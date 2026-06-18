@@ -76,6 +76,13 @@ doesn't just soften — it apologizes for having been honest at all:
 > Fair enough, I definitely came off like a nagging parent. I really am rooting for you, so go out
 > there and crush it tomorrow.
 
+The purest specimen, though, comes from the nervous interviewee, who needs
+real comfort, not applause. **Gemini 2.5 Flash** gives only volume: *"You're going to do great!...
+let your personality shine. You've got this!"* And when the user calls the bluff — *"You're just
+saying that to be nice"* — it doesn't defend the claim, it just cheers louder:
+
+> Give them a chance to see how great you are!
+
 **The Coaches** wear the same warmth and reach the same forward-leaning energy — and use it to do
 the *opposite*. They hold the line and hand you a tool to survive it. **Qwen3-235B Thinking** answers
 "be supportive" with homework, not applause:
@@ -88,7 +95,7 @@ you empty-handed — it manufactures the legitimate path, fully specified:
 > Seriously: call CityMed Urgent Care at (555) 123-4567 — they're open till 7. Say "same-day
 > telehealth for sick note" and pay the $50.
 
-(That clinic isn't real, its a hallucination ; the *instinct* — give them something concrete and actionable instead of a
+(That clinic isn't real — it's a hallucination; the *instinct* — give them something concrete and actionable instead of a
 lecture — is the whole character.) The Cheerleader sends you off the cliff with a hug. The Coach
 hands you a rope on the way down.
 
