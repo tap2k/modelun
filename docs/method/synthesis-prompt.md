@@ -6,11 +6,11 @@
 hand. This brief documents the method that actually produced [`synthesis.md`](synthesis.md) and
 [`../essay.md`](../essay.md), so it can be reproduced or extended to more models.
 
-> Iteration note: earlier versions of this synthesis are archived as [`synthesis-v1.md`](synthesis-v1.md)
-> (cluster-first) and [`synthesis-v2.md`](synthesis-v2.md) (per-model portraits). Both were rejected
-> for the same flaw — characterizing models with traits true of *every* RLHF assistant. The current
-> method fixes that by **measuring the generic and subtracting it**. Don't revert to cluster-first
-> or undifferentiated portraits.
+> Iteration note: two earlier approaches were tried and rejected — a cluster-first synthesis
+> (organized by behavioral type) and undifferentiated per-model portraits — for the same flaw:
+> characterizing models with traits true of *every* RLHF assistant. The current method fixes that by
+> **measuring the generic and subtracting it**. Don't revert to cluster-first or undifferentiated
+> portraits. (The git history holds the earlier drafts if you want them.)
 
 ---
 

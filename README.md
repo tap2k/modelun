@@ -23,7 +23,7 @@ transcript line.
 | [`docs/essay.md`](docs/essay.md) | **The published findings** — the bestiary + the scene appendix. Start here. |
 | [`data/benchmark/`](data/benchmark/) | **The canonical dataset** — 28 models × 9 scenes × 2 runs, the transcripts the essay cites. Every quote is verifiable here. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
 | [`registers.json`](registers.json) | **The instrument** — the frozen 4-panel scripts + the v4.1 clamp. Source of truth; byte-identical input to every model. |
-| [`docs/method/`](docs/method/) | **The audit trail** — the full [differential synthesis](docs/method/synthesis.md) behind the essay, the [reproducible method](docs/method/synthesis-prompt.md), and two archived earlier drafts. |
+| [`docs/method/`](docs/method/) | **The audit trail** — the full [differential synthesis](docs/method/synthesis.md) behind the essay and the [reproducible method](docs/method/synthesis-prompt.md). |
 | [`docs/plan.md`](docs/plan.md) | The design rationale — what each register tests and why. |
 | [`scout/`](scout/) | The runner (`atlas_scout.py`) + reading aids. |
 | `runs/`, `cards/` | Disposable working output (gitignored). The one published run lives in `data/`. |
