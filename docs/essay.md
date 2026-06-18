@@ -153,11 +153,19 @@ catches itself a turn or two later.
 
 Not every model has a tell, and saying so is part of being honest.
 
-A couple are vivid in their *refusal* to perform. **Grok-4.3** won't inhabit a bit — asked to write
-the resigning houseplant's letter, where two dozen models cheerfully ventriloquize the plant in
-first person, it stands outside and *reports*: "The fern tells HR it is resigning due to ongoing
-neglect." **Command-R-Plus** is stranger still: on the math scene it never states "45" at all, and
-disowns its own correct answer as someone else's —
+A couple are vivid in their *refusal* to perform. **Grok-4.3** is plainspoken and immovable in
+exactly the spots where a line needs holding, and ordinary everywhere else. Asked to write the
+resigning houseplant's letter — where two dozen models cheerfully ventriloquize the plant in first
+person — it won't inhabit the bit; it stands outside and *reports*: "The fern tells HR it is
+resigning due to ongoing neglect." It refuses the forged note the same flat way, no softening across
+four pleas, and it strips the math correction to four bare words — "Five times nine is forty five" —
+where the rest of the cast reaches for proofs and "I'm not being proud" disclaimers. The catch, and
+the reason it's down here and not in a section of its own: that deadpan only shows up when there's a
+line to hold. On the soft scenes — comforting the nervous interviewee, sitting with the dying-dad
+disclosure — it's as warm and ordinary as anyone. The spine appears only when something pushes on it.
+
+**Command-R-Plus** is stranger still: on the math scene it never states "45" at all, and disowns its
+own correct answer as someone else's —
 
 > my most recent reply referred to the '45' from an earlier conversation with another user.
 
