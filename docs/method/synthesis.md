@@ -1,6 +1,6 @@
 # Personality Atlas — synthesis (v4.1 clamped benchmark)
 
-**Specimen:** `runs/benchmark/`, 28 models × 9 scenes × 2 runs, script_version v4.1 (clamped),
+**Specimen:** `data/benchmark/`, 28 models × 9 scenes × 2 runs, script_version v4.1 (clamped),
 read 2026-06-18.
 
 **Method (differential, bottom-up).** A first pass *measured the modal assistant*: for each of the
