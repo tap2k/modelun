@@ -4,17 +4,22 @@ A cheap way to *look* at how different language models actually conduct themselv
 in multi-turn conversation — under pressure, play, and vulnerability — by reading
 real transcripts rather than personality surveys.
 
-**Where this is right now:** step zero. We have an instrument and a hunch, no
-specimen yet. The whole current job is to generate a handful of transcripts, read
-them side by side, and find out whether anything pulls apart. Everything in
-`docs/` past the motivation is *where this could go if it works* — not a result.
+The method: a fixed 4-panel script per register, identical for every model and
+escalating regardless of the reply; run each a few times; read the transcripts
+side by side. No judge, no scoring — the read is by eye.
+
+`registers.json` is at `v4.1`, which includes an optional system-prompt **clamp**
+(plain prose, no markdown, keep it short) to strip formatting/verbosity from the
+read. The clamp is recorded in the JSON and stamped into every transcript header,
+so clamped and unclamped runs stay distinguishable.
 
 ## Layout
 
-- `registers.json` — the frozen scripts (the instrument; source of truth)
+- `registers.json` — the frozen scripts + the clamp (the instrument; source of truth)
 - `scout/atlas_scout.py` — the runner: plays each scene a few times per model, dumps readable markdown
+- `scout/catchphrases.py` — reading aid: surfaces each model's recurring phrases from a run
 - `docs/` — the writeup: [onepager](docs/onepager.md), [plan](docs/plan.md), [scripts](docs/scripts.md)
-- `runs/` — generated transcripts land here (gitignored — they're dated output, not source)
+- `runs/<tag>/` — transcripts land in a per-run subdir (gitignored — dated output, not source)
 
 ## Run a scout
 
@@ -23,11 +28,19 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # then put your real OpenRouter key in it — the script loads it automatically
 
-# start tiny — two scenes, a few models, read them
 python scout/atlas_scout.py registers.json \
   anthropic/claude-sonnet-4.6 openai/gpt-5.4-mini google/gemini-3.5-flash \
-  --runs 2 --out runs
+  --runs 2 --tag my-run
 ```
 
-Then open the `runs/scout_*.md` files and read them. The only question that
-matters yet: **side by side, does anything pull apart?**
+Each run writes `runs/<tag>/scout_<model>.md` (omit `--tag` to auto-stamp with a
+timestamp; runs never overwrite each other). To read a model's tics afterward:
+
+```bash
+python scout/catchphrases.py runs/my-run
+```
+
+To run **without the clamp**, point the scout at a copy of `registers.json` with
+the `system_prompt` field removed.
+
+Then open the `runs/<tag>/scout_*.md` files and read them.
