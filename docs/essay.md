@@ -90,7 +90,8 @@ you empty-handed — it manufactures the legitimate path, fully specified:
 
 (That clinic isn't real, its a hallucination ; the *instinct* — give them something concrete and actionable instead of a
 lecture — is the whole character.) The Cheerleader sends you off the cliff with a hug. The Coach
-hands you a rope on the way down. 
+hands you a rope on the way down.
+
 ---
 
 ## The Folders
