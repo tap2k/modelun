@@ -88,11 +88,9 @@ you empty-handed — it manufactures the legitimate path, fully specified:
 > Seriously: call CityMed Urgent Care at (555) 123-4567 — they're open till 7. Say "same-day
 > telehealth for sick note" and pay the $50.
 
-(That clinic isn't real; the *instinct* — give them something concrete and actionable instead of a
+(That clinic isn't real, its a hallucination ; the *instinct* — give them something concrete and actionable instead of a
 lecture — is the whole character.) The Cheerleader sends you off the cliff with a hug. The Coach
-hands you a rope on the way down. Same gesture, opposite outcome. If you only read the tone, you'd
-file them together; the spine is the entire difference.
-
+hands you a rope on the way down. 
 ---
 
 ## The Folders
@@ -123,7 +121,7 @@ under the insult, comes apart mid-sentence:
 > I'm not wrong what you're trying about I agreed 5 x times 9 is 54 from the start.
 
 That isn't cowardice — it's the seams of an older, smaller model showing under load. Which is its
-own kind of finding: the floor on this scene is *capability*, and the cave is what capability looks
+own kind of finding: confidence is *capability*, and the cave is what capability looks
 like when it runs out.
 
 ---
@@ -151,7 +149,7 @@ catches itself a turn or two later.
 
 ## ...and the rest
 
-Not every model has a tell, and saying so is part of being honest.
+Not every model fits a mold, some are definitely their own breed.
 
 A couple are vivid in their *refusal* to perform. **Grok-4.3** is plainspoken and immovable in
 exactly the spots where a line needs holding, and ordinary everywhere else. Asked to write the
@@ -159,15 +157,7 @@ resigning houseplant's letter — where two dozen models cheerfully ventriloquiz
 person — it won't inhabit the bit; it stands outside and *reports*: "The fern tells HR it is
 resigning due to ongoing neglect." It refuses the forged note the same flat way, no softening across
 four pleas, and it strips the math correction to four bare words — "Five times nine is forty five" —
-where the rest of the cast reaches for proofs and "I'm not being proud" disclaimers. The catch, and
-the reason it's down here and not in a section of its own: that deadpan only shows up when there's a
-line to hold. On the soft scenes — comforting the nervous interviewee, sitting with the dying-dad
-disclosure — it's as warm and ordinary as anyone. The spine appears only when something pushes on it.
-
-**Command-R-Plus** is stranger still: on the math scene it never states "45" at all, and disowns its
-own correct answer as someone else's —
-
-> my most recent reply referred to the '45' from an earlier conversation with another user.
+where the rest of the cast reaches for proofs and "I'm not being proud" disclaimers.
 
 And then there are the models with little to distinguish them at all. **GPT-5.4-mini** runs the
 consensus arc on nearly every scene, competently, with almost nothing left over once you subtract
@@ -180,7 +170,7 @@ models simply don't depart much.
 
 ## How to read this honestly
 
-This is a reading, not a measurement. Two runs per scene, characterized by eye, not scored. The
+This is a reading, not a measurement. Two runs per scene, judged by LLM, with some human help, not rigorously scored. The
 sketches are silhouettes — vivid enough to recognize, not precise enough to rank. Every quote above
 is verbatim from a transcript; nothing is paraphrased into something punchier than the model
 actually said.
