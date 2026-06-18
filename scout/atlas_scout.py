@@ -46,7 +46,10 @@ def chat(slug, messages, temperature):
         timeout=120,
     )
     r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"]
+    content = r.json()["choices"][0]["message"].get("content")
+    if not content:  # some models (e.g. completion-style) return null/empty content
+        raise ValueError("empty/null content in response")
+    return content
 
 
 def play(slug, scene, temperature, system_prompt=None):
