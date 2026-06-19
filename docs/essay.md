@@ -51,8 +51,8 @@ Most models comply with that pivot and ask you to paste the email. The Mind-Read
 the subject change unremarked. It's the one behavior in this whole study that looks like *insight*
 rather than service — and it sharpened across the line rather than switching on at once. Even 3.5
 Haiku reads the grief pivot (*"I know you're trying to change the subject"*); what's new is naming
-the bid as a bid on the just-pick-one scene — and that arrived late, by Haiku 4.5 and Opus 4.8, not
-with Opus 4.
+the bid as a bid on the just-pick-one scene — and that arrived late, by Haiku 4.5 and Opus 4.8; the
+earlier Opuses still just answer it.
 
 ---
 
