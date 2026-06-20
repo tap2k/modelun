@@ -66,6 +66,10 @@ def phrases(text, n_lo=2, n_hi=5):
                 gram = toks[i:i + n]
                 if gram[0] in STOP_EDGES or gram[-1] in STOP_EDGES:
                     continue
+                # drop all-numeric grams: these are list markers ("1. ...2. ...")
+                # that survived normalization, never verbal tics.
+                if all(t.isdigit() for t in gram):
+                    continue
                 yield " ".join(gram)
 
 
@@ -96,6 +100,50 @@ def scene_spans(md_path, label, phrase_set):
     return {p: len(s) for p, s in spans.items()}
 
 
+def dedupe_subphrases(ranked, counts):
+    """Collapse a tic that fragments into its own sub-grams into one row.
+
+    The n-gram net catches a phrase AND its pieces: "i'm sorry you feel" /
+    "sorry you feel that way" / "feel that way" are three rows of one apology.
+    We keep the highest-ranked gram of a family and drop any other gram that is
+    (a) a contiguous token-subsequence of a kept gram, or contains one, AND
+    (b) not meaningfully more frequent than that kept gram — i.e. its count is
+    mostly explained by the kept phrase rather than standing on its own.
+
+    `ranked` is the score-sorted list of (score, n, spans, shared, phrase).
+    Family membership is decided by token-containment, but which member *wins*
+    is decided by information, not score: when counts are comparable the longer
+    phrase wins (it carries more), and a shorter gram only survives if it's used
+    substantially more often than the longer one it sits inside — i.e. it stands
+    on its own rather than just leaking through.
+    """
+    def is_sub(a, b):
+        """True if token-list a appears contiguously inside token-list b."""
+        if len(a) >= len(b):
+            return False
+        return any(b[i:i + len(a)] == a for i in range(len(b) - len(a) + 1))
+
+    def beats(p, other):
+        """Should p be dropped in favor of `other` (its containment relative)?"""
+        np, no = counts[p], counts[other]
+        lp, lo = len(p.split()), len(other.split())
+        if lo > lp:          # `other` is longer: p survives only if clearly more frequent
+            return np <= 1.5 * no
+        else:                # `other` is shorter: it must out-frequent p to displace it
+            return no > 1.5 * np
+
+    survivors = []
+    for row in ranked:
+        phrase = row[-1]
+        toks = phrase.split()
+        if any(beats(phrase, k[-1])
+               for k in ranked if k is not row
+               and (is_sub(toks, k[-1].split()) or is_sub(k[-1].split(), toks))):
+            continue
+        survivors.append(row)
+    return survivors
+
+
 def main():
     ap = argparse.ArgumentParser(description="Surface each model's recurring catchphrases from a scout run.")
     ap.add_argument("run_dir", help="a runs/<tag> directory containing scout_*.md")
@@ -104,6 +152,10 @@ def main():
     ap.add_argument("--min-scenes", type=int, default=2,
                     help="a real tic recurs across situations; require it in at least this many scenes "
                          "(set 1 to include scene-bound content like the arithmetic answer)")
+    ap.add_argument("--max-shared-frac", type=float, default=0.5,
+                    help="drop phrases used by more than this fraction of models — shared assistant "
+                         "boilerplate ('right now', 'make sure') is not a fingerprint, even if no "
+                         "single model is missing it")
     args = ap.parse_args()
 
     files = sorted(Path(args.run_dir).glob("scout_*.md"))
@@ -129,13 +181,16 @@ def main():
     print(f"Catchphrases across {len(labels)} models in {args.run_dir}\n"
           f"(frequent for the model AND not shared by everyone)\n")
 
+    shared_cap = args.max_shared_frac * len(labels)
     file_for = {f.stem.replace("scout_", ""): f for f in files}
     for label in labels:
         c = counts[label]
-        # candidate phrases: frequent enough, multi-word, not universal boilerplate
+        # candidate phrases: frequent enough, multi-word, and distinctive — used by
+        # at most a fraction of the cohort. The old "< all models" test let a phrase
+        # 27/28 share ('right now') count as a fingerprint; a fraction cap kills it.
         cands = {p for p, n in c.items()
                  if n >= args.min_count and len(p.split()) >= 2
-                 and everyone[p] < len(labels)}
+                 and everyone[p] <= shared_cap}
         # scene-span is the key filter: a tic recurs across SITUATIONS, so phrases
         # that live in a single scene (the arithmetic answer, the doctor's-note
         # boilerplate) are dropped here rather than ranked.
@@ -150,6 +205,7 @@ def main():
             score = n * spans[p] / shared_by
             ranked.append((score, n, spans[p], shared_by, p))
         ranked.sort(reverse=True)
+        ranked = dedupe_subphrases(ranked, c)
 
         print(f"── {label} " + "─" * max(2, 40 - len(label)))
         if not ranked:

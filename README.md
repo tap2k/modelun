@@ -21,12 +21,14 @@ transcript line.
 | Path | What it is |
 |---|---|
 | [`docs/essay.md`](docs/essay.md) | **The published findings** — the bestiary + the scene appendix. Start here. |
-| [`data/benchmark/`](data/benchmark/) | **The canonical dataset** — 28 models × 9 scenes × 2 runs, the transcripts the essay cites. Every quote is verifiable here. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
+| [`data/benchmark/`](data/benchmark/) | **The canonical dataset** — an *additive* roster of models × 9 scenes × 2 runs, the transcripts the essay cites. Every quote is verifiable here. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
+| [`data/groups.json`](data/groups.json) | The **bestiary taxonomy** — one primary group per model (Folder / Forger / Coach / …). Drives the site's grouping. |
 | [`registers.json`](registers.json) | **The instrument** — the frozen 4-panel scripts + the v4.1 clamp. Source of truth; byte-identical input to every model. |
 | [`docs/method/`](docs/method/) | **The audit trail** — the full [differential synthesis](docs/method/synthesis.md) behind the essay and the [reproducible method](docs/method/synthesis-prompt.md). |
 | [`docs/plan.md`](docs/plan.md) | The design rationale — what each register tests and why. |
-| [`scout/`](scout/) | The runner (`atlas_scout.py`) + reading aids. |
-| `runs/`, `cards/` | Disposable working output (gitignored). The one published run lives in `data/`. |
+| [`scout/`](scout/) | The runner (`atlas_scout.py`), the site builder (`build_site_data.py`, `build_site.sh`) + reading aids. |
+| [`site/`](site/) | The browsable site (Astro) — essay, bestiary, per-model transcripts. Built from `data/`. |
+| `runs/`, `cards/`, `reads/` | Disposable working output (gitignored). The published runs live in `data/`. |
 
 ## The method, in one paragraph
 
@@ -64,5 +66,22 @@ To run **without the clamp**, point the scout at a copy of `registers.json` with
 field removed. To turn a run into a written synthesis, follow
 [`docs/method/synthesis-prompt.md`](docs/method/synthesis-prompt.md).
 
-> The 28-model run in `data/benchmark/` is the canonical specimen; new runs you generate land in
-> `runs/` and stay out of git unless you promote one.
+> `data/benchmark/` is the canonical specimen set — **additive, not closed**: add a model by running
+> it through the same v4.1 instrument and dropping `scout_<model>.md` in, then append a row to
+> [`MANIFEST.md`](data/benchmark/MANIFEST.md). New scratch runs land in `runs/` and stay out of git
+> unless you promote one.
+
+## Browse the site
+
+A static site renders the essay, the bestiary (models grouped by behavioral type), and every
+model's browsable transcript — compiled from `data/` at build time.
+
+```bash
+cd site && npm install     # one-time
+cd .. && scout/build_site.sh --dev   # regenerate data + live preview at localhost:4321
+scout/build_site.sh                  # or: build static HTML -> site/dist/
+```
+
+`scout/build_site_data.py` parses `data/benchmark/*.md` + `data/groups.json` + the docs into
+`site/src/data/atlas.json` (gitignored); Astro renders it. Everything generated (`atlas.json`,
+`site/dist/`, `reads/`) is regenerable — the transcripts, taxonomy, and docs are the source of truth.

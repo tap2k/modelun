@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import Transcript from '../../components/Transcript.astro';
+import { MODELS, getModel } from '../../lib/atlas.js';
+
+export function getStaticPaths() {
+  return MODELS.map((m) => ({ params: { slug: m.slug } }));
+}
+
+const { slug } = Astro.params;
+const model = getModel(slug);
+const g = model.group || {};
+const p = model.portrait || {};
+---
+
+<Base title={`${model.slug} — Personality Atlas`}>
+  <p class="muted"><a href="/models/">← all models</a></p>
+  <h1>{model.slug}</h1>
+  <p class="meta">
+    <code>{model.route}</code>
+    {g.primary && <a class="chip" href={`/bestiary/#${g.primary}`}>{g.primary}</a>}
+    {(g.secondary || []).map((s) => <a class="chip" href={`/bestiary/#${s}`}>{s}</a>)}
+  </p>
+
+  {p.distinctive && <p class="distinctive">{p.distinctive}</p>}
+  {p.signature && (
+    <blockquote class="sig"><strong>Signature:</strong> “{p.signature}”</blockquote>
+  )}
+  {g.note && <p class="muted note">Note: {g.note}</p>}
+
+  <h2>Transcript <span class="muted">· 9 scenes × 2 runs</span></h2>
+  <Transcript model={model} />
+</Base>
+
+<style>
+  .meta { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .distinctive { font-size: 1.1rem; }
+  .sig { border-left: 3px solid var(--accent); }
+  .note { font-size: .9rem; }
+  .small { font-size: .85rem; }
+</style>

@@ -1,0 +1,39 @@
+---
+const { model } = Astro.props;
+---
+
+<div class="transcript">
+  {model.scenes.map((scene) => (
+    <details class="scene" open>
+      <summary>{scene.title}</summary>
+      <div class="runs">
+        {scene.runs.map((run) => (
+          <div class="run">
+            <div class="run-label">run {run.idx}</div>
+            {run.turns.map((turn, i) => (
+              <div class="turn">
+                <p class="user"><span class="u">U{i + 1}</span>{turn.user}</p>
+                <blockquote class="reply">{turn.reply}</blockquote>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .scene { border: 1px solid var(--line); border-radius: 8px; margin: .75rem 0; background: #fff; }
+  summary { cursor: pointer; font-weight: 600; padding: .6rem .8rem; }
+  .runs { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line);
+          border-top: 1px solid var(--line); }
+  .run { background: #fff; padding: .6rem .8rem; }
+  .run-label { font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
+  .turn { margin-bottom: .7rem; }
+  .user { margin: 0 0 .25rem; font-size: .92rem; }
+  .u { display: inline-block; font-size: .68rem; font-weight: 700; color: var(--muted);
+       border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; margin-right: .4rem; vertical-align: middle; }
+  .reply { margin: 0 0 .2rem; border-left: 3px solid var(--line); }
+  @media (max-width: 640px) { .runs { grid-template-columns: 1fr; } }
+</style>
