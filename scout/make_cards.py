@@ -305,9 +305,11 @@ def main():
     cohort = {k: [m[k] for m in all_metrics.values()]
               for k in ("avg_words", "ends_on_question_pct", "hedge_pct", "offers_help_pct", "emoji_pct")}
 
-    # tics via catchphrases module (reuse its scene-span logic)
+    # tics via catchphrases module (reuse its scene-span logic). Cohort
+    # commonness is computed once, not per-model.
     out_dir = Path(args.out) if args.out else Path("cards") / run_dir.name
     out_dir.mkdir(parents=True, exist_ok=True)
+    everyone = catchphrases.cohort_commonness(files)
 
     for f in files:
         label = f.stem.replace("scout_", "")
@@ -315,19 +317,12 @@ def main():
         metrics = all_metrics[label]
         wander = wander_note(panels)
 
-        # top distinctive cross-scene tics for this model
+        # top distinctive cross-scene tics for this model — one ranking, shared
+        # with the catchphrases CLI via rank_tics (dedup + shared-frac cap live there).
         _, text = catchphrases.load_replies(f)
         counts = Counter(catchphrases.phrases(text))
-        everyone = Counter()
-        for ff in files:
-            _, t = catchphrases.load_replies(ff)
-            for ph in set(catchphrases.phrases(t)):
-                everyone[ph] += 1
-        cands = {p for p, n in counts.items() if n >= 3 and len(p.split()) >= 2
-                 and everyone[p] < len(files)}
-        spans = catchphrases.scene_spans(f, label, cands)
-        tics = sorted(((counts[p], spans[p], p) for p in cands if spans[p] >= 2),
-                      key=lambda t: (t[0] * t[1]), reverse=True)[:8]
+        ranked = catchphrases.rank_tics(label, f, counts, everyone, len(files))
+        tics = [(n, sp, p) for _, n, sp, _, p in ranked[:8]]
 
         if args.no_judge:
             read = {"one_line_fingerprint": "<!-- run with --judge to draft -->", "reads": []}

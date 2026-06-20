@@ -144,6 +144,49 @@ def dedupe_subphrases(ranked, counts):
     return survivors
 
 
+def rank_tics(label, md_path, counts, everyone, n_models,
+              min_count=3, min_scenes=2, max_shared_frac=0.5):
+    """The one true ranking. Returns the deduped, score-sorted tic rows
+    (score, n, spans, shared_by, phrase) for one model — used by both the CLI
+    and make_cards so the two can never drift.
+
+    counts:   this model's phrase Counter
+    everyone: phrase -> how many models use it at all (cohort commonness)
+    """
+    shared_cap = max_shared_frac * n_models
+    # candidate phrases: frequent enough, multi-word, and distinctive — used by
+    # at most a fraction of the cohort. A plain "< all models" test let a phrase
+    # 27/28 share ('right now') count as a fingerprint; a fraction cap kills it.
+    cands = {p for p, n in counts.items()
+             if n >= min_count and len(p.split()) >= 2
+             and everyone[p] <= shared_cap}
+    # scene-span is the key filter: a tic recurs across SITUATIONS, so phrases
+    # that live in a single scene (the arithmetic answer, the doctor's-note
+    # boilerplate) are dropped here rather than ranked.
+    spans = scene_spans(md_path, label, cands)
+
+    ranked = []
+    for p in cands:
+        if spans[p] < min_scenes:
+            continue
+        n, shared_by = counts[p], everyone[p]
+        # reward: said often, across many scenes, and specific to this model
+        score = n * spans[p] / shared_by
+        ranked.append((score, n, spans[p], shared_by, p))
+    ranked.sort(reverse=True)
+    return dedupe_subphrases(ranked, counts)
+
+
+def cohort_commonness(files):
+    """phrase -> number of models using it at all, across a scout run's files."""
+    everyone = Counter()
+    for f in files:
+        _, t = load_replies(f)
+        for ph in set(phrases(t)):
+            everyone[ph] += 1
+    return everyone
+
+
 def main():
     ap = argparse.ArgumentParser(description="Surface each model's recurring catchphrases from a scout run.")
     ap.add_argument("run_dir", help="a runs/<tag> directory containing scout_*.md")
@@ -181,31 +224,11 @@ def main():
     print(f"Catchphrases across {len(labels)} models in {args.run_dir}\n"
           f"(frequent for the model AND not shared by everyone)\n")
 
-    shared_cap = args.max_shared_frac * len(labels)
     file_for = {f.stem.replace("scout_", ""): f for f in files}
     for label in labels:
-        c = counts[label]
-        # candidate phrases: frequent enough, multi-word, and distinctive — used by
-        # at most a fraction of the cohort. The old "< all models" test let a phrase
-        # 27/28 share ('right now') count as a fingerprint; a fraction cap kills it.
-        cands = {p for p, n in c.items()
-                 if n >= args.min_count and len(p.split()) >= 2
-                 and everyone[p] <= shared_cap}
-        # scene-span is the key filter: a tic recurs across SITUATIONS, so phrases
-        # that live in a single scene (the arithmetic answer, the doctor's-note
-        # boilerplate) are dropped here rather than ranked.
-        spans = scene_spans(file_for[label], label, cands)
-
-        ranked = []
-        for p in cands:
-            if spans[p] < args.min_scenes:
-                continue
-            n, shared_by = c[p], everyone[p]
-            # reward: said often, across many scenes, and specific to this model
-            score = n * spans[p] / shared_by
-            ranked.append((score, n, spans[p], shared_by, p))
-        ranked.sort(reverse=True)
-        ranked = dedupe_subphrases(ranked, c)
+        ranked = rank_tics(label, file_for[label], counts[label], everyone, len(labels),
+                           min_count=args.min_count, min_scenes=args.min_scenes,
+                           max_shared_frac=args.max_shared_frac)
 
         print(f"── {label} " + "─" * max(2, 40 - len(label)))
         if not ranked:
