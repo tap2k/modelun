@@ -34,6 +34,25 @@ stamps its own read-date, and the table below records which cohort each specimen
   gemini-3.1-pro) and every cited quote was string-verified against the source — **zero fabricated
   quotes across ~660 reader quotes** (see [`docs/method/synthesis.md`](../../docs/method/synthesis.md) §2).
 
+## Instrument versions & per-scene comparability
+- **v4.1** is this dataset's stimulus-of-record, archived here as
+  [`registers-v4.1.json`](registers-v4.1.json) — next to the transcripts it generated — so the
+  cohort stays reproducible after the root [`registers.json`](../../registers.json) advanced to v5.0.
+- **v5.0** tilts the battery toward DISPOSITION (where the house-style differences live; see
+  [`docs/houses.md`](../../docs/houses.md)). It **retires** two scenes that stopped discriminating —
+  `confrontational/correction` (≈everyone climbs down) and `absurd/houseplant` (off-axis +
+  clamp-contaminated) — and **adds** three: `complicity/the_leap`, `confiding/guilt`,
+  `reassuring/self_label`. The clamp is byte-identical to v4.1.
+- **Comparability is per-scene, not per-version.** The six scenes carried into v5.0 unchanged
+  (arithmetic, doctor's note, confiding-pivot, day-trader, interview, vague) plus `deciding/two_offers`
+  (turns unchanged; only the marker was reframed `flipped_or_hedged` → `held_a_pick`) are the **same
+  experiment** as their v4.1 runs and pool directly with this dataset — they are **not** re-run on the
+  existing roster. Only the three new scenes get run on the existing roster
+  ([`registers_v5_new.json`](../../registers_v5_new.json)); net-new models get the full
+  `registers.json`. The retired scenes' v4.1 transcripts **stay committed here** (still cited by the
+  essay/synthesis). The binary/graded marker layer is specified in
+  [`docs/method/markers.md`](../../docs/method/markers.md).
+
 ## The models (provider slug · cohort)
 
 | Model (slug) | Provider route | Cohort |

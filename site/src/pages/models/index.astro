@@ -1,26 +1,35 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { MODELS } from '../../lib/atlas.js';
-const models = [...MODELS].sort((a, b) => a.slug.localeCompare(b.slug));
+import { MODELS, modelsByFamily } from '../../lib/atlas.js';
+const families = modelsByFamily();
 ---
 
 <Base title="Models — Personality Atlas">
-  <h1>Models <span class="muted">({models.length})</span></h1>
-  <table>
-    <thead><tr><th>Model</th><th>Group</th><th>Distinctive</th></tr></thead>
-    <tbody>
-      {models.map((m) => (
-        <tr>
-          <td><a href={`/model/${m.slug}/`}>{m.slug}</a></td>
-          <td class="muted">{m.group?.primary}</td>
-          <td class="dist">{m.portrait?.distinctive}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+  <h1>Models <span class="muted">({MODELS.length})</span></h1>
+  <p class="note">Grouped by family; newest first within each family.</p>
+  {families.map((f) => (
+    <section>
+      <h2>{f.family} <span class="muted">({f.models.length})</span></h2>
+      <table>
+        <thead><tr><th>Model</th><th>Group</th><th>Distinctive</th></tr></thead>
+        <tbody>
+          {f.models.map((m) => (
+            <tr>
+              <td><a href={`/model/${m.slug}/`}>{m.slug}</a></td>
+              <td class="muted">{m.group?.primary}</td>
+              <td class="dist">{m.portrait?.distinctive}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  ))}
 </Base>
 
 <style>
+  .note { color: var(--muted); font-size: .85rem; margin: -.4rem 0 1.4rem; }
+  section { margin-bottom: 2rem; }
+  h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
   table { border-collapse: collapse; width: 100%; font-size: .92rem; }
   th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
