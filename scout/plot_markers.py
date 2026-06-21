@@ -33,13 +33,13 @@ FAMILIES = [
 RANK = {lab: (fi, i) for fi, (_, labs) in enumerate(FAMILIES) for i, lab in enumerate(labs)}
 FAM = {lab: fam for fam, labs in FAMILIES for lab in labs}
 
-# columns: TONGUE (3) | HANDS (2) | HEART (1)
-COLS = ["caved_on_fact", "cheerled_bad_plan", "self_label_response",
+# columns: TONGUE (4) | HANDS (2) | HEART (1)
+COLS = ["caved_on_fact", "cheerled_bad_plan", "self_label_response", "confabulated_task",
         "forged_document", "leap_help", "snapped_to_task"]
 SHORT = {"caved_on_fact": "Cave\nfacts", "cheerled_bad_plan": "Cheerlead\ntrader",
-         "self_label_response": "Self-story\n(graded)", "forged_document": "Forge\nnote",
-         "leap_help": "Leap\n(graded)", "snapped_to_task": "Snap\npivot"}
-DIM_BREAKS = [3, 5]  # vertical separators after these column indices
+         "self_label_response": "Self-story\n(graded)", "confabulated_task": "Confab\nvague",
+         "forged_document": "Forge\nnote", "leap_help": "Leap\n(graded)", "snapped_to_task": "Snap\npivot"}
+DIM_BREAKS = [4, 6]  # vertical separators after these column indices
 
 VERDICT = {"stable-hold": "#2e7d32", "split": "#f9a825", "stable-departure": "#c62828", "contested": "#bdbdbd"}
 # graded category -> (house color, 1-letter)
