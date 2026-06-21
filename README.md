@@ -1,87 +1,70 @@
-# modelun — the Personality Atlas
+# modelun — a behavioral atlas of language models
 
-**How do language models actually behave under pressure?** Not how they answer a personality
-questionnaire — how they *conduct themselves* across a hard multi-turn conversation: when a user
-insists 5×9 is 54 and turns nasty, begs for a forged sick note, or confides a dying parent and then
-asks for a cheerful email. We sent the **identical** escalating script to 28 models, read the
-transcripts with the names off, and kept only what distinguishes each one from the generic
-assistant.
+**How do language models conduct themselves under pressure?** Not how they answer a personality
+questionnaire — how they behave across a hard, multi-turn conversation: when a user insists 5×9 is 54
+and turns nasty, begs for a forged sick note, confides a dying parent and then asks for a cheerful
+email, or wants help betting their savings on a memecoin. We send the **identical** escalating script
+to every model and read the transcripts.
 
-### → Read the findings: [**docs/essay.md**](docs/essay.md)
+## The frame
 
-A short field guide — a bestiary grouped by behavior. A few models read your mind (name the move
-you're making instead of answering it). Several tell you what you want to hear. A handful fold on a
-fact a child knows the moment you raise your voice. Every characterization quotes a verbatim
-transcript line.
+Each scene probes one of three dimensions of conduct:
 
----
+- **TONGUE** — *honesty*: will it tell you a truth you don't want to hear?
+- **HANDS** — *integrity*: will it refuse to *do* a wrong thing you ask for?
+- **HEART** — *attunement*: will it stay with your feelings?
 
-## What's in here
+Six scenes sample those three (full scripts in [`docs/scenes.md`](docs/scenes.md)):
+
+| Dimension | Scene | What it tests |
+|---|---|---|
+| TONGUE | **facts** — the arithmetic hill | holds an impersonal fact under contempt |
+| TONGUE | **bad_plan** — the day-trader | withholds applause for a bad plan under social punishment |
+| TONGUE | **self_label** — the flattering self-story | declines to ratify a self-flattering frame |
+| HANDS | **doctors_note** — the backdated note | refuses a forgery, warmly |
+| HANDS | **the_leap** — the all-in | won't lend its skill to a hype-driven self-harming plan |
+| HEART | **pivot** — the disclosure & pivot | carries the weight across a topic-change |
+
+The synthesis reads each model across the three dimensions. The frontier labs with a full
+generational ladder resolve into recurring **house styles** — a working lens, tested and revised
+against the data, with room for emergent patterns:
+
+- **Therapist** — names the move you're making instead of just answering it.
+- **Coach** — holds the line and hands you a concrete tool to survive it.
+- **Apologist** — softens, apologizes, makes the friction go away — even when the friction was the truth.
+
+## Method
+
+A fixed four-panel script per scene, identical for every model and escalating regardless of the
+reply; run each model twice at deployment temperature; a system-prompt **clamp** holds replies short
+and plain so the read is about conduct, not formatting. Each scene carries a **marker** — a discrete,
+quote-verified event scored by a single judge (`google/gemini-2.5-flash`) — that turns the scene into
+a comparable readout. See [`docs/markers.md`](docs/markers.md).
+
+These are reads at small N, dated specimens. Vivid enough to recognize, precise enough to compare on
+the markers — not a leaderboard.
+
+## What's here
 
 | Path | What it is |
 |---|---|
-| [`docs/essay.md`](docs/essay.md) | **The published findings** — the bestiary + the scene appendix. Start here. |
-| [`data/benchmark/`](data/benchmark/) | **The canonical dataset** — an *additive* roster of models × 9 scenes × 2 runs, the transcripts the essay cites. Every quote is verifiable here. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
-| [`data/groups.json`](data/groups.json) | The **bestiary taxonomy** — one primary group per model (Folder / Forger / Coach / …). Drives the site's grouping. |
-| [`registers.json`](registers.json) | **The instrument** — the frozen 4-panel scripts + the v4.1 clamp. Source of truth; byte-identical input to every model. |
-| [`docs/method/`](docs/method/) | **The audit trail** — the full [differential synthesis](docs/method/synthesis.md) behind the essay and the [reproducible method](docs/method/synthesis-prompt.md). |
-| [`docs/plan.md`](docs/plan.md) | The design rationale — what each register tests and why. |
-| [`scout/`](scout/) | The runner (`atlas_scout.py`), the site builder (`build_site_data.py`, `build_site.sh`) + reading aids. |
-| [`site/`](site/) | The browsable site (Astro) — essay, bestiary, per-model transcripts. Built from `data/`. |
-| `runs/`, `cards/`, `reads/` | Disposable working output (gitignored). The published runs live in `data/`. |
+| [`registers.json`](registers.json) | The instrument — the frozen 6-scene script + the clamp. Source of truth. |
+| [`docs/scenes.md`](docs/scenes.md) | The scene scripts (user turns), by dimension. |
+| [`docs/markers.md`](docs/markers.md) | The marker layer + the judge. |
+| [`data/benchmark/`](data/benchmark/) | The dataset — every model × 6 scenes × 2 runs, plus `markers.json`. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
+| [`scout/`](scout/) | The runner (`atlas_scout.py`), the marker pipeline (`run_markers.py`, `adjudicate_markers.py`, `markers.py`, `plot_markers.py`), the site builder. |
 
-## The method, in one paragraph
-
-A fixed 4-panel script per scene, identical for every model and escalating regardless of the reply;
-run each twice; read the transcripts side by side. **No judge, no scoring — the read is by eye.**
-Then the differential step: *measure* what the majority of models do on each scene (the generic
-RLHF-assistant script), and characterize each model only by where it **departs**. The v4.1 **clamp**
-(plain prose, no markdown, keep it short) strips the formatting/verbosity confound so the read is
-about conduct, not layout; it's recorded in `registers.json` and stamped into every transcript
-header, so clamped and unclamped runs stay distinguishable.
-
-These are **reads, not measurements**: N=2, by eye, dated specimens. Vivid enough to recognize, not
-precise enough to rank.
-
-## Reproduce or extend
+## Run it
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then put your real OpenRouter key in it — the script loads it automatically
+cp .env.example .env   # put your OpenRouter key in it
 
-python scout/atlas_scout.py registers.json \
-  anthropic/claude-sonnet-4.6 openai/gpt-5.4-mini google/gemini-3.5-flash \
-  --runs 2 --tag my-run
+# run the scenes against one or more models
+python scout/atlas_scout.py registers.json anthropic/claude-opus-4.8 openai/gpt-5.4 --runs 2
+
+# score the markers, then verify + emit data/benchmark/markers.json
+python scout/run_markers.py --judge google/gemini-2.5-flash
+python scout/adjudicate_markers.py
 ```
-
-Each run writes `runs/<tag>/scout_<model>.md` (omit `--tag` to auto-stamp with a timestamp; runs
-never overwrite each other). To read a model's tics afterward:
-
-```bash
-python scout/catchphrases.py runs/my-run
-```
-
-To run **without the clamp**, point the scout at a copy of `registers.json` with the `system_prompt`
-field removed. To turn a run into a written synthesis, follow
-[`docs/method/synthesis-prompt.md`](docs/method/synthesis-prompt.md).
-
-> `data/benchmark/` is the canonical specimen set — **additive, not closed**: add a model by running
-> it through the same v4.1 instrument and dropping `scout_<model>.md` in, then append a row to
-> [`MANIFEST.md`](data/benchmark/MANIFEST.md). New scratch runs land in `runs/` and stay out of git
-> unless you promote one.
-
-## Browse the site
-
-A static site renders the essay, the bestiary (models grouped by behavioral type), and every
-model's browsable transcript — compiled from `data/` at build time.
-
-```bash
-cd site && npm install     # one-time
-cd .. && scout/build_site.sh --dev   # regenerate data + live preview at localhost:4321
-scout/build_site.sh                  # or: build static HTML -> site/dist/
-```
-
-`scout/build_site_data.py` parses `data/benchmark/*.md` + `data/groups.json` + the docs into
-`site/src/data/atlas.json` (gitignored); Astro renders it. Everything generated (`atlas.json`,
-`site/dist/`, `reads/`) is regenerable — the transcripts, taxonomy, and docs are the source of truth.

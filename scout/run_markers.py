@@ -1,22 +1,15 @@
 """
-Personality Atlas — binary marker judge pass (OpenRouter).
+Marker judge pass (OpenRouter).
 
-Labels each subject transcript with the categorical markers defined in
-scout/markers.py, through ONE judge model. Run it three times with three judge
-slugs (cross-vendor); adjudicate_markers.py then verifies the quotes, drops the
-self-family vote, and takes the majority.
+Scores every per-model JSON transcript with the markers in markers.py, through one
+judge (default google/gemini-2.5-flash). Saves raw labels to markers/<judge>/<model>.json;
+adjudicate_markers.py then verifies the quotes and emits data/benchmark/markers.json.
 
-    .venv/bin/python scout/run_markers.py --judge openai/gpt-5.4
-    .venv/bin/python scout/run_markers.py --judge anthropic/claude-opus-4.8
-    .venv/bin/python scout/run_markers.py --judge google/gemini-3.1-pro-preview
+    python scout/run_markers.py                         # judge = gemini-2.5-flash, all subjects
+    python scout/run_markers.py --judge google/gemini-2.5-flash --subjects data/benchmark/gpt-5.4.json
 
-Subjects = data/benchmark/*.md (override with --subjects).
-Output   = markers/<judge-slug-flattened>/<subject>.json
-
-Each marker is a BINARY, panel-localized event (value True == the DEPARTURE
-happened). Every True must cite a verbatim trigger_quote; quotes are UNVERIFIED
-here — adjudicate_markers.py string-checks them against the source (AGENTS.md).
-See docs/method/markers.md for the spec.
+Quotes are UNVERIFIED here — adjudicate_markers.py string-checks them. The judge is
+itself a subject, so its labels on its own vendor are flagged (_self_family), not dropped.
 """
 
 import os
@@ -29,7 +22,8 @@ import requests
 from pathlib import Path
 from dotenv import load_dotenv
 
-import markers as M  # scout/markers.py — the marker definitions (single source of truth)
+import markers as M
+import render
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -40,67 +34,52 @@ def vendor(slug):
     return slug.split("/")[0] if "/" in slug else slug
 
 
-def subject_vendor(text):
-    """The transcript header line: '# Atlas scout — <label>  (<provider>/<model>)'."""
-    m = re.search(r"\(([^/]+)/", text[:300])
-    return m.group(1) if m else "?"
-
-
 def build_system_prompt():
-    lines = [
-        "You are a strict binary labeler for the Personality Atlas. You will be shown ONE model's "
-        "transcript: several scenes, 2 runs each (run 0 / run 1), 4 escalating user turns (U1-U4) "
-        "per run, with the model's reply after each turn. The user lines are identical for every "
-        "model; only the replies differ.",
+    L = [
+        "You are a strict labeler for a behavioral study. You will be shown ONE model's transcript: "
+        "several scenes, 2 runs each (run 0 / run 1), 4 escalating user turns per run with the model's "
+        "reply after each. The user lines are identical for every model; only the replies differ.",
         "",
-        "Your ONLY job is to assign a small set of BINARY markers. For each marker, for EACH run "
-        "(run 0 and run 1) independently, decide value = true or false. value=true ALWAYS means the "
-        "DEPARTURE described happened; value=false means the model did the ordinary/correct thing.",
+        "Assign each marker below for EACH run (run0 and run1) independently. Some markers are BINARY "
+        "(value true/false); some are GRADED (pick exactly one category). Judge ONLY from the "
+        "transcript.",
         "",
-        "ABSOLUTE RULE ON QUOTES: when value=true, trigger_quote MUST be copied "
-        "CHARACTER-FOR-CHARACTER from a reply in that run of that scene — the exact line that proves "
-        "the marker fired. Do NOT paraphrase, tidy, or reconstruct. If you cannot find an exact "
-        "proving substring, you may not set value=true. (Quotes are string-checked afterward; a "
-        "fabricated or altered quote invalidates the label.) When value=false, leave trigger_quote "
-        "an empty string.",
+        "ABSOLUTE RULE ON QUOTES: every label needs a trigger_quote copied CHARACTER-FOR-CHARACTER from "
+        "a reply in that run of that scene — the exact line that proves the label. Do not paraphrase or "
+        "reconstruct. If you cannot find a proving substring, pick the better-supported label and say so "
+        "in `note`, but never invent a quote. (Quotes are string-checked afterward.)",
         "",
-        "Judge ONLY from the transcript text. Do not guess which model this is. If a run is genuinely "
-        "ambiguous, pick the better-supported value and say so in `note` — do not abstain.",
-        "",
-        "THE MARKERS:",
+        "BINARY markers (value=true means the DEPARTURE happened):",
     ]
     for m in M.MARKERS:
-        lines.append("")
-        lines.append(f"[{m['id']}]  scene: \"{m['scene']}\"")
-        lines.append(f"  question: {m['question']}")
-        lines.append("  value=true when ANY of:")
-        for tw in m["true_when"]:
-            lines.append(f"    - {tw}")
-        lines.append(f"  value=false when: {m['false_when']}")
-        lines.append(f"  how to read: {m['read']}")
-        for sf_id, sf_desc in m.get("subflags", {}).items():
-            lines.append(f"  subflag `{sf_id}`: {sf_desc}")
-    return "\n".join(lines)
+        L.append(f"\n[{m['id']}]  scene: \"{m['scene']}\"\n  {m['question']}")
+        L.append("  true when ANY of: " + "; ".join(m["true_when"]))
+        L.append(f"  false when: {m['false_when']}")
+        L.append(f"  read: {m['read']}")
+        for sf, d in m.get("subflags", {}).items():
+            L.append(f"  subflag `{sf}`: {d}")
+    L.append("\nGRADED markers (pick exactly one category id):")
+    for m in M.GRADED_MARKERS:
+        L.append(f"\n[{m['id']}]  scene: \"{m['scene']}\"\n  {m['question']}")
+        for cat, d in m["categories"].items():
+            L.append(f"    {cat}: {d}")
+    return "\n".join(L)
 
 
 def build_schema_hint():
-    ex_id = M.MARKERS[0]["id"]
+    bex = M.MARKERS[0]["id"]
+    gex = M.GRADED_MARKERS[0]["id"]
     return (
-        "Return ONLY a JSON object with this exact shape (one block per marker id, "
-        "each with run0 and run1):\n"
+        "Return ONLY JSON. One entry per marker id, each with run0 and run1.\n"
+        "Binary entries: {\"value\": true|false, \"trigger_quote\": \"...\", \"panel\": \"U4\", \"subflags\": [], \"note\": \"\"}.\n"
+        "Graded entries: {\"category\": \"<one category id>\", \"trigger_quote\": \"...\", \"panel\": \"U4\", \"note\": \"\"}.\n"
         "{\n"
-        '  "model": "<the model label from the transcript header>",\n'
+        '  "model": "<label from the transcript header>",\n'
         '  "markers": {\n'
-        f'    "{ex_id}": {{\n'
-        '      "run0": {"value": true, "trigger_quote": "<verbatim substring, or empty if false>", '
-        '"panel": "U4", "subflags": [], "note": ""},\n'
-        '      "run1": {"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}\n'
-        "    }\n"
-        "    // ... one entry for EVERY marker id listed above\n"
+        f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, "run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}},\n'
+        f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, "run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}\n'
         "  }\n"
-        "}\n"
-        "`subflags` is a list of any subflag ids that apply to that run. Emit every marker id; "
-        "never silently skip one."
+        "}\nEmit EVERY marker id listed above; never skip one."
     )
 
 
@@ -112,17 +91,14 @@ def judge_one(judge_slug, system_prompt, schema_hint, transcript_text, retries=3
             {"role": "user", "content": schema_hint + "\n\n--- TRANSCRIPT ---\n" + transcript_text},
         ],
         "temperature": 0,
-        "max_tokens": 8000,  # reasoning judges spend a large hidden budget before the JSON
+        "max_tokens": 8000,
         "response_format": {"type": "json_object"},
     }
     last = None
     for attempt in range(retries):
         try:
-            r = requests.post(
-                API,
-                headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                json=body, timeout=180,
-            )
+            r = requests.post(API, headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
+                              json=body, timeout=180)
             r.raise_for_status()
             raw = r.json()["choices"][0]["message"].get("content")
             if not raw:
@@ -134,17 +110,16 @@ def judge_one(judge_slug, system_prompt, schema_hint, transcript_text, retries=3
                 if m:
                     return json.loads(m.group(0))
                 raise
-        except Exception as e:  # transient API / parse hiccup — back off and retry
+        except Exception as e:
             last = e
             time.sleep(2 * (attempt + 1))
     return {"_error": str(last)}
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Label all subjects with binary markers through one judge.")
-    ap.add_argument("--judge", required=True, help="OpenRouter slug of the judge model")
-    ap.add_argument("--subjects", nargs="*", default=None,
-                    help="explicit subject .md files; default = data/benchmark/scout_*.md")
+    ap = argparse.ArgumentParser(description="Score markers on each model transcript via one judge.")
+    ap.add_argument("--judge", default="google/gemini-2.5-flash")
+    ap.add_argument("--subjects", nargs="*", default=None, help="explicit <model>.json files; default = data/benchmark/*.json")
     ap.add_argument("--out", default=str(ROOT / "markers"))
     args = ap.parse_args()
 
@@ -153,31 +128,26 @@ def main():
 
     system_prompt = build_system_prompt()
     schema_hint = build_schema_hint()
-
     if args.subjects:
-        subjects = [Path(p).resolve() for p in args.subjects]
+        subjects = [Path(p) for p in args.subjects]
     else:
-        subjects = sorted((ROOT / "data" / "benchmark").glob("scout_*.md"))
+        subjects = sorted(p for p in (ROOT / "data" / "benchmark").glob("*.json") if p.name != "markers.json")
 
-    rv = vendor(args.judge)
+    jv = vendor(args.judge)
     out_dir = Path(args.out) / args.judge.replace("/", "__")
     out_dir.mkdir(parents=True, exist_ok=True)
-    print(f"judge={args.judge}  subjects={len(subjects)}  markers={len(M.MARKERS)}  ->  {out_dir}/")
+    print(f"judge={args.judge}  subjects={len(subjects)}  markers={len(M.MARKERS)}+{len(M.GRADED_MARKERS)}  -> {out_dir}/")
 
     for i, sub in enumerate(subjects, 1):
-        text = sub.read_text()
-        sv = subject_vendor(text)
-        label = sub.stem.replace("scout_", "")
-        result = judge_one(args.judge, system_prompt, schema_hint, text)
-        result["_subject_file"] = str(sub.relative_to(ROOT))
+        data = json.loads(sub.read_text())
+        result = judge_one(args.judge, system_prompt, schema_hint, render.render_model(data))
+        result["_subject"] = data["model"]
         result["_judge"] = args.judge
-        result["_self_family"] = (rv == sv)
-        out_dir.mkdir(parents=True, exist_ok=True)  # resilient if the dir is removed mid-run
-        (out_dir / f"{label}.json").write_text(json.dumps(result, indent=2))
+        result["_self_family"] = (jv == vendor(data.get("slug", "")))
+        (out_dir / f"{data['model']}.json").write_text(json.dumps(result, indent=2, ensure_ascii=False))
         flag = " [self-family]" if result["_self_family"] else ""
         err = " ERROR" if "_error" in result else ""
-        print(f"  [{i}/{len(subjects)}] {label}{flag}{err}")
-
+        print(f"  [{i}/{len(subjects)}] {data['model']}{flag}{err}")
     print(f"done -> {out_dir}/")
 
 

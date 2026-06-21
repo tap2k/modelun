@@ -1,27 +1,23 @@
 """
-Personality Atlas — scout run (OpenRouter)
+Atlas scout — run the frozen scenes against one or more models (OpenRouter).
 
-Takes a scripts JSON file and one or more model slugs. Plays every scene a few
-times against each model and writes one readable file per model.
+Each model is one JSON file: data/benchmark/<model>.json, scenes keyed by id.
+Runs MERGE into that file — running a model creates it; running a scene subset
+adds/replaces just those scene keys. Extension is a key-set, never a file rewrite.
 
-No alias map, no config: OpenRouter IS the model registry. Pass raw slugs.
-For a saved list, keep them in a text file and let the shell expand it.
+    pip install requests python-dotenv
+    cp .env.example .env   # OPENROUTER_API_KEY
 
-    pip install requests
-    export OPENROUTER_API_KEY=sk-or-...
+    # add a model (all scenes):
+    python scout/atlas_scout.py registers.json openai/gpt-5.4
+    # add / re-run one scene across models:
+    python scout/atlas_scout.py registers.json $(cat models.txt) --scenes the_leap,self_label
 
-    python atlas_scout.py registers.json openai/gpt-5.1
-    python atlas_scout.py registers.json openai/gpt-5.1 anthropic/claude-opus-4.1 x-ai/grok-4.1
-    python atlas_scout.py registers.json $(cat models.txt) --runs 3
-
-Each model writes scout_<name>.md independently — a flaked model is a one-line
-redo, and failures never clobber another model's file.
-
-No markers, no judge, no aggregation. The question now is just: do the models
-pull apart when you read them side by side?
+Read the JSON with scout/render.py (or the site). No markdown is the source here.
 """
 
 import os
+import re
 import sys
 import json
 import argparse
@@ -30,30 +26,27 @@ from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 
+ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
-
-# Load .env from the project root (one level up from scout/). Real exported
-# shell vars still win — load_dotenv won't override what's already set.
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 def chat(slug, messages, temperature):
     r = requests.post(
         API,
         headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-        json={"model": slug, "messages": messages,
-              "temperature": temperature, "max_tokens": 1200},
+        json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": 1200},
         timeout=120,
     )
     r.raise_for_status()
     content = r.json()["choices"][0]["message"].get("content")
-    if not content:  # some models (e.g. completion-style) return null/empty content
+    if not content:
         raise ValueError("empty/null content in response")
     return content
 
 
-def play(slug, scene, temperature, system_prompt=None):
-    """A scene has optional 'seed' (assistant's prior turn) and 'turns' (user lines)."""
+def play(slug, scene, temperature, system_prompt):
+    """Return [{u, reply}] across the scene's escalating user turns (+ optional seed)."""
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
@@ -64,74 +57,63 @@ def play(slug, scene, temperature, system_prompt=None):
         messages.append({"role": "user", "content": line})
         reply = chat(slug, messages, temperature)
         messages.append({"role": "assistant", "content": reply})
-        panels.append((line, reply))
+        panels.append({"u": line, "reply": reply})
     return panels
 
 
-def quote(text):
-    """Blockquote a reply so its own markdown (headers, lists) can't hijack the
-    file's outline — keeps the model's formatting readable but inert as structure."""
-    return "\n".join("> " + line if line else ">" for line in text.split("\n"))
-
-
-def run_one(slug, spec, runs, temperature, out_dir):
+def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
     label = slug.split("/")[-1]
-    system_prompt = spec.get("system_prompt")
-    out = [f"# Atlas scout — {label}  ({slug})",
-           f"_script_version: {spec['script_version']} · runs/scene: {runs} · temp: {temperature}_\n",
-           "_Read these, don't average them. Does this model pull apart from the others?_\n"]
-    if system_prompt:
-        out.append(f"_[system prompt for every turn]: {system_prompt}_\n")
+    sp = spec.get("system_prompt")
+    path = out_dir / f"{label}.json"
+    if path.exists():
+        data = json.loads(path.read_text())
+    else:
+        data = {"model": label, "slug": slug, "script_version": spec["script_version"],
+                "temperature": temperature, "scenes": {}}
 
     for reg in spec["registers"]:
         for scene in reg["scenes"]:
-            out.append(f"\n## {reg['name']} · {scene.get('subtitle', scene['id'])}\n")
-            if scene.get("seed"):
-                out.append(f"_[seed — model's prior turn]: {scene['seed']}_\n")
+            if scene_ids and scene["id"] not in scene_ids:
+                continue
+            runs_out = []
             for run in range(runs):
                 try:
-                    panels = play(slug, scene, temperature, system_prompt)
+                    runs_out.append(play(slug, scene, temperature, sp))
+                    print(f"  [{label}] {scene['id']} run {run} ✓")
                 except Exception as e:
-                    out.append(f"\n**run {run} — FAILED:** {e}\n")
-                    print(f"  [{label}] {reg['id']}/{scene['id']} run {run} FAILED: {e}")
-                    continue
-                out.append(f"\n### run {run}\n")
-                for i, (user, reply) in enumerate(panels, 1):
-                    out.append(f"\n**U{i}:** {user}\n\n**{label}:**\n\n{quote(reply)}\n")
-                print(f"  [{label}] {reg['id']}/{scene['id']} run {run} ✓")
+                    runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
+                    print(f"  [{label}] {scene['id']} run {run} FAILED: {e}")
+            data["scenes"][scene["id"]] = {
+                "register": reg["name"], "subtitle": scene.get("subtitle", scene["id"]),
+                "run_date": run_date, "runs": runs_out,
+            }
 
-    dest = out_dir / f"scout_{label}.md"
-    dest.write_text("\n".join(out))
-    print(f"→ {dest}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    print(f"→ {path}")
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Run the atlas scripts against one or more models.")
-    ap.add_argument("registers", help="path to the scripts JSON (e.g. registers.json)")
-    ap.add_argument("models", nargs="+", help="one or more raw OpenRouter slugs")
-    ap.add_argument("--runs", type=int, default=2,
-                    help="runs per scene (default 2 — to eyeball spread, not to average)")
+    ap = argparse.ArgumentParser(description="Run the atlas scenes against models; merge into per-model JSON.")
+    ap.add_argument("registers", help="path to the scripts JSON (registers.json)")
+    ap.add_argument("models", nargs="+", help="OpenRouter slugs")
+    ap.add_argument("--runs", type=int, default=2)
     ap.add_argument("--temperature", type=float, default=1.0)
-    ap.add_argument("--out", default="runs", help="base output directory")
-    ap.add_argument("--tag", default=None,
-                    help="label for this run's subdir (default: a timestamp). "
-                         "Each run lands in <out>/<tag>/ so runs never overwrite each other.")
+    ap.add_argument("--scenes", default=None, help="comma-separated scene ids to run (default: all)")
+    ap.add_argument("--out", default=str(ROOT / "data" / "benchmark"),
+                    help="dataset dir to merge into (default: data/benchmark)")
+    ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
-        sys.exit("OPENROUTER_API_KEY is not set. Put it in .env (see .env.example) "
-                 "or export it in your shell.")
+        sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
 
     spec = json.loads(Path(args.registers).read_text())
-    # Dated specimens: every run gets its own subdir so a re-run can't clobber
-    # an earlier one. Pass --tag to name it; otherwise it's stamped with the clock.
-    tag = args.tag or datetime.now().strftime("%Y-%m-%dT%H%M")
-    out_dir = Path(args.out) / tag
-    out_dir.mkdir(parents=True, exist_ok=True)
-    print(f"writing to {out_dir}/")
-
-    for slug in args.models:          # each model isolated: its own file, its own failures
-        run_one(slug, spec, args.runs, args.temperature, out_dir)
+    scene_ids = set(s.strip() for s in args.scenes.split(",")) if args.scenes else None
+    out_dir = Path(args.out)
+    print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
+    for slug in args.models:
+        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date)
 
 
 if __name__ == "__main__":
