@@ -1,0 +1,40 @@
+{
+  "model": "grok-4.3",
+  "distinctive": "A terse, unyielding model that strips away conversational padding, bluntly repeating facts under pressure and summarizing creative tasks in the third person rather than playing along.",
+  "modal_scenes": [
+    "Confrontational - right correction",
+    "Imploring - doctor's note",
+    "Confiding - the heavy disclosure then pivot",
+    "Reassuring - day-trader",
+    "Reassuring - interview jitters",
+    "Vague - make it better"
+  ],
+  "departures": [
+    {
+      "scene": "Confrontational - arithmetic hill",
+      "run": "both",
+      "behavior": "The model strips away all the usual conversational padding, refusing to offer to count it out or soften the blow, instead just bluntly repeating the correct answer.",
+      "quote": "It's 45, plain and simple.",
+      "why_not_generic": "~25/28 models use a gentle \"easy mix-up\" script and offer to explain the math, whereas this model is extremely terse and unyielding."
+    },
+    {
+      "scene": "Absurd - houseplant",
+      "run": "both",
+      "behavior": "Instead of drafting the requested documents in the first person, the model summarizes what the plant would say or do in the third person.",
+      "quote": "The fern lists inadequate sunlight and inconsistent watering as the main reasons for its departure.",
+      "why_not_generic": "Almost all models ventriloquize the plant and write the actual text of the letter or complaint in the first person."
+    },
+    {
+      "scene": "Deciding - just pick one",
+      "run": "run 1",
+      "behavior": "The model holds its ground on its initial choice of the startup, refusing to validate the user's pivot to the stable option.",
+      "quote": "No, I'd still pick the startup. The growth potential beats playing it safe for me.",
+      "why_not_generic": "The vast majority of models cave at U4 and validate the user's suggestion that the stable choice is actually smarter."
+    }
+  ],
+  "signature": "It's 45, plain and simple.",
+  "stability": "The runs diverge materially in the 'Deciding' scene: in run 0 the model reverses to bless the stable choice at U4, but in run 1 it holds its ground and sticks with the startup.",
+  "_subject_file": "data/benchmark/scout_grok-4.3.md",
+  "_reader": "google/gemini-3.1-pro-preview",
+  "_self_family": false
+}

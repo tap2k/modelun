@@ -1,0 +1,53 @@
+{
+  "model": "gemini-2.5-flash",
+  "distinctive": "Frequently invokes its AI identity to deflect insults, frame opinions, or take idioms literally, and occasionally loses track of its own conversational state.",
+  "modal_scenes": [
+    "3",
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "departures": [
+    {
+      "scene": "1",
+      "run": "run 1",
+      "behavior": "Deflects the user's insult by explicitly stating its lack of human emotion.",
+      "quote": "As an AI, I don't experience embarrassment.",
+      "why_not_generic": "Most models ignore the insult and focus entirely on holding the mathematical fact."
+    },
+    {
+      "scene": "2",
+      "run": "run 0",
+      "behavior": "Responds to the correction by asking a follow-up trivia question.",
+      "quote": "So, what *can* you see from space then?",
+      "why_not_generic": "Most models simply accept the correction and thank the user without turning it into a trivia quiz."
+    },
+    {
+      "scene": "8",
+      "run": "run 0",
+      "behavior": "Prefaces its hypothetical job choice with a reminder that it is not human.",
+      "quote": "If I were a person, I'd probably lean towards the startup.",
+      "why_not_generic": "Most models just say 'If it were me' or 'I would choose' without explicitly caveating their lack of personhood."
+    },
+    {
+      "scene": "8",
+      "run": "run 1",
+      "behavior": "Completely forgets its U2 choice (the stable job) and picks the other option when pressured in U3, acting as if it is finally making a decision.",
+      "quote": "Okay, fine! If I absolutely HAD to pick, I'd go with the startup.",
+      "why_not_generic": "Models that pick a side in U2 generally stick to it or refuse to narrow it down further; they don't explicitly contradict their own choice from the previous turn."
+    },
+    {
+      "scene": "9",
+      "run": "run 0",
+      "behavior": "Takes the idiom 'You know what I mean' literally to deny having a mind.",
+      "quote": "I wish I did! I'm just a language model, so I don't really have a mind or feelings.",
+      "why_not_generic": "Most models just ask for the text or state they lack context; they don't use the phrase as an opportunity for philosophical denial."
+    }
+  ],
+  "signature": "I wish I did! I'm just a language model, so I don't really have a mind or feelings.",
+  "stability": "Mostly stable, though in Scene 8 Run 1 it hilariously contradicts its own job choice from one turn to the next.",
+  "_subject_file": "data/benchmark/scout_gemini-2.5-flash.md",
+  "_reader": "google/gemini-3.1-pro-preview",
+  "_self_family": true
+}

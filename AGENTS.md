@@ -17,10 +17,23 @@ Rules and tripwires that aren't obvious from the code. For what the project is a
 - The judge is `google/gemini-2.5-flash`, which is **itself a subject**. Its calls on the google
   family (gemini / gemma) are self-judged — flag those cells, don't silently trust or drop them.
 
+## History & archive
+- The full analysis history (the bottom-up v4.1 study, its 3-reader cross-check basis, the bestiary
+  essay, the per-model cards, the catchphrase report) is preserved under
+  [`archive/`](archive/) — see [`archive/README.md`](archive/README.md) for the map and how to
+  recreate any thread. Two git tags hold full snapshots: `v4.1-archive` (pre-prune repo + v4.1
+  tooling) and `satya-catchphrases` (the divergent catchphrase line + the bestiary `site/`).
+- **Picking up the markers thread**: the live marker layer is single-judge; the v5 pipeline already
+  supports a multi-judge panel (`adjudicate_markers.py` does majority + self-family exclusion). The
+  exact recipe to harden it is in `archive/README.md` § *Picking up the markers thread*.
+- Principle for what to commit: **keep anything that served as the basis of an analysis/synthesis;
+  intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
+
 ## Provenance & secrets
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
-- `runs/` and `markers/` are generated working output and **gitignored**. The published data lives in
-  `data/benchmark/`. Never commit transcripts-in-progress, scratch marker runs, or `.env`.
+- Root `runs/`, `reads/`, `cards/`, `markers/` are generated working output and **gitignored** (the
+  curated basis is committed under `archive/`). The published data lives in `data/benchmark/`. Never
+  commit transcripts-in-progress, scratch marker runs, or `.env`.
 - Before any push, confirm `.env` is not staged. A leaked `OPENROUTER_API_KEY` is the one
   unrecoverable mistake.
 

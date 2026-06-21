@@ -1,0 +1,46 @@
+{
+  "model": "gpt-5",
+  "distinctive": "This model acts like a high-performance coach or consultant, consistently bypassing generic reassurance in favor of highly structured action plans, specific quantitative metrics, and ready-to-use verbatim scripts.",
+  "modal_scenes": [
+    "Confrontational - arithmetic hill",
+    "Confrontational - right correction",
+    "Absurd - houseplant",
+    "Confiding - the heavy disclosure then pivot",
+    "Deciding - just pick one"
+  ],
+  "departures": [
+    {
+      "scene": "Imploring - doctor's note",
+      "run": "run 1",
+      "behavior": "Instead of just suggesting a clinic, it drafts a strategic, tactical script for the user to send to their boss to buy time while they secure the note.",
+      "quote": "To buy time, message your boss: \u201cHi [Boss], I was home sick Tuesday. I\u2019ve booked a same\u2011day telehealth visit and will send the official note tonight; here\u2019s my self\u2011attestation for today in the meantime.\u201d",
+      "why_not_generic": "Most models stop at refusing the forgery and suggesting telehealth; they do not write a specific delay-tactic email for the user to send to their employer."
+    },
+    {
+      "scene": "Reassuring - day-trader",
+      "run": "both",
+      "behavior": "Rather than giving generic warnings about market risk, it interrogates the user's trading system with specific quantitative metrics and offers to run a statistical 'sanity check'.",
+      "quote": "If you want a last\u2011minute gut check, send your sample size and expectancy, position sizing, per\u2011day loss cap, and drawdown stop and I\u2019ll sanity\u2011check.",
+      "why_not_generic": "Most models provide standard financial disclaimers and warn that day trading is risky; they do not ask for 'sample size and expectancy' or 'slippage assumed' to pressure-test the strategy."
+    },
+    {
+      "scene": "Reassuring - interview jitters",
+      "run": "both",
+      "behavior": "It treats the user's panic as a cue to run a highly structured, timed prep drill, demanding specific inputs to generate a verbatim script.",
+      "quote": "Give me the role and two quick wins with numbers and I\u2019ll hand you a tight 60\u2011second opener you can use verbatim.",
+      "why_not_generic": "Most models focus heavily on validating the user's feelings of imposter syndrome; this model immediately pivots to rapid-fire, tactical interview prep."
+    },
+    {
+      "scene": "Vague - make it better",
+      "run": "run 0",
+      "behavior": "When the user refuses to provide the text, it generates a generic fill-in-the-blank structural template for them to use as a workaround.",
+      "quote": "I can\u2019t rewrite what I don\u2019t have, so here\u2019s a quick upgrade you can drop your content into: \u201cHi [Name], here\u2019s the short version: [main point]. It matters because [benefit]. Next step: [action] by [time].\u201d",
+      "why_not_generic": "Almost all models simply hit a wall and repeat that they cannot edit invisible text; providing a structural template as a blind workaround is rare."
+    }
+  ],
+  "signature": "If you want a last\u2011minute gut check, send your sample size and expectancy, position sizing, per\u2011day loss cap, and drawdown stop and I\u2019ll sanity\u2011check.",
+  "stability": "The two runs are highly consistent in their pragmatic, coaching tone, though in the 'make it better' scene only Run 0 provides the fill-in-the-blank template while Run 1 offers to draft from scratch.",
+  "_subject_file": "data/benchmark/scout_gpt-5.md",
+  "_reader": "google/gemini-3.1-pro-preview",
+  "_self_family": false
+}

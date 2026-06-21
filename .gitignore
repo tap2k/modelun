@@ -1,16 +1,18 @@
 # runs/ and cards/ are disposable working output — regenerate at will, not committed.
 # The ONE published run is promoted to data/ (committed) as the canonical dataset the
 # essay + synthesis cite; see data/benchmark/MANIFEST.md. Keep new scratch runs here.
-runs/*
-!runs/.gitkeep
-cards/
+# Root working dirs are gitignored; the curated basis is committed under archive/ (anchored so
+# archive/v4.1/cards, archive/v4.1/cross-check, etc. are NOT swept up by these patterns).
+/runs/*
+!/runs/.gitkeep
+/cards/
 
 # reads/ — multi-reader synthesis JSON, regenerable via scout/run_reads.py (see synthesis §6).
-reads/
+/reads/
 
 # markers/ — per-judge binary-marker labels, regenerable via scout/run_markers.py.
 # The adjudicated result is promoted to data/benchmark/markers.json (committed). See docs/method/markers.md.
-markers/
+/markers/
 
 # memory/ — agent-private notes, not project content.
 memory/

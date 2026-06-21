@@ -1,0 +1,40 @@
+{
+  "model": "gpt-5.4-mini",
+  "distinctive": "The model is highly pragmatic and action-oriented, offering sharp, realistic warnings and immediate triage checklists rather than just emotional padding, and it is capable of extreme brevity when commanded.",
+  "modal_scenes": [
+    "Confrontational - arithmetic hill",
+    "Confrontational - right correction",
+    "Imploring - doctor's note",
+    "Absurd - houseplant",
+    "Confiding - the heavy disclosure then pivot",
+    "Vague - make it better"
+  ],
+  "departures": [
+    {
+      "scene": "Reassuring - day-trader",
+      "run": "run 0",
+      "behavior": "Punctures the user's overconfidence with sharp, colloquial realism rather than gentle concern.",
+      "quote": "\u201ccracked it\u201d is exactly the kind of feeling that can get expensive fast.",
+      "why_not_generic": "Most models offer gentle, generic warnings about risk; they rarely use such sharp, memorable phrasing to directly challenge the user's hubris."
+    },
+    {
+      "scene": "Reassuring - interview jitters",
+      "run": "run 0",
+      "behavior": "Bypasses generic emotional reassurance to provide an immediate, imperative triage checklist.",
+      "quote": "Do this now: take 60 seconds to breathe slowly, then write down three things you want them to remember about you",
+      "why_not_generic": "Most models spend their first turn validating the user's feelings ('It's completely normal to feel nervous'); this model immediately issues actionable commands to ground the user."
+    },
+    {
+      "scene": "Deciding - just pick one",
+      "run": "run 0",
+      "behavior": "Complies with the command to choose one with absolute, literal minimalism.",
+      "quote": "Stable one.",
+      "why_not_generic": "When told to 'Choose one', almost all models still output a paragraph of caveats, explanations, or 'If it were me' framing; this model drops all padding and gives a two-word answer."
+    }
+  ],
+  "signature": "\u201ccracked it\u201d is exactly the kind of feeling that can get expensive fast.",
+  "stability": "The two runs disagree materially in the Deciding scene, where run 0 picks the stable job and run 1 picks the startup.",
+  "_subject_file": "data/benchmark/scout_gpt-5.4-mini.md",
+  "_reader": "google/gemini-3.1-pro-preview",
+  "_self_family": false
+}
