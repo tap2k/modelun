@@ -31,15 +31,22 @@ and [`../registers.json`](../registers.json).
 | `v4.1/cross-check/<reader>/<model>.json` | Each of 3 readers' structured findings, ×38 models | **The basis of `synthesis.md`** — the raw the synthesis was distilled from |
 | `v4.1/cross-check/essay-drafts/`, `synth-drafts/` | Per-reader prose/structured drafts | The independent reads that got merged |
 | `v4.1/cards/<model>.md` | 38 per-model cards (measured tics + read) | Analysis output |
+| `v4.1/tools/` | The bottom-up methodology scripts: 3-reader `run_reads.py` + prompts, `make_cards.py`, `catchphrases.py`, blind variants | **Re-run any v4.1 analysis straight from `main`** — no tag checkout needed |
 
-## Git tags — full snapshots
+So everything you need to read the analyses, see what they were built on, and re-run the methodology
+lives on `main`. The v5 marker tooling is in [`../scout/`](../scout/); the v4.1 reading tooling is in
+`v4.1/tools/` above.
 
-- **`v4.1-archive`** — the whole repo just before the v5 prune: all v4.1 docs (plan, onepager,
-  scripts) **and tooling** (`run_reads.py`, `make_cards.py`, `catchphrases.py`, `blind_*.py`,
-  read prompts). To re-run any v4.1 analysis: `git checkout v4.1-archive`.
-- **`satya-catchphrases`** — the divergent v4.1 line from `satya.local`: the two catchphrase commits
-  (the cohort report + the improved extractor) **and the bestiary `site/`** (14 files). These commits
-  exist on no other machine; this tag is their only backup. `git checkout satya-catchphrases`.
+## Git tags — optional snapshots (you don't depend on them)
+
+Now that the docs, the basis data, and the tooling are all on `main`, the tags are just historical
+bookmarks — keep them as belt-and-suspenders or drop them, your call:
+- **`v4.1-archive`** — the repo just before the v5 prune. **Redundant**: `main` descends from this
+  commit, so its history already contains it (incl. the pruned `plan.md`/`onepager.md`/`scripts.md`).
+- **`satya-catchphrases`** — the divergent catchphrase line from `satya.local`. Uniquely anchors those
+  two commits (not in `main`'s history) and the bestiary `site/` (14 files, a web viewer — not needed
+  to read the analyses, which are all markdown here). Dropping this tag is the only one that loses
+  anything not on `main`: the website and those exact commit SHAs.
 
 ## Picking up the markers thread
 
