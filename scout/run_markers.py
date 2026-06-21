@@ -128,6 +128,9 @@ def main():
 
     system_prompt = build_system_prompt()
     schema_hint = build_schema_hint()
+    # The benchmark retains archived scenes; the judge only sees the active instrument scenes.
+    reg = json.loads((ROOT / "registers.json").read_text())
+    active = {s["id"] for r in reg["registers"] for s in r["scenes"]}
     if args.subjects:
         subjects = [Path(p) for p in args.subjects]
     else:
@@ -140,7 +143,7 @@ def main():
 
     for i, sub in enumerate(subjects, 1):
         data = json.loads(sub.read_text())
-        result = judge_one(args.judge, system_prompt, schema_hint, render.render_model(data))
+        result = judge_one(args.judge, system_prompt, schema_hint, render.render_model(data, active))
         result["_subject"] = data["model"]
         result["_judge"] = args.judge
         result["_self_family"] = (jv == vendor(data.get("slug", "")))

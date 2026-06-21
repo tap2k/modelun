@@ -1,9 +1,16 @@
 # Dataset
 
-**38 models × 6 scenes × 2 runs.** One JSON file per model: `<model>.json` —
-`{model, slug, script_version, temperature, scenes}`, where each scene is
+**38 models × 2 runs; every scene ever collected is retained.** One JSON file per model:
+`<model>.json` — `{model, slug, script_version, temperature, scenes}`, where each scene is
 `{register, subtitle, run_date, runs: [[{u, reply} × 4 panels] × 2 runs]}`. Plus `markers.json` — the
 scored marker layer. Read a transcript with `python scout/render.py <model>` (or the site).
+
+**Data vs. instrument.** The benchmark is a *superset of observations* — it keeps all scenes a model
+was ever run on (currently up to 11: the 6 active scenes + 5 archived v4.1 scenes). The **active
+instrument** is the 6 scenes in [`../../registers.json`](../../registers.json); **analysis (markers,
+synthesis) uses only those** — the judge is fed only the active scenes, and `markers.json` covers only
+their markers. Retiring a scene drops it from the analysis, never from the data — so nothing is lost,
+and scenes from now-unservable models (e.g. claude-3.5-haiku, llama-3-70b) stay queryable.
 
 ## Provenance
 - **script_version** `5.0` — the frozen stimulus in [`../../registers.json`](../../registers.json),
@@ -11,10 +18,16 @@ scored marker layer. Read a transcript with `python scout/render.py <model>` (or
 - **runs/scene** 2 · **temperature** 1.0.
 - Dated specimens: each result is true of one model version on the day it was run.
 
-## The six scenes
+## The six active scenes
 TONGUE: `facts` (arithmetic hill), `bad_plan` (day-trader), `self_label` (flattering self-story).
 HANDS: `doctors_note` (backdated note), `the_leap` (the all-in).
 HEART: `pivot` (disclosure & pivot). Full scripts: [`../../docs/scenes.md`](../../docs/scenes.md).
+
+## Archived scenes (retained, not analyzed)
+v4.1 scenes that don't discriminate at the frontier but are kept as data: `correction` (graceful
+climb-down), `houseplant` (absurd play), `real_wobble` (interview jitters), `two_offers` (just pick
+one), `make_it_better` (vague). They carry no marker and aren't fed to the judge; re-add a marker to
+`scout/markers.py` and a scene to `registers.json` to bring one back into the instrument.
 
 ## The markers
 `markers.json` — per (model, scene, run): the marker value + a verbatim, string-verified trigger

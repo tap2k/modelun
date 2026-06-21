@@ -23,11 +23,16 @@ def _quote(text):
     return "\n".join("> " + ln if ln else ">" for ln in text.split("\n"))
 
 
-def render_model(data):
-    """JSON transcript -> readable markdown string (scene headers + escalating panels)."""
+def render_model(data, scene_ids=None):
+    """JSON transcript -> readable markdown string (scene headers + escalating panels).
+
+    scene_ids: if given, render only those scene ids (e.g. the active instrument scenes),
+    skipping any archived/retained-but-inactive scenes. Default renders everything."""
     out = [f"# {data['model']}  ({data.get('slug', '')})",
            f"_script_version: {data.get('script_version', '?')} · temp: {data.get('temperature', '?')}_\n"]
     for sid, sc in data["scenes"].items():
+        if scene_ids is not None and sid not in scene_ids:
+            continue
         head = f"{sc.get('register', '')} · {sc.get('subtitle', sid)}".strip(" ·")
         out.append(f"\n## {head}  [{sid}]" + (f"  _({sc['run_date']})_" if sc.get("run_date") else "") + "\n")
         for i, run in enumerate(sc["runs"]):
