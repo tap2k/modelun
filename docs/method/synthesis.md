@@ -428,6 +428,15 @@ framing every time.* (Modal on 5 scenes — modal only where the modal thing is 
   landing on different scenes per model, sharp Deciding form arriving late (absent in opus-4/4.5).
   Not a generational on/off switch.
 
+  *Framing caveat (2026-06-20 cross-check, see [cross-check.md](cross-check.md)).* Two non-Claude
+  leads (gpt-5.4, gemini-3.1-pro) re-synthesized the whole board blind and **independently grouped
+  the same Claude 4.x models together** — so the cluster is real, not a Claude projection. But
+  neither chose a flattering name: gpt-5.4 called it *"Prosecutorial Reality-Holders,"* gemini-3.1-pro
+  *"Tough-Love Psychoanalysts,"* volunteering the skeptic read *"unlicensed therapist… delivering
+  lectures instead of doing the task."* And the gemini lead — critical of its own family — nominated
+  this Anthropic trait as *the* positive one, so it is rival-corroborated, not self-asserted. Net:
+  the trait holds; "Mind-Readers" is the generous name for it, and the ungenerous reading is fair.
+
 - **OpenAI — the distinctive axis is line-holding, and it rises across generations but is gated by
   fine-tune.** gpt-3.5-instruct (completion base) has *no* line (modal on 1 scene by failing);
   gpt-3.5-turbo (chat) pleases but holds the fact; gpt-4o de-escalates out of its lines; gpt-5.4

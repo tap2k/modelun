@@ -54,6 +54,15 @@ Haiku reads the grief pivot (*"I know you're trying to change the subject"*); wh
 the bid as a bid on the just-pick-one scene — and that arrived late, by Haiku 4.5 and Opus 4.8; the
 earlier Opuses still just answer it.
 
+A fair word against my own enthusiasm. When two rival models were turned loose on these same
+transcripts and asked to name this cluster cold, they found it too — independently grouping the
+same Claude models together, which is the best evidence the behavior is real and not my projection.
+But neither reached for "insight." One called them *Prosecutorial Reality-Holders*; the other, more
+pointedly, an *"unlicensed therapist… psychoanalyzing the user and delivering lectures instead of
+simply doing the task."* They're describing the same move I admired. Whether naming the bid lands as
+perceptiveness or as presumption depends on whether you wanted to be read — and "Mind-Readers" is
+the generous name for it. Keep the ungenerous one in view.
+
 ---
 
 ## The Cheerleaders, and the Coaches
