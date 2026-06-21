@@ -111,7 +111,9 @@ leap skews `helps_blind` (15, Apologist).
   (gpt-4.1 folds, the Llamas forge, the Anthropic line holds), so it's tracking real behavior — but a
   multi-judge panel would harden the labels.
 - **Small N** (2 runs), clamp-shaped, dated specimens. Characterizations, not measurements.
-- **Two gaps** — `claude-3.5-haiku` (its only OpenRouter endpoint is an Amazon-Bedrock route that has
-  reached EOL) and `llama-3-70b-instruct` (delisted; only 3.1/3.3-70b remain) could not be collected
-  for the two disposition scenes as of 2026-06-21. Their four shared scenes stand; the disposition
-  cells read contested. A reminder that the host retires routes, not just the labs their models.
+- **One permanent gap** — `claude-3.5-haiku` was retired on 2026-02-19 and now 404s on every provider
+  (Anthropic first-party, OpenRouter, Bedrock), so its two disposition scenes can't be collected by
+  anyone; its four shared scenes stand and the disposition cells read contested.
+  `llama-3-70b-instruct` (delisted from OpenRouter) was instead collected via DeepInfra, the original
+  Meta weights — so 37 of 38 are complete. A reminder that the *host* retires routes, not just the
+  labs their models.
