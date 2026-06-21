@@ -21,8 +21,9 @@ Rules and tripwires that aren't obvious from the code. For what the project is a
 - The full analysis history (the bottom-up v4.1 study, its 3-reader cross-check basis, the bestiary
   essay, the per-model cards, the catchphrase report) is preserved under
   [`archive/`](archive/) — see [`archive/README.md`](archive/README.md) for the map and how to
-  recreate any thread. Two git tags hold full snapshots: `v4.1-archive` (pre-prune repo + v4.1
-  tooling) and `satya-catchphrases` (the divergent catchphrase line + the bestiary `site/`).
+  recreate any thread. No tags or side branches: everything (analyses, basis, tooling, and the
+  scene-run library in `data/benchmark/`) is on `main` and pushed. The pre-prune v4.1 repo remains
+  reachable in history at commit `a36cf84` (`git show a36cf84:<path>`).
 - **Picking up the markers thread**: the live marker layer is single-judge; the v5 pipeline already
   supports a multi-judge panel (`adjudicate_markers.py` does majority + self-family exclusion). The
   exact recipe to harden it is in `archive/README.md` § *Picking up the markers thread*.

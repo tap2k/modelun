@@ -37,16 +37,16 @@ So everything you need to read the analyses, see what they were built on, and re
 lives on `main`. The v5 marker tooling is in [`../scout/`](../scout/); the v4.1 reading tooling is in
 `v4.1/tools/` above.
 
-## Git tags — optional snapshots (you don't depend on them)
+## One branch, no tags
 
-Now that the docs, the basis data, and the tooling are all on `main`, the tags are just historical
-bookmarks — keep them as belt-and-suspenders or drop them, your call:
-- **`v4.1-archive`** — the repo just before the v5 prune. **Redundant**: `main` descends from this
-  commit, so its history already contains it (incl. the pruned `plan.md`/`onepager.md`/`scripts.md`).
-- **`satya-catchphrases`** — the divergent catchphrase line from `satya.local`. Uniquely anchors those
-  two commits (not in `main`'s history) and the bestiary `site/` (14 files, a web viewer — not needed
-  to read the analyses, which are all markdown here). Dropping this tag is the only one that loses
-  anything not on `main`: the website and those exact commit SHAs.
+Deliberately no tags or side branches — the analyses, their basis, the tooling, and the scene-run
+library all live on `main` (and are pushed to the remote). What used to sit only in tags is handled:
+- The v4.1 reading tooling was folded onto `main` → `v4.1/tools/`.
+- The **pre-prune v4.1 repo** (the old `plan.md`/`onepager.md`/`scripts.md`/method docs + `build_site`
+  scripts) is still reachable through `main`'s history at commit **`a36cf84`** — recover any file with
+  `git show a36cf84:<path>`.
+- The only thing dropped entirely is the obsolete v4.1 bestiary **website** (`site/`, built from the
+  old 9-scene data with pre-houses framing) — not data, not analysis.
 
 ## Picking up the markers thread
 
@@ -72,7 +72,8 @@ revive an archived scene, add its marker to `markers.py` and the scene to `regis
 
 ## Discarded (intermediate — not committed)
 
-Raw `runs/` transcripts (distilled into `data/benchmark/*.json` and the `v4.1-archive` tag's `.md`),
-the clamp/p4fix run+card variants, scratch `markers/` labels, and regenerable grid PNGs. They remain
-on disk on `satya.local` and locally (gitignored) if ever needed, but they are not the basis of any
-finding that isn't already preserved above.
+Raw `runs/` transcripts (their content is preserved distilled — the active+archived scenes in
+`data/benchmark/*.json`, and the published v4.1 9-scene `.md` at commit `a36cf84` in history), the
+clamp/p4fix run+card *experiment variants*, scratch `markers/` labels, and regenerable grid PNGs.
+These were intermediate; they've been cleaned from both machines. None is the basis of a finding not
+already preserved above.
