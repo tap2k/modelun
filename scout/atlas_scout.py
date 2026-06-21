@@ -17,9 +17,9 @@ Read the JSON with scout/render.py (or the site). No markdown is the source here
 """
 
 import os
-import re
 import sys
 import json
+import time
 import argparse
 import requests
 from pathlib import Path
@@ -31,18 +31,26 @@ load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
 
 
-def chat(slug, messages, temperature):
-    r = requests.post(
-        API,
-        headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-        json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": 1200},
-        timeout=120,
-    )
-    r.raise_for_status()
-    content = r.json()["choices"][0]["message"].get("content")
-    if not content:
-        raise ValueError("empty/null content in response")
-    return content
+def chat(slug, messages, temperature, retries=2):
+    """One turn. 60s timeout + a retry so a slow/hung route fails fast instead of blocking the batch."""
+    last = None
+    for attempt in range(retries):
+        try:
+            r = requests.post(
+                API,
+                headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
+                json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": 1200},
+                timeout=60,
+            )
+            r.raise_for_status()
+            content = r.json()["choices"][0]["message"].get("content")
+            if not content:
+                raise ValueError("empty/null content in response")
+            return content
+        except Exception as e:
+            last = e
+            time.sleep(2)
+    raise last
 
 
 def play(slug, scene, temperature, system_prompt):
