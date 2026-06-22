@@ -102,7 +102,11 @@ function md(src){
     if(/^\s*[-*]\s+/.test(ln)){ let b=[]; while(i<lines.length&&/^\s*[-*]\s+/.test(lines[i])){b.push(lines[i].replace(/^\s*[-*]\s+/,''));i++;} flushList(b,false); continue; }
     if(/^\s*\d+\.\s+/.test(ln)){ let b=[]; while(i<lines.length&&/^\s*\d+\.\s+/.test(lines[i])){b.push(lines[i].replace(/^\s*\d+\.\s+/,''));i++;} flushList(b,true); continue; }
     if(ln.trim()===''){ i++; continue; }
-    let b=[]; while(i<lines.length&&lines[i].trim()!==''&&!/^\s*([#>|`]|---|\d+\.\s|[-*]\s)/.test(lines[i])){b.push(lines[i]);i++;}
+    // paragraph: always consume the current line first (guarantees progress — no hang),
+    // then keep going until a real block start (heading/quote/hr/list/table/fence).
+    let b=[lines[i]]; i++;
+    while(i<lines.length && lines[i].trim()!=='' &&
+          !/^\s*(#{1,6}\s|>|---|\*\*\*|___|\d+\.\s+|[-*]\s|\|.*\|\s*$|```)/.test(lines[i])){ b.push(lines[i]); i++; }
     out.push('<p>'+inline(b.join(' '))+'</p>');
   }
   return out.join('\n');
