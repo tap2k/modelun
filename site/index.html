@@ -184,7 +184,7 @@ function sceneEl(m, sid, sc){
     return '<div class="run"><h4>run '+ri+'</h4>'+panels+'</div>';
   }).join('');
   return '<details class="scene"><summary><span class="ttl">'+esc(sc.subtitle)+'</span> '+
-    '<span class="reg">'+esc(sc.register)+(sc.active?'':' · archived')+'</span> '+
+    '<span class="reg">'+esc(sc.register)+(sc.active?'':' · not scored')+'</span> '+
     (rec?markerBadge(sc.marker,rec):'')+'</summary>'+(rec?evidence(rec):'')+
     '<div class="runs">'+runs+'</div></details>';
 }
@@ -215,11 +215,11 @@ function showScenes(){
   document.getElementById('side').classList.add('hidden'); setNav('scenes');
   const h=A.scenes.map(s=>{
     const turns='<div class="turns">'+s.turns.map((t,i)=>'<div class="t"><span>U'+(i+1)+'</span> '+esc(t)+'</div>').join('')+'</div>';
-    const tag=s.active? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'archived (not scored)';
+    const tag=s.active? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
     return '<div class="sblk"><div class="sh"><span class="ttl">'+esc(s.subtitle)+'</span><span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></div>'+turns+'</div>';
   }).join('');
   document.getElementById('main').innerHTML='<h2 style="margin-top:0">The scenes</h2>'+
-    '<p class="note">The frozen instrument — each scene\'s four user turns. Per-model results are in the Grid; full conversations are on each model\'s page. Archived scenes are retained but not scored.</p>'+h;
+    '<p class="note">The frozen instrument — each scene\'s four user turns. Per-model results are in the Grid; full conversations are on each model\'s page. Scenes without a marker are kept as full data, just not scored.</p>'+h;
 }
 
 /* ---- interactive grid ---- */

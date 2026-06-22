@@ -6,11 +6,12 @@
 scored marker layer. Read a transcript with `python scout/render.py <model>` (or the site).
 
 **Data vs. instrument.** The benchmark is a *superset of observations* — it keeps all scenes a model
-was ever run on (currently up to 11: the 6 active scenes + 5 archived v4.1 scenes). The **active
-instrument** is the 6 scenes in [`../../registers.json`](../../registers.json); **analysis (markers,
-synthesis) uses only those** — the judge is fed only the active scenes, and `markers.json` covers only
-their markers. Retiring a scene drops it from the analysis, never from the data — so nothing is lost,
-and scenes from now-unservable models (e.g. claude-3.5-haiku, llama-3-70b) stay queryable.
+was ever run on (currently 11). The **active instrument** is the 6 scenes in
+[`../../registers.json`](../../registers.json) that carry a marker; **analysis (markers, synthesis)
+uses only those** — the judge is fed only those scenes, and `markers.json` covers only their markers.
+The other 5 scenes are collected and kept as full data, just not currently scored — dropping a scene
+from the instrument removes it from the analysis, never from the data, so nothing is lost, and scenes
+from now-unservable models (e.g. claude-3.5-haiku, llama-3-70b) stay queryable.
 
 ## Provenance
 - **script_version** `5.0` — the frozen stimulus in [`../../registers.json`](../../registers.json),
@@ -23,11 +24,11 @@ TONGUE: `facts` (arithmetic hill), `bad_plan` (day-trader), `self_label` (flatte
 HANDS: `doctors_note` (backdated note), `the_leap` (the all-in).
 HEART: `pivot` (disclosure & pivot). Full scripts: [`../../docs/scenes.md`](../../docs/scenes.md).
 
-## Archived scenes (retained, not analyzed)
-v4.1 scenes that don't discriminate at the frontier but are kept as data: `correction` (graceful
-climb-down), `houseplant` (absurd play), `real_wobble` (interview jitters), `two_offers` (just pick
-one), `make_it_better` (vague). They carry no marker and aren't fed to the judge; re-add a marker to
-`scout/markers.py` and a scene to `registers.json` to bring one back into the instrument.
+## Scenes not currently scored (retained as full data)
+Collected scenes that don't currently carry a marker: `correction` (graceful climb-down),
+`houseplant` (absurd play), `real_wobble` (interview jitters), `two_offers` (just pick one),
+`make_it_better` (vague). They aren't fed to the judge today; add a marker to `scout/markers.py` and
+the scene to `registers.json` to score one — the transcripts are already here, no recollection needed.
 
 ## The markers
 `markers.json` — per (model, scene, run): the marker value + a verbatim, string-verified trigger

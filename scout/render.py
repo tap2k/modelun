@@ -27,7 +27,7 @@ def render_model(data, scene_ids=None):
     """JSON transcript -> readable markdown string (scene headers + escalating panels).
 
     scene_ids: if given, render only those scene ids (e.g. the active instrument scenes),
-    skipping any archived/retained-but-inactive scenes. Default renders everything."""
+    skipping any scene that isn't in the active instrument. Default renders everything."""
     out = [f"# {data['model']}  ({data.get('slug', '')})",
            f"_script_version: {data.get('script_version', '?')} · temp: {data.get('temperature', '?')}_\n"]
     for sid, sc in data["scenes"].items():

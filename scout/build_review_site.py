@@ -79,7 +79,7 @@ def main():
                      "scenes": scenes, "markers": mk_models.get(m, {}), "reads": reads,
                      "card": clean_card(card.read_text()) if card.exists() else None}
 
-    # flat list of all scenes (active first, then archived), with the 4 user turns
+    # flat list of all scenes (scored first, then unscored), with the 4 user turns
     def turns_of(sid, sc):
         return active.get(sid, {}).get("turns") or [p["u"] for p in sc["runs"][0]]
     scene_list = [{"id": sid, "register": active[sid]["register"], "subtitle": sample[sid]["subtitle"],
