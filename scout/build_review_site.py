@@ -69,7 +69,9 @@ def main():
             f = rd / f"{m}.json"
             if f.exists():
                 try:
-                    reads[rd.name] = json.loads(f.read_text())
+                    rj = json.loads(f.read_text())
+                    if "_error" not in rj:  # skip stubs where the reader failed on this subject
+                        reads[rd.name] = rj
                 except json.JSONDecodeError:
                     pass
         card = CARDS / f"{m}.md"
