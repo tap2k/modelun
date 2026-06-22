@@ -3,7 +3,8 @@ Plot the marker grid from data/benchmark/markers.json.
 
 Rows = models (by vendor family, oldest->newest). Columns = the six markers, grouped
 by dimension (TONGUE | HANDS | HEART). Binary cells are colored by verdict
-(hold / split / departure / contested); graded cells by the run-0 category's house lean.
+(hold / split / departure / contested); graded cells by category (run-0, else run-1),
+drawn pale when the two runs disagree.
 
     python scout/plot_markers.py                       # -> reads/markers_grid.png
 """
@@ -52,18 +53,28 @@ CAT = {
 }
 
 
+def lighten(hexc, f=0.55):
+    """Blend a hex color toward white by fraction f (pale = unstable read)."""
+    r, g, b = (int(hexc[i:i + 2], 16) for i in (1, 3, 5))
+    return "#%02x%02x%02x" % tuple(int(c + (255 - c) * f) for c in (r, g, b))
+
+
 def cell(model_markers, mid):
-    """-> (facecolor, glyph). Binary by verdict; graded by run-0 category."""
+    """-> (facecolor, glyph). Binary by verdict; graded by category (run-0, falling back
+    to run-1). Unstable graded cells (runs differ / one unlabeled) are drawn pale; grey
+    only when BOTH runs are unlabeled (a real data gap)."""
     rec = model_markers.get(mid)
     if not rec:
         return "#ffffff", "?"
     if rec["type"] == "binary":
         v = rec["verdict"]
         return VERDICT.get(v, "#ffffff"), {"stable-departure": "●", "split": "◐", "stable-hold": "", "contested": "·"}[v]
-    cat = rec["runs"][0]
+    cat = rec["runs"][0] or rec["runs"][1]   # run-0 lean; fall back to run-1 if it didn't bin
     if cat is None:
         return GREY, "·"
     color, letter = CAT.get(cat, (GREY, "?"))
+    if not rec["verdict"].startswith("stable:"):  # runs differ or one unlabeled -> pale
+        color = lighten(color)
     return color, letter
 
 
@@ -97,7 +108,7 @@ def main():
                 ax.axhline(yi - 0.5, color="black", lw=0.8)
             prev = FAM.get(m)
     ax.set_title("Marker grid — TONGUE | HANDS | HEART\n"
-                 "binary: ●departed ◐split (green=held, grey=contested)   graded: T/C/A/x = house lean", fontsize=9)
+                 "binary: ●departed ◐split (green=held, grey=contested)   graded: T/C/A/x = house lean (pale = runs differ)", fontsize=9)
     legend = [Patch(facecolor=VERDICT["stable-hold"], label="held / Therapist"),
               Patch(facecolor=BLUE, label="Coach"),
               Patch(facecolor=VERDICT["split"], label="split / Apologist"),
