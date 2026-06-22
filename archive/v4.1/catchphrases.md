@@ -74,7 +74,7 @@ Two distinct ways to land in the saturated band:
 - **The old/small/verbose models** (hermes-3, mythomax, command-r-plus, claude-3-haiku) are saturated
   because they're *templated* — they fall into the same canned construction across every scene. Their
   tics are formulaic ("wishing you all the best," "it's important," "to whom it may concern"). The
-  evo run adds a wrinkle: the early-4.x **Opuses** (opus-4, opus-4.5) and **sonnet-4** also saturate,
+  early-4.x rungs add a wrinkle: **opus-4**, **opus-4.5**, and **sonnet-4** also saturate,
   but from *length* — they write long, reflective replies, so phrasings recur simply by volume.
 - **The frontier models** (opus-4.8, gpt-5.4, gemini-3.5-flash) are tic-rich because they have a
   *strong, consistent voice* — they say distinctive things on purpose, repeatedly. Their tics carry
@@ -117,7 +117,7 @@ other model's transcripts (shared_by = 1). These are unforgeable — a true verb
 | **llama-4-scout** | `conversation just started` | Its signature deflection on the vague "make it better" scene. |
 
 These are the entries to lead with on any per-model page — they're the things *only* that model
-says. (gpt-5's `60 second` is the sharpest new one: an evo model whose unique tic *is* its bestiary
+says. (gpt-5's `60 second` is the sharpest new one: a later model whose unique tic *is* its bestiary
 character — the Coach who puts a timer on everything.)
 
 ---
@@ -135,7 +135,7 @@ card's **Catchphrases** block.
 - **claude-sonnet-4.6** — `mean telling` (unique), `our conversation` (5×), `people who`, `sorry about`.
 - **claude-3.5-haiku** — `can't help`, `sounds like`, `you're absolutely`. Only 3 tics; a generation
   behind the 4.x voice.
-- *(evo)* The early-4.x rungs are **tic-saturated by length**: **claude-opus-4** (`probably means`,
+- The early-4.x rungs are **tic-saturated by length**: **claude-opus-4** (`probably means`,
   unique), **claude-opus-4.5**, and **claude-sonnet-4** all hit the 15-cap — long reflective replies
   recur their phrasings by volume, not by a sharp voice. **claude-3-haiku** (`would strongly`, unique)
   saturates the *old* way: templated counsel.
@@ -149,7 +149,7 @@ card's **Catchphrases** block.
 - **gpt-3.5-turbo** — `feel free to reach out` (unique), `good luck`, `it's a common`.
 - **gpt-4o-mini** — `want to share`, `totally get`, `share more`. The gentle-prompter voice.
 - **gpt-5.4-mini** — `i'll help`, `i'll make`. Only 3 tics, all shared — the modal-bland profile.
-- *(evo)* **gpt-5** — `60 second` (unique, 6×), the Coach's timer; lean (6 tics) but characterful.
+- **gpt-5** — `60 second` (unique, 6×), the Coach's timer; lean (6 tics) but characterful.
   **gpt-4-turbo** — `i'm sorry for any confusion`, `i'm here to help` (6×): the apologetic-cheerleader
   diction behind its "here to help, not to be right" fold. **gpt-4.1** — `want to chat about`
   (unique): pivots to chat under pressure.
@@ -162,7 +162,7 @@ Gemini's signature is apology, and each version apologizes *differently*:
 - **gemini-3.5-flash** — `am so sorry`, `truly hope`, `want you to succeed`, `even the best`. The
   *cheerleader* — earnest encouragement layered on the apology. 11 tics, the most characterful Gemini.
 - **gemini-2.5-flash** — `that's a tough one`, `more direct`, `oh no`.
-- *(evo)* **gemini-3-flash** — tic-rich (10): `much more`, `definitely help`, `would likely` — the
+- **gemini-3-flash** — tic-rich (10): `much more`, `definitely help`, `would likely` — the
   breezy over-promising diction behind its confabulated edits. **gemma-2** (3 tics) and **gemma-3**
   (7) are the open-weight floor — sparse and templated, the Folder's diction.
 
@@ -208,7 +208,7 @@ never drift again.
 
 **Limits.**
 - **Coverage: all 38.** The tool reads `data/benchmark/`, the canonical committed set, so every
-  model — including the 2026-06-19 evo rungs — is fingerprinted. (Earlier drafts read the gitignored
+  model — including the 2026-06-19 additions — is fingerprinted. (Earlier drafts read the gitignored
   `runs/benchmark/` scratch copy, which held only the founding 28; pointing at `data/benchmark/`
   fixed the gap.)
 - **The clamp shapes diction.** The v4.1 system prompt caps replies short and bans formatting, so
