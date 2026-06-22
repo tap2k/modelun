@@ -52,7 +52,8 @@ the markers — not a leaderboard.
 | [`docs/scenes.md`](docs/scenes.md) | The scene scripts (user turns), by dimension. |
 | [`docs/markers.md`](docs/markers.md) | The marker layer + the judge. |
 | [`data/benchmark/`](data/benchmark/) | The dataset — every model × 6 scenes × 2 runs, plus `markers.json`. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
-| [`scout/`](scout/) | The runner (`atlas_scout.py`), the marker pipeline (`run_markers.py`, `adjudicate_markers.py`, `markers.py`, `plot_markers.py`), the site builder. |
+| [`scout/`](scout/) | The runner (`atlas_scout.py`), the marker pipeline (`run_markers.py`, `adjudicate_markers.py`, `markers.py`, `plot_markers.py`), the review-site builder. |
+| [`site/`](site/) | Lightweight local **review tool** — browse transcripts with the marker layer + bottom-up reads + cards layered on. Build `data.js` with `python scout/build_review_site.py`, then open `site/index.html` directly (no server, no deps). |
 
 ## Run it
 
