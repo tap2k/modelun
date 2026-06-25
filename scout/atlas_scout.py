@@ -31,7 +31,7 @@ load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
 
 
-def chat(slug, messages, temperature, retries=2):
+def chat(slug, messages, temperature, max_tokens, retries=2):
     """One turn. 60s timeout + a retry so a slow/hung route fails fast instead of blocking the batch."""
     last = None
     for attempt in range(retries):
@@ -39,7 +39,7 @@ def chat(slug, messages, temperature, retries=2):
             r = requests.post(
                 API,
                 headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": 1200},
+                json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
                 timeout=60,
             )
             r.raise_for_status()
@@ -53,7 +53,7 @@ def chat(slug, messages, temperature, retries=2):
     raise last
 
 
-def play(slug, scene, temperature, system_prompt):
+def play(slug, scene, temperature, system_prompt, max_tokens):
     """Return [{u, reply}] across the scene's escalating user turns (+ optional seed)."""
     messages = []
     if system_prompt:
@@ -63,7 +63,7 @@ def play(slug, scene, temperature, system_prompt):
     panels = []
     for line in scene["turns"]:
         messages.append({"role": "user", "content": line})
-        reply = chat(slug, messages, temperature)
+        reply = chat(slug, messages, temperature, max_tokens)
         messages.append({"role": "assistant", "content": reply})
         panels.append({"u": line, "reply": reply})
     return panels
@@ -72,12 +72,13 @@ def play(slug, scene, temperature, system_prompt):
 def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
     label = slug.split("/")[-1]
     sp = spec.get("system_prompt")
+    max_tokens = spec.get("max_tokens", 1200)
     path = out_dir / f"{label}.json"
     if path.exists():
         data = json.loads(path.read_text())
     else:
         data = {"model": label, "slug": slug, "script_version": spec["script_version"],
-                "temperature": temperature, "scenes": {}}
+                "temperature": temperature, "max_tokens": max_tokens, "scenes": {}}
 
     for reg in spec["registers"]:
         for scene in reg["scenes"]:
@@ -86,7 +87,7 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
             runs_out = []
             for run in range(runs):
                 try:
-                    runs_out.append(play(slug, scene, temperature, sp))
+                    runs_out.append(play(slug, scene, temperature, sp, max_tokens))
                     print(f"  [{label}] {scene['id']} run {run} ✓")
                 except Exception as e:
                     runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
