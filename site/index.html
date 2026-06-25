@@ -25,7 +25,7 @@
   aside button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--fg);padding:5px 14px 5px 20px;cursor:pointer;font-size:13px;border-left:2px solid transparent}
   aside button:hover{background:var(--panel2)}
   aside button.on{background:var(--panel2);border-left-color:var(--acc);color:#fff}
-  main{flex:1;min-width:0;padding:20px 26px;max-width:1040px}
+  main{flex:1;min-width:0;padding:20px 26px;max-width:1320px}
   .mh{display:flex;align-items:baseline;gap:12px;margin:0 0 8px} .mh h2{margin:0;font-size:20px}
   .mh .slug{color:var(--mut);font-size:12px;font-family:ui-monospace,Menlo,monospace}
   .dim{color:var(--mut);font-size:12px;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.6px}
@@ -55,7 +55,6 @@
   .md th{background:var(--panel2)} .md hr{border:0;border-top:1px solid var(--line);margin:18px 0}
   .md li{margin:2px 0}
   .hidden{display:none}
-  .selfj{font-size:10px;color:var(--amber);border:1px solid var(--amber);border-radius:4px;padding:0 4px;margin-left:4px}
   .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:840px}
   /* by-scene view */
   .sblk{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 16px;padding:13px 16px}
@@ -75,6 +74,24 @@
   .gtbl td.mn a{color:var(--fg);cursor:pointer}
   .gtbl td.gc{width:30px;height:24px;text-align:center;color:#fff;border:1px solid var(--bg);font-size:11px}
   .gtbl tr.fr td{padding:9px 0 3px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  /* frontier compare */
+  .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px}
+  .cmp-tools .rt{display:flex;gap:4px}
+  .cmp-tools button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:13px}
+  .cmp-tools button.on{color:#fff;border-color:var(--acc)}
+  .cmp-scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 18px;padding:14px 16px}
+  .cmp-scene .csh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px}
+  .cmp-scene .csh .ttl{font-weight:650;font-size:16px} .cmp-scene .csh .reg{color:var(--mut);font-size:12px}
+  .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .chead{margin-bottom:2px}
+  .chead .ch{display:flex;flex-direction:column;align-items:flex-start;gap:5px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .chead .cm{font-weight:600;font-size:13px;font-family:ui-monospace,Menlo,monospace}
+  .cu{color:var(--amber);font-size:13px;margin:14px 0 8px;padding-left:2px}
+  .cu .un{color:var(--mut);font-weight:700;margin-right:7px}
+  .ccell{white-space:pre-wrap;font-size:12.5px;border-left:2px solid var(--line);padding:1px 0 1px 10px}
+  .ccell.none{color:var(--grey);font-style:italic}
+  .ccell .cml{display:none;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--mut);margin-bottom:3px}
+  @media(max-width:900px){.cgrid{grid-template-columns:1fr;gap:14px} .chead{display:none} .ccell .cml{display:block}}
 </style>
 </head>
 <body>
@@ -165,9 +182,8 @@ function markerBadge(mid, rec){
   if(!rec) return '';
   const lbl=(A.short[mid]||mid).replace(/\n/g,' ');
   const {label,color}=labelOf(rec);
-  const sj=rec.self_judged?'<span class="selfj">self-judged</span>':'';
   const text = rec.type==='binary'? label : (rec.runs[0]===rec.runs[1]?label:esc(rec.runs[0]||'—')+' / '+esc(rec.runs[1]||'—'));
-  return '<span class="badge" style="background:'+color+'">'+lbl+': '+esc(text)+'</span>'+sj;
+  return '<span class="badge" style="background:'+color+'">'+lbl+': '+esc(text)+'</span>';
 }
 function evidence(rec){
   if(!rec||!rec.evidence) return '';
@@ -245,6 +261,46 @@ function bindChips(){
     e.preventDefault(); const m=a.dataset.m; if(A.models[m]){ currentModel=m; route('models',m);} }));
 }
 
+/* ---- frontier compare: the three reader models, side by side, per scene ---- */
+const FRONTIER = Object.keys(A.readerLabels).map(k=>k.split('__')[1])
+  .filter(m=>A.models[m]).sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+let compareRun = 0;
+function showCompare(){
+  document.getElementById('side').classList.add('hidden'); setNav('compare');
+  const fm = FRONTIER;
+  const tools = '<div class="cmp-tools"><span class="reg">Run</span><div class="rt">'+
+    [0,1].map(r=>'<button data-run="'+r+'"'+(r===compareRun?' class="on"':'')+'>run '+r+'</button>').join('')+'</div></div>';
+  const blocks = A.scenes.map(s=>{
+    const tag = s.active ? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
+    let h='<div class="cmp-scene"><div class="csh"><span class="ttl">'+esc(s.subtitle)+
+      '</span><span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></div>';
+    h+='<div class="cgrid chead">'+fm.map(m=>{
+      let v='';
+      if(s.active && s.marker){ const rec=A.models[m].markers[s.marker];
+        if(rec){ const {label,color}=labelOf(rec);
+          v='<span class="badge" style="background:'+color+'">'+esc(label)+'</span>'; } }
+      return '<div class="ch"><span class="cm">'+esc(m)+'</span>'+v+'</div>';
+    }).join('')+'</div>';
+    s.turns.forEach((u,i)=>{
+      h+='<div class="cu"><span class="un">U'+(i+1)+'</span>'+esc(u)+'</div>';
+      h+='<div class="cgrid">'+fm.map(m=>{
+        const turn=A.models[m].scenes[s.id].runs[compareRun][i];
+        const reply=turn&&turn.reply;
+        return '<div class="ccell'+(reply?'':' none')+'"><span class="cml">'+esc(m)+'</span>'+
+          (reply?esc(reply):'[no reply]')+'</div>';
+      }).join('')+'</div>';
+    });
+    return h+'</div>';
+  }).join('');
+  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Frontier comparison</h2>'+
+    '<p class="note">The frozen scenes with the three frontier reader models side by side — '+fm.map(esc).join(', ')+
+    '. User turns are identical across models; only the replies differ. Toggle the run to see within-model variation. '+
+    'Scored scenes show each model\'s marker verdict.</p>'+tools+blocks;
+  document.querySelectorAll('.cmp-tools [data-run]').forEach(b=>
+    b.addEventListener('click',()=>{ compareRun=+b.dataset.run; showCompare(); window.scrollTo(0,0); }));
+  location.hash='compare';
+}
+
 /* ---- markdown tabs ---- */
 function showMd(key){ document.getElementById('side').classList.add('hidden'); document.getElementById('main').innerHTML='<div class="md">'+md(A[key])+'</div>'; }
 
@@ -254,6 +310,7 @@ function showModels(m){ document.getElementById('side').classList.remove('hidden
 function setNav(v){ [...document.querySelectorAll('#nav button')].forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
 function route(v,arg){ if(v==='models') showModels(arg);
   else if(v==='scenes') showScenes(); else if(v==='grid') showGrid();
+  else if(v==='compare') showCompare();
   else if(v==='synthesis'){setNav('synthesis');showMd('synthesis');}
   else if(v==='catchphrases'){setNav('catchphrases');showMd('catchphrases');} }
 
@@ -264,13 +321,15 @@ function buildSide(){ const s=document.getElementById('side'); let h='';
   s.addEventListener('click',e=>{const b=e.target.closest('button'); if(b){currentModel=b.dataset.m; showModels(b.dataset.m);}});
 }
 function buildNav(){
-  const items=[['models','Models'],['grid','Grid'],['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
+  const items=[['models','Models'],['grid','Grid'],['compare','Compare'],['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
   const n=document.getElementById('nav'); n.innerHTML=items.map(([v,l])=>'<button data-v="'+v+'">'+l+'</button>').join('');
   n.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) route(b.dataset.v);});
 }
 buildSide(); buildNav();
 const hash=location.hash.replace(/^#/,'');
-if(hash.startsWith('m/')&&A.models[hash.slice(2)]){currentModel=hash.slice(2);route('models',currentModel);} else route('models');
+if(hash.startsWith('m/')&&A.models[hash.slice(2)]){currentModel=hash.slice(2);route('models',currentModel);}
+else if(hash==='compare') route('compare');
+else route('models');
 </script>
 </body>
 </html>
