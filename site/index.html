@@ -74,6 +74,19 @@
   .gtbl td.mn a{color:var(--fg);cursor:pointer}
   .gtbl td.gc{width:30px;height:24px;text-align:center;color:#fff;border:1px solid var(--bg);font-size:11px}
   .gtbl tr.fr td{padding:9px 0 3px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  /* grid: per-marker example legends */
+  .sw{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:4px;color:#fff;font-size:12px;font-weight:700;flex:none}
+  .mlegs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;max-width:1180px}
+  @media(max-width:860px){.mlegs{grid-template-columns:1fr}}
+  .mleg{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 15px}
+  .mleg .mlh{font-weight:650;font-size:13px;margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:7px}
+  .mleg .mlh .sub{color:var(--mut);font-weight:400;font-size:12px}
+  .mlo{display:flex;gap:9px;align-items:flex-start;margin:9px 0}
+  .mlo .sw{margin-top:1px}
+  .mlx{min-width:0}
+  .mlt{font-size:12.5px;font-weight:600;color:var(--fg)}
+  .mlt .mlm{color:var(--mut);font-weight:400;font-size:11px;font-family:ui-monospace,Menlo,monospace;margin-left:6px}
+  .mlq{color:var(--mut);font-size:12px;font-style:italic;margin-top:2px;line-height:1.5}
   /* frontier compare */
   .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px}
   .cmp-tools .rt{display:flex;gap:4px}
@@ -163,7 +176,7 @@ function lighten(hex,f){ f=f==null?.55:f; const n=parseInt(hex.slice(1),16); let
 function cellOf(rec){ // -> {color, glyph}
   if(!rec) return {color:'#ffffff',glyph:''};
   if(rec.type==='binary'){ return {color:A.verdictColors[rec.verdict]||'#fff',
-    glyph:{'stable-departure':'●','split':'◐','stable-hold':'','contested':'·'}[rec.verdict]||''}; }
+    glyph:{'stable-departure':'∗','split':'∗','stable-hold':'','contested':''}[rec.verdict]||''}; }
   const cat=rec.runs[0]||rec.runs[1];
   if(!cat) return {color:A.verdictColors.contested,glyph:'·'};
   let cc=A.cat[cat]||['#bdbdbd','?'], color=cc[0];
@@ -215,12 +228,14 @@ function renderModel(m){
   const M=A.models[m];
   let h='<div class="mh"><h2>'+esc(m)+'</h2><span class="slug">'+esc(M.slug)+'</span><span class="reg">'+esc(M.family)+'</span></div>';
   h+='<div class="dim">Scenes</div>'+Object.entries(M.scenes).map(([sid,sc])=>sceneEl(m,sid,sc)).join('');
+  /* Layered analysis — bottom-up read: temporarily hidden
   const reads=Object.entries(M.reads||{});
   if(reads.length||M.card){
     h+='<div class="dim">Layered analysis — bottom-up read</div>';
     if(reads.length) h+='<div class="reads">'+reads.map(([k,r])=>readEl(k,r)).join('')+'</div>';
     if(M.card) h+='<div class="read" style="margin-top:12px"><div class="md">'+md(M.card)+'</div></div>';
   }
+  */
   document.getElementById('main').innerHTML=h; document.getElementById('main').scrollTop=0; window.scrollTo(0,0);
   [...document.querySelectorAll('#side button')].forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   location.hash='m/'+m;
@@ -239,6 +254,48 @@ function showScenes(){
 }
 
 /* ---- interactive grid ---- */
+/* per-marker legend: each outcome shown with a real example pulled from the data */
+function markerLegends(){
+  const sub=mid=>(A.short[mid]||mid).replace(/\n/g,' ');
+  const rank={'#2e7d32':0,'#1565c0':1,'#f9a825':2,'#c62828':3};
+  const sw=(color,glyph)=>'<span class="sw" style="background:'+color+'">'+esc(glyph||'')+'</span>';
+  const trunc=(s,n)=>{ s=(s||'').replace(/\s+/g,' ').trim(); return s.length>n? s.slice(0,n).replace(/\s+\S*$/,'')+'…':s; };
+  // find a representative example: first model whose rec matches test(rec)->runIndex|null
+  const example=(col,test)=>{ for(const m of ORDER){ const r=A.models[m].markers[col]; if(!r) continue;
+    const i=test(r); if(i!=null){ const q=(r.evidence||{})['run'+i]; if(q) return {m,q}; } } return null; };
+  const row=(color,glyph,label,ex)=>'<div class="mlo">'+sw(color,glyph)+
+    '<div class="mlx"><div class="mlt">'+esc(label)+(ex?'<span class="mlm">'+esc(ex.m)+'</span>':'')+'</div>'+
+    (ex?'<div class="mlq">“'+esc(trunc(ex.q,210))+'”</div>':'')+'</div></div>';
+
+  const cards=A.cols.map(col=>{
+    const scene=A.scenes.find(s=>s.marker===col);
+    const isBinary=!ORDER.some(m=>{const r=A.models[m].markers[col]; return r&&r.type!=='binary';});
+    let rows='';
+    if(isBinary){
+      rows+=row(A.verdictColors['stable-departure'],'∗','Departed',
+        example(col,r=>{const i=r.runs.indexOf(true); return (r.verdict==='stable-departure'&&i>=0)?i:null;}));
+      rows+=row(A.verdictColors['stable-hold'],'','Held',
+        example(col,r=>{const i=r.runs.indexOf(false); return (r.verdict==='stable-hold'&&i>=0)?i:null;}));
+      rows+=row(A.verdictColors['split'],'∗','Split — runs differ',
+        example(col,r=>{const i=r.runs.indexOf(true); return (r.verdict==='split'&&i>=0)?i:null;}));
+      const ct=example(col,r=>r.verdict==='contested'?0:null);
+      if(ct) rows+=row(A.verdictColors['contested'],'','Contested',ct);
+    } else {
+      const cats=new Set(); for(const m of ORDER){const r=A.models[m].markers[col];
+        if(r&&r.type!=='binary')(r.runs||[]).forEach(c=>c&&cats.add(c));}
+      const ordered=[...cats].sort((a,b)=>(rank[(A.cat[a]||[])[0]]??9)-(rank[(A.cat[b]||[])[0]]??9));
+      for(const c of ordered){ const cc=A.cat[c]||['#bdbdbd','?'];
+        const ex=example(col,r=>(r.type!=='binary'&&r.runs&&r.runs[0]===c&&r.runs[1]===c)?0:null)  // prefer stable
+          ||example(col,r=>{ if(r.type==='binary'||!r.runs) return null; const i=r.runs.indexOf(c); return i>=0?i:null; });
+        rows+=row(cc[0],cc[1],c.replace(/_/g,' '),ex); }
+    }
+    return '<div class="mleg"><div class="mlh">'+esc(sub(col))+
+      (scene?' <span class="sub">'+esc(scene.subtitle)+'</span>':'')+'</div>'+rows+'</div>';
+  }).join('');
+  return '<p class="note">One marker per column. Each cell is a model’s verdict across two runs; a <b>pale</b> cell means the two runs landed differently. '+
+    'The cards below show what each outcome looks like, by example. Click a model name in the grid to open its transcripts.</p>'+
+    '<div class="mlegs">'+cards+'</div>';
+}
 function showGrid(){
   document.getElementById('side').classList.add('hidden'); setNav('grid');
   let h='<table class="gtbl"><thead><tr><th class="mh2"></th>'+
@@ -252,8 +309,7 @@ function showGrid(){
     }
   }
   h+='</tbody></table>';
-  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Marker grid</h2>'+
-    '<p class="note">Binary: ●departed ◐split, green=held, grey=contested. Graded: house letter (T=Therapist, C=Coach, A=Apologist), pale = runs differ. Click a model to open it.</p>'+h;
+  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Marker grid</h2>'+h+markerLegends();
   bindChips();
 }
 function bindChips(){
@@ -264,19 +320,25 @@ function bindChips(){
 /* ---- frontier compare: the three reader models, side by side, per scene ---- */
 const FRONTIER = Object.keys(A.readerLabels).map(k=>k.split('__')[1])
   .filter(m=>A.models[m]).sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+const hasUnclamped = Object.values(A.models).some(v=>v.unclamped);
 let compareRun = 0;
-function showCompare(){
-  document.getElementById('side').classList.add('hidden'); setNav('compare');
-  const fm = FRONTIER;
+/* unclamped=true reads the ablation transcripts/markers (data/benchmark-unclamped) instead of the
+   clamped baseline. Same view; the source object per model is models[m].unclamped when present. */
+function showCompare(unclamped){
+  document.getElementById('side').classList.add('hidden'); setNav(unclamped?'compare-unclamped':'compare');
+  const src = m => unclamped ? A.models[m].unclamped : A.models[m];
+  const fm = FRONTIER.filter(m=>!unclamped || A.models[m].unclamped);
+  // unclamped only covers the scored scenes; the unscored extras have no ablation run.
+  const scenes = unclamped ? A.scenes.filter(s=>s.active) : A.scenes;
   const tools = '<div class="cmp-tools"><span class="reg">Run</span><div class="rt">'+
     [0,1].map(r=>'<button data-run="'+r+'"'+(r===compareRun?' class="on"':'')+'>run '+r+'</button>').join('')+'</div></div>';
-  const blocks = A.scenes.map(s=>{
+  const blocks = scenes.map(s=>{
     const tag = s.active ? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
     let h='<div class="cmp-scene"><div class="csh"><span class="ttl">'+esc(s.subtitle)+
       '</span><span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></div>';
     h+='<div class="cgrid chead">'+fm.map(m=>{
       let v='';
-      if(s.active && s.marker){ const rec=A.models[m].markers[s.marker];
+      if(s.active && s.marker){ const rec=src(m).markers[s.marker];
         if(rec){ const {label,color}=labelOf(rec);
           v='<span class="badge" style="background:'+color+'">'+esc(label)+'</span>'; } }
       return '<div class="ch"><span class="cm">'+esc(m)+'</span>'+v+'</div>';
@@ -284,7 +346,8 @@ function showCompare(){
     s.turns.forEach((u,i)=>{
       h+='<div class="cu"><span class="un">U'+(i+1)+'</span>'+esc(u)+'</div>';
       h+='<div class="cgrid">'+fm.map(m=>{
-        const turn=A.models[m].scenes[s.id].runs[compareRun][i];
+        const sc=src(m).scenes[s.id];
+        const turn=sc&&sc.runs[compareRun]&&sc.runs[compareRun][i];
         const reply=turn&&turn.reply;
         return '<div class="ccell'+(reply?'':' none')+'"><span class="cml">'+esc(m)+'</span>'+
           (reply?esc(reply):'[no reply]')+'</div>';
@@ -292,13 +355,20 @@ function showCompare(){
     });
     return h+'</div>';
   }).join('');
-  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Frontier comparison</h2>'+
-    '<p class="note">The frozen scenes with the three frontier reader models side by side — '+fm.map(esc).join(', ')+
-    '. User turns are identical across models; only the replies differ. Toggle the run to see within-model variation. '+
-    'Scored scenes show each model\'s marker verdict.</p>'+tools+blocks;
+  const mt=A.unclampedMaxTokens;
+  const intro = unclamped
+    ? 'The same scenes and frontier models, but with the formatting/length clamp removed (a neutral '+
+      'system prompt, max_tokens '+(mt||'raised')+'). Compare against the clamped Compare tab to see where the '+
+      'clamp shaped behavior — watch forged_document and leap_help, the artifact-producing markers.'
+    : 'The frozen scenes with the three frontier reader models side by side — '+fm.map(esc).join(', ')+
+      '. User turns are identical across models; only the replies differ. Toggle the run to see within-model variation. '+
+      'Scored scenes show each model\'s marker verdict.';
+  document.getElementById('main').innerHTML='<h2 style="margin-top:0">'+
+    (unclamped?'Frontier comparison — unclamped':'Frontier comparison')+'</h2>'+
+    '<p class="note">'+intro+'</p>'+tools+blocks;
   document.querySelectorAll('.cmp-tools [data-run]').forEach(b=>
-    b.addEventListener('click',()=>{ compareRun=+b.dataset.run; showCompare(); window.scrollTo(0,0); }));
-  location.hash='compare';
+    b.addEventListener('click',()=>{ compareRun=+b.dataset.run; showCompare(unclamped); window.scrollTo(0,0); }));
+  location.hash=unclamped?'compare-unclamped':'compare';
 }
 
 /* ---- markdown tabs ---- */
@@ -310,7 +380,8 @@ function showModels(m){ document.getElementById('side').classList.remove('hidden
 function setNav(v){ [...document.querySelectorAll('#nav button')].forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
 function route(v,arg){ if(v==='models') showModels(arg);
   else if(v==='scenes') showScenes(); else if(v==='grid') showGrid();
-  else if(v==='compare') showCompare();
+  else if(v==='compare') showCompare(false);
+  else if(v==='compare-unclamped') showCompare(true);
   else if(v==='synthesis'){setNav('synthesis');showMd('synthesis');}
   else if(v==='catchphrases'){setNav('catchphrases');showMd('catchphrases');} }
 
@@ -321,7 +392,9 @@ function buildSide(){ const s=document.getElementById('side'); let h='';
   s.addEventListener('click',e=>{const b=e.target.closest('button'); if(b){currentModel=b.dataset.m; showModels(b.dataset.m);}});
 }
 function buildNav(){
-  const items=[['models','Models'],['grid','Grid'],['compare','Compare'],['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
+  const items=[['models','Models'],['grid','Grid'],['compare','Compare'],
+    ...(hasUnclamped?[['compare-unclamped','Compare Unclamped']]:[]),
+    ['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
   const n=document.getElementById('nav'); n.innerHTML=items.map(([v,l])=>'<button data-v="'+v+'">'+l+'</button>').join('');
   n.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) route(b.dataset.v);});
 }
@@ -329,6 +402,7 @@ buildSide(); buildNav();
 const hash=location.hash.replace(/^#/,'');
 if(hash.startsWith('m/')&&A.models[hash.slice(2)]){currentModel=hash.slice(2);route('models',currentModel);}
 else if(hash==='compare') route('compare');
+else if(hash==='compare-unclamped'&&hasUnclamped) route('compare-unclamped');
 else route('models');
 </script>
 </body>

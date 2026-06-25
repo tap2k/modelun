@@ -20,9 +20,21 @@ from plot_markers import FAMILIES, COLS, SHORT, VERDICT, CAT  # single source of
 
 ROOT = Path(__file__).resolve().parent.parent
 BENCH = ROOT / "data" / "benchmark"
+UNCLAMPED = ROOT / "data" / "benchmark-unclamped"
 XCHECK = ROOT / "archive" / "v4.1" / "cross-check"
 CARDS = ROOT / "archive" / "v4.1" / "cards"
 SITE = ROOT / "site"
+
+
+def scene_blob(d, active):
+    """Transcript -> per-scene {subtitle, marker, runs} the site renders. Shared by the
+    clamped dataset and the unclamped ablation so both feed the Compare views identically."""
+    return {sid: {"register": sc.get("register", ""), "subtitle": sc.get("subtitle", sid),
+                  "active": sid in active, "marker": active.get(sid, {}).get("marker"),
+                  "dimension": active.get(sid, {}).get("dimension"),
+                  "runs": [[{"u": pn["u"], "reply": pn.get("reply")} for pn in run]
+                           for run in sc["runs"]]}
+            for sid, sc in d["scenes"].items()}
 
 
 def clean_card(text):
@@ -56,12 +68,7 @@ def main():
     for p in sorted(b for b in BENCH.glob("*.json") if b.name != "markers.json"):
         d = json.loads(p.read_text())
         m = d["model"]
-        scenes = {sid: {"register": sc.get("register", ""), "subtitle": sc.get("subtitle", sid),
-                        "active": sid in active, "marker": active.get(sid, {}).get("marker"),
-                        "dimension": active.get(sid, {}).get("dimension"),
-                        "runs": [[{"u": pn["u"], "reply": pn.get("reply")} for pn in run]
-                                 for run in sc["runs"]]}
-                  for sid, sc in d["scenes"].items()}
+        scenes = scene_blob(d, active)
         if sample is None:
             sample = scenes
         reads = {}
@@ -78,6 +85,20 @@ def main():
         models[m] = {"slug": d.get("slug", ""), "family": fam_of.get(m, "Other"),
                      "scenes": scenes, "markers": mk_models.get(m, {}), "reads": reads,
                      "card": clean_card(card.read_text()) if card.exists() else None}
+
+    # Unclamped ablation: attach the parallel transcripts + markers to the models that have them.
+    # Only the frontier anchors are run unclamped, so Compare Unclamped shows a subset.
+    unc_max_tokens = None
+    if UNCLAMPED.exists():
+        upath = UNCLAMPED / "markers.json"
+        unc_mk = json.loads(upath.read_text())["models"] if upath.exists() else {}
+        for p in sorted(b for b in UNCLAMPED.glob("*.json") if b.name != "markers.json"):
+            d = json.loads(p.read_text())
+            m = d["model"]
+            if m not in models:
+                continue
+            unc_max_tokens = unc_max_tokens or d.get("max_tokens")
+            models[m]["unclamped"] = {"scenes": scene_blob(d, active), "markers": unc_mk.get(m, {})}
 
     # flat list of all scenes (scored first, then unscored), with the 4 user turns
     def turns_of(sid, sc):
@@ -96,6 +117,7 @@ def main():
         "cols": COLS, "short": SHORT, "verdictColors": VERDICT, "cat": {k: list(v) for k, v in CAT.items()},
         "readerLabels": {rd.name: rd.name.split("__")[0] for rd in readers},
         "models": models, "scenes": scene_list,
+        "unclampedMaxTokens": unc_max_tokens,
         "synthesis": (ROOT / "docs" / "houses.md").read_text(),
         "catchphrases": cat.read_text() if cat.exists() else "",
     }
