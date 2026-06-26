@@ -24,12 +24,25 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: python studies/conduct/views/plot.py     # reads/markers_grid.png (from the committed markers.json)
-      - run: python studies/conduct/views/build.py    # views/data.js + core.js — the bundled review blob
+
+      # Each study bakes its own self-contained view dir (index.html + data.js + core.js).
+      - run: python studies/conduct/views/plot.py      # reads/markers_grid.png (from the committed markers.json)
+      - run: python studies/conduct/views/build.py     # conduct: views/data.js + core.js
+      - run: python studies/language/views/build.py    # language: views/data.js + core.js
+
+      # Assemble one Pages tree: a landing index + each study at its own slug. Pages serves
+      # a single artifact, so multiple studies share one site via subpaths, not separate URLs.
+      - name: Assemble combined site
+        run: |
+          mkdir -p site
+          cp docs/site-index.html site/index.html
+          cp -r studies/conduct/views  site/conduct
+          cp -r studies/language/views site/language
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: studies/conduct/views
+          path: site
 
   deploy:
     needs: build

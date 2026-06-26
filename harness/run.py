@@ -56,10 +56,15 @@ def chat(slug, messages, temperature, max_tokens, retries=2):
 
 
 def play(slug, scene, temperature, system_prompt, max_tokens):
-    """Return [{u, reply}] across the scene's escalating user turns (+ optional seed)."""
+    """Return [{u, reply}] across the scene's escalating user turns (+ optional seed).
+
+    `system_prompt` may be overridden per-scene (`scene["system_prompt"]`); the spec-level
+    prompt is the fallback. A scene with no prompt at either level runs system-prompt-free.
+    """
     messages = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
+    sp = scene.get("system_prompt", system_prompt)
+    if sp:
+        messages.append({"role": "system", "content": sp})
     if scene.get("seed"):
         messages.append({"role": "assistant", "content": scene["seed"]})
     panels = []
@@ -71,33 +76,53 @@ def play(slug, scene, temperature, system_prompt, max_tokens):
     return panels
 
 
+def iter_scenes(spec):
+    """Yield (register_name, scene) for either spec shape.
+
+    Two stimulus shapes are supported behind one iterator:
+      - target (docs): flat `scenes[]`           → register_name is None
+      - legacy (conduct): `registers[]` of scenes → register_name is the register's name
+    Detection is by key presence; a spec carries exactly one of the two.
+    """
+    if "scenes" in spec:
+        for scene in spec["scenes"]:
+            yield None, scene
+    else:
+        for reg in spec["registers"]:
+            for scene in reg["scenes"]:
+                yield reg["name"], scene
+
+
 def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
     label = slug.split("/")[-1]
     sp = spec.get("system_prompt")
     max_tokens = spec.get("max_tokens", 1200)
+    # Version key follows the spec shape: flat → spec_version, legacy → script_version.
+    version = spec.get("spec_version") or spec["script_version"]
+    version_key = "spec_version" if "spec_version" in spec else "script_version"
     path = out_dir / f"{label}.json"
     if path.exists():
         data = json.loads(path.read_text())
     else:
-        data = {"model": label, "slug": slug, "script_version": spec["script_version"],
+        data = {"model": label, "slug": slug, version_key: version,
                 "temperature": temperature, "max_tokens": max_tokens, "scenes": {}}
 
-    for reg in spec["registers"]:
-        for scene in reg["scenes"]:
-            if scene_ids and scene["id"] not in scene_ids:
-                continue
-            runs_out = []
-            for run in range(runs):
-                try:
-                    runs_out.append(play(slug, scene, temperature, sp, max_tokens))
-                    print(f"  [{label}] {scene['id']} run {run} ✓")
-                except Exception as e:
-                    runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
-                    print(f"  [{label}] {scene['id']} run {run} FAILED: {e}")
-            data["scenes"][scene["id"]] = {
-                "register": reg["name"], "subtitle": scene.get("subtitle", scene["id"]),
-                "run_date": run_date, "runs": runs_out,
-            }
+    for reg_name, scene in iter_scenes(spec):
+        if scene_ids and scene["id"] not in scene_ids:
+            continue
+        runs_out = []
+        for run in range(runs):
+            try:
+                runs_out.append(play(slug, scene, temperature, sp, max_tokens))
+                print(f"  [{label}] {scene['id']} run {run} ✓")
+            except Exception as e:
+                runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
+                print(f"  [{label}] {scene['id']} run {run} FAILED: {e}")
+        entry = {"subtitle": scene.get("subtitle", scene["id"]),
+                 "run_date": run_date, "runs": runs_out}
+        if reg_name is not None:           # legacy shape carries the register tag through
+            entry["register"] = reg_name
+        data["scenes"][scene["id"]] = entry
 
     out_dir.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")

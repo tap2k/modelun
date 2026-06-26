@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>language — review</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
+    --grey:#7c828e; --amber:#f9a825; --acc:#6ea8fe;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.2px}
+  header .sub{color:var(--mut);font-size:12px}
+  nav{margin-left:auto;display:flex;gap:4px}
+  nav button{background:none;border:1px solid transparent;color:var(--mut);padding:6px 12px;border-radius:7px;cursor:pointer;font-size:13px}
+  nav button:hover{color:var(--fg);background:var(--panel2)}
+  nav button.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  .wrap{display:flex;min-height:calc(100vh - 49px)}
+  aside{width:250px;flex:none;border-right:1px solid var(--line);overflow:auto;height:calc(100vh - 49px);position:sticky;top:49px;background:var(--panel)}
+  aside .fam{padding:9px 14px 4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+  aside button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--fg);padding:5px 14px 5px 20px;cursor:pointer;font-size:13px;border-left:2px solid transparent}
+  aside button:hover{background:var(--panel2)}
+  aside button.on{background:var(--panel2);border-left-color:var(--acc);color:#fff}
+  main{flex:1;min-width:0;padding:20px 26px;max-width:1320px}
+  .mh{display:flex;align-items:baseline;gap:12px;margin:0 0 8px} .mh h2{margin:0;font-size:20px}
+  .mh .slug{color:var(--mut);font-size:12px;font-family:ui-monospace,Menlo,monospace}
+  .dim{color:var(--mut);font-size:12px;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.6px}
+  .scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 10px;overflow:hidden}
+  .scene>summary{list-style:none;cursor:pointer;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .scene>summary::-webkit-details-marker{display:none}
+  .scene>summary:hover{background:var(--panel2)}
+  .scene .ttl{font-weight:600} .scene .reg{color:var(--mut);font-size:12px}
+  .runs{padding:4px 14px 12px;display:grid;grid-template-columns:1fr;gap:12px}
+  .run h4{margin:8px 0 4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .panel{border-left:2px solid var(--line);padding:2px 0 2px 10px;margin:0 0 8px}
+  .u{color:var(--amber);font-size:12.5px;margin-bottom:3px} .u::before{content:"▸ "}
+  .a{white-space:pre-wrap;font-size:13px} .a.none{color:var(--grey);font-style:italic}
+  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:840px}
+  .note code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+  .hidden{display:none}
+  /* compare */
+  .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
+  .cmp-tools .lbl{color:var(--mut);font-size:12px}
+  .cmp-tools .rt{display:flex;gap:4px}
+  .cmp-tools button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:13px}
+  .cmp-tools button.on{color:#fff;border-color:var(--acc)}
+  .cmp-scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 18px;padding:14px 16px}
+  .cmp-scene .csh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px}
+  .cmp-scene .csh .ttl{font-weight:650;font-size:16px} .cmp-scene .csh .reg{color:var(--mut);font-size:12px}
+  .cgrid{display:grid;gap:12px;grid-template-columns:var(--cgrid-cols,repeat(3,1fr))}
+  .chead{margin-bottom:2px}
+  .chead .ch{display:flex;flex-direction:column;align-items:flex-start;gap:5px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .chead .cm{font-weight:600;font-size:13px;font-family:ui-monospace,Menlo,monospace}
+  .cu{color:var(--amber);font-size:13px;margin:14px 0 8px;padding-left:2px}
+  .cu .un{color:var(--mut);font-weight:700;margin-right:7px}
+  .ccell{white-space:pre-wrap;font-size:12.5px;border-left:2px solid var(--line);padding:1px 0 1px 10px}
+  .ccell.none{color:var(--grey);font-style:italic}
+  .ccell .cml{display:none;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--mut);margin-bottom:3px}
+  @media(max-width:900px){.cgrid{grid-template-columns:1fr!important;gap:14px} .chead{display:none} .ccell .cml{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <h1>language <span class="sub">— transcript &amp; compare review</span></h1>
+  <nav id="nav"></nav>
+</header>
+<div class="wrap">
+  <aside id="side"></aside>
+  <main id="main"></main>
+</div>
+
+<script src="core.js"></script>
+<script src="data.js"></script>
+<script>
+/* Generic transcript rendering comes from the harness core (renderArc / renderCompare);
+   this file holds only the language study's view shell — model list, compare grid, tabs.
+   No markers, no verdicts: this study is generate-and-view. */
+const { esc, renderArc, renderCompare } = window.Core;
+const L = window.LANG;
+const MODELS = Object.keys(L.models);
+const side = document.getElementById('side');
+const main = document.getElementById('main');
+const nav = document.getElementById('nav');
+
+let view = 'transcripts', current = MODELS[0] || null, compareRun = 0;
+
+/* ---- per-model transcripts ---- */
+function showTranscripts(){
+  setNav('transcripts');
+  side.classList.remove('hidden');
+  side.innerHTML = '<div class="fam">Models</div>' + MODELS.map(m =>
+    '<button class="'+(m===current?'on':'')+'" onclick="pick(\''+m+'\')">'+esc(m)+'</button>'
+  ).join('');
+  if(!current){ main.innerHTML = '<p class="note">No transcripts yet. Run the study:<br><code>python harness/run.py --study studies/language &lt;slug&gt;...</code><br>then <code>python studies/language/views/build.py</code>.</p>'; return; }
+  const M = L.models[current];
+  let h = '<div class="mh"><h2>'+esc(current)+'</h2><span class="slug">'+esc(M.slug)+'</span></div>';
+  h += '<p class="note">System prompt: '+esc(L.system_prompt)+'</p>';
+  h += '<div class="dim">Scenes</div>';
+  h += L.scenes.map(s => {
+    const sc = M.scenes[s.id];
+    if(!sc) return '';
+    return '<details class="scene" open><summary><span class="ttl">'+esc(s.subtitle||s.id)+
+      '</span><span class="reg">'+esc(s.id)+'</span></summary>'+ renderArc(sc) +'</details>';
+  }).join('');
+  main.innerHTML = h;
+}
+function pick(m){ current = m; showTranscripts(); }
+
+/* ---- side-by-side compare: all models as columns, one scene at a time ---- */
+function showCompare(){
+  setNav('compare');
+  side.classList.add('hidden');
+  // run selector: max run count across models (default datasets are runs:1)
+  const maxRuns = Math.max(1, ...MODELS.map(m =>
+    Math.max(...L.scenes.map(s => (L.models[m].scenes[s.id]?.runs.length)||0), 0)));
+  const cols = MODELS.map(m => ({ id: m }));
+  let h = '<p class="note">Every model side by side on the same Gujarati turns. System prompt: '+esc(L.system_prompt)+'</p>';
+  if(maxRuns > 1){
+    h += '<div class="cmp-tools"><span class="lbl">run</span><div class="rt">'+
+      Array.from({length:maxRuns}, (_,i) =>
+        '<button class="'+(i===compareRun?'on':'')+'" onclick="setRun('+i+')">'+i+'</button>').join('')+
+      '</div></div>';
+  }
+  // Column count drives BOTH the header row (.cgrid.chead) and the cell rows (.cgrid)
+  // via one scoped CSS var, so headers and their columns always align for any N models.
+  const cw = 'repeat('+Math.max(1,MODELS.length)+',minmax(220px,1fr))';
+  h += L.scenes.map(s => {
+    const colsS = MODELS.map(m => ({ id: m, scene: L.models[m].scenes[s.id] }));
+    return '<div class="cmp-scene" style="--cgrid-cols:'+cw+'"><div class="csh"><span class="ttl">'+
+      esc(s.subtitle||s.id)+'</span><span class="reg">'+esc(s.id)+'</span></div>'+
+        renderCompare(s, colsS, compareRun)+
+      '</div>';
+  }).join('');
+  main.innerHTML = h || '<p class="note">No transcripts yet.</p>';
+}
+function setRun(i){ compareRun = i; showCompare(); }
+
+/* ---- nav ---- */
+function setNav(v){
+  view = v;
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v===v));
+}
+function route(v){ if(v==='transcripts') showTranscripts(); else showCompare(); }
+nav.innerHTML = [['transcripts','Transcripts'],['compare','Compare']].map(([v,lbl]) =>
+  '<button data-v="'+v+'" onclick="route(\''+v+'\')">'+lbl+'</button>').join('');
+route('transcripts');
+</script>
+</body>
+</html>
