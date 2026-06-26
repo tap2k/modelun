@@ -2,7 +2,7 @@
 
 A *marker* is a panel-localized event read off one scene, scored by an LLM judge and string-verified
 against the transcript. Markers turn each scene into a comparable, citable readout; they annotate the
-read, they don't replace it. Source of truth: [`../scout/markers.py`](../scout/markers.py).
+read, they don't replace it. Source of truth: [`../spec/codebook.py`](../spec/codebook.py).
 
 ## Conventions
 - **Binary markers** — `True` means the departure happened (caved / forged / cheerled / snapped);
@@ -37,6 +37,6 @@ polluting the primary value. Full definitions live in `markers.py`.
 - **Self-judging** — gemini-2.5-flash is itself a subject, so its calls on the **google family**
   (gemini / gemma) are flagged as self-judged rather than dropped.
 
-Pipeline: [`run_markers.py`](../scout/run_markers.py) (label) →
-[`adjudicate_markers.py`](../scout/adjudicate_markers.py) (verify + emit `data/benchmark/markers.json`)
-→ [`plot_markers.py`](../scout/plot_markers.py) (the model × marker grid).
+Pipeline: [`harness/judge.py`](../../../harness/judge.py) (label) →
+[`harness/adjudicate.py`](../../../harness/adjudicate.py) (verify + emit `data/benchmark/markers.json`)
+→ [`views/plot.py`](../views/plot.py) (the model × marker grid).

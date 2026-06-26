@@ -24,12 +24,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: python scout/plot_markers.py        # reads/markers_grid.png (from the committed markers.json)
-      - run: python scout/build_review_site.py    # site/data.js — the bundled review blob
+      - run: python studies/conduct/views/plot.py     # reads/markers_grid.png (from the committed markers.json)
+      - run: python studies/conduct/views/build.py    # views/data.js + core.js — the bundled review blob
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: studies/conduct/views
 
   deploy:
     needs: build

@@ -3,8 +3,17 @@
 Rules and tripwires that aren't obvious from the code. For what the project is and how to run it, see
 [README.md](README.md).
 
+## Layout: harness vs. study
+The repo splits into a domain-neutral **`harness/`** (the tool — runner, judge, adjudicator, the
+`viewer/core.js` renderer) and **`studies/<name>/`** (the conduct atlas is `studies/conduct/`). The
+harness holds no conduct semantics; a study supplies `spec/` (`stimulus.json` + `codebook.py`),
+`data/`, `views/`, `docs/`. Architecture and contracts: [`docs/harness.md`](docs/harness.md). Harness
+scripts take `--study <dir>` and resolve paths via `harness/study.py` (+ the study's
+`spec/paths.json`, which lets conduct keep its historical `data/benchmark` and `markers/` names).
+
 ## The frozen stimulus is sacred
-`registers.json` is byte-identical input sent to every model — that's what makes columns comparable.
+`studies/conduct/spec/stimulus.json` is byte-identical input sent to every model — that's what makes
+columns comparable.
 - Do **not** edit scene turns or the `system_prompt` clamp between runs you intend to compare.
 - Any change to the stimulus (including the clamp) **must bump `script_version`**, and the old and
   new versions are not comparable — keep them in separate run dirs.
@@ -22,18 +31,18 @@ Rules and tripwires that aren't obvious from the code. For what the project is a
   essay, the per-model cards, the catchphrase report) is preserved under
   [`archive/`](archive/) — see [`archive/README.md`](archive/README.md) for the map and how to
   recreate any thread. No tags or side branches: everything (analyses, basis, tooling, and the
-  scene-run library in `data/benchmark/`) is on `main` and pushed. The pre-prune v4.1 repo remains
+  scene-run library in `studies/conduct/data/benchmark/`) is on `main` and pushed. The pre-prune v4.1 repo remains
   reachable in history at commit `a36cf84` (`git show a36cf84:<path>`).
 - **Picking up the markers thread**: the live marker layer is single-judge; the v5 pipeline already
-  supports a multi-judge panel (`adjudicate_markers.py` does majority + self-family exclusion). The
+  supports a multi-judge panel (`harness/adjudicate.py` does majority + self-family exclusion). The
   exact recipe to harden it is in `archive/README.md` § *Picking up the markers thread*.
 - Principle for what to commit: **keep anything that served as the basis of an analysis/synthesis;
   intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
 
 ## Provenance & secrets
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
-- Root `runs/`, `reads/`, `cards/`, `markers/` are generated working output and **gitignored** (the
-  curated basis is committed under `archive/`). The published data lives in `data/benchmark/`. Never
+- `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored** (the
+  curated basis is committed under `archive/`). The published data lives in `studies/conduct/data/benchmark/`. Never
   commit transcripts-in-progress, scratch marker runs, or `.env`.
 - Before any push, confirm `.env` is not staged. A leaked `OPENROUTER_API_KEY` is the one
   unrecoverable mistake.

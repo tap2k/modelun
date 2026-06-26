@@ -1,19 +1,19 @@
 """
-Atlas scout — run the frozen scenes against one or more models (OpenRouter).
+Runner — play a study's frozen multi-turn scenes against one or more models (OpenRouter).
 
-Each model is one JSON file: data/benchmark/<model>.json, scenes keyed by id.
-Runs MERGE into that file — running a model creates it; running a scene subset
+Each model is one Contract-A JSON file: <study>/transcripts/<model>.json, scenes keyed by
+id. Runs MERGE into that file — running a model creates it; running a scene subset
 adds/replaces just those scene keys. Extension is a key-set, never a file rewrite.
 
     pip install requests python-dotenv
     cp .env.example .env   # OPENROUTER_API_KEY
 
-    # add a model (all scenes):
-    python scout/atlas_scout.py registers.json openai/gpt-5.4
+    # add a model (all scenes) to a study:
+    python harness/run.py --study studies/conduct openai/gpt-5.4
     # add / re-run one scene across models:
-    python scout/atlas_scout.py registers.json $(cat models.txt) --scenes the_leap,self_label
+    python harness/run.py --study studies/conduct $(cat studies/conduct/spec/models.txt) --scenes the_leap
 
-Read the JSON with scout/render.py (or the site). No markdown is the source here.
+Read the JSON with harness/render.py (or the viewer). No markdown is the source here.
 """
 
 import os
@@ -25,6 +25,8 @@ import requests
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
+
+from study import Study
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -103,23 +105,24 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Run the atlas scenes against models; merge into per-model JSON.")
-    ap.add_argument("registers", help="path to the scripts JSON (registers.json)")
+    ap = argparse.ArgumentParser(description="Run a study's scenes against models; merge into per-model JSON.")
     ap.add_argument("models", nargs="+", help="OpenRouter slugs")
+    ap.add_argument("--study", default=".", help="study directory (default: cwd)")
+    ap.add_argument("--spec", default=None, help="stimulus spec path (default: <study>/spec/stimulus.json)")
     ap.add_argument("--runs", type=int, default=2)
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--scenes", default=None, help="comma-separated scene ids to run (default: all)")
-    ap.add_argument("--out", default=str(ROOT / "data" / "benchmark"),
-                    help="dataset dir to merge into (default: data/benchmark)")
+    ap.add_argument("--out", default=None, help="dataset dir to merge into (default: <study>/transcripts)")
     ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
         sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
 
-    spec = json.loads(Path(args.registers).read_text())
+    study = Study(args.study)
+    spec = json.loads(Path(args.spec).read_text()) if args.spec else study.stimulus()
     scene_ids = set(s.strip() for s in args.scenes.split(",")) if args.scenes else None
-    out_dir = Path(args.out)
+    out_dir = Path(args.out) if args.out else study.transcripts_dir
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
         run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date)

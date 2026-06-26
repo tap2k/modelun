@@ -1,14 +1,14 @@
 """
-Adjudicate marker labels -> data/benchmark/markers.json.
+Adjudicate labels -> the study's store (verified, voted).
 
-Reads the judge labels (markers/<judge>/<model>.json) and the source transcripts
-(data/benchmark/<model>.json). For each (model, marker, run): string-VERIFIES the
+Reads the judge labels (<study>/labels/<labeler>/<model>.json) and the source transcripts
+(<study>/transcripts/<model>.json). For each (model, criterion, run): string-VERIFIES the
 trigger_quote against the actual replies, then records the value (binary) or category
-(graded). With multiple judges it takes the majority of the clean (non-self-family)
-labels; with the single default judge it uses that label and flags self-judged cells
-(the judge scoring its own vendor).
+(graded). With multiple labelers it takes the majority of the clean (non-self-family)
+labels; with a single labeler it uses that label and flags self-judged cells (the labeler
+scoring its own vendor).
 
-    python scout/adjudicate_markers.py
+    python harness/adjudicate.py --study studies/conduct
 """
 
 import re
@@ -17,7 +17,7 @@ import argparse
 from pathlib import Path
 from collections import defaultdict, Counter
 
-import markers as M
+from study import Study
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -52,24 +52,27 @@ def run_node(blob, mid, run_norm):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--markers-dir", default=str(ROOT / "markers"))
-    ap.add_argument("--bench", default=str(ROOT / "data" / "benchmark"))
-    ap.add_argument("--out", default=str(ROOT / "data" / "benchmark" / "markers.json"))
+    ap.add_argument("--study", default=".", help="study directory (default: cwd)")
+    ap.add_argument("--labels-dir", default=None, help="default: <study>/labels")
+    ap.add_argument("--bench", default=None, help="default: <study>/transcripts")
+    ap.add_argument("--out", default=None, help="default: <study>/store.json")
     args = ap.parse_args()
 
-    reg = json.loads((ROOT / "registers.json").read_text())
-    marker_scene = {s["marker"]: s["id"] for r in reg["registers"] for s in r["scenes"]}
+    study = Study(args.study)
+    M = study.codebook()
+    stim = study.stimulus()
+    marker_scene = {s["marker"]: s["id"] for r in stim["registers"] for s in r["scenes"]}
     binary = {m["id"] for m in M.MARKERS}
     graded = {m["id"] for m in M.GRADED_MARKERS}
 
-    mdir = Path(args.markers_dir)
+    mdir = Path(args.labels_dir) if args.labels_dir else study.labels_dir
     judge_dirs = sorted(d for d in mdir.iterdir() if d.is_dir()) if mdir.exists() else []
     if not judge_dirs:
-        raise SystemExit(f"no judge dirs under {mdir}/ — run scout/run_markers.py first")
+        raise SystemExit(f"no labeler dirs under {mdir}/ — run harness/judge.py first")
     judges = [d.name.replace("__", "/") for d in judge_dirs]
-    print(f"judges: {', '.join(judges)}")
+    print(f"labelers: {', '.join(judges)}")
 
-    bench = Path(args.bench)
+    bench = Path(args.bench) if args.bench else study.transcripts_dir
     subjects = sorted(p for p in bench.glob("*.json") if p.name != "markers.json")
     models_out = {}
     counts = defaultdict(Counter)
@@ -154,8 +157,10 @@ def main():
                         for m in M.MARKERS + M.GRADED_MARKERS},
         "models": models_out,
     }
-    Path(args.out).write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
-    print(f"\nwrote {args.out}  ({len(models_out)} models)\n")
+    out_path = Path(args.out) if args.out else study.store_path
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
+    print(f"\nwrote {out_path}  ({len(models_out)} models)\n")
     for mid in [m["id"] for m in M.MARKERS + M.GRADED_MARKERS]:
         print(f"  {mid:<22} " + "  ".join(f"{k}={v}" for k, v in counts[mid].most_common()))
 

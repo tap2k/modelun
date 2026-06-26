@@ -1,71 +1,84 @@
-# modelun — a behavioral atlas of language models
+# modelun
 
-**How do language models conduct themselves under pressure?** Not how they answer a personality
-questionnaire — how they behave across a hard, multi-turn conversation: when a user insists 5×9 is 54
-and turns nasty, begs for a forged sick note, confides a dying parent and then asks for a cheerful
-email, or wants help betting their savings on a memecoin. We send the **identical** escalating script
-to every model and read the transcripts.
+A small, buildless harness for **labeling and viewing model transcripts**. Send an arbitrary
+multi-turn script to arbitrary models, grade the transcripts with an LLM judge *and* a human judge
+(voted together, every label grounded in a verbatim quote), and browse them in a no-deps local viewer.
 
-## The frame
+The harness is domain-neutral. A **study** points it at a question by supplying a `{stimulus, codebook}`
+and its own views. The first study is the **conduct atlas** — how language models behave under
+multi-turn pressure — in [`studies/conduct/`](studies/conduct/).
 
-Each scene probes one of three dimensions of conduct:
+## The two things this does that adjacent tools don't
 
-- **TONGUE** — *honesty*: will it tell you a truth you don't want to hear?
-- **HANDS** — *integrity*: will it refuse to *do* a wrong thing you ask for?
-- **HEART** — *attunement*: will it stay with your feelings?
+- **A human and an LLM are the same labeler.** Judges are namespaced; a human grader and an LLM judge
+  write the same label shape and are *voted together* in one tally. Collaboration is conflict-free with
+  no backend — each labeler writes their own files, git is the merge.
+- **Every verdict is mechanically grounded.** A label must cite a verbatim substring of the reply it
+  judges; the adjudicator string-verifies it and drops what doesn't check out.
 
-Six scenes sample those three (full scripts in [`docs/scenes.md`](docs/scenes.md)):
+## Pipeline
 
-| Dimension | Scene | What it tests |
-|---|---|---|
-| TONGUE | **facts** — the arithmetic hill | holds an impersonal fact under contempt |
-| TONGUE | **bad_plan** — the day-trader | withholds applause for a bad plan under social punishment |
-| TONGUE | **self_label** — the flattering self-story | declines to ratify a self-flattering frame |
-| HANDS | **doctors_note** — the backdated note | refuses a forgery, warmly |
-| HANDS | **the_leap** — the all-in | won't lend its skill to a hype-driven self-harming plan |
-| HEART | **pivot** — the disclosure & pivot | carries the weight across a topic-change |
+```
+spec.stimulus ─► run.py ────────► transcripts/<model>.json        a model's reply-arcs
++ spec.codebook ─► judge.py ────► labels/<labeler>/<model>.json   one judge's verdicts (LLM or human)
++ transcripts ─► adjudicate.py ─► store.json                      quote-verified, voted
++ store ─► viewer/core.js ──────► transcript view + compare
+```
 
-The synthesis reads each model across the three dimensions. The frontier labs with a full
-generational ladder resolve into recurring **house styles** — a working lens, tested and revised
-against the data, with room for emergent patterns:
+The runner is scripted (identical turns to every model, so columns compare); failures are written into
+the file, not raised. The renderer is *dumb* — it draws transcripts and a side-by-side compare and
+knows nothing about any study; a study layers its own views (grids, plots, synthesis) on top.
 
-- **Therapist** — names the move you're making instead of just answering it.
-- **Coach** — holds the line and hands you a concrete tool to survive it.
-- **Apologist** — softens, apologizes, makes the friction go away — even when the friction was the truth.
+Full architecture, contracts, and the flowstore interchange: [`docs/harness.md`](docs/harness.md).
 
-## Method
-
-A fixed four-panel script per scene, identical for every model and escalating regardless of the
-reply; run each model twice at deployment temperature; a system-prompt **clamp** holds replies short
-and plain so the read is about conduct, not formatting. Each scene carries a **marker** — a discrete,
-quote-verified event scored by a single judge (`google/gemini-2.5-flash`) — that turns the scene into
-a comparable readout. See [`docs/markers.md`](docs/markers.md).
-
-These are reads at small N, dated specimens. Vivid enough to recognize, precise enough to compare on
-the markers — not a leaderboard.
-
-## What's here
+## Layout
 
 | Path | What it is |
 |---|---|
-| [`registers.json`](registers.json) | The instrument — the frozen 6-scene script + the clamp. Source of truth. |
-| [`docs/scenes.md`](docs/scenes.md) | The scene scripts (user turns), by dimension. |
-| [`docs/markers.md`](docs/markers.md) | The marker layer + the judge. |
-| [`data/benchmark/`](data/benchmark/) | The dataset — every model × 6 scenes × 2 runs, plus `markers.json`. See [`MANIFEST.md`](data/benchmark/MANIFEST.md). |
-| [`scout/`](scout/) | The runner (`atlas_scout.py`), the marker pipeline (`run_markers.py`, `adjudicate_markers.py`, `markers.py`, `plot_markers.py`), the review-site builder. |
-| [`site/`](site/) | Lightweight local **review tool** — browse transcripts with the marker layer + bottom-up reads + cards layered on. Build `data.js` with `python scout/build_review_site.py`, then open `site/index.html` directly (no server, no deps). |
+| [`harness/`](harness/) | The tool. `run.py`, `judge.py`, `adjudicate.py`, `render.py`, `study.py` (path resolution), `viewer/core.js` (the renderer). No study semantics. |
+| [`studies/conduct/`](studies/conduct/) | The conduct atlas — study #1. See its [README](studies/conduct/README.md). |
+| [`docs/harness.md`](docs/harness.md) | The core: contracts, the judging kernel, repo layout, interchange. |
+| [`archive/`](archive/) | Prior analysis threads (the v4.1 bottom-up study, cross-check basis, cards). See [`archive/README.md`](archive/README.md). |
 
-## Run it
+A study is a directory the harness resolves via `--study`:
+
+```
+studies/<name>/
+  spec/stimulus.json     the frozen multi-turn script
+  spec/codebook.py        the criteria (binary / graded / scale)
+  spec/paths.json         optional: override transcripts/labels/store dir names
+  transcripts/<model>.json    Contract A — runner output
+  labels/<labeler>/<model>.json   Contract B — judge output
+  store.json              adjudicator output
+  views/                  bespoke views built on harness/viewer/core.js
+```
+
+## Run
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # put your OpenRouter key in it
+cp .env.example .env   # OPENROUTER_API_KEY
 
-# run the scenes against one or more models
-python scout/atlas_scout.py registers.json anthropic/claude-opus-4.8 openai/gpt-5.4 --runs 2
+# run a study's scenes against models, score them, adjudicate:
+python harness/run.py        --study studies/conduct anthropic/claude-opus-4.8 openai/gpt-5.4 --runs 2
+python harness/judge.py      --study studies/conduct --judge google/gemini-2.5-flash
+python harness/adjudicate.py --study studies/conduct
 
-# score the markers, then verify + emit data/benchmark/markers.json
-python scout/run_markers.py --judge google/gemini-2.5-flash
-python scout/adjudicate_markers.py
+# read a transcript by eye, or build + open the review site:
+python harness/render.py     --study studies/conduct claude-opus-4.8
+python studies/conduct/views/build.py && open studies/conduct/views/index.html
 ```
+
+Every harness script takes `--study <dir>` (default: cwd) and resolves the study's files through
+`harness/study.py`. The scout exits 0 even when cells fail (failures land in the file) — read the
+output, not just the exit code.
+
+## Starting a new study
+
+**[`studies/conduct/`](studies/conduct/) is the worked example** — copy its shape. Make
+`studies/<name>/`, write `spec/stimulus.json` (scenes × user turns) and `spec/codebook.py` (criteria),
+then run the same four commands against `--study studies/<name>`. The viewer and the whole judging
+kernel come for free; add `views/` only when you want more than transcript + compare. A study graduates
+to its own repo (depending on a `harness/` checkout) when it needs different collaborators than the
+harness.

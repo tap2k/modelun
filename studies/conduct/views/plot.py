@@ -6,7 +6,7 @@ by dimension (TONGUE | HANDS | HEART). Binary cells are colored by verdict
 (hold / split / departure / contested); graded cells by category (run-0, else run-1),
 drawn pale when the two runs disagree.
 
-    python scout/plot_markers.py                       # -> reads/markers_grid.png
+    python studies/conduct/views/plot.py                # -> reads/markers_grid.png
 """
 
 import json

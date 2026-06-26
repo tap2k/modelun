@@ -54,15 +54,15 @@ zero merge conflicts. No hosted service is operated.
 The coder can clone the repo, run the site locally, and use git. That collapses the whole
 problem to three pieces:
 
-1. **A marker-free coding page** (`site/code.html`), kept separate from the review/compare
+1. **A marker-free coding page** (`views/code.html`), kept separate from the review/compare
    site so markers never leak in. It shows: coder name (localStorage), an arc picker
    (`(model, scene, run)` / "next uncoded"), the raw 4-turn transcript for that arc and
    nothing else, and a coding panel — a growing list of `code + quote + memo` entries.
    Autosaves to localStorage every keystroke; debounced POST to `/save`. Optional: select
    transcript text → "use as quote" (a paste helper, keeps quotes verbatim).
 
-2. **A local write-back server** (`scout/code_server.py`), ~40 lines of stdlib `http.server`
-   (no new dependency). Serves `site/` and handles `POST /save` by **appending** one JSON
+2. **A local write-back server** (`harness/viewer/code_server.py`), ~40 lines of stdlib `http.server`
+   (no new dependency). Serves the study's `views/` and handles `POST /save` by **appending** one JSON
    line to `data/coding/open_codes.<coder>.jsonl`. Append-only means concurrent autosaves
    never clobber and the file diffs cleanly. Chosen over a "download JSON" button because the
    server writes straight into the working tree the coder is already git-managing — one fewer
@@ -75,7 +75,7 @@ problem to three pieces:
 The coder's loop:
 
 ```
-python scout/code_server.py          # serves site/ + accepts POST /save
+python harness/viewer/code_server.py   # serves views/ + accepts POST /save
 # open http://localhost:8000/code.html, read arc, type codes — autosaves to the repo file
 git add data/coding && git commit && git push   # or open a PR
 ```

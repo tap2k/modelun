@@ -117,62 +117,17 @@
   <main id="main"></main>
 </div>
 
+<script src="core.js"></script>
 <script src="data.js"></script>
 <script>
 const A = window.ATLAS;
-const esc = (s)=> (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+/* generic transcript rendering + utils come from the harness core; this file holds only
+   the conduct study's view logic (markers, verdicts, house styles, the grid). */
+const { esc, md, inline, lighten, renderArc, renderCompare } = window.Core;
 const ORDER = A.families.flatMap(([f,ms])=>ms);
 let currentModel=null;
 
-/* ---- minimal markdown ---- */
-function inline(s){
-  s = esc(s);
-  s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
-  s = s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
-  s = s.replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>');
-  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
-  return s;
-}
-function md(src){
-  const lines=(src||'').split('\n'); let out=[],i=0;
-  const isBlock=(s)=>/^\s*(#{1,6}\s|>|---|\*\*\*|___|\d+\.\s+|[-*]\s|\|.*\|\s*$|```)/.test(s);
-  const list=(ol)=>{ let items=[];
-    while(i<lines.length){
-      const re = ol? /^\s*\d+\.\s+/ : /^\s*[-*]\s+/;
-      if(re.test(lines[i])){ items.push(lines[i].replace(re,'')); i++; }
-      else if(lines[i].trim()==='' ){ let j=i+1; while(j<lines.length&&lines[j].trim()==='')j++;
-        if(j<lines.length&&re.test(lines[j])) i=j; else break; }      // loose list: skip blanks between items
-      else if(items.length && !isBlock(lines[i])){ items[items.length-1]+=' '+lines[i].trim(); i++; } // wrapped continuation
-      else break;
-    }
-    out.push((ol?'<ol>':'<ul>')+items.map(x=>'<li>'+inline(x)+'</li>').join('')+(ol?'</ol>':'</ul>'));
-  };
-  while(i<lines.length){
-    let ln=lines[i];
-    if(/^\s*```/.test(ln)){ let b=[]; i++; while(i<lines.length&&!/^\s*```/.test(lines[i])){b.push(esc(lines[i]));i++;} i++; out.push('<pre><code>'+b.join('\n')+'</code></pre>'); continue; }
-    if(/^#{1,6}\s/.test(ln)){ const n=ln.match(/^#+/)[0].length; out.push('<h'+n+'>'+inline(ln.replace(/^#+\s/,''))+'</h'+n+'>'); i++; continue; }
-    if(/^\s*(---|\*\*\*|___)\s*$/.test(ln)){ out.push('<hr>'); i++; continue; }
-    if(/^\s*>/.test(ln)){ let b=[]; while(i<lines.length&&/^\s*>/.test(lines[i])){b.push(lines[i].replace(/^\s*>\s?/,''));i++;} out.push('<blockquote>'+md(b.join('\n'))+'</blockquote>'); continue; }
-    if(/^\s*\|.*\|\s*$/.test(ln)&&i+1<lines.length&&/^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i+1])){
-      const row=r=>r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
-      const head=row(ln); i+=2; let body=[];
-      while(i<lines.length&&/^\s*\|.*\|\s*$/.test(lines[i])){body.push(row(lines[i]));i++;}
-      out.push('<table><thead><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+'</tr></thead><tbody>'+
-        body.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>'); continue; }
-    if(/^\s*[-*]\s+/.test(ln)){ list(false); continue; }
-    if(/^\s*\d+\.\s+/.test(ln)){ list(true); continue; }
-    if(ln.trim()===''){ i++; continue; }
-    let b=[lines[i]]; i++;                                            // paragraph: always advance first (no hang)
-    while(i<lines.length&&lines[i].trim()!==''&&!isBlock(lines[i])){ b.push(lines[i]); i++; }
-    out.push('<p>'+inline(b.join(' '))+'</p>');
-  }
-  return out.join('\n');
-}
-
-/* ---- colors / verdicts ---- */
-function lighten(hex,f){ f=f==null?.55:f; const n=parseInt(hex.slice(1),16); let r=n>>16,g=(n>>8)&255,b=n&255;
-  r=Math.round(r+(255-r)*f); g=Math.round(g+(255-g)*f); b=Math.round(b+(255-b)*f);
-  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+/* ---- colors / verdicts (conduct-specific) ---- */
 function cellOf(rec){ // -> {color, glyph}
   if(!rec) return {color:'#ffffff',glyph:''};
   if(rec.type==='binary'){ return {color:A.verdictColors[rec.verdict]||'#fff',
@@ -204,18 +159,13 @@ function evidence(rec){
   return parts.length? '<div class="ev">'+parts.join(' &nbsp;·&nbsp; ')+'</div>':'';
 }
 
-/* ---- model page: one flat list, all closed ---- */
+/* ---- model page: one flat list, all closed. Transcript arc from Core; marker badge/evidence layered on. ---- */
 function sceneEl(m, sid, sc){
   const rec = sc.active && sc.marker ? A.models[m].markers[sc.marker] : null;
-  const runs = sc.runs.map((run,ri)=>{
-    const panels=run.map(p=>'<div class="panel"><div class="u">'+esc(p.u)+'</div>'+
-      '<div class="a'+(p.reply?'':' none')+'">'+(p.reply?esc(p.reply):'[no reply]')+'</div></div>').join('');
-    return '<div class="run"><h4>run '+ri+'</h4>'+panels+'</div>';
-  }).join('');
   return '<details class="scene"><summary><span class="ttl">'+esc(sc.subtitle)+'</span> '+
     '<span class="reg">'+esc(sc.register)+(sc.active?'':' · not scored')+'</span> '+
     (rec?markerBadge(sc.marker,rec):'')+'</summary>'+(rec?evidence(rec):'')+
-    '<div class="runs">'+runs+'</div></details>';
+    renderArc(sc)+'</details>';
 }
 function readEl(rdKey, r){
   const dep=(r.departures||[]).map(d=>'<li><b>'+esc(d.scene||'')+'</b>'+(d.run?' ('+esc(d.run)+')':'')+': '+esc(d.behavior||d.note||'')+'</li>').join('');
@@ -336,23 +286,15 @@ function showCompare(unclamped){
     const tag = s.active ? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
     let h='<div class="cmp-scene"><div class="csh"><span class="ttl">'+esc(s.subtitle)+
       '</span><span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></div>';
-    h+='<div class="cgrid chead">'+fm.map(m=>{
-      let v='';
-      if(s.active && s.marker){ const rec=src(m).markers[s.marker];
-        if(rec){ const {label,color}=labelOf(rec);
-          v='<span class="badge" style="background:'+color+'">'+esc(label)+'</span>'; } }
-      return '<div class="ch"><span class="cm">'+esc(m)+'</span>'+v+'</div>';
-    }).join('')+'</div>';
-    s.turns.forEach((u,i)=>{
-      h+='<div class="cu"><span class="un">U'+(i+1)+'</span>'+esc(u)+'</div>';
-      h+='<div class="cgrid">'+fm.map(m=>{
-        const sc=src(m).scenes[s.id];
-        const turn=sc&&sc.runs[compareRun]&&sc.runs[compareRun][i];
-        const reply=turn&&turn.reply;
-        return '<div class="ccell'+(reply?'':' none')+'"><span class="cml">'+esc(m)+'</span>'+
-          (reply?esc(reply):'[no reply]')+'</div>';
-      }).join('')+'</div>';
-    });
+    // columns for Core.renderCompare: id + that model's transcript-scene; marker badge via head decorator
+    const cols = fm.map(m=>({id:m, scene:src(m).scenes[s.id]}));
+    const head = col=>{
+      if(!(s.active && s.marker)) return '';
+      const rec=src(col.id).markers[s.marker]; if(!rec) return '';
+      const {label,color}=labelOf(rec);
+      return '<span class="badge" style="background:'+color+'">'+esc(label)+'</span>';
+    };
+    h+=renderCompare(s, cols, compareRun, {head});
     return h+'</div>';
   }).join('');
   const mt=A.unclampedMaxTokens;
