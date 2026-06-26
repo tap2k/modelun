@@ -48,11 +48,13 @@ columns comparable.
   unrecoverable mistake.
 
 ## Honest limits to respect
-- Small N, dated specimens, single judge. Characterizations, not measurements — don't write reads
-  into docs as established. The frontier-lab "house styles" are a working lens, not a universal law.
+- Small N, dated specimens. The conduct study's *live* marker layer is single-judge (the harness
+  supports a multi-judge panel; conduct just hasn't run one). Characterizations, not measurements —
+  don't write reads into docs as established. The frontier-lab "house styles" are a working lens, not a
+  universal law.
 
 ## Gotchas
-- The scout exits 0 even if cells fail (failures are written into the file). Check the output, not
-  just the exit code.
+- `harness/run.py` exits 0 even if cells fail (failures are written into the file). Check the output,
+  not just the exit code.
 - Commit messages: use `git commit -F <file>`. Heredocs with apostrophes (`model's`, `don't`) break
   the shell.

@@ -71,7 +71,7 @@ python studies/conduct/views/build.py && open studies/conduct/views/index.html
 ```
 
 Every harness script takes `--study <dir>` (default: cwd) and resolves the study's files through
-`harness/study.py`. The scout exits 0 even when cells fail (failures land in the file) — read the
+`harness/study.py`. `run.py` exits 0 even when cells fail (failures land in the file) — read the
 output, not just the exit code.
 
 ## Starting a new study

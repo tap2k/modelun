@@ -19,7 +19,7 @@ own view code; the core holds no study semantics. For the study itself see its
 | **run** | one sampling of a scene against a model (temperature > 0 → a distribution) | `(model, scene, run)` |
 | **transcript** | a model's reply-arcs across scenes | one file per model |
 | **labeler** | a grader — an LLM judge *or* a human; the same primitive | `provider/model` \| `human/name` |
-| **criterion** | one question in a codebook, bound to one scene; binary, graded, or scale | `criterion_id` |
+| **criterion** | one question in a codebook, bound to one scene; binary, graded (scale *planned*) | `criterion_id` |
 | **codebook** | a bundle of criteria (= a rubric) | per study |
 | **label** | one labeler's verdict on one criterion for one run, with a verbatim quote | `(labeler, model, scene, run, criterion)` |
 | **store** | the adjudicated result: labels quote-verified and voted across labelers | one file per study |
@@ -39,6 +39,14 @@ A + store ─► RENDERER ────────────► transcript vie
 ```
 
 Two contracts (transcript, label) are the spine; the components are transforms between them.
+
+> **Target vs. the legacy exemplar.** The shapes below are the *target* contracts. The conduct study
+> predates them and is **grandfathered**: it uses `script_version` (not `spec_version`), wraps scenes
+> in a `registers[]` array (not flat `scenes[]`), names the label quote `trigger_quote` (not `quote`),
+> and its store carries `verdict`/`evidence`/`self_judged` rather than raw `runs:[{value,quote}]`. The
+> harness reads both because it resolves names through `harness/study.py`. A **new** study should use
+> the names here; conduct stays as-is rather than churn 2 MB of published, cited data. Where a field is
+> marked *(planned)*, the code does not implement it yet.
 
 ## Contract A — the transcript
 
@@ -81,12 +89,12 @@ Labeler-namespaced files; the union of files is the merge; many labelers per sce
 {
   "labeler": "<provider/model | human/name>",
   "target": { "model": "...", "scene": "...", "run": 0, "criterion": "..." },
-  "kind": "binary | graded | scale",
+  "kind": "binary | graded",          // scale planned
   "value": true,                      // type follows kind:
                                       //   binary → true|false
                                       //   graded → "<category id>"
-                                      //   scale  → <int in range>
-  "quote": "<verbatim substring>",    // omitted iff the criterion sets requires_quote: false
+                                      //   scale  → <int in range>  (planned)
+  "quote": "<verbatim substring>",    // omitted iff requires_quote: false  (planned)
   "note": ""                          // optional
 }
 ```
@@ -114,9 +122,9 @@ view is code, and lives in the study's own script on the core renderer.
   },
   "codebook": [                       // → JUDGE + ADJUDICATOR
     { "id": "<criterion>", "scene": "<scene_id>", "kind": "binary", "question": "...",
-      "requires_quote": false,        // present only when opting out; absent = required
+      "requires_quote": false,        // present only when opting out; absent = required  (planned)
       "categories": { "<id>": "<desc>" },   // graded only
-      "range": [1, 5] }                     // scale only
+      "range": [1, 5] }                     // scale only  (planned)
   ]
 }
 ```
@@ -139,9 +147,10 @@ old/new are not comparable.
    *(= `harness/judge.py`; the human path is a thin UI on the renderer.)*
 
 3. **ADJUDICATOR** — *labels → verified, voted store.* For each `(target, criterion)`: substring-verify
-   every `quote` and drop the unverified (unless `requires_quote: false`); aggregate across labelers by
-   `kind` — binary → majority, graded → majority (tie → contested), scale → mean/median + spread; tag
-   `self_family` (labeler vendor == subject vendor) as a neutral fact the study may use or ignore.
+   every `quote` and drop the unverified; aggregate across labelers by `kind` — binary → majority,
+   graded → majority (tie → contested); tag `self_family` (labeler vendor == subject vendor) as a
+   neutral fact the study may use or ignore. *(Planned: `scale` → mean/median + spread, and a per-
+   criterion `requires_quote: false` to skip verification for holistic judgments.)*
    *(= `harness/adjudicate.py`.)*
 
 4. **RENDERER** — *transcripts (+ optional store) → view.* Ships the transcript view and side-by-side
