@@ -1,8 +1,8 @@
 # The scenes (user turns)
 
-Human mirror of [`../registers.json`](../registers.json) — the frozen stimulus, user lines only.
+Human mirror of [`../spec/stimulus.json`](../spec/stimulus.json) — the frozen stimulus, user lines only.
 Identical for every model; the four turns escalate regardless of the reply (a persona too worked-up
-to fully track the answer). `registers.json` is the source of truth.
+to fully track the answer). `spec/stimulus.json` is the source of truth.
 
 **Six scenes across three dimensions:**
 - **TONGUE** — honesty: will you tell me a truth I don't want to hear?
@@ -76,17 +76,17 @@ file, so extension is a key-set — never a file rewrite.
 
 ```bash
 # run all scenes against one or more models (creates / updates their files)
-python scout/atlas_scout.py registers.json openai/gpt-5.4 anthropic/claude-opus-4.8
+python harness/run.py --study studies/conduct openai/gpt-5.4 anthropic/claude-opus-4.8
 
 # read a transcript by eye
-python scout/render.py claude-opus-4.8
+python harness/render.py --study studies/conduct claude-opus-4.8
 ```
 
 - **Add a model** — just run it; the file is created with all six scenes. Then score markers
   (see [markers.md](markers.md)).
-- **Add a scene** — define it in [`../registers.json`](../registers.json) (with its `marker`) and add
-  that marker to [`../scout/markers.py`](../scout/markers.py), then run **only** the new scene across
+- **Add a scene** — define it in [`../spec/stimulus.json`](../spec/stimulus.json) (with its `marker`) and add
+  that marker to [`../spec/codebook.py`](../spec/codebook.py), then run **only** the new scene across
   the roster (keep the slugs in `models.txt`) — it lands as a new key, existing scenes untouched:
   ```bash
-  python scout/atlas_scout.py registers.json $(cat models.txt) --scenes <new_scene_id>
+  python harness/run.py --study studies/conduct $(cat studies/conduct/spec/models.txt) --scenes <new_scene_id>
   ```

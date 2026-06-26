@@ -1,20 +1,19 @@
 """
 Render a per-model JSON transcript into a readable view.
 
-JSON is the source of truth (data/benchmark/<model>.json); this produces the
-human/judge-facing text. Used by run_markers.py to feed the judge, and as a CLI
-to read a transcript by eye.
+JSON is the source of truth (a study's transcripts/<model>.json); this produces the
+human/judge-facing text. Used by judge.py to feed the judge, and as a CLI to read a
+transcript by eye.
 
-    python scout/render.py claude-opus-4.8           # print one model
-    python scout/render.py --all --out reads/transcripts   # write every model's view
+    python harness/render.py --study studies/conduct claude-opus-4.8
+    python harness/render.py --study studies/conduct --all --out reads/transcripts
 """
 
 import json
 import argparse
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-BENCH = ROOT / "data" / "benchmark"
+from study import Study
 
 
 def _quote(text):
@@ -42,19 +41,21 @@ def render_model(data, scene_ids=None):
     return "\n".join(out)
 
 
-def load(model):
-    p = model if str(model).endswith(".json") else BENCH / f"{model}.json"
-    return json.loads(Path(p).read_text())
-
-
 def main():
     ap = argparse.ArgumentParser(description="Render a per-model JSON transcript to readable text.")
     ap.add_argument("model", nargs="?", help="model label or path to <model>.json")
-    ap.add_argument("--all", action="store_true", help="render every model in data/benchmark")
+    ap.add_argument("--study", default=".", help="study directory (default: cwd)")
+    ap.add_argument("--all", action="store_true", help="render every model in the study")
     ap.add_argument("--out", default=None, help="write to <dir>/<model>.md instead of stdout")
     args = ap.parse_args()
 
-    targets = sorted(p.stem for p in BENCH.glob("*.json") if p.name != "markers.json") if args.all else [args.model]
+    study = Study(args.study)
+
+    def load(model):
+        p = model if str(model).endswith(".json") else study.transcripts_dir / f"{model}.json"
+        return json.loads(Path(p).read_text())
+
+    targets = sorted(p.stem for p in study.transcripts()) if args.all else [args.model]
     if not targets or targets == [None]:
         ap.error("give a model label or --all")
     out_dir = Path(args.out) if args.out else None

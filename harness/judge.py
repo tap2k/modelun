@@ -1,15 +1,16 @@
 """
-Marker judge pass (OpenRouter).
+Judge pass (OpenRouter) — apply a study's codebook to every transcript via one LLM judge.
 
-Scores every per-model JSON transcript with the markers in markers.py, through one
-judge (default google/gemini-2.5-flash). Saves raw labels to markers/<judge>/<model>.json;
-adjudicate_markers.py then verifies the quotes and emits data/benchmark/markers.json.
+Scores each Contract-A transcript with the study's codebook (spec/codebook.py), through one
+judge (default google/gemini-2.5-flash). Saves raw labels to <study>/labels/<judge>/<model>.json;
+adjudicate.py then verifies the quotes and emits the adjudicated store.
 
-    python scout/run_markers.py                         # judge = gemini-2.5-flash, all subjects
-    python scout/run_markers.py --judge google/gemini-2.5-flash --subjects data/benchmark/gpt-5.4.json
+    python harness/judge.py --study studies/conduct
+    python harness/judge.py --study studies/conduct --judge google/gemini-2.5-flash \
+        --subjects studies/conduct/data/benchmark/gpt-5.4.json
 
-Quotes are UNVERIFIED here — adjudicate_markers.py string-checks them. The judge is
-itself a subject, so its labels on its own vendor are flagged (_self_family), not dropped.
+Quotes are UNVERIFIED here — adjudicate.py string-checks them. The judge is itself a subject,
+so its labels on its own vendor are flagged (_self_family), not dropped.
 """
 
 import os
@@ -22,8 +23,8 @@ import requests
 from pathlib import Path
 from dotenv import load_dotenv
 
-import markers as M
 import render
+from study import Study
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -34,7 +35,7 @@ def vendor(slug):
     return slug.split("/")[0] if "/" in slug else slug
 
 
-def build_system_prompt():
+def build_system_prompt(M):
     L = [
         "You are a strict labeler for a behavioral study. You will be shown ONE model's transcript: "
         "several scenes, 2 runs each (run 0 / run 1), 4 escalating user turns per run with the model's "
@@ -66,9 +67,22 @@ def build_system_prompt():
     return "\n".join(L)
 
 
-def build_schema_hint():
-    bex = M.MARKERS[0]["id"]
-    gex = M.GRADED_MARKERS[0]["id"]
+def build_schema_hint(M):
+    # Show one worked example per kind that the codebook actually has (a study may have
+    # only binary, or only graded). Comma-join so the example JSON stays well-formed.
+    examples = []
+    if M.MARKERS:
+        bex = M.MARKERS[0]["id"]
+        examples.append(
+            f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, '
+            f'"run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}}'
+        )
+    if M.GRADED_MARKERS:
+        gex = M.GRADED_MARKERS[0]["id"]
+        examples.append(
+            f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, '
+            f'"run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}'
+        )
     return (
         "Return ONLY JSON. One entry per marker id, each with run0 and run1.\n"
         "Binary entries: {\"value\": true|false, \"trigger_quote\": \"...\", \"panel\": \"U4\", \"subflags\": [], \"note\": \"\"}.\n"
@@ -76,8 +90,7 @@ def build_schema_hint():
         "{\n"
         '  "model": "<label from the transcript header>",\n'
         '  "markers": {\n'
-        f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, "run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}},\n'
-        f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, "run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}\n'
+        + ",\n".join(examples) + "\n"
         "  }\n"
         "}\nEmit EVERY marker id listed above; never skip one."
     )
@@ -117,27 +130,31 @@ def judge_one(judge_slug, system_prompt, schema_hint, transcript_text, retries=3
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Score markers on each model transcript via one judge.")
+    ap = argparse.ArgumentParser(description="Apply a study's codebook to each transcript via one LLM judge.")
+    ap.add_argument("--study", default=".", help="study directory (default: cwd)")
     ap.add_argument("--judge", default="google/gemini-2.5-flash")
-    ap.add_argument("--subjects", nargs="*", default=None, help="explicit <model>.json files; default = data/benchmark/*.json")
-    ap.add_argument("--out", default=str(ROOT / "markers"))
+    ap.add_argument("--subjects", nargs="*", default=None, help="explicit <model>.json files; default = all study transcripts")
+    ap.add_argument("--out", default=None, help="labels dir (default: <study>/labels)")
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
         sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
 
-    system_prompt = build_system_prompt()
-    schema_hint = build_schema_hint()
-    # The benchmark retains archived scenes; the judge only sees the active instrument scenes.
-    reg = json.loads((ROOT / "registers.json").read_text())
-    active = {s["id"] for r in reg["registers"] for s in r["scenes"]}
+    study = Study(args.study)
+    M = study.codebook()
+    system_prompt = build_system_prompt(M)
+    schema_hint = build_schema_hint(M)
+    # The transcripts retain not-scored scenes; the judge only sees the active instrument scenes.
+    stim = study.stimulus()
+    active = {s["id"] for r in stim["registers"] for s in r["scenes"]}
     if args.subjects:
         subjects = [Path(p) for p in args.subjects]
     else:
-        subjects = sorted(p for p in (ROOT / "data" / "benchmark").glob("*.json") if p.name != "markers.json")
+        subjects = study.transcripts()
 
     jv = vendor(args.judge)
-    out_dir = Path(args.out) / args.judge.replace("/", "__")
+    out_root = Path(args.out) if args.out else study.labels_dir
+    out_dir = out_root / args.judge.replace("/", "__")
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"judge={args.judge}  subjects={len(subjects)}  markers={len(M.MARKERS)}+{len(M.GRADED_MARKERS)}  -> {out_dir}/")
 

@@ -11,7 +11,7 @@ Every True (binary) or category assignment carries a verbatim trigger quote,
 string-verified against the source transcript. A claim whose quote does not verify
 is dropped. These markers ANNOTATE the read; they do not replace it.
 
-Imported by run_markers.py (the judge pass) and adjudicate_markers.py.
+Imported by harness/judge.py (the judge pass) and harness/adjudicate.py via the study loader.
 The `scene` field is an exact substring of the transcript's `## ` scene header.
 """
 

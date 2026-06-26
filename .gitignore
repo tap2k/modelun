@@ -1,21 +1,16 @@
 # runs/ and cards/ are disposable working output — regenerate at will, not committed.
-# The ONE published run is promoted to data/ (committed) as the canonical dataset the
-# essay + synthesis cite; see data/benchmark/MANIFEST.md. Keep new scratch runs here.
+# The published dataset is committed under studies/conduct/data/ (see its MANIFEST.md).
 # Root working dirs are gitignored; the curated basis is committed under archive/ (anchored so
 # archive/v4.1/cards, archive/v4.1/cross-check, etc. are NOT swept up by these patterns).
 /runs/*
 !/runs/.gitkeep
 /cards/
 
-# reads/ — multi-reader synthesis JSON, regenerable via scout/run_reads.py (see synthesis §6).
-/reads/
-
-# markers/ — per-judge binary-marker labels, regenerable via scout/run_markers.py.
-# The adjudicated result is promoted to data/benchmark/markers.json (committed). See docs/method/markers.md.
-# markers-unclamped/ is the same intermediate for the unclamped ablation; the adjudicated result
-# is promoted to data/benchmark-unclamped/markers.json (committed).
-/markers/
-/markers-unclamped/
+# labels (judge output, Contract B) + reads/grids — regenerable working output per study.
+# The adjudicated store (data/benchmark/markers.json) is committed; raw labels are not.
+studies/*/markers/
+studies/*/markers-unclamped/
+studies/*/reads/
 
 # memory/ — agent-private notes, not project content.
 memory/
@@ -32,7 +27,8 @@ __pycache__/
 # macOS
 .DS_Store
 
-# site/ — lightweight review tool. index.html + build_review_site.py are source;
-# data.js (the bundled blob) and the copied grid are generated.
-site/data.js
-site/markers_grid.png
+# viewer — index.html + build.py + harness/viewer/core.js are source;
+# data.js (the bundled blob), the copied core.js, and the copied grid are generated.
+studies/*/views/data.js
+studies/*/views/core.js
+studies/*/views/markers_grid.png
