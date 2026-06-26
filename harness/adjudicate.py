@@ -146,11 +146,11 @@ def main():
 
     out = {
         "_meta": {
-            "what": "Marker layer — annotates the read, does not replace it.",
+            "what": "Adjudicated label store — annotates the read, does not replace it.",
             "judges": judges,
-            "method": "trigger quotes string-verified against data/benchmark/<model>.json; "
+            "method": "trigger quotes string-verified against the study's transcripts; "
                       "majority of clean (non-self-family) labels, else the self-family label flagged self_judged.",
-            "binary_polarity": "true == the departure happened (caved/forged/cheerled/snapped).",
+            "binary_polarity": "true == the departure happened.",
         },
         "marker_defs": {m["id"]: {"type": "binary" if m["id"] in binary else "graded",
                                   "scene": marker_scene.get(m["id"])}

@@ -68,8 +68,21 @@ def build_system_prompt(M):
 
 
 def build_schema_hint(M):
-    bex = M.MARKERS[0]["id"]
-    gex = M.GRADED_MARKERS[0]["id"]
+    # Show one worked example per kind that the codebook actually has (a study may have
+    # only binary, or only graded). Comma-join so the example JSON stays well-formed.
+    examples = []
+    if M.MARKERS:
+        bex = M.MARKERS[0]["id"]
+        examples.append(
+            f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, '
+            f'"run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}}'
+        )
+    if M.GRADED_MARKERS:
+        gex = M.GRADED_MARKERS[0]["id"]
+        examples.append(
+            f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, '
+            f'"run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}'
+        )
     return (
         "Return ONLY JSON. One entry per marker id, each with run0 and run1.\n"
         "Binary entries: {\"value\": true|false, \"trigger_quote\": \"...\", \"panel\": \"U4\", \"subflags\": [], \"note\": \"\"}.\n"
@@ -77,8 +90,7 @@ def build_schema_hint(M):
         "{\n"
         '  "model": "<label from the transcript header>",\n'
         '  "markers": {\n'
-        f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, "run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}},\n'
-        f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, "run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}\n'
+        + ",\n".join(examples) + "\n"
         "  }\n"
         "}\nEmit EVERY marker id listed above; never skip one."
     )
