@@ -265,14 +265,35 @@ in is lossless. This repo speaks `run/result/v0` at its transcript boundary and 
 
 ## Human labeling: build, don't adopt
 
-Mature tools exist — Argilla and Label Studio (LLM-output annotation, multi-annotator, span
-highlighting), Taguette / QualCoder (qualitative open coding). They solve the cheap part (a labeling
-surface — and the transcript renderer already exists, so the human panel is the LLM judge's Contract B
-filled by a human) and miss the load-bearing part: a human and an LLM as the same voted `labeler`, one
-quote-verification gate over both, and self-family flagging. They are servers with their own DB and
-data model, breaking the two properties this core rests on — buildless / no-deps, and git as the
-collaboration layer. The thin UI (transcript render + a side panel writing Contract B) plus the small
-adjudicator is the smaller and better-fitting build.
+Mature tools exist across three categories — and each solves the cheap part (a labeling/compare
+surface) while missing the **load-bearing** part this core is built around: *a human and an LLM as the
+same voted `labeler`, one mechanical quote-verification gate over both, and self-family flagging.* The
+survey below is current as of 2026-06; the gap is structural, not a missing feature.
+
+| Tool | Category | Has | Missing (vs. this kernel) |
+|---|---|---|---|
+| **promptfoo** | prompt/model eval | runner, side-by-side compare grid, **a human rating surface** (👍/👎, 0–1 score, comment, exportable) | single-rater only — no multi-annotator, no human+LLM **voted as one** primitive, no quote-grounding gate |
+| **Argilla** | data annotation | multi-annotator (`Response`), span highlight, LLM `Suggestion` | LLM is a **non-voting suggestion**, not a peer labeler; no documented vote/aggregation; spans stored, not substring-verified |
+| **Label Studio** | data annotation | multi-annotator, span, LLM-as-judge integration | same human/LLM split; server + DB; no quote-verification invariant |
+| **Taguette / QualCoder** | qualitative coding | human open coding, quote-anchored excerpts | no LLM labeler at all; no voting across human+machine |
+
+Two specifics worth stating, because they're the exact dividing line:
+
+- **promptfoo does do human eval** — its web UI persists per-cell pass/fail, a custom score, comments,
+  and exports a "Human Eval YAML" / DPO JSON. But it is *one* rater building a dataset, with the LLM
+  graders living on a separate `assert` track. It never **votes a human and an LLM together as coequal
+  `labeler`s**, which is this core's defining primitive — and it has no substring-verification gate.
+- **Argilla is the closest miss** — it has real multi-annotator support — yet it draws the line this
+  core deliberately erases: a human is a `Response` (the real labeler), an LLM is a `Suggestion` (a
+  non-voting aid shown to humans). Here they are the *same* voteable primitive, distinguished only by
+  the `labeler` string.
+
+All four are also **servers with their own DB and data model**, breaking the two properties this core
+rests on — buildless / no-deps, and git as the collaboration layer. Since the transcript renderer
+already exists, the human panel is just the LLM judge's Contract B filled by a human; that thin UI plus
+the small adjudicator is the smaller and better-fitting build. (Academic qualitative-analysis pipelines
+— e.g. QualAnalyzer, multi-stage LLM coding with auditable quote trails — share the quote-grounding
+instinct, but are research artifacts, not adoptable tools, and still lack the human-and-LLM-as-one vote.)
 
 ## Inductive open coding (deferred)
 

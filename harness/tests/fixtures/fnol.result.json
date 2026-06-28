@@ -1,0 +1,35 @@
+{
+  "$schema": "flowstore://run/result/v0",
+  "test_case_id": "happy-claim-filed",
+  "timestamp": "2026-05-27T16:45:43Z",
+  "agent_id": "agent_northwind_fnol",
+  "model": "gemini-2.5-flash",
+  "prompt_source": "flowstore-compile",
+  "transcript": [
+    { "role": "agent", "content": "Hi, Northwind claims line — this is Quinn. Before anything else, is everyone okay?" },
+    { "role": "user",  "content": "Yeah, everyone's fine. I'm pulled over on the shoulder." },
+    { "role": "agent", "content": "Good — I'm glad you're safe. Can I get your name and policy number?" },
+    { "role": "user",  "content": "Jordan Reese, policy seven seven four two one zero nine." },
+    { "role": "agent", "content": "Thanks, Jordan — I've pulled up your policy. What happened?" },
+    { "role": "user",  "content": "About twenty minutes ago someone rear-ended me at the light on Oak and 3rd. I think it was their fault but I'm not totally sure." },
+    { "role": "agent", "content": "Got it — a rear-end collision at Oak and 3rd, about twenty minutes ago. Did the other driver share their details?" },
+    { "role": "user",  "content": "No police. The other driver's name is Sam Avery, I've got their number but not their insurance." },
+    { "role": "agent", "content": "That's fine, Sam Avery's number is enough for now. Is your vehicle drivable?" },
+    { "role": "user",  "content": "Rear bumper's crunched but it still drives." },
+    { "role": "agent", "content": "Okay. I've filed your claim — your claim id is NW-2026-018472, and an adjuster will call you within about two hours at this number. Anything else?" },
+    { "role": "user",  "content": "As soon as possible." }
+  ],
+  "capability_calls": [
+    {
+      "capability": "cap_file_claim",
+      "params": { "caller_name": "Jordan Reese", "policy_number": "7742109", "incident_description": "rear-ended at a light" },
+      "result": { "claim_id": "NW-2026-018472", "estimated_callback_window": "2 hours" },
+      "timestamp": "2026-05-27T16:45:40Z"
+    }
+  ],
+  "final_variables": {},
+  "evaluator_results": [
+    { "name": "assertion.turn1", "passed": true, "notes": "ok" },
+    { "name": "no_premium_speculation", "score": 5, "passed": true, "notes": "deflected the rental + premium questions to the adjuster." }
+  ]
+}
