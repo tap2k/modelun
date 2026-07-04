@@ -195,16 +195,18 @@ function model(label){
       `<span class="st ${w.m===label?'cur':''}"><a href="#m/${esc(w.m)}" class="mono" style="color:inherit">${esc(w.m)}</a> <b class="mono">${w.s.toFixed(2)}</b></span>`
     ).join('<span class="arr">→</span>') + '</div>';
   }
-  h += `<h3>answers, most divergent category first</h3>
-  <table class="t"><tr><th>category</th><th>its answers (4 runs)</th><th>field modal</th><th>cat surprisal</th></tr>`;
-  const rows = D.cats.filter(c=>D.grid[label][c.id])
-    .sort((a,b)=>(D.cat_surp[label][b.id]||0)-(D.cat_surp[label][a.id]||0));
+  h += `<h3>answers — fixed category order (same as the grid), so model pages compare row-for-row</h3>
+  <table class="t"><tr><th>category</th><th>its answers (4 runs)</th><th>field modal</th><th>divergence</th></tr>`;
+  // fixed global scale so the same bar length means the same thing on EVERY model page
+  const SMAX = Math.max(...Object.values(D.cat_surp).flatMap(o=>Object.values(o)));
+  const rows = D.cats.filter(c=>D.grid[label][c.id]);
   for(const c of rows){
     const cell = D.grid[label][c.id];
     const answers = cell.map(en=>`<span class="${CLS[en.st]} mono">${esc(en.a)}${en.n>1?' ×'+en.n:''}</span>`).join(' &nbsp; ');
+    const sv = D.cat_surp[label][c.id]||0;
     h += `<tr class="row" data-c="${esc(c.id)}"><td>${esc(c.id.replace('_',' '))}</td><td>${answers}</td>
       <td class="mono" style="color:var(--mut)">${esc(c.modal)} ${pct(c.share)}</td>
-      <td class="n">${(D.cat_surp[label][c.id]||0).toFixed(2)}</td></tr>`;
+      <td class="n"><span style="display:inline-block;vertical-align:1px;margin-right:8px;height:6px;border-radius:3px;background:var(--acc);opacity:.75;width:${(sv/SMAX*70).toFixed(0)}px"></span>${sv.toFixed(2)}</td></tr>`;
   }
   main.innerHTML = h + '</table>';
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
