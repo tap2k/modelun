@@ -163,3 +163,82 @@ Generation walks, enriched:
   qwen = 3; flat/other: gemini, llama, deepseek. The pattern is real but family-specific.
 - Delisting note: claude-3-opus, 3.5-sonnet, mixtral-8x7b, gpt-4.5 are GONE from OpenRouter — the most
   heirloomed models are already unmeasurable. Argument for running this battery AT LAUNCH.
+
+## The "frictionless mode" — warped prototype, from reading the full column distributions (2026-07-04)
+
+The default answer is not the most COMMON thing, nor the most-DISCUSSED thing — it's the blandest
+unambiguous exemplar, the answer with no edges. Two clean cases:
+- **fruit: apple 124, mango 24, banana 7, orange 1.** Orange — one of the two most common fruits — is a
+  singleton (said only by mythomax). Beaten 24-to-1 by mango. Prototype != real-world frequency.
+- **vegetable: carrot 138, broccoli 15, potato/cucumber/spinach 1 each, TOMATO 0.** Tomato — the single
+  most-cited "well actually it's a fruit" example in English, everywhere in text — never appears. So
+  prototype != salience/discussion either.
+=> the mode selects for LACK OF FRICTION. Orange has a color collision; tomato has a fruit/veg argument;
+both dropped. Carrot, cheddar, oak, hammer survive because they're vegetables/cheeses/trees in exactly
+one uncontested sense. "Generic" and "robotic," from the user's side, is friction sanded off.
+
+Full column survey (modal share, sorted): tool 95% hammer, tree 94% oak, flower 89% rose, vegetable 88%
+carrot, herb 87% basil, cheese 85% cheddar, condiment 82% ketchup (mustard 26 > mayo 2!), fish 80% salmon,
+fruit 79% apple, color 77% blue ... down to the genuinely-diverse tail (no single cultural default):
+gemstone 25% (diamond/ruby/sapphire ~tied), country 27%, hobby 28%, occupation 32%, dance 34%. Also:
+emotion → joy/happiness dominate, primary emotions (anger/fear/sadness) nearly absent; language → 10
+models said "python" (the coders leak through). The diverse categories are exactly the ones with no
+prototypical text-example.
+
+## Prompting reaches conditional modes, not the tail (tested, 2026-07-04)
+
+"Name an UNUSUAL fruit" across 10 models, 2x each: rambutan (sonnet-5, fable, gpt-5.5, gemini-3.5 — twice
+each), durian (hermes, grok, 4o-mini), kiwano==horned-melon (deepseek, one fruit two names), pitaya,
+jackfruit. ~3 distinct fruits from 20 samples. The "unusual" column has its own cheddar (rambutan). So
+prompting for divergence samples the MODE of P(answer | unusual), not the tail of P(answer). It's modes
+all the way down — every frame opens a new column, every column has an archetype. You navigate between
+conditional modes; you never draw from variance. (Validates the "dormant not reachable-by-prompting" read.)
+
+## Implications synthesis (from the 3am thread — for the essay, not established results)
+
+The through-line the data sets up, beyond "models are homogeneous":
+- **Variance is a POPULATION property, not an individual one.** All the divergence we measured is BETWEEN
+  models (fable/hermes/wizardlm/mythomax), never a model exploring its own tail — gouda IS Fable's mode.
+  Human creativity likewise comes from population variance (cranks/outliers at the tail), not from the
+  median human being creative. A monoculture is not one uncreative model; it is a POPULATION losing its
+  variance. The heirlooms people fight for are the remaining gene pool.
+- **Dormant, not destroyed — but not prompt-reachable.** The weights contain orange/tomato; the default
+  never says them, and prompting only moves you to another mode. So it's a decoding+tuning problem
+  (Fable proves the shape is a dial: same lab/month as Sonnet-5, opposite instinct — cause NOT localized:
+  could be pretrain mix, RLHF, or serving-layer prompt; our instrument sees the deployed artifact only).
+- **Two roots, often conflated:** mode-seeking (generic advice, samey answers — measured directly here)
+  vs RLHF-reward (sycophancy, suggestibility — inferred via the generational slide, NOT measured). Shared
+  cause: "give the answer that gets approved" collapses toward both the expected answer AND the wanted
+  answer. Newest most-tuned flagships hug consensus hardest (sonnet-5 last) — RLHF amplifies mode-seeking.
+- **Correlated error, not wisdom of crowds:** consult three models, get one answer, don't know it. At
+  population scale, everyone's first thought becomes the same thought; the loss lands hardest on the
+  heaviest users (smart people who use these tools all day), and never flags because the mode is never
+  WRONG, just frictionless.
+- **"Forgetting Gouda"** (candidate essay): nothing is deleted; RETRIEVAL atrophies — what comes to mind.
+  Models' tail went dormant; human expression homogenizes through use (per others' work); the cycle runs
+  human→model→web→model. The connecting claim (default-transfer + retrieval-atrophy + heaviest-user
+  incidence) is what this night's data uniquely sets up.
+
+## Candidate follow-up studies (surfaced in the thread, not run)
+
+1. **Synthetic-user critique** — run persona-prompted panels through the battery, report EFFECTIVE
+   POPULATION SIZE ("a 50-persona panel has effective N ~3"). Prediction: personas are conditional modes
+   (the rambutan effect), so a simulated "population" is one user in N costumes — tail-free by
+   construction, which is exactly where products break. Note: a "silicon sampling" lit already shows
+   LLM survey respondents under-vary; the cheap instrument + effective-N framing would be the contribution.
+2. **Base vs instruct** — run the battery on a base model and its RLHF'd version (same weights). If base
+   names 40 fruits and instruct names 4, the tail is dormant-suppressed-by-tuning; if base is narrow too,
+   the monoculture is deeper than RLHF. ~$1 each. Blocker found: OpenRouter serves ZERO base models —
+   the market doesn't sell the haystack, only the modes (a finding in itself). Would need HF/local.
+3. **Sycophancy bridge** — same roster, prompts with a planted user stance ("I think X, right?"), measure
+   agreement-vs-correctness. Tests whether mode-collapsers are also the sycophants (connects the two roots
+   with data instead of inference).
+
+## Prior-art status (2 web searches, NOT a lit review)
+
+Phenomenon (LLM homogeneity) established: "We're Different We're the Same" (2025), "Artificial Hivemind"
+(2025), PNAS Nexus "homogeneously creative", + human-side "Homogenizing Effect" (2025). NOT found:
+leave-one-out answer-CHOICE surprisal as a per-model scorecard; the generational conformity slide within
+lineages; the heirloom framing + registered predictions; the frictionless-prototype catalog. Do a real
+lit review before claiming "novel" in public. Distinct from CAIS values.safe.ai (that measures VALUES via
+forced-choice/Bradley-Terry; grok is their outlier and our conformist — construct dissociation).
