@@ -27,11 +27,12 @@ from analyze import load, analyze  # noqa: E402
 # chronological order within lineages, for the generation-walk view (release order,
 # maintained by hand — models.json carries no generation field)
 WALKS = {
-    "claude": ["claude-3-haiku", "claude-haiku-4.5", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5"],
-    "gpt": ["gpt-3.5-turbo", "gpt-4o-mini-2024-07-18", "gpt-5.4", "gpt-5.5"],
+    "claude": ["claude-3-haiku", "claude-haiku-4.5", "claude-sonnet-4.6", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5"],
+    "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5"],
     "gemini": ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash"],
     "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-r1"],
     "llama": ["llama-3.3-70b-instruct", "llama-4-maverick"],
+    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507"],
 }
 
 

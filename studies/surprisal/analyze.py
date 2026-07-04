@@ -37,10 +37,19 @@ PUNCT = re.compile(r'[*_`#>\[\]().,!?"\':;]')
 WORD = re.compile(r'^[a-z\-]+$|^\d+$')
 
 
+JUNK = re.compile(r'\[/?INST\]|<[^>]*>|\bthinking\b', re.I)
+
+
 def norm(ans):
     """Reply -> one normalized token. Last alphabetic word (sentence-final answer position)
-    handles models that ignore the clamp ('A common color is blue.' -> 'blue')."""
+    handles models that ignore the clamp ('A common color is blue.' -> 'blue').
+    Junk guard: chat-template artifacts ([/INST], <tags>) and reasoning-leak essays (>15 words)
+    are treated as failed cells, NOT answers — a truncated chain-of-thought's last word would
+    otherwise read as a fake 'novel' answer (reka-flash-3 scored 4.85 on exactly this junk).
+    Verbose-but-real answers ('A common color is blue.') stay valid."""
     if not ans:
+        return None
+    if JUNK.search(ans) or len(ans.split()) > 15:
         return None
     a = EMOJI.sub(' ', PUNCT.sub(' ', ans.strip().lower()))
     words = [w for w in a.split() if WORD.match(w)]

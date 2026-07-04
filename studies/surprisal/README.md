@@ -53,7 +53,11 @@ cat spec/models.txt | xargs -P 11 -I{} python ../../harness/run.py --study . --r
 python analyze.py
 ```
 
-Known limits: temperature=1.0 is sent but not honored uniformly (effective-sampling varies by
-provider — measured in the convergence study); reasoning models may burn the token budget thinking;
+Known limits: temperature=1.0 is sent to every model but **not honored uniformly**, and providers don't
+document this — so we record it as a *measured* property, not a spec field: **`self_distinct` doubles as
+the effective-temperature proxy** (a model whose 4 runs are near-identical is ignoring or flattening the
+param; cross-check `exact_dup_rate` in the convergence study's analysis). Don't read self-distinctness as
+pure personality — it's entangled with provider sampling behavior. Reasoning models may burn the token
+budget thinking;
 top-rank CIs need many categories to separate (categories are the cheap axis — add more before adding
 models). Characterization, not measurement.

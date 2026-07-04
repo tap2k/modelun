@@ -108,7 +108,7 @@ function board(){
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
   Unique-vs-the-field and stochastic-vs-itself are independent — the <b>type</b> column names the four combinations.
   Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
-  (This measures snap answers to trivial questions — shared defaults, not creativity.)</p>
+  (This measures snap answers to trivial questions — shared defaults, not creativity. self-distinct is also the effective-temperature proxy: temp=1.0 is sent to all models, but a model whose runs are near-identical is ignoring it — provider sampling behavior, not just personality.)</p>
   <table class="t"><tr><th>#</th><th>model</th><th>surprisal</th><th>90% CI</th><th>novel</th><th>avoid</th><th>self-distinct</th><th>type</th></tr>`;
   const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
   const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));

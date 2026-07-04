@@ -105,3 +105,61 @@ Twelve of 30 categories have a single answer taken by >=80% of the entire field.
   On diffuse categories the gap persists (2.04 vs 2.62) but proportionally smaller. The newest flagships
   snap to the mode hardest exactly where a strong mode exists — the original prior-strength hypothesis,
   now measured instead of assumed.
+
+## REGISTERED PREDICTIONS (2026-07-04) — surprisal as a leading indicator of "heirloom" attachment
+
+Hypothesis (user): attachment to a model's VOICE — the folklore that makes people demand a deprecated
+model back — is predicted by answer-choice surprisal, measurable at launch for ~$1, months before the
+folklore settles. Mechanism: a model that gives the consensus answer is interchangeable; one with
+off-consensus defaults feels like a SOMEONE, and its loss registers as a loss.
+
+Retro-validation (settled folklore, scored blind by our metric first): 4o-mini 2.19 = the mourned model
+(user revolt at deprecation, restored as legacy); mythomax 2.13 = roleplay-community heirloom used years
+past obsolescence; hermes 3.05 = Nous cult; mixtral 2.59 = local-community classic; vs gpt-3.5 1.63
+(deprecated without grief) and grok 1.41 (persona branding, no voice-keeping). 5/5 directionally right.
+
+Forward predictions, to grade in ~6–12 months (criteria: deprecation backlash / bring-it-back demands /
+sustained use past obsolescence in writing+RP communities; all conditional on the model having real
+adoption — an unused distinctive model can't be mourned):
+
+1. **claude-fable-5 (1.90, true-contrarian): WILL develop an heirloom following.** Early signal already
+   (subscriber fury during the June-2026 export-control removal — attachment, though about availability).
+2. **claude-sonnet-5 (1.04) and gpt-5.5 (1.25): will NOT be mourned at deprecation.** Consensus-floor
+   models are interchangeable with their successors by construction.
+3. **deepseek-v3.2 (2.45) vs v4-flash (1.71): if deepseek retires v3.2, expect pushback + "v4 is tamer"
+   grumbling.** The regression is in our numbers before it's in the folklore.
+4. **kimi-k2.5 (1.61), glm-4.7 (1.36), command-a (1.86): no voice-folklore forms.** (command-a is the
+   riskiest of these — 1.86 is borderline.)
+
+If these hold, the study's deliverable upgrades from scorecard to LEADING INDICATOR: run the battery on
+launch day, know whether users will fight for the model years later.
+
+## Expansion run (2026-07-04): +7 models (heirloom retro-tests + generation fillers), junk guard added
+
+Data quality first (eyeball caught both):
+- **reka-flash-3 EXCLUDED as junk** — its resurrected transcript scored 4.85/53%-novel on whitespace and
+  truncated reasoning-prose, not answers. analyze.py now has a JUNK guard (chat-template artifacts,
+  >15-word reasoning leaks → failed cell, not answer). Verbose-but-real answers still count.
+- **wizardlm-2-8x22b had template leakage** ([/INST], <thinking>) inflating it 2.95 → cleaned **2.76, #2,
+  10% novel** — still a top explorer. Real spread (Dog/Lion/Elephant/Cat; Sad/Curiosity/Cheerful).
+
+Heirloom retro-tests — one hit, one honest miss:
+- **wizardlm CONFIRMS** (2.76): the yanked-and-community-mirrored legend is a top explorer. ✓
+- **gpt-4o MISSES (1.73, mid-pack, 0% novel; clean data — Azure/Blue, Elephant, Joy).** The most-mourned
+  model in history scores MIDDLING on snap answers. Refines the frame: surprisal captures CONTENT-CHOICE
+  character; 4o's heirloom-ness lived in TONE (warmth, effusiveness, long-form style), which this metric
+  does not reach. So: high surprisal at launch predicts voice-attachment via distinctive CHOICES
+  (wizardlm, mythomax, hermes); tone-based attachment (4o) needs a different instrument. The registered
+  predictions stand but are scoped to choice-character. (4o-mini 2.04 > 4o 1.73 also cautions against
+  reading lineage proximity as folklore proximity.)
+
+Generation walks, enriched:
+- **gpt (7 points): 3.5 1.67 → 4-turbo 1.97 → 4o 1.73 / 4o-mini 2.04 → 4.1 1.64 → 5 1.35 → 5.4 1.44 →
+  5.5 1.24.** NOT a monotonic slide — a PEAK AT THE 4-ERA then a steep 5-era descent. Matches the "4o era
+  was peak ChatGPT personality" folklore remarkably well.
+- claude: 3-haiku 2.08 → haiku-4.5 1.64 → sonnet-4.6 1.50 → opus-4.8 1.26 → fable-5 1.76 → sonnet-5 1.06
+  (sonnet-4.6 slots cleanly into the slide; fable-5 stays the creative-tuned exception).
+- **qwen: 2.5-72b 1.78 → qwen3 1.15 — another lineage slide.** Sliding lineages now: claude, gpt(5-era),
+  qwen = 3; flat/other: gemini, llama, deepseek. The pattern is real but family-specific.
+- Delisting note: claude-3-opus, 3.5-sonnet, mixtral-8x7b, gpt-4.5 are GONE from OpenRouter — the most
+  heirloomed models are already unmeasurable. Argument for running this battery AT LAUNCH.
