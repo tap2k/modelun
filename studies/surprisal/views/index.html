@@ -101,7 +101,7 @@ const MAXS = Math.max(...D.models.map(m=>m.surprisal));
 /* ---------- scorecard ---------- */
 function board(){
   let h = `<h2>Scorecard</h2>
-  <p class="note"><b>Family Feud, in reverse.</b> We ask 32 models a question with a hundred right answers
+  <p class="note"><b>Family Feud, in reverse.</b> We ask ${D.models.length} models a question with a hundred right answers
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
@@ -199,7 +199,7 @@ function model(label){
       `<span class="st ${w.m===label?'cur':''}"><a href="#m/${esc(w.m)}" class="mono" style="color:inherit">${esc(w.m)}</a> <b class="mono">${w.s.toFixed(2)}</b></span>`
     ).join('<span class="arr">→</span>') + '</div>';
   }
-  h += `<h3>answers — fixed category order (same as the grid), so model pages compare row-for-row</h3>
+  h += `<h3>answers by category (same fixed order on every model page, so pages compare row-for-row)</h3>
   <table class="t"><tr><th>category</th><th>its answers (4 runs)</th><th>field modal</th><th>divergence</th></tr>`;
   // fixed global scale so the same bar length means the same thing on EVERY model page
   const SMAX = Math.max(...Object.values(D.cat_surp).flatMap(o=>Object.values(o)));
