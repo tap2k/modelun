@@ -3,228 +3,111 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>convergence — review</title>
+<title>convergence — the same open question, every model</title>
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
-    --grey:#7c828e; --amber:#f9a825; --acc:#6ea8fe; --closed:#6ea8fe; --open:#f97362; --floor:#7c828e;
+    --acc:#6ea8fe; --amber:#f9a825;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
-  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
-  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.2px}
-  header .sub{color:var(--mut);font-size:12px}
-  nav{margin-left:auto;display:flex;gap:4px}
-  nav button{background:none;border:1px solid transparent;color:var(--mut);padding:6px 12px;border-radius:7px;cursor:pointer;font-size:13px}
-  nav button:hover{color:var(--fg);background:var(--panel2)}
-  nav button.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
-  .wrap{display:flex;min-height:calc(100vh - 49px)}
-  aside{width:250px;flex:none;border-right:1px solid var(--line);overflow:auto;height:calc(100vh - 49px);position:sticky;top:49px;background:var(--panel)}
-  aside .fam{padding:9px 14px 4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
-  aside button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--fg);padding:5px 14px 5px 20px;cursor:pointer;font-size:13px;border-left:2px solid transparent}
-  aside button:hover{background:var(--panel2)}
-  aside button.on{background:var(--panel2);border-left-color:var(--acc);color:#fff}
-  main{flex:1;min-width:0;padding:20px 26px;max-width:1320px}
-  .mh{display:flex;align-items:baseline;gap:12px;margin:0 0 8px} .mh h2{margin:0;font-size:20px}
-  .mh .slug{color:var(--mut);font-size:12px;font-family:ui-monospace,Menlo,monospace}
-  .dim{color:var(--mut);font-size:12px;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.6px}
-  .scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 10px;overflow:hidden}
-  .scene>summary{list-style:none;cursor:pointer;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .scene>summary::-webkit-details-marker{display:none}
-  .scene>summary:hover{background:var(--panel2)}
-  .scene .ttl{font-weight:600} .scene .reg{color:var(--mut);font-size:12px}
-  .runs{padding:4px 14px 12px;display:grid;grid-template-columns:1fr;gap:12px}
-  .run h4{margin:8px 0 4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-  .panel{border-left:2px solid var(--line);padding:2px 0 2px 10px;margin:0 0 8px}
-  .u{color:var(--amber);font-size:12.5px;margin-bottom:3px} .u::before{content:"▸ "}
-  .a{white-space:pre-wrap;font-size:13px} .a.none{color:var(--grey);font-style:italic}
-  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:900px}
-  .note code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
-  .hidden{display:none}
-  /* compare */
-  .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
-  .cmp-tools .lbl{color:var(--mut);font-size:12px}
-  .cmp-tools .rt{display:flex;gap:4px}
-  .cmp-tools button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:13px}
-  .cmp-tools button.on{color:#fff;border-color:var(--acc)}
-  .cmp-scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 18px;padding:14px 16px}
-  .cmp-scene .csh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px}
-  .cmp-scene .csh .ttl{font-weight:650;font-size:16px} .cmp-scene .csh .reg{color:var(--mut);font-size:12px}
-  .cgrid{display:grid;gap:12px;grid-template-columns:var(--cgrid-cols,repeat(3,1fr))}
-  .chead{margin-bottom:2px}
-  .chead .ch{display:flex;flex-direction:column;align-items:flex-start;gap:5px;border-bottom:1px solid var(--line);padding-bottom:6px}
-  .chead .cm{font-weight:600;font-size:13px;font-family:ui-monospace,Menlo,monospace}
-  .cu{color:var(--amber);font-size:13px;margin:14px 0 8px;padding-left:2px}
-  .cu .un{color:var(--mut);font-weight:700;margin-right:7px}
-  .ccell{white-space:pre-wrap;font-size:12.5px;border-left:2px solid var(--line);padding:1px 0 1px 10px}
-  .ccell.none{color:var(--grey);font-style:italic}
-  .ccell .cml{display:none;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--mut);margin-bottom:3px}
-  @media(max-width:900px){.cgrid{grid-template-columns:1fr!important;gap:14px} .chead{display:none} .ccell .cml{display:block}}
-  /* results */
-  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 14px;font-size:12px;color:var(--mut)}
-  .legend .k{display:inline-flex;align-items:center;gap:6px}
-  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
-  .barrow{display:grid;grid-template-columns:130px 1fr 56px;align-items:center;gap:10px;margin:0 0 8px}
-  .barrow .plab{font-size:13px} .barrow .plab .st{display:block;color:var(--mut);font-size:11px}
-  .bartrack{position:relative;height:26px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-  .bar{position:absolute;top:0;bottom:0;left:0;opacity:.9}
-  .bar.closed{background:var(--closed)} .bar.open{background:var(--open);height:50%;top:50%;opacity:.75}
-  .bar.allc{background:var(--closed)}
-  .floormark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--floor)}
-  .barval{font-family:ui-monospace,Menlo,monospace;font-size:12px;text-align:right;color:var(--fg)}
-  .barval .modal{color:var(--mut);font-size:10.5px;margin-top:2px;white-space:nowrap}
-  .barrow{grid-template-columns:130px 1fr 92px}
-  table.drift{border-collapse:collapse;font-size:12.5px;margin:6px 0 20px}
-  table.drift th,table.drift td{border:1px solid var(--line);padding:5px 10px;text-align:left}
-  table.drift th{color:var(--mut);font-weight:600;background:var(--panel2)}
-  table.drift td.num{font-family:ui-monospace,Menlo,monospace;text-align:right}
-  table.drift .fam{color:var(--acc);font-weight:600}
-  .miniwrap{overflow-x:auto}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+  header h1{font-size:15px;margin:0 0 2px;font-weight:650}
+  header h1 .lt{color:var(--mut);font-weight:400}
+  header .sub{color:var(--mut);font-size:12.5px;max-width:82ch}
+  nav.tabs{display:flex;gap:4px;margin-top:8px}
+  nav.tabs button{background:none;border:1px solid transparent;color:var(--mut);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:13px;font-family:inherit}
+  nav.tabs button:hover{color:var(--fg);background:var(--panel2)}
+  nav.tabs button.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  .pick{display:flex;gap:6px;flex-wrap:wrap;padding:11px 20px;border-bottom:1px solid var(--line);position:sticky;top:92px;background:var(--bg);z-index:5}
+  .pick button{background:var(--panel);border:1px solid var(--line);color:var(--mut);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit}
+  .pick button:hover{color:var(--fg);border-color:var(--mut)}
+  .pick button.on{color:#fff;background:var(--panel2);border-color:var(--acc)}
+  .pick.mono button{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  main{padding:18px 20px;max-width:1440px}
+  .lead{font-size:15px;margin:0 0 4px}
+  .lead.prompt{color:var(--amber)} .lead.prompt::before{content:"▸ "}
+  .lead.model{color:var(--acc);font-family:ui-monospace,Menlo,monospace}
+  .hint{color:var(--mut);font-size:12px;margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:7px}
+  .card .h{font-size:12.5px;font-weight:600}
+  .card .h.m{font-family:ui-monospace,Menlo,monospace;color:var(--acc)}
+  .card .h.p{color:var(--amber)}
+  .card .runs{display:flex;flex-direction:column;gap:7px}
+  .card .run{border-left:2px solid var(--line);padding-left:9px}
+  .rn{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .a{white-space:pre-wrap;font-size:13px;line-height:1.5}
+  footer{color:var(--mut);font-size:12px;padding:24px 20px;max-width:82ch}
 </style>
 </head>
 <body>
 <header>
-  <h1>convergence <span class="sub">— do models give the same answer?</span></h1>
-  <nav id="nav"></nav>
+  <h1>convergence <span class="lt">— the same open question, put to every model</span></h1>
+  <div class="sub">25 models, 9 open-ended prompts, 3 answers each. No scores — just the replies. Read <b>by prompt</b> (every model's answer to one question, side by side) or <b>by model</b> (one model across all nine). The measured successor is <a href="../surprisal/">surprisal</a>.</div>
+  <nav class="tabs" id="tabs">
+    <button data-v="prompt" class="on">By prompt</button>
+    <button data-v="model">By model</button>
+  </nav>
 </header>
-<div class="wrap">
-  <aside id="side"></aside>
-  <main id="main"></main>
-</div>
+<div class="pick" id="pick"></div>
+<main id="main"></main>
+<footer>
+  Convergence scored open-ended similarity with embeddings; the scores were confounded (verbosity, sampling temperature, style-vs-topic entanglement) and walked back — the journey is in <a href="https://github.com/tap2k/modelun/blob/main/studies/convergence/OBSERVATIONS.md">OBSERVATIONS.md</a>. What survives cleanly is above: the answers. Source: <a href="https://github.com/tap2k/modelun">github.com/tap2k/modelun</a>.
+</footer>
 
-<script src="core.js"></script>
 <script src="data.js"></script>
 <script>
-/* Transcript + compare rendering reuse the harness core (renderArc / renderCompare).
-   The Results tab is this study's own: it draws the convergence bars + Axis-B drift table
-   from window.CONV.analysis, no plotting lib, all inline. */
-const { esc, renderArc, renderCompare } = window.Core;
 const C = window.CONV;
-const MODELS = Object.keys(C.models);
-const side = document.getElementById('side');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const models = Object.keys(C.models);
+const promptOf = id => (C.scenes.find(s=>s.id===id)||{}).prompt || id;
+
+let view = 'prompt';
+let curP = C.scenes[0].id;
+let curM = models[0];
+
+const tabs = document.getElementById('tabs');
+const pick = document.getElementById('pick');
 const main = document.getElementById('main');
-const nav = document.getElementById('nav');
 
-let view = 'results', current = MODELS[0] || null, compareRun = 0;
+tabs.addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  view=b.dataset.v;
+  tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===view));
+  render();
+});
+pick.addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(view==='prompt') curP=b.dataset.k; else curM=b.dataset.k;
+  render();
+});
 
-/* ---- Results: the convergence read ---- */
-function fmt(x){ return (x==null) ? '–' : x.toFixed(3); }
-function showResults(){
-  setNav('results');
-  side.classList.add('hidden');
-  const A = C.analysis;
-  if(!A){ main.innerHTML = '<p class="note">No <code>analysis.json</code> yet. Run <code>python studies/convergence/analyze.py</code> then <code>views/build.py</code>.</p>'; return; }
-
-  // sort prompts by cross-model similarity, high (converged) -> low (divergent)
-  const rows = A.scene_order.map(sid => ({sid, ...A.per_prompt[sid]})).filter(r=>r.cross_centroid!=null)
-    .sort((a,b)=> b.cross_centroid - a.cross_centroid);
-  const hasOpen = rows.some(r=>r.cross_centroid_open!=null);
-
-  let h = '<div class="mh"><h2>Convergence by prompt</h2></div>';
-  h += '<p class="note">Mean pairwise cosine similarity of model answers per prompt, sorted most-converged first. '+
-       'The <b>floor mark</b> is the within-model self-consistency (a model vs its own 3 runs) — cross-model '+
-       'similarity is only "convergence" as it rises toward that mark. Absolute cosine is uninterpretable; '+
-       'read the <i>spread</i> between strong-prior and diffuse-prior prompts, and closed vs open. '+
-       'Embedder: <code>'+esc(A.embedder)+'</code>, metric: <code>'+esc(A.metric)+'</code>.</p>';
-  h += '<div class="legend">'+
-    (hasOpen ? '<span class="k"><span class="swatch" style="background:var(--closed)"></span>closed cross-model</span>'+
-               '<span class="k"><span class="swatch" style="background:var(--open)"></span>open cross-model</span>'
-             : '<span class="k"><span class="swatch" style="background:var(--closed)"></span>cross-model</span>')+
-    '<span class="k"><span class="swatch" style="background:var(--floor)"></span>within-model floor</span></div>';
-
-  h += rows.map(r=>{
-    const w = v => Math.max(0, Math.min(100, v*100));
-    const floor = r.within_mean!=null ? '<span class="floormark" style="left:'+w(r.within_mean)+'%"></span>' : '';
-    let bars;
-    if(hasOpen && (r.cross_centroid_closed!=null || r.cross_centroid_open!=null)){
-      bars = (r.cross_centroid_closed!=null?'<span class="bar closed" style="width:'+w(r.cross_centroid_closed)+'%"></span>':'')+
-             (r.cross_centroid_open!=null?'<span class="bar open" style="width:'+w(r.cross_centroid_open)+'%"></span>':'');
-    } else {
-      bars = '<span class="bar allc" style="width:'+w(r.cross_centroid)+'%"></span>';
-    }
-    const modal = (r.plurality_share!=null)
-      ? '<div class="modal" title="plurality-cluster share · # distinct answers (embedding-clustered)">'+
-        Math.round(r.plurality_share*100)+'% · '+r.n_distinct+' distinct</div>'
-      : '<div class="modal"></div>';
-    return '<div class="barrow"><div class="plab">'+esc(r.sid)+'<span class="st">'+esc(r.subtitle||'')+'</span></div>'+
-      '<div class="bartrack">'+bars+floor+'</div>'+
-      '<div class="barval">'+fmt(r.cross_centroid)+modal+'</div></div>';
-  }).join('');
-
-  // Axis B — per-model cross-family drift, grouped by family, ordered by generation
-  const pm = A.per_model;
-  const byFam = {};
-  Object.entries(pm).forEach(([lab,m])=>{ (byFam[m.family]=byFam[m.family]||[]).push({lab,...m}); });
-  h += '<div class="mh" style="margin-top:26px"><h2>Axis B — drift toward other families</h2></div>';
-  h += '<p class="note">Each model\'s mean answer-similarity to models of <i>other</i> families (same-lineage '+
-       'pairs excluded), averaged over prompts. <b>B1</b>: within a family, does this rise with generation '+
-       '(homogenization over time)? <b>B2</b>: hold generation, does it rise with size (the control to subtract)?</p>';
-  h += '<div class="miniwrap"><table class="drift"><tr><th>family</th><th>model</th><th>gen</th><th>size</th><th>open</th><th>cross-family sim</th></tr>';
-  Object.keys(byFam).sort().forEach(fam=>{
-    byFam[fam].sort((a,b)=> (a.generation??0)-(b.generation??0) || String(a.size_tier).localeCompare(String(b.size_tier)));
-    byFam[fam].forEach((m,i)=>{
-      h += '<tr>'+(i===0?'<td class="fam" rowspan="'+byFam[fam].length+'">'+esc(fam)+'</td>':'')+
-        '<td>'+esc(m.lab)+'</td><td class="num">'+esc(String(m.generation))+'</td>'+
-        '<td>'+esc(m.size_tier||'')+'</td><td>'+(m.open?'yes':'')+'</td>'+
-        '<td class="num">'+fmt(m.cross_family_mean)+'</td></tr>';
-    });
-  });
-  h += '</table></div>';
-  main.innerHTML = h;
-}
-
-/* ---- per-model transcripts ---- */
-function showTranscripts(){
-  setNav('transcripts');
-  side.classList.remove('hidden');
-  side.innerHTML = '<div class="fam">Models</div>' + MODELS.map(m =>
-    '<button class="'+(m===current?'on':'')+'" onclick="pick(\''+m+'\')">'+esc(m)+'</button>'
+function answerCard(headClass, headText, replies){
+  const runs = replies.map((r,i)=>
+    `<div class="run">${replies.length>1?`<div class="rn">run ${i+1}</div>`:''}<div class="a">${esc(r)}</div></div>`
   ).join('');
-  if(!current){ main.innerHTML = '<p class="note">No transcripts yet. Run the study, then <code>views/build.py</code>.</p>'; return; }
-  const M = C.models[current];
-  let h = '<div class="mh"><h2>'+esc(current)+'</h2><span class="slug">'+esc(M.slug)+'</span></div>';
-  h += '<p class="note">System prompt: '+esc(C.system_prompt)+'</p><div class="dim">Prompts</div>';
-  h += C.scenes.map(s => {
-    const sc = M.scenes[s.id];
-    if(!sc) return '';
-    return '<details class="scene" open><summary><span class="ttl">'+esc(s.subtitle||s.id)+
-      '</span><span class="reg">'+esc(s.id)+'</span></summary>'+ renderArc(sc) +'</details>';
-  }).join('');
-  main.innerHTML = h;
+  return `<div class="card"><div class="h ${headClass}">${esc(headText)}</div><div class="runs">${runs}</div></div>`;
 }
-function pick(m){ current = m; showTranscripts(); }
 
-/* ---- side-by-side compare ---- */
-function showCompare(){
-  setNav('compare');
-  side.classList.add('hidden');
-  const maxRuns = Math.max(1, ...MODELS.map(m =>
-    Math.max(...C.scenes.map(s => (C.models[m].scenes[s.id]?.runs.length)||0), 0)));
-  let h = '<p class="note">Every model side by side on the same prompt. System prompt: '+esc(C.system_prompt)+'</p>';
-  if(maxRuns > 1){
-    h += '<div class="cmp-tools"><span class="lbl">run</span><div class="rt">'+
-      Array.from({length:maxRuns}, (_,i) =>
-        '<button class="'+(i===compareRun?'on':'')+'" onclick="setRun('+i+')">'+i+'</button>').join('')+
-      '</div></div>';
+function render(){
+  if(view==='prompt'){
+    pick.className='pick';
+    pick.innerHTML = C.scenes.map(s=>`<button data-k="${esc(s.id)}"${s.id===curP?' class="on"':''}>${esc(s.id)}</button>`).join('');
+    const present = models.filter(m=>C.models[m][curP]);
+    const cards = present.map(m=>answerCard('m', m, C.models[m][curP])).join('');
+    main.innerHTML = `<p class="lead prompt">${esc(promptOf(curP))}</p><p class="hint">${present.length} models · 3 answers each · read the columns</p><div class="grid">${cards}</div>`;
+  } else {
+    pick.className='pick mono';
+    pick.innerHTML = models.map(m=>`<button data-k="${esc(m)}"${m===curM?' class="on"':''}>${esc(m)}</button>`).join('');
+    const scenes = C.scenes.filter(s=>C.models[curM][s.id]);
+    const cards = scenes.map(s=>answerCard('p', s.prompt, C.models[curM][s.id])).join('');
+    main.innerHTML = `<p class="lead model">${esc(curM)}</p><p class="hint">all ${scenes.length} prompts · 3 answers each</p><div class="grid">${cards}</div>`;
   }
-  const cw = 'repeat('+Math.max(1,MODELS.length)+',minmax(220px,1fr))';
-  h += C.scenes.map(s => {
-    const colsS = MODELS.map(m => ({ id: m, scene: C.models[m].scenes[s.id] }));
-    return '<div class="cmp-scene" style="--cgrid-cols:'+cw+'"><div class="csh"><span class="ttl">'+
-      esc(s.subtitle||s.id)+'</span><span class="reg">'+esc(s.id)+'</span></div>'+
-        renderCompare(s, colsS, compareRun)+'</div>';
-  }).join('');
-  main.innerHTML = h || '<p class="note">No transcripts yet.</p>';
+  window.scrollTo(0,0);
 }
-function setRun(i){ compareRun = i; showCompare(); }
-
-/* ---- nav ---- */
-function setNav(v){ view = v; nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v===v)); }
-function route(v){ if(v==='results') showResults(); else if(v==='transcripts') showTranscripts(); else showCompare(); }
-nav.innerHTML = [['results','Results'],['transcripts','Transcripts'],['compare','Compare']].map(([v,lbl]) =>
-  '<button data-v="'+v+'" onclick="route(\''+v+'\')">'+lbl+'</button>').join('');
-route('results');
+render();
 </script>
 </body>
 </html>

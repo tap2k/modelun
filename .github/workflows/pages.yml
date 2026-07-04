@@ -30,6 +30,7 @@ jobs:
       - run: python studies/conduct/views/build.py     # conduct: views/data.js + core.js
       - run: python studies/language/views/build.py    # language: views/data.js + core.js
       - run: python studies/surprisal/views/build.py   # surprisal: views/data.js (self-contained)
+      - run: python studies/convergence/views/build.py # convergence: views/data.js (answers-only)
 
       # Assemble one Pages tree: a landing index + each study at its own slug. Pages serves
       # a single artifact, so multiple studies share one site via subpaths, not separate URLs.
@@ -40,6 +41,7 @@ jobs:
           cp -r studies/conduct/views  site/conduct
           cp -r studies/language/views site/language
           cp -r studies/surprisal/views site/surprisal
+          cp -r studies/convergence/views site/convergence
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

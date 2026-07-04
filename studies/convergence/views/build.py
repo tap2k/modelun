@@ -1,64 +1,43 @@
 """
-Build the convergence study's review site: views/data.js (+ a copy of the renderer).
+Build the convergence review site: views/data.js — just the answers.
 
-Bakes transcripts + scenes (for the reused transcript/compare views) AND analysis.json
-(the convergence results — per-prompt similarity, per-model cross-family drift) into one
-blob the page draws. Matplotlib is a repo dep, but we keep the site buildless and
-self-contained: the results view draws its own bars/table from the numbers in JS, so
-there is no PNG to host and the page stays a single no-deps open-in-browser file.
+Convergence tried to measure open-ended similarity with embeddings and hit confound after
+confound (see OBSERVATIONS.md); its scored numbers were walked back. So this site shows only
+the RAW ANSWERS — every model's reply to each open-ended prompt, read side by side. No scores,
+no rankings. The reader judges convergence by eye. (The confound journey lives in the repo;
+the measured successor is studies/surprisal/.)
 
-    python studies/convergence/analyze.py            # first: transcripts -> analysis.json
-    python studies/convergence/views/build.py        # then: analysis.json -> data.js
+    python studies/convergence/views/build.py
     open studies/convergence/views/index.html
 """
 
 import json
-import shutil
 from pathlib import Path
 
 VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
-REPO = STUDY.parent.parent
 TRANSCRIPTS = STUDY / "transcripts"
-
-
-def scene_blob(d):
-    return {sid: {"subtitle": sc.get("subtitle", sid),
-                  "runs": [[{"u": pn["u"], "reply": pn.get("reply")} for pn in run]
-                           for run in sc["runs"]]}
-            for sid, sc in d["scenes"].items()}
 
 
 def main():
     spec = json.loads((STUDY / "spec" / "stimulus.json").read_text())
-    scene_list = [{"id": s["id"], "subtitle": s.get("subtitle", s["id"]), "turns": s["turns"]}
-                  for s in spec["scenes"]]
-    meta = {m["label"]: m for m in json.loads((STUDY / "spec" / "models.json").read_text())["models"]}
+    scenes = [{"id": s["id"], "prompt": s["turns"][0]} for s in spec["scenes"]]
 
     models = {}
-    for p in sorted(TRANSCRIPTS.glob("*.json")) if TRANSCRIPTS.exists() else []:
+    for p in sorted(TRANSCRIPTS.glob("*.json")):
         d = json.loads(p.read_text())
-        models[d["model"]] = {"slug": d.get("slug", ""), "meta": meta.get(d["model"], {}),
-                              "scenes": scene_blob(d)}
+        by_scene = {}
+        for sid, sc in d["scenes"].items():
+            # all runs' replies for this prompt (skip failed cells)
+            replies = [run[0].get("reply") for run in sc["runs"] if run and run[0].get("reply")]
+            if replies:
+                by_scene[sid] = replies
+        if by_scene:
+            models[d["model"]] = by_scene
 
-    analysis_path = STUDY / "analysis.json"
-    analysis = json.loads(analysis_path.read_text()) if analysis_path.exists() else None
-
-    blob = {
-        "system_prompt": spec.get("system_prompt", "") or "(none — models' naked default)",
-        "models": models,
-        "scenes": scene_list,
-        "analysis": analysis,
-    }
-    VIEWS.mkdir(exist_ok=True)
+    blob = {"scenes": scenes, "models": models}
     (VIEWS / "data.js").write_text("window.CONV = " + json.dumps(blob, ensure_ascii=False) + ";\n")
-    shutil.copy(REPO / "harness" / "viewer" / "core.js", VIEWS / "core.js")
-    n_an = len(analysis["per_prompt"]) if analysis else 0
-    print(f"wrote {VIEWS / 'data.js'} + core.js  ({len(models)} models, {len(scene_list)} scenes, "
-          f"{n_an} analyzed prompts)")
-    if not analysis:
-        print("  (no analysis.json yet — run analyze.py to populate the Results tab)")
-    print(f"open {VIEWS / 'index.html'} in a browser")
+    print(f"wrote {VIEWS / 'data.js'}  ({len(models)} models, {len(scenes)} prompts)")
 
 
 if __name__ == "__main__":
