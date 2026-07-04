@@ -43,7 +43,7 @@
   table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)}
   table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;padding:5px 12px 5px 6px;white-space:nowrap;border-right:1px solid var(--line);cursor:pointer}
   table.g tbody th .s{font-size:10.5px;color:var(--mut);margin-left:7px}
-  table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);font-family:ui-monospace,Menlo,monospace}
+  table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);font-family:ui-monospace,Menlo,monospace;max-width:150px;overflow:hidden;text-overflow:ellipsis}
   /* colored cells — moderate fill, brighter text. (Rules scoped under table.g to beat the base
      cell rule's specificity; that was the real bug behind cells rendering gray.) */
   table.g td.c.off{background:var(--off-bg);color:#cfe0f6}
@@ -160,7 +160,7 @@ function grid(){
         for(const e of cell) for(let k=0;k<e.n;k++) ds.push(`<i class="${e.st==='novel'?'n':e.st==='off'?'o':''}"></i>`);
         runs = `<div class="runs">${ds.join('')}</div>`;
       }
-      h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-mi="${mi}" data-ci="${ci}">${esc(p.a)}${runs}</td>`;
+      h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-mi="${mi}" data-ci="${ci}" title="${esc(p.a)}">${esc(p.a)}${runs}</td>`;
     });
     h += '</tr>';
   });
