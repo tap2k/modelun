@@ -105,21 +105,21 @@ function board(){
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
-  Unique-vs-the-field and stochastic-vs-itself are independent — the <b>type</b> column names the four combinations.
-  Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
+  Unique-vs-the-field and stochastic-vs-itself are independent dials — a model can be original-but-steady, or
+  random-but-conformist. Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
   (This measures snap answers to trivial questions — shared defaults, not creativity. self-distinct is also the effective-temperature proxy: temp=1.0 is sent to all models, but a model whose runs are near-identical is ignoring it — provider sampling behavior, not just personality.)</p>
-  <table class="t"><tr><th>#</th><th>model</th><th>surprisal</th><th>90% CI</th><th>novel</th><th>avoid</th><th>self-distinct</th><th>type</th></tr>`;
+  <table class="t"><tr><th>#</th><th>model</th><th>surprisal</th><th>90% CI</th><th>novel</th><th>avoid</th><th>self-distinct</th></tr>`;
   const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
   const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));
   const X = v => (v-lo)/(hi-lo)*100;
   D.models.forEach((m,i)=>{
     const ci = m.ci90||[m.surprisal,m.surprisal];
     h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${i+1}</td>
-      <td><span class="mono">${esc(m.label)}</span><span class="chip">${esc(m.origin||'')}</span></td>
+      <td><span class="mono">${esc(m.label)}</span></td>
       <td class="n">${m.surprisal.toFixed(2)}</td>
       <td><div class="cibar"><span class="ci" style="left:${X(ci[0])}%;width:${X(ci[1])-X(ci[0])}%"></span><span class="pt" style="left:${X(m.surprisal)}%"></span></div></td>
       <td class="n">${pct(m.novel_rate)}</td><td class="n">${pct(m.modal_avoid)}</td>
-      <td class="n">${pct(m.self_distinct)}</td><td>${esc(m.type)}</td></tr>`;
+      <td class="n">${pct(m.self_distinct)}</td></tr>`;
   });
   main.innerHTML = h + '</table>';
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
@@ -184,7 +184,7 @@ function model(label){
   const rank = D.models.indexOf(m)+1;
   const ci = m.ci90||[m.surprisal,m.surprisal];
   let h = `<p class="crumb"><a href="#board">scorecard</a> / <span class="mono">${esc(label)}</span></p>
-  <h2 class="mono">${esc(label)} <span class="chip">${esc(m.origin||'')}</span><span class="chip">${esc(m.type)}</span></h2>
+  <h2 class="mono">${esc(label)}</h2>
   <p class="note">rank <b>#${rank}</b> of ${D.models.length} · surprisal <b>${m.surprisal.toFixed(2)}</b>
   [${ci[0].toFixed(2)}–${ci[1].toFixed(2)}] · novel <b>${pct(m.novel_rate)}</b> ·
   modal-avoid <b>${pct(m.modal_avoid)}</b> · self-distinct <b>${pct(m.self_distinct)}</b></p>`;
