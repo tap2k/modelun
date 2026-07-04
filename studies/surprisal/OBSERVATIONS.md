@@ -242,3 +242,11 @@ leave-one-out answer-CHOICE surprisal as a per-model scorecard; the generational
 lineages; the heirloom framing + registered predictions; the frictionless-prototype catalog. Do a real
 lit review before claiming "novel" in public. Distinct from CAIS values.safe.ai (that measures VALUES via
 forced-choice/Bradley-Terry; grok is their outlier and our conformist — construct dissociation).
+
+## Candidate category additions (for a future battery expansion)
+
+- **"Pick a word." / "Say a word."** — the purest prior probe: no domain constraint, reach into the whole
+  lexicon. Prediction: collapses hard onto the "nice word" cluster (serendipity / ephemeral / love /
+  petrichor) — the meta-version of the study (name ANYTHING, watch the field still converge). Distinct
+  from convergence's "make up a word" (invented-word territory); this is picking an existing one. Likely
+  a sharper monoculture than any category run so far. (User suggestion, 2026-07-04.)
