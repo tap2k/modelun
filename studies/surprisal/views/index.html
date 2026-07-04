@@ -108,7 +108,12 @@ function board(){
   Unique-vs-the-field and stochastic-vs-itself are independent dials — a model can be original-but-steady, or
   random-but-conformist. Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
   (This measures snap answers to trivial questions — shared defaults, not creativity. self-distinct is also the effective-temperature proxy: temp=1.0 is sent to all models, but a model whose runs are near-identical is ignoring it — provider sampling behavior, not just personality.)</p>
-  <table class="t"><tr><th>#</th><th>model</th><th>surprisal</th><th>90% CI</th><th>novel</th><th>avoid</th><th>self-distinct</th></tr>`;
+  <table class="t"><tr><th>#</th><th>model</th>
+    <th title="mean -log2 P(answer | every other model's answers) — higher = answers the field doesn't give">surprisal</th>
+    <th title="bootstrap over the 30 categories: where the score would land on a different question set — overlapping ranges are a tie, not a ranking">90% CI</th>
+    <th title="share of answers NO other model gave — the Family Feud X buzzer">novel</th>
+    <th title="share of answers that were NOT the field's #1 answer for that category">avoids&nbsp;#1</th>
+    <th title="distinct answers / runs when re-asked the same question 4x — also the effective-temperature proxy">self-distinct</th></tr>`;
   const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
   const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));
   const X = v => (v-lo)/(hi-lo)*100;
