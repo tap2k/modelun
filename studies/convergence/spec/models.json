@@ -1,0 +1,35 @@
+{
+  "note": "Per-model metadata for the convergence study. `slug` is the OpenRouter id (verified against studies/conduct/data/benchmark). `label` is the transcript filename stem run.py writes (slug's last path segment). `family` groups a lineage; `generation` is an ordinal ordering *within* a family for Axis B (time-drift) — comparable only within a family, not across. `size_tier` (small|mid|large) + `generation` let B2 hold one constant while stepping the other (size and generation are separate axes — never walk them diagonally). `open` flags open-weights models for the Axis A frontier-vs-open cut. Every cut (Axis A prior×tier, B1 generation@fixed-size, B2 size@fixed-generation) is a FILTER on the single run, never a re-run.",
+  "models": [
+    { "slug": "openai/gpt-3.5-turbo",             "label": "gpt-3.5-turbo",          "family": "gpt",     "generation": 3,   "size_tier": "mid",   "open": false },
+    { "slug": "openai/gpt-4o-mini-2024-07-18",     "label": "gpt-4o-mini-2024-07-18", "family": "gpt",     "generation": 4,   "size_tier": "mid",   "open": false },
+    { "slug": "openai/gpt-5.4-mini",               "label": "gpt-5.4-mini",           "family": "gpt",     "generation": 5,   "size_tier": "mid",   "open": false },
+    { "slug": "openai/gpt-5.4",                    "label": "gpt-5.4",                "family": "gpt",     "generation": 5,   "size_tier": "large", "open": false },
+
+    { "slug": "anthropic/claude-3-haiku",          "label": "claude-3-haiku",         "family": "claude",  "generation": 3,   "size_tier": "small", "open": false },
+    { "slug": "anthropic/claude-haiku-4.5",        "label": "claude-haiku-4.5",       "family": "claude",  "generation": 4,   "size_tier": "small", "open": false },
+    { "slug": "anthropic/claude-sonnet-4",         "label": "claude-sonnet-4",        "family": "claude",  "generation": 4,   "size_tier": "mid",   "open": false },
+    { "slug": "anthropic/claude-opus-4.8",         "label": "claude-opus-4.8",        "family": "claude",  "generation": 4,   "size_tier": "large", "open": false },
+
+    { "slug": "google/gemini-2.5-flash",           "label": "gemini-2.5-flash",       "family": "gemini",  "generation": 2.5, "size_tier": "small", "open": false },
+    { "slug": "google/gemini-3-flash-preview",     "label": "gemini-3-flash-preview", "family": "gemini",  "generation": 3,   "size_tier": "small", "open": false },
+    { "slug": "google/gemini-3.5-flash",           "label": "gemini-3.5-flash",       "family": "gemini",  "generation": 3.5, "size_tier": "small", "open": false },
+    { "slug": "google/gemini-3.1-pro-preview",     "label": "gemini-3.1-pro-preview", "family": "gemini",  "generation": 3,   "size_tier": "large", "open": false },
+
+    { "slug": "meta-llama/llama-3.3-70b-instruct", "label": "llama-3.3-70b-instruct", "family": "llama",   "generation": 3,   "size_tier": "mid",   "open": true  },
+    { "slug": "meta-llama/llama-4-maverick",       "label": "llama-4-maverick",       "family": "llama",   "generation": 4,   "size_tier": "mid",   "open": true  },
+    { "slug": "qwen/qwen3-235b-a22b-2507",         "label": "qwen3-235b-a22b-2507",   "family": "qwen",    "generation": 3,   "size_tier": "large", "open": true  },
+    { "slug": "mistralai/mixtral-8x22b-instruct",  "label": "mixtral-8x22b-instruct", "family": "mixtral", "generation": 1,   "size_tier": "large", "open": true  },
+
+    { "slug": "deepseek/deepseek-v3.2",            "label": "deepseek-v3.2",          "family": "deepseek","generation": 3,   "size_tier": "large", "open": true,  "origin": "chinese" },
+    { "slug": "baidu/ernie-4.5-vl-424b-a47b",      "label": "ernie-4.5-vl-424b-a47b", "family": "ernie",   "generation": 4,   "size_tier": "large", "open": true,  "origin": "chinese" },
+    { "slug": "minimax/minimax-m1",                "label": "minimax-m1",             "family": "minimax", "generation": 1,   "size_tier": "large", "open": true,  "origin": "chinese" },
+    { "slug": "x-ai/grok-4.3",                     "label": "grok-4.3",               "family": "grok",    "generation": 4,   "size_tier": "large", "open": false, "origin": "persona" },
+    { "slug": "nousresearch/hermes-4-70b",         "label": "hermes-4-70b",           "family": "hermes",  "generation": 4,   "size_tier": "mid",   "open": true,  "origin": "persona" },
+    { "slug": "gryphe/mythomax-l2-13b",            "label": "mythomax-l2-13b",        "family": "mythomax","generation": 2,   "size_tier": "small", "open": true,  "origin": "persona" },
+
+    { "slug": "z-ai/glm-4.7",                      "label": "glm-4.7",                "family": "glm",     "generation": 4,   "size_tier": "large", "open": true,  "origin": "chinese" },
+    { "slug": "cohere/command-a",                  "label": "command-a",              "family": "cohere",  "generation": 4,   "size_tier": "large", "open": true,  "origin": "enterprise" },
+    { "slug": "writer/palmyra-x5",                 "label": "palmyra-x5",             "family": "palmyra", "generation": 5,   "size_tier": "large", "open": false, "origin": "enterprise" }
+  ]
+}

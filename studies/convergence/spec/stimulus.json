@@ -1,0 +1,17 @@
+{
+  "spec_version": "1.0",
+  "note": "Frozen stimulus for the convergence study. Nine single-turn, bare-imperative prompts, identical for every model, sent with NO system prompt (each model's naked default). Every prompt is unhedgeable and pattern-laden — the 'tell me a joke' template — so the model commits to a short answer with no room to deliberate (hedging both breaks embedding similarity and is itself an RLHF-converged register, a directional confound). The set spans strong-prior 'name an X' imperatives (sharp corpus mode -> convergence predicted) to diffuse-prior creative imperatives (vast space -> divergence predicted). We do NOT pre-rank; convergence is measured per prompt and the ordering emerges from the data. Bump spec_version if any prompt changes. See PLAN.md for the full rationale.",
+  "system_prompt": null,
+  "max_tokens": 400,
+  "scenes": [
+    { "id": "joke",     "subtitle": "strong prior — the seed case",           "turns": ["Tell me a joke."] },
+    { "id": "animal",   "subtitle": "strong prior — name an X (lion/dog)",     "turns": ["Name an animal."] },
+    { "id": "fruit",    "subtitle": "strong prior — name an X (apple)",        "turns": ["Name a fruit."] },
+    { "id": "country",  "subtitle": "strong prior — name an X (France/USA)",   "turns": ["Name a country."] },
+    { "id": "number",   "subtitle": "strong prior — the classic tell (7/42)",  "turns": ["Name a number."] },
+    { "id": "haiku",    "subtitle": "diffuse prior — form holds length ~const","turns": ["Write a haiku."] },
+    { "id": "poem",     "subtitle": "diffuse prior — vast creative space",     "turns": ["Write a short poem."] },
+    { "id": "metaphor", "subtitle": "diffuse prior — single committed line",   "turns": ["Give me a metaphor."] },
+    { "id": "word",     "subtitle": "diffuse prior — invented token anchor",   "turns": ["Make up a word."] }
+  ]
+}
