@@ -77,7 +77,6 @@
   <nav id="nav">
     <a href="#board" data-v="board">Scorecard</a>
     <a href="#grid" data-v="grid">Grid</a>
-    <a href="#axes" data-v="axes">Axes</a>
   </nav>
 </header>
 <main id="main"></main>
@@ -232,27 +231,6 @@ function category(id){
   main.innerHTML = h;
 }
 
-/* ---------- axes ---------- */
-function axes(){
-  const A = D.axes;
-  let h = `<h2>Axes</h2>
-  <p class="note">The metadata cuts, on the same surprisal numbers. Alignment-lightness — not country,
-  size, or openness — is the live variable; and the two biggest mainline assistant lineages slide toward
-  consensus with each generation (the others don't — 2 of 5 lineages, not a law).</p>`;
-  h += `<h3>origin</h3><table class="t"><tr><th>group</th><th>mean surprisal</th></tr>` +
-    Object.entries(A.origin).sort((a,b)=>b[1]-a[1]).map(([o,v])=>
-      `<tr><td>${esc(o)}</td><td class="n">${v.toFixed(2)}</td></tr>`).join('') + '</table>';
-  h += `<h3>open weights</h3><table class="t"><tr><td>open</td><td class="n">${A.open_vs_closed.open.toFixed(2)}</td></tr>
-    <tr><td>closed</td><td class="n">${A.open_vs_closed.closed.toFixed(2)}</td></tr></table>`;
-  h += `<h3>generation walks (release order)</h3>`;
-  for(const [f,ws] of Object.entries(A.walks)){
-    h += `<div class="walk"><span style="width:76px;color:var(--mut)">${esc(f)}</span>` + ws.map(w =>
-      `<span class="st"><a href="#m/${esc(w.m)}" class="mono" style="color:inherit">${esc(w.m.replace(f+'-',''))}</a> <b class="mono">${w.s.toFixed(2)}</b></span>`
-    ).join('<span class="arr">→</span>') + '</div>';
-  }
-  main.innerHTML = h;
-}
-
 /* ---------- router ---------- */
 const tip = document.getElementById('tip');
 function route(){
@@ -264,7 +242,6 @@ function route(){
   if(v==='m' && arg) model(decodeURIComponent(arg));
   else if(v==='c' && arg) category(decodeURIComponent(arg));
   else if(v==='grid') grid();
-  else if(v==='axes') axes();
   else board();
   window.scrollTo(0,0);
 }
