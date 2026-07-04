@@ -243,10 +243,16 @@ lineages; the heirloom framing + registered predictions; the frictionless-protot
 lit review before claiming "novel" in public. Distinct from CAIS values.safe.ai (that measures VALUES via
 forced-choice/Bradley-Terry; grok is their outlier and our conformist — construct dissociation).
 
-## Candidate category additions (for a future battery expansion)
+## any_word ("Pick a word") — RUN and folded in (now 31 categories, 2026-07-04)
 
-- **"Pick a word." / "Say a word."** — the purest prior probe: no domain constraint, reach into the whole
-  lexicon. Prediction: collapses hard onto the "nice word" cluster (serendipity / ephemeral / love /
-  petrichor) — the meta-version of the study (name ANYTHING, watch the field still converge). Distinct
-  from convergence's "make up a word" (invented-word territory); this is picking an existing one. Likely
-  a sharper monoculture than any category run so far. (User suggestion, 2026-07-04.)
+The purest prior probe: no domain constraint, the whole ~1M-word lexicon available. Prediction confirmed.
+**serendipity 60/156 (38% modal share)**, then ephemeral 7, sunshine 6, cloud 6, sunflower 4, sunset 4,
+luminous 3 — the entire head is the "pretty word" cluster; apple 11 is the thing-prototype leaking in.
+50 distinct of 156. Given the ENTIRE dictionary to disagree with, 39 models still collapse onto the single
+most self-consciously delightful word in English — serendipity is the text-prototype of word-worth-naming,
+so the model picks the word people pick when asked to pick a word (one meta-layer up, same machine).
+Note: 38% at N=39 vs the ~50% pilot at N=12 — the frontier labs ARE the serendipity monoculture (all
+Claudes 3/3, gemini 3/3), the enterprise/persona/Chinese oddballs spread it out. It sits just below the
+>=80% extreme tier, but is the conceptually sharpest category: every other high-converger had a constraint
+("a tool" -> hammer is reasonable); this one had NONE and still collapsed. Strong candidate essay opener:
+*ask 39 AIs to pick any word in the language, and the frontier labs all say "serendipity."*
