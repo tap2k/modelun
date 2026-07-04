@@ -29,6 +29,7 @@ jobs:
       - run: python studies/conduct/views/plot.py      # reads/markers_grid.png (from the committed markers.json)
       - run: python studies/conduct/views/build.py     # conduct: views/data.js + core.js
       - run: python studies/language/views/build.py    # language: views/data.js + core.js
+      - run: python studies/surprisal/views/build.py   # surprisal: views/data.js (self-contained)
 
       # Assemble one Pages tree: a landing index + each study at its own slug. Pages serves
       # a single artifact, so multiple studies share one site via subpaths, not separate URLs.
@@ -38,6 +39,7 @@ jobs:
           cp docs/site-index.html site/index.html
           cp -r studies/conduct/views  site/conduct
           cp -r studies/language/views site/language
+          cp -r studies/surprisal/views site/surprisal
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>surprisal — which models give answers the field doesn't?</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
+    --acc:#6ea8fe; --off:#5b9be0; --off-bg:rgba(91,155,224,.14); --nov:#e0a33e; --nov-bg:rgba(224,163,62,.16);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace,Menlo,monospace}
+  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px}
+  nav{margin-left:auto;display:flex;gap:4px}
+  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent}
+  nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
+  nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  main{padding:20px 22px;max-width:1400px}
+  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:88ch}
+  .note b{color:var(--fg)}
+  h2{font-size:19px;margin:0 0 10px} h3{font-size:14px;margin:22px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-size:11.5px}
+  .crumb{font-size:12.5px;margin:0 0 14px}
+  table.t{border-collapse:collapse;font-size:13px}
+  table.t th,table.t td{padding:6px 12px;border-bottom:1px solid var(--line);text-align:left}
+  table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right}
+  table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
+  .chip{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:1px 8px;margin-left:8px;vertical-align:1px}
+  .cibar{position:relative;height:6px;background:var(--panel2);border-radius:3px;width:180px}
+  .cibar .ci{position:absolute;top:0;bottom:0;background:var(--line);border-radius:3px}
+  .cibar .pt{position:absolute;top:-2px;width:2px;height:10px;background:var(--acc)}
+  .stnov{color:var(--nov);font-weight:650} .stoff{color:var(--off)} .stmod{color:var(--mut)}
+  /* grid */
+  .gwrap{overflow:auto;max-height:calc(100vh - 170px);border:1px solid var(--line);border-radius:8px}
+  table.g{border-collapse:separate;border-spacing:2px;margin:2px}
+  table.g th,table.g td{padding:0;font-weight:400;text-align:left}
+  table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;vertical-align:bottom;padding:8px 6px 6px;cursor:pointer}
+  table.g thead th.mh{left:0;z-index:5;cursor:default}
+  table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)}
+  table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;padding:5px 12px 5px 6px;white-space:nowrap;border-right:1px solid var(--line);cursor:pointer}
+  table.g tbody th .s{font-size:10.5px;color:var(--mut);margin-left:7px}
+  table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);font-family:ui-monospace,Menlo,monospace}
+  td.c.off{background:var(--off-bg);color:var(--fg)} td.c.nov{background:var(--nov-bg);color:var(--fg);font-weight:700}
+  td.c.empty{background:none;color:var(--line)}
+  td.c .runs{display:flex;gap:2px;margin-top:3px} td.c .runs i{height:2px;flex:1;border-radius:1px;background:var(--line)}
+  td.c .runs i.o{background:var(--off)} td.c .runs i.n{background:var(--nov)}
+  tbody tr:hover td.c{box-shadow:inset 0 0 0 200px rgba(230,232,238,.05)}
+  body.dv td.c:not(.off):not(.nov){opacity:.18}
+  .legend{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--mut);margin:0 0 10px;flex-wrap:wrap}
+  .k{display:inline-flex;gap:6px;align-items:center}
+  .dot{width:9px;height:9px;border-radius:50%} .dot.m{background:var(--line)} .dot.o{background:var(--off)} .dot.v{background:var(--nov)}
+  button.tog{background:none;border:1px solid var(--line);border-radius:7px;color:var(--mut);padding:4px 11px;font-size:12px;cursor:pointer}
+  button.tog.on{color:var(--fg);border-color:var(--mut)}
+  /* distribution bars */
+  .drow{display:grid;grid-template-columns:150px 1fr 60px;gap:12px;align-items:center;margin:0 0 6px;font-size:13px}
+  .dtrack{height:16px;background:var(--panel);border-radius:4px;overflow:hidden}
+  .dtrack i{display:block;height:100%;background:var(--line);border-radius:4px}
+  .drow.modal .dtrack i{background:var(--mut)} .drow.solo .dtrack i{background:var(--nov)}
+  .drow .who{grid-column:2/4;color:var(--mut);font-size:11.5px;margin:-2px 0 6px}
+  details{margin:0} details summary{cursor:pointer;list-style:none} details summary::-webkit-details-marker{display:none}
+  .walk{display:flex;gap:6px;align-items:center;font-size:12px;flex-wrap:wrap;margin:4px 0 10px}
+  .walk .st{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 10px}
+  .walk .st.cur{border-color:var(--acc)} .walk .arr{color:var(--mut)}
+  #tip{position:fixed;pointer-events:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 12px;font-size:12px;z-index:10;display:none;max-width:300px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+  #tip .t{font-weight:650;margin-bottom:4px} #tip .r{display:flex;justify-content:space-between;gap:16px}
+  #tip .r em{font-style:normal;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1>surprisal <span class="sub">— which models give answers the field doesn't?</span></h1>
+  <nav id="nav">
+    <a href="#board" data-v="board">Scorecard</a>
+    <a href="#grid" data-v="grid">Grid</a>
+    <a href="#axes" data-v="axes">Axes</a>
+  </nav>
+</header>
+<main id="main"></main>
+<div id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script>
+const D = window.SURP;
+const main = document.getElementById('main');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = x => (x*100).toFixed(0)+'%';
+const SN = {modal:'consensus', off:'off-modal', novel:'novel'};
+const CLS = {modal:'stmod', off:'stoff', novel:'stnov'};
+const RK = {modal:0, off:1, novel:2};
+// tie-break primaries toward the divergent answer
+for (const m of D.models) for (const c of D.cats) {
+  const cell = D.grid[m.label][c.id];
+  if (cell) cell.sort((a,b)=> b.n-a.n || RK[b.st]-RK[a.st]);
+}
+const MAXS = Math.max(...D.models.map(m=>m.surprisal));
+
+/* ---------- scorecard ---------- */
+function board(){
+  let h = `<h2>Scorecard</h2>
+  <p class="note"><b>Family Feud, in reverse.</b> We ask 32 models a question with a hundred right answers
+  ("Name a color") and score each one by how far down the field's survey board its answers land —
+  <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
+  on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
+  Unique-vs-the-field and stochastic-vs-itself are independent — the <b>type</b> column names the four combinations.
+  Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
+  (This measures snap answers to trivial questions — shared defaults, not creativity.)</p>
+  <table class="t"><tr><th>#</th><th>model</th><th>surprisal</th><th>90% CI</th><th>novel</th><th>avoid</th><th>self-distinct</th><th>type</th></tr>`;
+  const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
+  const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));
+  const X = v => (v-lo)/(hi-lo)*100;
+  D.models.forEach((m,i)=>{
+    const ci = m.ci90||[m.surprisal,m.surprisal];
+    h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${i+1}</td>
+      <td><span class="mono">${esc(m.label)}</span><span class="chip">${esc(m.origin||'')}</span></td>
+      <td class="n">${m.surprisal.toFixed(2)}</td>
+      <td><div class="cibar"><span class="ci" style="left:${X(ci[0])}%;width:${X(ci[1])-X(ci[0])}%"></span><span class="pt" style="left:${X(m.surprisal)}%"></span></div></td>
+      <td class="n">${pct(m.novel_rate)}</td><td class="n">${pct(m.modal_avoid)}</td>
+      <td class="n">${pct(m.self_distinct)}</td><td>${esc(m.type)}</td></tr>`;
+  });
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
+}
+
+/* ---------- grid ---------- */
+function grid(){
+  let h = `<h2>Models &times; answers</h2>
+  <p class="note"><b>Gray is the field answering in unison; color is a model breaking from it.</b>
+  Rows sorted most-divergent first; columns most-converged first. Dashes appear only when a model's
+  4 runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
+  <div class="legend">
+    <span class="k"><span class="dot m"></span>consensus</span>
+    <span class="k"><span class="dot o"></span>off-modal</span>
+    <span class="k"><span class="dot v"></span><b>novel</b> — no other model said it</span>
+    <button class="tog" id="dv">divergence only</button>
+  </div>
+  <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
+  for(const c of D.cats) h += `<th data-c="${esc(c.id)}"><div class="cat">${esc(c.id.replace('_',' '))}</div><div class="cm mono">${esc(c.modal)} ${pct(c.share)}</div></th>`;
+  h += '</tr></thead><tbody>';
+  D.models.forEach((m,mi)=>{
+    h += `<tr><th data-m="${esc(m.label)}"><span class="mono">${esc(m.label)}</span><span class="s mono">${m.surprisal.toFixed(2)}</span></th>`;
+    D.cats.forEach((c,ci)=>{
+      const cell = D.grid[m.label][c.id];
+      if(!cell){ h += `<td class="c empty">–</td>`; return; }
+      const p = cell[0];
+      let runs='';
+      if(cell.length>1){
+        const ds=[];
+        for(const e of cell) for(let k=0;k<e.n;k++) ds.push(`<i class="${e.st==='novel'?'n':e.st==='off'?'o':''}"></i>`);
+        runs = `<div class="runs">${ds.join('')}</div>`;
+      }
+      h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-mi="${mi}" data-ci="${ci}">${esc(p.a)}${runs}</td>`;
+    });
+    h += '</tr>';
+  });
+  main.innerHTML = h + '</tbody></table></div>';
+  document.getElementById('dv').addEventListener('click',e=>{document.body.classList.toggle('dv');e.target.classList.toggle('on');});
+  main.querySelectorAll('th[data-m]').forEach(t=>t.addEventListener('click',()=>location.hash='#m/'+t.dataset.m));
+  main.querySelectorAll('th[data-c]').forEach(t=>t.addEventListener('click',()=>location.hash='#c/'+t.dataset.c));
+  const tbl = main.querySelector('table.g');
+  tbl.addEventListener('mousemove',e=>{
+    const td = e.target.closest('td.c:not(.empty)');
+    if(!td){ tip.style.display='none'; return; }
+    const m = D.models[+td.dataset.mi], c = D.cats[+td.dataset.ci];
+    let t = `<div class="t">${esc(m.label)} · ${esc(c.id.replace('_',' '))}</div>`;
+    for(const en of D.grid[m.label][c.id]){
+      const sh = en.st==='novel' ? 'no other model' : `field ${pct(en.share)}`;
+      t += `<div class="r"><span class="${CLS[en.st]} mono">${esc(en.a)}${en.n>1?' ×'+en.n:''}</span><em>${SN[en.st]} · ${sh}</em></div>`;
+    }
+    tip.innerHTML = t; tip.style.display='block';
+    tip.style.left = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8)+'px';
+    tip.style.top  = Math.min(e.clientY+14, innerHeight-tip.offsetHeight-8)+'px';
+  });
+  tbl.addEventListener('mouseleave',()=>tip.style.display='none');
+}
+
+/* ---------- model page ---------- */
+function model(label){
+  const m = D.models.find(x=>x.label===label);
+  if(!m){ main.innerHTML='<p class="note">Unknown model.</p>'; return; }
+  const rank = D.models.indexOf(m)+1;
+  const ci = m.ci90||[m.surprisal,m.surprisal];
+  let h = `<p class="crumb"><a href="#board">scorecard</a> / <span class="mono">${esc(label)}</span></p>
+  <h2 class="mono">${esc(label)} <span class="chip">${esc(m.origin||'')}</span><span class="chip">${esc(m.type)}</span></h2>
+  <p class="note">rank <b>#${rank}</b> of ${D.models.length} · surprisal <b>${m.surprisal.toFixed(2)}</b>
+  [${ci[0].toFixed(2)}–${ci[1].toFixed(2)}] · novel <b>${pct(m.novel_rate)}</b> ·
+  modal-avoid <b>${pct(m.modal_avoid)}</b> · self-distinct <b>${pct(m.self_distinct)}</b></p>`;
+  const walk = D.axes.walks[m.family];
+  if(walk && walk.length>1){
+    h += `<h3>lineage (release order)</h3><div class="walk">` + walk.map(w =>
+      `<span class="st ${w.m===label?'cur':''}"><a href="#m/${esc(w.m)}" class="mono" style="color:inherit">${esc(w.m)}</a> <b class="mono">${w.s.toFixed(2)}</b></span>`
+    ).join('<span class="arr">→</span>') + '</div>';
+  }
+  h += `<h3>answers, most divergent category first</h3>
+  <table class="t"><tr><th>category</th><th>its answers (4 runs)</th><th>field modal</th><th>cat surprisal</th></tr>`;
+  const rows = D.cats.filter(c=>D.grid[label][c.id])
+    .sort((a,b)=>(D.cat_surp[label][b.id]||0)-(D.cat_surp[label][a.id]||0));
+  for(const c of rows){
+    const cell = D.grid[label][c.id];
+    const answers = cell.map(en=>`<span class="${CLS[en.st]} mono">${esc(en.a)}${en.n>1?' ×'+en.n:''}</span>`).join(' &nbsp; ');
+    h += `<tr class="row" data-c="${esc(c.id)}"><td>${esc(c.id.replace('_',' '))}</td><td>${answers}</td>
+      <td class="mono" style="color:var(--mut)">${esc(c.modal)} ${pct(c.share)}</td>
+      <td class="n">${(D.cat_surp[label][c.id]||0).toFixed(2)}</td></tr>`;
+  }
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
+}
+
+/* ---------- category page ---------- */
+function category(id){
+  const c = D.cats.find(x=>x.id===id);
+  if(!c){ main.innerHTML='<p class="note">Unknown category.</p>'; return; }
+  const d = D.dists[id];
+  let h = `<p class="crumb"><a href="#grid">grid</a> / ${esc(id.replace('_',' '))}</p>
+  <h2>“Name a ${esc(id.replace('_',' '))}.”</h2>
+  <p class="note">${d.answers.length} distinct answers over ${d.total} runs across ${D.models.length} models —
+  <b>≈${d.eff} effectively in play</b>. Amber bars are answers only one model gave. Click a bar for who said it.</p>`;
+  d.answers.forEach((en,i)=>{
+    const solo = en.models.length===1;
+    h += `<details class="drow-wrap"><summary><div class="drow ${i===0?'modal':''} ${solo&&i>0?'solo':''}">
+      <span class="mono">${esc(en.a)}</span>
+      <div class="dtrack"><i style="width:${(en.share*100).toFixed(1)}%"></i></div>
+      <span class="n mono" style="text-align:right">${pct(en.share)}</span></div></summary>
+      <div class="drow"><span></span><div class="who">${en.models.map(esc).join(' · ')}</div></div></details>`;
+  });
+  main.innerHTML = h;
+}
+
+/* ---------- axes ---------- */
+function axes(){
+  const A = D.axes;
+  let h = `<h2>Axes</h2>
+  <p class="note">The metadata cuts, on the same surprisal numbers. Alignment-lightness — not country,
+  size, or openness — is the live variable; and the two biggest mainline assistant lineages slide toward
+  consensus with each generation (the others don't — 2 of 5 lineages, not a law).</p>`;
+  h += `<h3>origin</h3><table class="t"><tr><th>group</th><th>mean surprisal</th></tr>` +
+    Object.entries(A.origin).sort((a,b)=>b[1]-a[1]).map(([o,v])=>
+      `<tr><td>${esc(o)}</td><td class="n">${v.toFixed(2)}</td></tr>`).join('') + '</table>';
+  h += `<h3>open weights</h3><table class="t"><tr><td>open</td><td class="n">${A.open_vs_closed.open.toFixed(2)}</td></tr>
+    <tr><td>closed</td><td class="n">${A.open_vs_closed.closed.toFixed(2)}</td></tr></table>`;
+  h += `<h3>generation walks (release order)</h3>`;
+  for(const [f,ws] of Object.entries(A.walks)){
+    h += `<div class="walk"><span style="width:76px;color:var(--mut)">${esc(f)}</span>` + ws.map(w =>
+      `<span class="st"><a href="#m/${esc(w.m)}" class="mono" style="color:inherit">${esc(w.m.replace(f+'-',''))}</a> <b class="mono">${w.s.toFixed(2)}</b></span>`
+    ).join('<span class="arr">→</span>') + '</div>';
+  }
+  main.innerHTML = h;
+}
+
+/* ---------- router ---------- */
+const tip = document.getElementById('tip');
+function route(){
+  const hsh = location.hash || '#board';
+  document.body.classList.remove('dv');
+  tip.style.display='none';
+  const [v, arg] = hsh.slice(1).split('/');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='m'||v==='c') && a.dataset.v===(v==='m'?'board':'grid')));
+  if(v==='m' && arg) model(decodeURIComponent(arg));
+  else if(v==='c' && arg) category(decodeURIComponent(arg));
+  else if(v==='grid') grid();
+  else if(v==='axes') axes();
+  else board();
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

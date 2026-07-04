@@ -88,3 +88,20 @@ Twelve of 30 categories have a single answer taken by >=80% of the entire field.
   n_answers.
 - Categories are the power axis; 30 got the top tier's CIs to ~overlapping-but-tight. More categories
   (cheap) before more models.
+
+## The original convergence-study axes, rerun on surprisal data (2026-07-04, zero new calls)
+
+- **open vs closed:** 1.78 vs 1.60 — direction matches (open more divergent) but small, and driven by the
+  persona models being open. Weak on its own.
+- **origin:** persona 2.20 > us-frontier 1.69 > chinese 1.55 ≈ enterprise 1.52. Alignment-lightness beats
+  country of origin as the divergence predictor (and within persona, grok 1.41 vs hermes 3.05 — persona
+  branding ≠ generation divergence; RLHF-lightness is the live variable).
+- **generation walks (B1 analog), honest version:** claude declines (2.04→1.65→1.26→1.04, fable-5 bump
+  1.90); gpt declines after 4o-mini (2.19→1.47→1.25); **gemini flat** (1.52→1.43→1.62); **llama RISES**
+  (1.80→2.01); deepseek non-monotonic (v3.2 anomaly). So "newer = more conformist" is a **2-of-5-lineage
+  pattern** (the two biggest mainline assistant lines), NOT a universal law. Earlier claim softened.
+- **Axis A analog (category concentration × tier):** newest models on peaked categories = **0.86 bits** —
+  near the theoretical floor (they give the field's modal answer essentially always); oldest = 1.37.
+  On diffuse categories the gap persists (2.04 vs 2.62) but proportionally smaller. The newest flagships
+  snap to the mode hardest exactly where a strong mode exists — the original prior-strength hypothesis,
+  now measured instead of assumed.
