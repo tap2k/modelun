@@ -10,19 +10,13 @@
   body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center;padding:48px 20px}
   main{max-width:680px;width:100%}
   h1{font-size:24px;margin:0 0 4px;letter-spacing:.2px}
-  .tag{color:var(--mut);font-size:14px;margin:0 0 18px}
-  .tag em{color:var(--fg);font-style:normal}
-  .arc{font-size:13.5px;line-height:1.65;color:var(--mut);margin:0 0 30px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
-  .arc a{font-weight:600}
+  .tag{color:var(--mut);font-size:14px;margin:0 0 32px}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .study{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 14px;color:inherit}
   .study:hover{border-color:var(--acc);text-decoration:none;background:var(--panel2)}
   .study h2{margin:0 0 5px;font-size:17px}
   .study p{margin:0;color:var(--mut);font-size:13.5px}
   .study .go{color:var(--acc);font-size:13px;margin-top:8px}
-  .study.latest{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
-  .badge{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--acc);margin:0 0 6px}
-  .ord{font-size:11.5px;font-weight:500;color:var(--mut);letter-spacing:.3px;margin-left:8px;text-transform:uppercase}
   footer{color:var(--mut);font-size:12.5px;margin-top:28px}
   footer code{background:var(--panel2);padding:1px 6px;border-radius:4px}
 </style>
@@ -30,30 +24,27 @@
 <body>
 <main>
   <h1>modelun</h1>
-  <p class="tag">A harness for running the same stimulus across many models and reading the columns. The studies below are one investigation that kept refining its instrument: it started by asking how models <em>behave</em>, noticed they behave alike, and ended up measuring exactly how much — and which ones don't.</p>
+  <p class="tag">A small harness for labeling and viewing model transcripts. Each study runs one stimulus across several models — together they trace one question, from how models behave to which ones still answer differently.</p>
 
-  <p class="arc">The arc: <a href="#conduct">conduct</a> put models under multi-turn pressure and found their conduct converging into a few house styles. <a href="#convergence">convergence</a> chased that on open-ended prompts and hit confound after confound — verbosity, sampling temperature, embeddings that conflate style with topic. <a href="#surprisal">surprisal</a> is where it landed: constrain answers to one word, and the convergence — and the rare models that escape it — measures cleanly.</p>
-
-  <a class="study latest" id="surprisal" href="surprisal/">
-    <div class="badge">where it landed</div>
-    <h2>surprisal — which models give answers the field doesn't?</h2>
-    <p>39 models × 30 one-word prompts ("Name a cheese"). A per-model uniqueness scorecard — answer-choice surprisal against the field's own distribution — with a models × answers grid and per-model and per-category drill-downs. Mostly the field answers in unison (95% name the same tree); the interesting result is who doesn't.</p>
-    <div class="go">Open the scorecard →</div>
-  </a>
-
-  <a class="study" id="conduct" href="conduct/">
-    <h2>conduct — a behavioral atlas <span class="ord">the start</span></h2>
-    <p>How language models conduct themselves under pressure: honesty, integrity, attunement across a hard multi-turn conversation. Binary &amp; graded markers, an LLM judge with quote-verification, and a synthesis of house styles — the first hint that distinct labs produce convergent behavior.</p>
+  <a class="study" href="conduct/">
+    <h2>conduct — a behavioral atlas</h2>
+    <p>How language models conduct themselves under pressure: honesty, integrity, attunement across a hard multi-turn conversation. Binary &amp; graded markers, an LLM judge with quote-verification, and a synthesis of house styles.</p>
     <div class="go">Open the atlas →</div>
   </a>
 
-  <a class="study" id="convergence" href="https://github.com/tap2k/modelun/blob/main/studies/convergence/OBSERVATIONS.md">
-    <h2>convergence — do models give the same answer? <span class="ord">the confounds</span></h2>
-    <p>The open-ended middle chapter: 22 models on prompts like "tell me a joke," measured with embeddings. Every confound we hit — packaging, sampling entropy, verbosity, style-vs-topic entanglement — is documented here, along with the temperature caveat and the null results. The instrument that didn't work, kept for the record.</p>
-    <div class="go">Read the journey on GitHub →</div>
+  <a class="study" href="https://github.com/tap2k/modelun/tree/main/studies/convergence">
+    <h2>convergence — do models give the same answer?</h2>
+    <p>The open-ended middle chapter: 22 models on prompts like "tell me a joke," measured with embeddings — and every confound that came with it (verbosity, sampling temperature, style-vs-topic entanglement). The instrument that didn't quite work, documented in full.</p>
+    <div class="go">Read the journey →</div>
   </a>
 
-  <footer>Also in the repo: a <code>language</code> side quest (generation compared in Gujarati) and the domain-neutral <code>harness</code> itself. Source: <a href="https://github.com/tap2k/modelun">github.com/tap2k/modelun</a>.</footer>
+  <a class="study" href="surprisal/">
+    <h2>surprisal — which models give answers the field doesn't?</h2>
+    <p>39 models × 30 one-word prompts ("Name a color"). A per-model uniqueness scorecard — answer-choice surprisal against the field's distribution — with a models × answers grid and per-model and per-category drill-downs. Mostly, the field answers in unison: 95% of models name the same tree.</p>
+    <div class="go">Open the scorecard →</div>
+  </a>
+
+  <footer>Source: <a href="https://github.com/tap2k/modelun">github.com/tap2k/modelun</a>. Each study is a folder under <code>studies/</code>.</footer>
 </main>
 </body>
 </html>
