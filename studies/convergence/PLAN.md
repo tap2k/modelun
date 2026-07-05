@@ -5,7 +5,7 @@ Study #3 on the [modelun harness](../../README.md). **Pilot has run** (22 models
 
 > **Successor:** this pilot's methodology work (three confounds found and killed: packaging, entropy,
 > verbosity) produced a clean discrete metric — answer-choice surprisal — now the flagship study at
-> [`studies/surprisal/`](../surprisal/). This study remains the journey + the embedding-side results.
+> [`studies/consensus/`](../consensus/). This study remains the journey + the embedding-side results.
 
 ## TOPLINE (characterization, not measurement — small N, one day, wide CIs)
 

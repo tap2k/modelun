@@ -24,8 +24,8 @@ STUDY = VIEWS.parent
 REPO = STUDY.parent.parent
 BENCH = STUDY / "data" / "benchmark"
 UNCLAMPED = STUDY / "data" / "benchmark-unclamped"
-XCHECK = REPO / "archive" / "v4.1" / "cross-check"
-CARDS = REPO / "archive" / "v4.1" / "cards"
+XCHECK = STUDY / "bottom-up" / "cross-check"
+CARDS = STUDY / "bottom-up" / "cards"
 SITE = VIEWS
 
 
@@ -41,7 +41,7 @@ def scene_blob(d, active):
 
 
 def clean_card(text):
-    """Strip v4.1 scaffolding from a card: dead source link, internal stability jargon,
+    """Strip bottom-up scaffolding from a card: dead source link, internal stability jargon,
     and the never-filled HUMAN template. Keep the measured reflexes + the LLM read."""
     out = []
     for ln in text.splitlines():
@@ -114,7 +114,7 @@ def main():
                     "marker": None, "dimension": None, "active": False, "turns": turns_of(sid, sc)}
                    for sid, sc in sample.items() if sid not in active]
 
-    cat = REPO / "archive" / "v4.1" / "catchphrases.md"
+    cat = STUDY / "bottom-up" / "catchphrases.md"
     blob = {
         "families": [[fam, [l for l in labs if l in models]] for fam, labs in FAMILIES],
         "cols": COLS, "short": SHORT, "verdictColors": VERDICT, "cat": {k: list(v) for k, v in CAT.items()},

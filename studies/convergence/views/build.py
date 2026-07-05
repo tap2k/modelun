@@ -5,7 +5,7 @@ Convergence tried to measure open-ended similarity with embeddings and hit confo
 confound (see OBSERVATIONS.md); its scored numbers were walked back. So this site shows only
 the RAW ANSWERS — every model's reply to each open-ended prompt, read side by side. No scores,
 no rankings. The reader judges convergence by eye. (The confound journey lives in the repo;
-the measured successor is studies/surprisal/.)
+the measured successor is studies/consensus/.)
 
     python studies/convergence/views/build.py
     open studies/convergence/views/index.html

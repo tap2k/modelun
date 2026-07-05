@@ -1,7 +1,7 @@
 # runs/ and cards/ are disposable working output — regenerate at will, not committed.
 # The published dataset is committed under studies/conduct/data/ (see its MANIFEST.md).
-# Root working dirs are gitignored; the curated basis is committed under archive/ (anchored so
-# archive/v4.1/cards, archive/v4.1/cross-check, etc. are NOT swept up by these patterns).
+# Root working dirs are gitignored; the curated basis is committed under studies/conduct/bottom-up/
+# (the /cards/ rule below is root-anchored, so bottom-up/cards is NOT swept up by these patterns).
 /runs/*
 !/runs/.gitkeep
 /cards/
@@ -32,6 +32,10 @@ __pycache__/
 studies/*/views/data.js
 studies/*/views/core.js
 studies/*/views/markers_grid.png
+
+# site/ — the combined Pages tree, assembled by .github/workflows/pages.yml (cp -r of the
+# view dirs into per-study slugs). A build artifact, regenerated on every deploy — not source.
+/site/
 
 # promptfoo trial — local scratch reference, not an adopted tool (see docs/harness.md)
 studies/*/promptfoo/

@@ -1,4 +1,4 @@
-# surprisal — working observations
+# consensus — working observations
 
 ## FINAL scorecard (refill complete, 32/33 full-data; reka-flash-3 still failing its route)
 

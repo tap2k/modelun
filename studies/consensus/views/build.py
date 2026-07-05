@@ -1,5 +1,5 @@
 """
-Build the surprisal study's review site: views/data.js.
+Build the consensus study's review site: views/data.js.
 
 Bakes the scorecard, the models x answers grid, per-category field distributions (with
 which models gave each answer), per-model-per-category surprisal (for the model drill-down),
@@ -7,8 +7,8 @@ and the metadata-axis cuts into one blob the page draws. Self-contained: this st
 transcripts are single-turn one-word answers, so the generic arc renderer (core.js) adds
 nothing and is not copied — the view is one hash-routed index.html with no deps.
 
-    python studies/surprisal/views/build.py
-    open studies/surprisal/views/index.html
+    python studies/consensus/views/build.py
+    open studies/consensus/views/index.html
 """
 
 import json
@@ -39,6 +39,10 @@ WALKS = {
 def main():
     result = analyze(STUDY)
     pm, pc = result["per_model"], result["per_category"]
+
+    # the actual prompt text per category (the clean question, sans one-word clamp)
+    stim = json.loads((STUDY / "spec" / "stimulus.json").read_text())
+    prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in stim["scenes"]}
 
     ans = load(STUDY)
     models = [m for m in sorted(pm, key=lambda x: -pm[x]["surprisal"]) if m in ans]
@@ -108,8 +112,9 @@ def main():
         "models": [{"label": m, **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",
                      "origin", "open", "family", "ci90")}} for m in models],
-        "cats": [{"id": c, "modal": pc[c]["modal"], "share": pc[c]["modal_share"],
-                  "eff": dists[c]["eff"], "n_distinct": pc[c]["n_distinct"]} for c in cats],
+        "cats": [{"id": c, "prompt": prompts.get(c, ""), "modal": pc[c]["modal"],
+                  "share": pc[c]["modal_share"], "eff": dists[c]["eff"],
+                  "n_distinct": pc[c]["n_distinct"]} for c in cats],
         "grid": grid,
         "cat_surp": cat_surp,
         "dists": dists,

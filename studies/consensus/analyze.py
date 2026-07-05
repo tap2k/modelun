@@ -1,5 +1,5 @@
 """
-analyze.py — the surprisal study's spine: Contract-A transcripts -> answer-choice metrics.
+analyze.py — the consensus study's spine: Contract-A transcripts -> answer-choice metrics.
 
 The datum is a model's DISCRETE CHOICE on a wide-answer-space category ("Name a color."),
 one-word-clamped. Everything is exact-match on normalized tokens: no embeddings, no judge,
@@ -20,7 +20,7 @@ convergence study and validated by a scratch probe (see studies/convergence/OBSE
 deepseek #1 with 25% novel answers; ernie-4.5 INVERTED from embedding-#1 to dead last once
 verbosity couldn't help (the smoking-gun for the verbosity confound); tree->oak 58/58.
 
-    python studies/surprisal/analyze.py [--study studies/surprisal]
+    python studies/consensus/analyze.py [--study studies/consensus]
 """
 
 import re

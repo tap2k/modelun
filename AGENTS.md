@@ -26,23 +26,27 @@ columns comparable.
 - The judge is `google/gemini-2.5-flash`, which is **itself a subject**. Its calls on the google
   family (gemini / gemma) are self-judged — flag those cells, don't silently trust or drop them.
 
-## History & archive
-- The full analysis history (the bottom-up v4.1 study, its 3-reader cross-check basis, the bestiary
-  essay, the per-model cards, the catchphrase report) is preserved under
-  [`archive/`](archive/) — see [`archive/README.md`](archive/README.md) for the map and how to
-  recreate any thread. No tags or side branches: everything (analyses, basis, tooling, and the
-  scene-run library in `studies/conduct/data/benchmark/`) is on `main` and pushed. The pre-prune v4.1 repo remains
-  reachable in history at commit `a36cf84` (`git show a36cf84:<path>`).
-- **Picking up the markers thread**: the live marker layer is single-judge; the v5 pipeline already
-  supports a multi-judge panel (`harness/adjudicate.py` does majority + self-family exclusion). The
-  exact recipe to harden it is in `archive/README.md` § *Picking up the markers thread*.
+## History & the bottom-up layer
+- The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
+  TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
+  layer (9 open scenes, emergent bestiary, its 3-reader cross-check basis, the per-model cards, the
+  catchphrase report) is preserved and still rendered under
+  [`studies/conduct/bottom-up/`](studies/conduct/bottom-up/) — see its
+  [README](studies/conduct/bottom-up/README.md) for the map and how to recreate any thread. No tags or
+  side branches: everything (analyses, basis, tooling, and the scene-run library in
+  `studies/conduct/data/benchmark/`) is on `main` and pushed. The pre-prune repo remains reachable in
+  history at commit `a36cf84` (`git show a36cf84:<path>`).
+- **Picking up the markers thread**: the live top-down marker layer is single-judge; the pipeline
+  already supports a multi-judge panel (`harness/adjudicate.py` does majority + self-family exclusion).
+  The exact recipe to harden it — importing the bottom-up layer's 3-reader cross-check as the template —
+  is in `studies/conduct/bottom-up/README.md` § *Picking up the markers thread*.
 - Principle for what to commit: **keep anything that served as the basis of an analysis/synthesis;
   intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
 
 ## Provenance & secrets
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
 - `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored** (the
-  curated basis is committed under `archive/`). The published data lives in `studies/conduct/data/benchmark/`. Never
+  curated basis is committed under `studies/conduct/bottom-up/`). The published data lives in `studies/conduct/data/benchmark/`. Never
   commit transcripts-in-progress, scratch marker runs, or `.env`.
 - Before any push, confirm `.env` is not staged. A leaked `OPENROUTER_API_KEY` is the one
   unrecoverable mistake.

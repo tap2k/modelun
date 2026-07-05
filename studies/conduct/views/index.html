@@ -334,8 +334,9 @@ function buildSide(){ const s=document.getElementById('side'); let h='';
   s.addEventListener('click',e=>{const b=e.target.closest('button'); if(b){currentModel=b.dataset.m; showModels(b.dataset.m);}});
 }
 function buildNav(){
+  // 'compare-unclamped' is intentionally omitted from the top menu; the view is still
+  // reachable directly via the #compare-unclamped hash (route wired below).
   const items=[['models','Models'],['grid','Grid'],['compare','Compare'],
-    ...(hasUnclamped?[['compare-unclamped','Compare Unclamped']]:[]),
     ['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
   const n=document.getElementById('nav'); n.innerHTML=items.map(([v,l])=>'<button data-v="'+v+'">'+l+'</button>').join('');
   n.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) route(b.dataset.v);});

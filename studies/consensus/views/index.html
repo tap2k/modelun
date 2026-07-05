@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>surprisal — which models give answers the field doesn't?</title>
+<title>consensus — which models give answers the field doesn't?</title>
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
@@ -76,10 +76,11 @@
 </head>
 <body>
 <header>
-  <h1>surprisal <span class="sub">— which models give answers the field doesn't?</span></h1>
+  <h1>consensus <span class="sub">— which models give answers the field doesn't?</span></h1>
   <nav id="nav">
     <a href="#board" data-v="board">Scorecard</a>
     <a href="#grid" data-v="grid">Grid</a>
+    <a href="#questions" data-v="questions">Questions</a>
   </nav>
 </header>
 <main id="main"></main>
@@ -219,13 +220,37 @@ function model(label){
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
 }
 
+/* ---------- questions list ---------- */
+function questions(){
+  let h = `<h2>Questions</h2>
+  <p class="note">The ${D.cats.length} prompts, each a “Name a ___” with a wide space of valid one-word answers,
+  sent identically to every model with no system prompt. Sorted most-converged first — <b>modal share</b> is
+  how much of the field piles onto the single most-common answer, <b>≈ in play</b> is the effective number of
+  distinct answers (entropy). Click a question for its full field distribution.</p>
+  <table class="t"><tr><th>#</th><th>question</th>
+    <th title="the field's single most-common answer, and its share">field modal</th>
+    <th title="share of all answers landing on that modal answer — higher = more converged">modal share</th>
+    <th title="effective number of distinct answers actually in play (2^entropy)">≈ in play</th></tr>`;
+  D.cats.forEach((c,i)=>{
+    const q = c.prompt || `Name a ${c.id.replace('_',' ')}.`;
+    h += `<tr class="row" data-c="${esc(c.id)}"><td class="n">${i+1}</td>
+      <td>${esc(q)}</td>
+      <td class="mono" style="color:var(--mut)">${esc(c.modal)} ${pct(c.share)}</td>
+      <td class="n">${pct(c.share)}</td>
+      <td class="n">${c.eff}</td></tr>`;
+  });
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
+}
+
 /* ---------- category page ---------- */
 function category(id){
   const c = D.cats.find(x=>x.id===id);
   if(!c){ main.innerHTML='<p class="note">Unknown category.</p>'; return; }
   const d = D.dists[id];
-  let h = `<p class="crumb"><a href="#grid">grid</a> / ${esc(id.replace('_',' '))}</p>
-  <h2>“Name a ${esc(id.replace('_',' '))}.”</h2>
+  const q = c.prompt || `Name a ${id.replace('_',' ')}.`;
+  let h = `<p class="crumb"><a href="#questions">questions</a> / ${esc(id.replace('_',' '))}</p>
+  <h2>“${esc(q)}”</h2>
   <p class="note">${d.answers.length} distinct answers over ${d.total} runs across ${D.models.length} models —
   <b>≈${d.eff} effectively in play</b>. Amber bars are answers only one model gave. Click a bar for who said it.</p>`;
   d.answers.forEach((en,i)=>{
@@ -246,10 +271,11 @@ function route(){
   document.body.classList.remove('dv');
   tip.style.display='none';
   const [v, arg] = hsh.slice(1).split('/');
-  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='m'||v==='c') && a.dataset.v===(v==='m'?'board':'grid')));
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='m'||v==='c') && a.dataset.v===(v==='m'?'board':'questions')));
   if(v==='m' && arg) model(decodeURIComponent(arg));
   else if(v==='c' && arg) category(decodeURIComponent(arg));
   else if(v==='grid') grid();
+  else if(v==='questions') questions();
   else board();
   window.scrollTo(0,0);
 }

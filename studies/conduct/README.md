@@ -60,6 +60,7 @@ this is the mapping to copy:
 | store (adjudicated) | `data/benchmark/markers.json` — the voted, quote-verified marker layer |
 | views | [`views/`](views/) — the marker grid, frontier compare, and synthesis, built on `harness/viewer/core.js` |
 | study docs | [`docs/`](docs/) — [scenes](docs/scenes.md), [markers](docs/markers.md), [houses](docs/houses.md), [inductive-coding](docs/inductive-coding.md) |
+| earlier layer | [`bottom-up/`](bottom-up/) — the study's first, inductive methodology (emergent bestiary + 3-reader cross-check); its cards, reads, and catchphrases are still rendered by the views. See its [README](bottom-up/README.md). |
 
 ## Run
 

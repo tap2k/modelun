@@ -38,7 +38,7 @@ Full architecture, contracts, and the flowstore interchange: [`docs/harness.md`]
 | [`harness/`](harness/) | The tool. `run.py`, `judge.py`, `adjudicate.py`, `render.py`, `study.py` (path resolution), `viewer/core.js` (the renderer). No study semantics. |
 | [`studies/conduct/`](studies/conduct/) | The conduct atlas — study #1. See its [README](studies/conduct/README.md). |
 | [`docs/harness.md`](docs/harness.md) | The core: contracts, the judging kernel, repo layout, interchange. |
-| [`archive/`](archive/) | Prior analysis threads (the v4.1 bottom-up study, cross-check basis, cards). See [`archive/README.md`](archive/README.md). |
+| [`studies/conduct/bottom-up/`](studies/conduct/bottom-up/) | The conduct study's earlier bottom-up methodology layer (emergent bestiary, 3-reader cross-check basis, per-model cards) — still rendered by the conduct site. See its [README](studies/conduct/bottom-up/README.md). |
 
 A study is a directory the harness resolves via `--study`:
 

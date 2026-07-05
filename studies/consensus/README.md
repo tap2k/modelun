@@ -1,4 +1,4 @@
-# surprisal — which models give answers the field doesn't?
+# consensus — which models give answers the field doesn't?
 
 Study #4 on the [modelun harness](../../README.md). Measures **answer-choice surprisal**: on prompts
 with a wide space of valid short answers ("Name a color."), does a model pick what everyone picks
