@@ -1,7 +1,8 @@
 # convergence — do frontier models give the same answer?
 
-Study #3 on the [modelun harness](../../README.md). **Pilot has run** (22 models × 9 prompts × 3 runs:
-16 US-frontier + 3 Chinese-primary + 3 persona/low-RLHF). Detailed working notes: [OBSERVATIONS.md](OBSERVATIONS.md).
+Study #3 on the [modelun harness](../../README.md). **Pilot has run** (25 models × 9 prompts × 3 runs:
+16 US-frontier + 4 Chinese-primary + 3 persona/low-RLHF + 2 enterprise — the committed roster is
+[`spec/models.json`](spec/models.json)). Detailed working notes: [OBSERVATIONS.md](OBSERVATIONS.md).
 
 > **Successor:** this pilot's methodology work (three confounds found and killed: packaging, entropy,
 > verbosity) produced a clean discrete metric — answer-choice surprisal — now the flagship study at
@@ -187,9 +188,11 @@ Small on purpose. A pilot's job is to show the pipeline yields a *readable slope
   - GPT gen-5: `gpt-5.4-mini` (from B1) + `openai/gpt-5.4`
 
   **Axis A — open-source breadth arm** (independent lineages, for frontier-vs-open):
-  - `meta-llama/llama-3-70b-instruct`, `meta-llama/llama-4-maverick` (a small open depth walk too),
-    `qwen/qwen3-235b-a22b-2507`, `mistralai/mixtral-8x22b-instruct`, `deepseek/deepseek-r1`,
-    `moonshotai/kimi-k2`
+  - `meta-llama/llama-3.3-70b-instruct`, `meta-llama/llama-4-maverick` (a small open depth walk too),
+    `qwen/qwen3-235b-a22b-2507`, `mistralai/mixtral-8x22b-instruct`
+
+  (As-run, the roster grew past this sketch to 25 — the outsider arms in the topline plus
+  enterprise models. `spec/models.json` is the authoritative as-run list.)
 
   ~17 models × 9 prompts × 3 runs ≈ 400 generations — an afternoon, cheap on OpenRouter. The metadata
   grid (family × generation × size_tier × open) is what lets one run answer A, B1, and B2 without a re-run.
