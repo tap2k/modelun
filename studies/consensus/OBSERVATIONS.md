@@ -256,3 +256,26 @@ Claudes 3/3, gemini 3/3), the enterprise/persona/Chinese oddballs spread it out.
 >=80% extreme tier, but is the conceptually sharpest category: every other high-converger had a constraint
 ("a tool" -> hammer is reasonable); this one had NONE and still collapsed. Strong candidate essay opener:
 *ask 39 AIs to pick any word in the language, and the frontier labs all say "serendipity."*
+
+## Roster-dependence check (2026-07-06) — "is this just measuring the panel?" Tested; rankings hold.
+
+The critique: surprisal is leave-one-out against the pooled field, so the scorecard could be an artifact
+of roster composition — in particular, 8 GPTs + 6 Claudes mean those models are scored against a field
+partly made of their own relatives (sibling contamination deflates big families relative to singletons
+like hermes). Concede up front what's true BY CONSTRUCTION: the panel-mean score is the field's entropy,
+the 2x2 typing is a median split of this panel, and novel-rate can only shrink as the panel grows —
+absolute bits are "relative to this 39-model field," always. The testable question is whether the
+RANKINGS are roster artifacts. `robustness.py` (zero new calls):
+
+- **Leave-one-family-out: rho 0.989 vs shipped ranking.** Contamination is real, small, GPT-concentrated:
+  gpt-4o-mini +0.16 bits (rank 9->6), gpt-4.1 +0.12 (25->19); all claude gains <=0.04. No headline moves —
+  hermes #1 either way, sonnet-5 last either way (1.07 -> 1.09).
+- **Balanced fields (one model per family, 200 draws): top 4 rank 1-4 in EVERY draw; sonnet-5 rank 39 in
+  EVERY draw.** Random-15-model fields (200 draws): same, mid-pack wobbles +/-3-5.
+- Generational slides survive and slightly sharpen under LOFO (family members scored against the
+  identical non-family field): gpt 2.28 -> 2.24 -> 1.94 -> 1.75 -> 1.4-ish; claude 2.17 -> 1.65 -> 1.67
+  -> 1.31 -> 1.09, fable-5 1.76 still the exception.
+- Residue to concede in prose: the panel is an OpenRouter availability sample, not usage-weighted — but
+  usage-weighting would make the field MORE flagship-dominated, sharpening the headline contrasts, so the
+  bias direction is conservative. And the substrate findings (oak 94%, tomato 0/156) are pooled-
+  distribution facts across ~15 independent labs, not relative scores — least exposed to the critique.
