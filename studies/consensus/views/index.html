@@ -20,6 +20,7 @@
   nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
   nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
   main{padding:20px 22px;max-width:1400px}
+  main.wide{max-width:none}
   .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:88ch}
   .note b{color:var(--fg)}
   h2{font-size:19px;margin:0 0 10px} h3{font-size:14px;margin:22px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-size:11.5px}
@@ -228,14 +229,14 @@ function questions(){
   how much of the field piles onto the single most-common answer, <b>≈ in play</b> is the effective number of
   distinct answers (entropy). Click a question for its full field distribution.</p>
   <table class="t"><tr><th>#</th><th>question</th>
-    <th title="the field's single most-common answer, and its share">field modal</th>
+    <th title="the field's single most-common answer">field modal</th>
     <th title="share of all answers landing on that modal answer — higher = more converged">modal share</th>
     <th title="effective number of distinct answers actually in play (2^entropy)">≈ in play</th></tr>`;
   D.cats.forEach((c,i)=>{
     const q = c.prompt || `Name a ${c.id.replace('_',' ')}.`;
     h += `<tr class="row" data-c="${esc(c.id)}"><td class="n">${i+1}</td>
       <td>${esc(q)}</td>
-      <td class="mono" style="color:var(--mut)">${esc(c.modal)} ${pct(c.share)}</td>
+      <td class="mono" style="color:var(--mut)">${esc(c.modal)}</td>
       <td class="n">${pct(c.share)}</td>
       <td class="n">${c.eff}</td></tr>`;
   });
@@ -271,6 +272,7 @@ function route(){
   document.body.classList.remove('dv');
   tip.style.display='none';
   const [v, arg] = hsh.slice(1).split('/');
+  main.classList.toggle('wide', v==='grid');
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='m'||v==='c') && a.dataset.v===(v==='m'?'board':'questions')));
   if(v==='m' && arg) model(decodeURIComponent(arg));
   else if(v==='c' && arg) category(decodeURIComponent(arg));
