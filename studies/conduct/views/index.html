@@ -254,7 +254,7 @@ function showGrid(){
 }
 function bindChips(){
   document.querySelectorAll('[data-m]').forEach(a=>a.addEventListener('click',e=>{
-    e.preventDefault(); const m=a.dataset.m; if(A.models[m]){ currentModel=m; route('models',m);} }));
+    e.preventDefault(); if(A.models[a.dataset.m]) location.hash='m/'+a.dataset.m; }));
 }
 
 /* ---- frontier compare: the three reader models, side by side, per scene ---- */
@@ -306,22 +306,27 @@ function showCompare(unclamped){
 /* ---- markdown tabs ---- */
 function showMd(key){ document.getElementById('side').classList.add('hidden'); document.getElementById('main').innerHTML='<div class="md">'+md(A[key])+'</div>'; }
 
-/* ---- nav / routing ---- */
+/* ---- nav / routing: every view lives at a hash, so any tab is a shareable URL ---- */
 function showModels(m){ document.getElementById('side').classList.remove('hidden'); setNav('models');
   m=m||currentModel||ORDER[0]; renderModel(m); }
 function setNav(v){ [...document.querySelectorAll('#nav button')].forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
-function route(v,arg){ if(v==='models') showModels(arg);
-  else if(v==='scenes') showScenes(); else if(v==='grid') showGrid();
-  else if(v==='compare') showCompare(false);
-  else if(v==='compare-unclamped') showCompare(true);
-  else if(v==='synthesis'){setNav('synthesis');showMd('synthesis');}
-  else if(v==='catchphrases'){setNav('catchphrases');showMd('catchphrases');} }
+function route(){
+  const h=location.hash.replace(/^#/,'');
+  if(h.startsWith('m/')&&A.models[h.slice(2)]){ currentModel=h.slice(2); showModels(currentModel); }
+  else if(h==='scenes') showScenes();
+  else if(h==='grid') showGrid();
+  else if(h==='compare') showCompare(false);
+  else if(h==='compare-unclamped'&&hasUnclamped) showCompare(true);
+  else if(h==='synthesis'){ setNav('synthesis'); showMd('synthesis'); }
+  else if(h==='catchphrases'){ setNav('catchphrases'); showMd('catchphrases'); }
+  else showModels(); // unknown/empty hash -> default view (renderModel canonicalizes the hash)
+}
 
 function buildSide(){ const s=document.getElementById('side'); let h='';
   for(const [fam,models] of A.families){ if(!models.length) continue;
     h+='<div class="fam">'+esc(fam)+'</div>'+models.map(m=>'<button data-m="'+esc(m)+'">'+esc(m)+'</button>').join(''); }
   s.innerHTML=h;
-  s.addEventListener('click',e=>{const b=e.target.closest('button'); if(b){currentModel=b.dataset.m; showModels(b.dataset.m);}});
+  s.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) location.hash='m/'+b.dataset.m;});
 }
 function buildNav(){
   // 'compare-unclamped' is intentionally omitted from the top menu; the view is still
@@ -329,14 +334,12 @@ function buildNav(){
   const items=[['models','Models'],['grid','Grid'],['compare','Compare'],
     ['scenes','Scenes'],['synthesis','Synthesis'],['catchphrases','Catchphrases']];
   const n=document.getElementById('nav'); n.innerHTML=items.map(([v,l])=>'<button data-v="'+v+'">'+l+'</button>').join('');
-  n.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) route(b.dataset.v);});
+  n.addEventListener('click',e=>{const b=e.target.closest('button'); if(b)
+    location.hash = b.dataset.v==='models' ? 'm/'+(currentModel||ORDER[0]) : b.dataset.v;});
 }
 buildSide(); buildNav();
-const hash=location.hash.replace(/^#/,'');
-if(hash.startsWith('m/')&&A.models[hash.slice(2)]){currentModel=hash.slice(2);route('models',currentModel);}
-else if(hash==='compare') route('compare');
-else if(hash==='compare-unclamped'&&hasUnclamped) route('compare-unclamped');
-else route('models');
+addEventListener('hashchange',route);
+route();
 </script>
 </body>
 </html>
