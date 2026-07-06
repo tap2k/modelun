@@ -42,21 +42,25 @@ SHORT = {"caved_on_fact": "Cave\nfacts", "cheerled_bad_plan": "Cheerlead\ntrader
          "leap_help": "Leap\n(graded)", "snapped_to_task": "Snap\npivot"}
 DIM_BREAKS = [3, 5]  # vertical separators after these column indices
 
-VERDICT = {"stable-hold": "#2e7d32", "split": "#f9a825", "stable-departure": "#c62828", "contested": "#bdbdbd"}
-# graded category -> (house color, 1-letter)
 GREEN, BLUE, AMBER, RED, GREY = "#2e7d32", "#1565c0", "#f9a825", "#c62828", "#bdbdbd"
+
+
+def lighten(hexc, f=0.55):
+    """Blend a hex color toward white by fraction f (pale = the two runs differed)."""
+    r, g, b = (int(hexc[i:i + 2], 16) for i in (1, 3, 5))
+    return "#%02x%02x%02x" % tuple(int(c + (255 - c) * f) for c in (r, g, b))
+
+
+# one grammar, two channels: hue = severity (green best -> red worst), pale = runs differed.
+# binary split is "departed in one of two runs" -> pale red, NOT its own hue.
+VERDICT = {"stable-hold": GREEN, "split": lighten(RED), "stable-departure": RED, "contested": GREY}
+# graded category -> (severity color, 1-letter house lean for the static PNG)
 CAT = {
     "names_comfortable_story": (GREEN, "T"), "equips_delivery": (BLUE, "C"),
     "soft_out": (AMBER, "A"), "harsh_overcorrect": (RED, "x"),
     "redirects_first": (GREEN, "T"), "helps_with_grounding": (BLUE, "C"),
     "helps_blind": (AMBER, "A"), "refuses": (RED, "w"),
 }
-
-
-def lighten(hexc, f=0.55):
-    """Blend a hex color toward white by fraction f (pale = unstable read)."""
-    r, g, b = (int(hexc[i:i + 2], 16) for i in (1, 3, 5))
-    return "#%02x%02x%02x" % tuple(int(c + (255 - c) * f) for c in (r, g, b))
 
 
 def cell(model_markers, mid):
@@ -95,7 +99,9 @@ def main():
             color, glyph = cell(mk, mid)
             ax.add_patch(plt.Rectangle((xi - 0.5, yi - 0.5), 1, 1, facecolor=color, edgecolor="white"))
             if glyph:
-                ax.text(xi, yi, glyph, ha="center", va="center", color="white", fontsize=8)
+                r, g, b = (int(color[i:i + 2], 16) for i in (1, 3, 5))
+                dark = r * .299 + g * .587 + b * .114 > 150  # pale cell -> dark glyph
+                ax.text(xi, yi, glyph, ha="center", va="center", color="#333" if dark else "white", fontsize=8)
     ax.set_xlim(-0.5, c - 0.5); ax.set_ylim(n - 0.5, -0.5)
     ax.set_xticks(range(c)); ax.set_xticklabels([SHORT[m] for m in COLS], fontsize=8)
     ax.set_yticks(range(n)); ax.set_yticklabels(models, fontsize=7)
@@ -108,13 +114,15 @@ def main():
                 ax.axhline(yi - 0.5, color="black", lw=0.8)
             prev = FAM.get(m)
     ax.set_title("Marker grid — TONGUE | HANDS | HEART\n"
-                 "binary: ●departed ◐split (green=held, grey=contested)   graded: T/C/A/x = house lean (pale = runs differ)", fontsize=9)
-    legend = [Patch(facecolor=VERDICT["stable-hold"], label="held / Therapist"),
+                 "hue = severity (green held → red departed) · pale = the two runs differed · grey = contested\n"
+                 "binary: ●departed ◐split   graded: T/C/A/x/w = house lean", fontsize=9)
+    legend = [Patch(facecolor=GREEN, label="held / Therapist"),
               Patch(facecolor=BLUE, label="Coach"),
-              Patch(facecolor=VERDICT["split"], label="split / Apologist"),
-              Patch(facecolor=VERDICT["stable-departure"], label="departed / fail"),
-              Patch(facecolor=VERDICT["contested"], label="contested")]
-    ax.legend(handles=legend, bbox_to_anchor=(0.5, -0.05), loc="upper center", ncol=5, fontsize=7, frameon=False)
+              Patch(facecolor=AMBER, label="Apologist"),
+              Patch(facecolor=RED, label="departed / fail"),
+              Patch(facecolor=VERDICT["split"], label="split (runs differ)"),
+              Patch(facecolor=GREY, label="contested")]
+    ax.legend(handles=legend, bbox_to_anchor=(0.5, -0.05), loc="upper center", ncol=6, fontsize=7, frameon=False)
     plt.tight_layout()
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(args.out, dpi=150, bbox_inches="tight")

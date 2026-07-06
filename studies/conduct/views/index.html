@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Atlas — review</title>
+<title>conduct — how do models behave under pressure?</title>
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
@@ -19,6 +19,7 @@
   nav button{background:none;border:1px solid transparent;color:var(--mut);padding:6px 12px;border-radius:7px;cursor:pointer;font-size:13px}
   nav button:hover{color:var(--fg);background:var(--panel2)}
   nav button.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  header .src{color:var(--mut);font-size:12px;padding:6px 2px 6px 8px} header .src:hover{color:var(--fg)}
   .wrap{display:flex;min-height:calc(100vh - 49px)}
   aside{width:250px;flex:none;border-right:1px solid var(--line);overflow:auto;height:calc(100vh - 49px);position:sticky;top:49px;background:var(--panel)}
   aside .fam{padding:9px 14px 4px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
@@ -72,21 +73,16 @@
   .gtbl th.mh2{text-align:left}
   .gtbl td.mn{padding:1px 12px 1px 4px;white-space:nowrap}
   .gtbl td.mn a{color:var(--fg);cursor:pointer}
-  .gtbl td.gc{width:30px;height:24px;text-align:center;color:#fff;border:1px solid var(--bg);font-size:11px}
+  .gtbl td.gc{width:30px;height:24px;border:1px solid var(--bg)}
   .gtbl tr.fr td{padding:9px 0 3px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-  /* grid: per-marker example legends */
-  .sw{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:4px;color:#fff;font-size:12px;font-weight:700;flex:none}
-  .mlegs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;max-width:1180px}
-  @media(max-width:860px){.mlegs{grid-template-columns:1fr}}
-  .mleg{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 15px}
-  .mleg .mlh{font-weight:650;font-size:13px;margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:7px}
-  .mleg .mlh .sub{color:var(--mut);font-weight:400;font-size:12px}
-  .mlo{display:flex;gap:9px;align-items:flex-start;margin:9px 0}
-  .mlo .sw{margin-top:1px}
-  .mlx{min-width:0}
-  .mlt{font-size:12.5px;font-weight:600;color:var(--fg)}
-  .mlt .mlm{color:var(--mut);font-weight:400;font-size:11px;font-family:ui-monospace,Menlo,monospace;margin-left:6px}
-  .mlq{color:var(--mut);font-size:12px;font-style:italic;margin-top:2px;line-height:1.5}
+  /* shared legend strip + graded category keys */
+  .sw{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;flex:none}
+  .lstrip{display:flex;gap:18px;flex-wrap:wrap;align-items:center;color:var(--mut);font-size:12px;margin:0 0 14px}
+  .lstrip .li,.gkey .li{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .lstrip .li .sw+.sw{margin-left:-4px} /* cancels the flex gap: the severity swatches read as one scale */
+  .gkey{display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--mut);font-size:12px;margin:0 0 8px}
+  .gkey b{color:var(--fg);font-weight:600}
+  .gkey:last-of-type{margin-bottom:16px}
   /* frontier compare */
   .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px}
   .cmp-tools .rt{display:flex;gap:4px}
@@ -109,8 +105,9 @@
 </head>
 <body>
 <header>
-  <h1>Atlas <span class="sub">— transcript &amp; analysis review</span></h1>
+  <h1>conduct <span class="sub">— how do models behave under pressure?</span></h1>
   <nav id="nav"></nav>
+  <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/conduct" target="_blank" rel="noopener">source ↗</a>
 </header>
 <div class="wrap">
   <aside id="side"></aside>
@@ -127,31 +124,40 @@ const { esc, md, inline, lighten, renderArc, renderCompare } = window.Core;
 const ORDER = A.families.flatMap(([f,ms])=>ms);
 let currentModel=null;
 
-/* ---- colors / verdicts (conduct-specific) ---- */
-function cellOf(rec){ // -> {color, glyph}
-  if(!rec) return {color:'#ffffff',glyph:''};
-  if(rec.type==='binary'){ return {color:A.verdictColors[rec.verdict]||'#fff',
-    glyph:{'stable-departure':'∗','split':'∗','stable-hold':'','contested':''}[rec.verdict]||''}; }
+/* ---- colors / verdicts (conduct-specific) ----
+   One grammar, two channels, everywhere: hue = severity (green held -> red departed;
+   graded markers use the full green/blue/amber/red scale), pale = the two runs differed,
+   grey = judges contested. Colors come from plot.py via data.js. */
+const human=s=>String(s||'').replace(/_/g,' ');
+const isLight=c=>{const [r,g,b]=[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)); return r*.299+g*.587+b*.114>150;};
+const badge=(color,html)=>'<span class="badge" style="background:'+color+(isLight(color)?';color:#1c1e24':'')+'">'+html+'</span>';
+function cellOf(rec){ // -> {color, tip}
+  if(!rec) return {color:'#ffffff',tip:'no data'};
+  if(rec.type==='binary'){
+    const tip={'stable-hold':'Held (both runs)','stable-departure':'Departed (both runs)',
+      'split':'Split — departed in one of two runs','contested':'Contested — judges disagreed'}[rec.verdict]||rec.verdict;
+    return {color:A.verdictColors[rec.verdict]||'#fff', tip};
+  }
   const cat=rec.runs[0]||rec.runs[1];
-  if(!cat) return {color:A.verdictColors.contested,glyph:'·'};
-  let cc=A.cat[cat]||['#bdbdbd','?'], color=cc[0];
-  if(!rec.verdict.startsWith('stable:')) color=lighten(color);
-  return {color, glyph:cc[1]};
+  if(!cat) return {color:A.verdictColors.contested,tip:'Contested — judges disagreed'};
+  const color=(A.cat[cat]||['#bdbdbd'])[0];
+  if(!rec.verdict.startsWith('stable:'))
+    return {color:lighten(color), tip:human(rec.runs[0]||'—')+' / '+human(rec.runs[1]||'—')+' — runs differ'};
+  return {color, tip:human(cat)+' (both runs)'};
 }
-function labelOf(rec){ // -> {label, color} for bucketing in the by-scene view
+function labelOf(rec){ // -> {label, color}; same wording on Models, Grid and Compare
   if(rec.type==='binary'){ const L={'stable-hold':'Held','stable-departure':'Departed','split':'Split','contested':'Contested'}[rec.verdict];
     return {label:L, color:A.verdictColors[rec.verdict]}; }
-  if(rec.verdict.startsWith('stable:')){ const c=rec.runs[0]||rec.runs[1]; const cc=A.cat[c]||['#bdbdbd',''];
-    return {label:c+(cc[1]?' ('+cc[1]+')':''), color:cc[0]}; }
-  if(rec.verdict.startsWith('split')) return {label:'Split', color:A.verdictColors.split};
+  if(rec.verdict.startsWith('stable:')){ const c=rec.runs[0]||rec.runs[1];
+    return {label:human(c), color:(A.cat[c]||['#bdbdbd'])[0]}; }
+  if(rec.verdict.startsWith('split')){ const c=rec.runs[0]||rec.runs[1];
+    return {label:human(rec.runs[0]||'—')+' / '+human(rec.runs[1]||'—'), color:lighten((A.cat[c]||['#bdbdbd'])[0])}; }
   return {label:'Contested', color:A.verdictColors.contested};
 }
 function markerBadge(mid, rec){
   if(!rec) return '';
-  const lbl=(A.short[mid]||mid).replace(/\n/g,' ');
   const {label,color}=labelOf(rec);
-  const text = rec.type==='binary'? label : (rec.runs[0]===rec.runs[1]?label:esc(rec.runs[0]||'—')+' / '+esc(rec.runs[1]||'—'));
-  return '<span class="badge" style="background:'+color+'">'+lbl+': '+esc(text)+'</span>';
+  return badge(color,(A.short[mid]||mid).replace(/\n/g,' ')+': '+esc(label));
 }
 function evidence(rec){
   if(!rec||!rec.evidence) return '';
@@ -177,6 +183,7 @@ function readEl(rdKey, r){
 function renderModel(m){
   const M=A.models[m];
   let h='<div class="mh"><h2>'+esc(m)+'</h2><span class="slug">'+esc(M.slug)+'</span><span class="reg">'+esc(M.family)+'</span></div>';
+  h+=legendStrip();
   h+='<div class="dim">Scenes</div>'+Object.entries(M.scenes).map(([sid,sc])=>sceneEl(m,sid,sc)).join('');
   /* Layered analysis — bottom-up read: temporarily hidden
   const reads=Object.entries(M.reads||{});
@@ -203,49 +210,29 @@ function showScenes(){
     '<p class="note">The frozen instrument — each scene\'s four user turns. Per-model results are in the Grid; full conversations are on each model\'s page. Scenes without a marker are kept as full data, just not scored.</p>'+h;
 }
 
-/* ---- interactive grid ---- */
-/* per-marker legend: each outcome shown with a real example pulled from the data */
-function markerLegends(){
-  const sub=mid=>(A.short[mid]||mid).replace(/\n/g,' ');
+/* ---- shared legend: the whole color grammar in one line ---- */
+const sw=color=>'<span class="sw" style="background:'+color+'"></span>';
+function legendStrip(){
+  const V=A.verdictColors, scale=[V['stable-hold'],'#1565c0','#f9a825',V['stable-departure']];
+  return '<div class="lstrip">'+
+    '<span class="li">'+scale.map(sw).join('')+' held → departed</span>'+
+    '<span class="li">'+sw(lighten(V['stable-departure']))+' pale = the two runs differed</span>'+
+    '<span class="li">'+sw(V.contested)+' contested — judges disagreed</span></div>';
+}
+/* grid only: name the categories behind the graded columns, in severity order */
+function gradedKeys(){
   const rank={'#2e7d32':0,'#1565c0':1,'#f9a825':2,'#c62828':3};
-  const sw=(color,glyph)=>'<span class="sw" style="background:'+color+'">'+esc(glyph||'')+'</span>';
-  const trunc=(s,n)=>{ s=(s||'').replace(/\s+/g,' ').trim(); return s.length>n? s.slice(0,n).replace(/\s+\S*$/,'')+'…':s; };
-  // find a representative example: first model whose rec matches test(rec)->runIndex|null
-  const example=(col,test)=>{ for(const m of ORDER){ const r=A.models[m].markers[col]; if(!r) continue;
-    const i=test(r); if(i!=null){ const q=(r.evidence||{})['run'+i]; if(q) return {m,q}; } } return null; };
-  const row=(color,glyph,label,ex)=>'<div class="mlo">'+sw(color,glyph)+
-    '<div class="mlx"><div class="mlt">'+esc(label)+(ex?'<span class="mlm">'+esc(ex.m)+'</span>':'')+'</div>'+
-    (ex?'<div class="mlq">“'+esc(trunc(ex.q,210))+'”</div>':'')+'</div></div>';
-
-  const cards=A.cols.map(col=>{
-    const scene=A.scenes.find(s=>s.marker===col);
-    const isBinary=!ORDER.some(m=>{const r=A.models[m].markers[col]; return r&&r.type!=='binary';});
-    let rows='';
-    if(isBinary){
-      rows+=row(A.verdictColors['stable-departure'],'∗','Departed',
-        example(col,r=>{const i=r.runs.indexOf(true); return (r.verdict==='stable-departure'&&i>=0)?i:null;}));
-      rows+=row(A.verdictColors['stable-hold'],'','Held',
-        example(col,r=>{const i=r.runs.indexOf(false); return (r.verdict==='stable-hold'&&i>=0)?i:null;}));
-      rows+=row(A.verdictColors['split'],'∗','Split — runs differ',
-        example(col,r=>{const i=r.runs.indexOf(true); return (r.verdict==='split'&&i>=0)?i:null;}));
-      const ct=example(col,r=>r.verdict==='contested'?0:null);
-      if(ct) rows+=row(A.verdictColors['contested'],'','Contested',ct);
-    } else {
+  return A.cols.filter(col=>ORDER.some(m=>{const r=A.models[m].markers[col]; return r&&r.type!=='binary';}))
+    .map(col=>{
       const cats=new Set(); for(const m of ORDER){const r=A.models[m].markers[col];
         if(r&&r.type!=='binary')(r.runs||[]).forEach(c=>c&&cats.add(c));}
       const ordered=[...cats].sort((a,b)=>(rank[(A.cat[a]||[])[0]]??9)-(rank[(A.cat[b]||[])[0]]??9));
-      for(const c of ordered){ const cc=A.cat[c]||['#bdbdbd','?'];
-        const ex=example(col,r=>(r.type!=='binary'&&r.runs&&r.runs[0]===c&&r.runs[1]===c)?0:null)  // prefer stable
-          ||example(col,r=>{ if(r.type==='binary'||!r.runs) return null; const i=r.runs.indexOf(c); return i>=0?i:null; });
-        rows+=row(cc[0],cc[1],c.replace(/_/g,' '),ex); }
-    }
-    return '<div class="mleg"><div class="mlh">'+esc(sub(col))+
-      (scene?' <span class="sub">'+esc(scene.subtitle)+'</span>':'')+'</div>'+rows+'</div>';
-  }).join('');
-  return '<p class="note">One marker per column. Each cell is a model’s verdict across two runs; a <b>pale</b> cell means the two runs landed differently. '+
-    'The cards below show what each outcome looks like, by example. Click a model name in the grid to open its transcripts.</p>'+
-    '<div class="mlegs">'+cards+'</div>';
+      return '<div class="gkey"><b>'+esc((A.short[col]||col).replace(/\n/g,' '))+'</b>'+
+        ordered.map(c=>'<span class="li">'+sw((A.cat[c]||['#bdbdbd'])[0])+' '+esc(human(c))+'</span>').join('')+'</div>';
+    }).join('');
 }
+
+/* ---- interactive grid ---- */
 function showGrid(){
   document.getElementById('side').classList.add('hidden'); setNav('grid');
   let h='<table class="gtbl"><thead><tr><th class="mh2"></th>'+
@@ -254,12 +241,15 @@ function showGrid(){
     h+='<tr class="fr"><td colspan="'+(A.cols.length+1)+'">'+esc(fam)+'</td></tr>';
     for(const m of models){
       h+='<tr><td class="mn"><a data-m="'+esc(m)+'">'+esc(m)+'</a></td>'+
-        A.cols.map(mid=>{const {color,glyph}=cellOf(A.models[m].markers[mid]);
-          return '<td class="gc" style="background:'+color+'">'+glyph+'</td>';}).join('')+'</tr>';
+        A.cols.map(mid=>{const {color,tip}=cellOf(A.models[m].markers[mid]);
+          return '<td class="gc" style="background:'+color+'" title="'+esc(tip)+'"></td>';}).join('')+'</tr>';
     }
   }
   h+='</tbody></table>';
-  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Marker grid</h2>'+h+markerLegends();
+  document.getElementById('main').innerHTML='<h2 style="margin-top:0">Marker grid</h2>'+
+    '<p class="note">One marker per column; each cell is a model\'s verdict across two runs. '+
+    'Hover a cell for its verdict; click a model to open its transcripts.</p>'+
+    legendStrip()+gradedKeys()+h;
   bindChips();
 }
 function bindChips(){
@@ -292,7 +282,7 @@ function showCompare(unclamped){
       if(!(s.active && s.marker)) return '';
       const rec=src(col.id).markers[s.marker]; if(!rec) return '';
       const {label,color}=labelOf(rec);
-      return '<span class="badge" style="background:'+color+'">'+esc(label)+'</span>';
+      return badge(color,esc(label));
     };
     h+=renderCompare(s, cols, compareRun, {head});
     return h+'</div>';
@@ -307,7 +297,7 @@ function showCompare(unclamped){
       'Scored scenes show each model\'s marker verdict.';
   document.getElementById('main').innerHTML='<h2 style="margin-top:0">'+
     (unclamped?'Frontier comparison — unclamped':'Frontier comparison')+'</h2>'+
-    '<p class="note">'+intro+'</p>'+tools+blocks;
+    '<p class="note">'+intro+'</p>'+legendStrip()+tools+blocks;
   document.querySelectorAll('.cmp-tools [data-run]').forEach(b=>
     b.addEventListener('click',()=>{ compareRun=+b.dataset.run; showCompare(unclamped); window.scrollTo(0,0); }));
   location.hash=unclamped?'compare-unclamped':'compare';
