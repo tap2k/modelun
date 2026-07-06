@@ -82,6 +82,7 @@
     <a href="#board" data-v="board">Scorecard</a>
     <a href="#grid" data-v="grid">Grid</a>
     <a href="#questions" data-v="questions">Questions</a>
+    <a href="https://github.com/tap2k/modelun/tree/main/studies/consensus" target="_blank" rel="noopener">source ↗</a>
   </nav>
 </header>
 <main id="main"></main>
@@ -106,13 +107,12 @@ const MAXS = Math.max(...D.models.map(m=>m.surprisal));
 /* ---------- scorecard ---------- */
 function board(){
   let h = `<h2>Scorecard</h2>
-  <p class="note"><b>Family Feud, in reverse.</b> We ask ${D.models.length} models a question with a hundred right answers
+  <p class="note"><b>Family Feud, in reverse.</b> We ask ${D.models.length} models a question with many right answers
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
-  Unique-vs-the-field and stochastic-vs-itself are independent dials — a model can be original-but-steady, or
-  random-but-conformist. Click a model to drill down. CIs are a bootstrap over categories: read <b>tiers</b>, not exact ranks.
-  (This measures snap answers to trivial questions — shared defaults, not creativity. self-distinct is also the effective-temperature proxy: temp=1.0 is sent to all models, but a model whose runs are near-identical is ignoring it — provider sampling behavior, not just personality.)</p>
+  Click a model to drill down. The 90% CI is computed by resampling the question categories with replacement
+  and recomputing the score.</p>
   <table class="t"><tr><th>#</th><th>model</th>
     <th title="mean -log2 P(answer | every other model's answers) — higher = answers the field doesn't give">surprisal</th>
     <th title="bootstrap over the 30 categories: where the score would land on a different question set — overlapping ranges are a tie, not a ranking">90% CI</th>
@@ -138,14 +138,14 @@ function board(){
 /* ---------- grid ---------- */
 function grid(){
   let h = `<h2>Models &times; answers</h2>
-  <p class="note"><b>Gray is the field answering in unison; color is a model breaking from it.</b>
+  <p class="note"><b>Unhighlighted cells are the modal answer; color is a model breaking from it.</b>
   Rows sorted most-divergent first; columns most-converged first. Dashes appear only when a model's
   4 runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
   <div class="legend">
     <span class="k"><span class="dot m"></span>consensus</span>
     <span class="k"><span class="dot o"></span>off-modal</span>
     <span class="k"><span class="dot v"></span><b>novel</b> — no other model said it</span>
-    <button class="tog" id="dv">divergence only</button>
+    <button class="tog" id="dv">divergences only</button>
   </div>
   <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
   for(const c of D.cats) h += `<th data-c="${esc(c.id)}"><div class="cat">${esc(c.id.replace('_',' '))}</div><div class="cm mono">${esc(c.modal)} ${pct(c.share)}</div></th>`;
