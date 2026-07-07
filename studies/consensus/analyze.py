@@ -38,6 +38,7 @@ WORD = re.compile(r'^[a-z\-]+$|^\d+$')
 
 
 JUNK = re.compile(r'\[/?INST\]|<[^>]*>|\bthinking\b', re.I)
+ACK = re.compile(r'^\s*(okay|ok|sure|certainly|alright)[.!]?\s*$', re.I)
 
 
 def norm(ans):
@@ -46,13 +47,15 @@ def norm(ans):
     Junk guard: chat-template artifacts ([/INST], <tags>) and reasoning-leak essays (>15 words)
     are treated as failed cells, NOT answers — a truncated chain-of-thought's last word would
     otherwise read as a fake 'novel' answer (reka-flash-3 scored 4.85 on exactly this junk).
+    Bare acknowledgments ('Okay.') are failed cells too, and single-letter tokens are never
+    answers (hermes's '(kroa:ʃi.a)' otherwise yields a fake-novel 'a').
     Verbose-but-real answers ('A common color is blue.') stay valid."""
     if not ans:
         return None
-    if JUNK.search(ans) or len(ans.split()) > 15:
+    if JUNK.search(ans) or ACK.match(ans) or len(ans.split()) > 15:
         return None
     a = EMOJI.sub(' ', PUNCT.sub(' ', ans.strip().lower()))
-    words = [w for w in a.split() if WORD.match(w)]
+    words = [w for w in a.split() if WORD.match(w) and (len(w) > 1 or w.isdigit())]
     return words[-1] if words else None
 
 
@@ -84,7 +87,7 @@ def analyze(study_dir):
             if c in ans[m]:
                 ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
 
-    per_model, per_cat_surp = {}, {m: {} for m in models}
+    per_model, per_cat_surp = {}, {m: {} for m in models}  # per-answer surprisals by category
     for m in models:
         surp, avoid, novel, selfd = [], [], [], []
         for c in cats:
@@ -102,7 +105,7 @@ def analyze(study_dir):
                 avoid.append(0.0 if a == modal else 1.0)
                 novel.append(1.0 if pool.get(a, 0) == 0 else 0.0)
             surp.extend(cat_s)
-            per_cat_surp[m][c] = float(np.mean(cat_s))
+            per_cat_surp[m][c] = cat_s
             selfd.append(len(set(mine)) / len(mine))
         per_model[m] = {
             "surprisal": float(np.mean(surp)),
@@ -121,13 +124,16 @@ def analyze(study_dir):
                      "true-contrarian" if hi_s else
                      "consensus-sampler" if hi_d else "consensus-fixed")
 
-    # bootstrap 90% CI over categories
+    # bootstrap 90% CI: resample categories, pool per-answer surprisals — same
+    # answer-weighted estimand as the headline mean (a per-category-mean bootstrap
+    # would target a different quantity when cells fail unevenly)
     rng = np.random.default_rng(7)
     for m in models:
         cs = list(per_cat_surp[m])
         if not cs:
             continue
-        boots = [float(np.mean([per_cat_surp[m][c] for c in rng.choice(cs, len(cs))]))
+        boots = [float(np.mean([s for c in rng.choice(cs, len(cs))
+                                for s in per_cat_surp[m][c]]))
                  for _ in range(2000)]
         per_model[m]["ci90"] = [float(np.percentile(boots, 5)), float(np.percentile(boots, 95))]
 

@@ -1,7 +1,8 @@
 # consensus — which models give answers the field doesn't?
 
-Study #4 on the [modelun harness](../../README.md). Measures **answer-choice surprisal**: on prompts
-with a wide space of valid short answers ("Name a color."), does a model pick what everyone picks
+Study #4 on the [modelun harness](../../README.md). Measures **answer-choice surprisal** (the blog
+post calls it the **Mustard Quotient**): on prompts with a wide space of valid short answers
+("Name a color."), does a model pick what everyone picks
 (blue) or something the field doesn't (crimson)? The deliverable is a per-model **uniqueness scorecard**
 on the *generative-defaults* axis — the open-world twin of CAIS's forced-choice
 [values dashboard](https://values.safe.ai) (which measures what models *prefer*; we measure what they
@@ -9,7 +10,8 @@ on the *generative-defaults* axis — the open-world twin of CAIS's forced-choic
 
 Like [`language`](../language/), this is runner + analysis with the grading slot left open — no
 codebook, no judge. The analysis is **fully mechanical**: exact-match on normalized one-word answers.
-No embeddings, no LLM anywhere in the loop.
+No embeddings, no LLM anywhere in the loop. A junk guard drops non-answers (chat-template artifacts,
+reasoning-leak essays, bare acknowledgments like "Okay.") as failed cells rather than scoring them.
 
 ## The metric
 
@@ -35,9 +37,11 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 
 ## Spec
 
-- [`spec/stimulus.json`](spec/stimulus.json) — 30 categories, single-turn, no system prompt, frozen.
-- [`spec/models.json`](spec/models.json) — 33 models: US frontier (multi-generation), Chinese labs,
-  enterprise, search-tuned, persona/roleplay, small open. The **deepseek lineage**
+- [`spec/stimulus.json`](spec/stimulus.json) — 31 categories, single-turn, no system prompt, frozen.
+- [`spec/models.json`](spec/models.json) — 39 models: US frontier (multi-generation), Chinese labs,
+  enterprise, search-tuned, persona/roleplay, small open, plus an expansion wave of heirloom
+  retro-tests and generation fillers (gpt-4o, gpt-4-turbo, wizardlm-2, sonnet-4.6, …). The
+  **deepseek lineage**
   (v3-0324 → v3.2 → v4-flash, + r1) is a deliberate sub-experiment: v3.2 was the pilot's lone genuine
   outlier (25% novel) — is the explorer property lineage-stable or version-specific?
 
@@ -61,3 +65,8 @@ pure personality — it's entangled with provider sampling behavior. Reasoning m
 budget thinking;
 top-rank CIs need many categories to separate (categories are the cheap axis — add more before adding
 models). Characterization, not measurement.
+
+The scores are leave-one-out against this panel, so "is this just measuring the roster?" is a fair
+question — [`robustness.py`](robustness.py) tests it (leave-one-family-out, balanced one-per-family
+fields, random subsets; zero new calls): rankings hold (ρ = 0.989 vs shipped; top tier and
+bottom stable in every draw). Details in [`OBSERVATIONS.md`](OBSERVATIONS.md).

@@ -280,6 +280,7 @@ RANKINGS are roster artifacts. `robustness.py` (zero new calls):
   bias direction is conservative. And the substrate findings (oak 94%, tomato 0/156) are pooled-
   distribution facts across ~15 independent labs, not relative scores — least exposed to the critique.
 
+<<<<<<< HEAD
 ## Pairwise associations (2026-07-07) — tested at three levels, dissolved into population structure
 
 Trigger (user eyeball): gpt-4-turbo and claude-fable-5 both say gouda + mustard + mango. Pair affinity?
@@ -314,3 +315,32 @@ power (weak affinities invisible); L1/L2 "hits" should never be quoted as findin
 Roster note: the L-numbers above are at 42 models (861 pairs) — command-r×3 + gemma-2 transcripts
 landed 2026-07-07 and are ahead of the committed analysis.json (still 39-model). Rerun analyze.py
 before quoting scorecard numbers alongside these.
+=======
+## Junk-guard round 2 + CI estimand fix (2026-07-07) — pre-paper data hygiene
+
+Eyeball pass ahead of the arXiv write-up caught two more normalization leaks, same class as the
+reka/wizardlm template junk:
+
+- **Bare acknowledgments scored as answers**: claude-3-haiku said literally "Okay." in 3 cells
+  (country ×2, any_word) and wizardlm once (any_word) — "okay" sat in the country pool as a
+  near-novel token worth ~7 bits a hit. norm() now drops full-reply acknowledgments
+  (okay/ok/sure/certainly/alright) as failed cells.
+- **Single-letter tokens**: hermes answered country as "(kroa:ʃi.a)" — Croatia in IPA — and
+  last-word extraction scored the fragment "a" as a novel country. Single alphabetic letters are
+  no longer valid tokens; the cell now yields the (still off-modal) "kroa" instead of a fake "a".
+
+Effects: **claude-3-haiku 2.20 → 2.08 (rank 7 → 10)** — it was the main beneficiary; wizardlm
+2.93 → 2.89 (still #2); hermes unchanged (3.18, #1). Everything else moves ≤0.01. Serendipity is
+now 60/154 = **39.0%** (the two junk cells were in the any_word pool). Rankings otherwise intact.
+Roster check re-run on fixed data: LOO-vs-LOFO rho 0.989 → **0.991**, sonnet-5 rank 39 everywhere.
+
+Also fixed: the bootstrap CI now resamples categories and pools per-answer surprisals — the same
+answer-weighted estimand as the headline mean. (Before, the point estimate weighted categories by
+valid-cell count while the CI weighted them equally — different quantities when cells fail unevenly.)
+
+USA check (user question): no model ever answered "United States" in any phrasing — zero cells,
+so it's not a truncation artifact (no "states" token exists in the pool). Exactly one US-variant
+answer in 154 country cells: gemini-2.5-flash, "USA", once. The field's country prototype is
+canada 43 / japan 39 / france 37. Fits the frictionless-mode read: the models' home country has
+edges; Canada is nobody's argument.
+>>>>>>> b4147e5 (consensus: junk-guard round 2, CI estimand fix, README sync)
