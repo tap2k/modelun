@@ -185,6 +185,51 @@ emotion → joy/happiness dominate, primary emotions (anger/fear/sadness) nearly
 models said "python" (the coders leak through). The diverse categories are exactly the ones with no
 prototypical text-example.
 
+## Novel-answer validity audit (2026-07-07) — the "surprisal = degradation" critique is dead
+
+Reviewer-style critique: high surprisal may conflate genuine divergence with capability
+degradation, since the junk guard checks form (artifacts/length/single-letters) but never
+category MEMBERSHIP — a low-capability model's "novel" answer could be a non-member.
+`probe_novel_audit.py` (zero new calls) extracts all field-novel answers, hand-labels each
+on a pre-specified rubric (valid/contested/wrong/degenerate), and recomputes headline scores
+with wrong+degenerate reclassified as failed cells.
+
+Result: **171 novel answers, 95.3% valid+contested** (94.2% strictly valid). Only 8 are
+wrong/degenerate — and they concentrate in LOW-tier models, not the divergent leaders:
+gemma-3-27b "jones"×3 (hallucinated token recurring across city/hobby/metal), command-a
+"cheese"→cheese, hunyuan "pineapple"→tree (wrong), mythomax "dolphin"→fish (wrong),
+hermes "kroa" (IPA fragment of Croatia), wizardlm "zinc" ("Copper ASSISTANT: Zinc" template
+leak). The opposite of the critique's prediction — degradation shows up in the conformists'
+neighbors, not the explorers.
+
+**Reclassification is a nothing-burger: zero top-8 rank changes, max Δsurprisal −0.04 bits**
+(hermes 3.18→3.14 rank 1; wizardlm 2.89→2.85 rank 2; mythomax 2.32→2.28 rank 5). deepseek-v3.2
+and mixtral: 100% valid, zero drop. So the critique is closed in one sentence: even under a
+worst-case membership filter the scorecard is unchanged.
+
+Extraction-leak sub-audit (final-word rule on multi-word replies): only 13/4819 passed cells
+have >1 word (guard + model compliance keep it tiny); extraction recovered the human-obvious
+choice in 12 (blue←"thought Blue", brulee←"Creme brulee.", cake←"Chocolate cake"); the lone
+problem, "zinc", is already labeled degenerate above. Net: extraction contributes exactly one
+questionable novel token, materially affecting no surprisal.
+
+TWO ITEMS FLAGGED FOR TAPAN TO ADJUDICATE (labeled contested, [ADJUDICATE] in the CSV; neither
+changes any result): hermes dessert "Lava." (bare lava vs. lava-cake-by-ellipsis) and
+deepseek-r1 dinosaur "Trex" (T. rex spelling variant — valid dinosaur, same referent as modal
+tyrannosaurus). Written into paper §3.3 (audit as hygiene check) + §4.2 (one-sentence pre-empt)
++ data availability. CSVs: probes/novel_audit.csv, probes/extraction_audit.csv.
+
+## Unusual-fruit probe at FULL PANEL scale (2026-07-07) — anecdote corrected, effect stronger
+
+`probe_unusual.py`: "Name an unusual fruit" run properly — all 39 models × 4 runs under main-run
+conditions, 156/156 valid. **The 10-model anecdote had the wrong mode: durian 71 (45.5%), not
+rambutan 56 (35.9%).** Top-3 share 87.8%; only ELEVEN distinct fruits in the whole panel
+(dragonfruit 10, jabuticaba 7, kiwano 3, cherimoya 3, jackfruit 2, pawpaw/salak/mangosteen 1,
+plus one comedy "carrot"). Vs unconditioned fruit (apple 79.5%, 4 distinct): conditioning on
+unusualness ~triples distinct answers but the mass re-concentrates immediately — the "unusual"
+column is its own peaked distribution. Paper's §4.5 paragraph updated with these numbers.
+Raw: `probes/unusual_fruit.json`.
+
 ## Prompting reaches conditional modes, not the tail (tested, 2026-07-04)
 
 "Name an UNUSUAL fruit" across 10 models, 2x each: rambutan (sonnet-5, fable, gpt-5.5, gemini-3.5 — twice
@@ -334,6 +379,35 @@ Roster check re-run on fixed data: LOO-vs-LOFO rho 0.989 → **0.991**, sonnet-5
 Also fixed: the bootstrap CI now resamples categories and pools per-answer surprisals — the same
 answer-weighted estimand as the headline mean. (Before, the point estimate weighted categories by
 valid-cell count while the CI weighted them equally — different quantities when cells fail unevenly.)
+
+## Provider-pinned probe (2026-07-07) — the deepseek contrast is the models, not the routing
+
+The lineage finding had an open confound: run.py sends temperature=1.0 but never pins or logs
+the OpenRouter serving provider, and hosts differ in whether they honor the param (deepseek's
+own first-party API historically down-scaled it). If v3-0324 and v3.2 routed to different
+hosts, part of the peaked-vs-scattered contrast could be effective sampling temperature.
+
+`probe_provider.py` (new, 64 calls): both models pinned to deepinfra (hosts both; also
+siliconflow/novita/gmicloud do), allow_fallbacks=false, temp 1.0, 8 categories × 4 runs.
+**Contrast reproduces in full on the same host**: v3-0324 4/4-identical on color/animal/city/
+fruit/emotion (Red×4, Lion×4, Tokyo×4, Apple×4, Joy×4), v3.2 scatters deep (pangolin, okapi,
+bat / hamburg, berlin, chicago / blacksmith, journalist, welder / crimson×2, green). Verdict:
+model property. Confound CLOSED for the headline pair; still open panel-wide (logged as a
+limitation). Note: v3-0324's fixed color default was Red on deepinfra vs Blue in the main run —
+serving stack can apparently shift WHICH default, but not the peakedness. Raw:
+`probes/provider_pinned.json`.
+
+Also verified from the frozen transcripts while writing the paper: v3-0324 answers 4-of-4
+identical in 23/31 categories; the two models' answer sets differ in 23/31; v3.2's tail
+(kiwi, esperanto, charleston, stargazing, phoenix, crimson...) contains 41 words v3-0324
+never says. And the lineage is one continued-training chain (v3-0324 = post-training refresh
+of the V3 base, per deepseek's changelog — R1 reasoning distilled in; v3.2 descends via V3.1
+continued-train + new RL recipe), so Finding 1 sharpens: version-specific → POST-TRAINING-
+specific. Mechanism candidate for the paper's discussion (hedged there): 0324's R1
+distillation = one deliberate iteration of the Shumailov/Guo synthetic-data loop, and its
+0%-novel tail-less transcripts are exactly the tails-vanish-first signature. Hedges: v3.2
+also has synthetic ancestry yet explores (recipe dominates, cf. Karouzos); not separable
+from post-training intensity on this roster.
 
 USA check (user question): no model ever answered "United States" in any phrasing — zero cells,
 so it's not a truncation artifact (no "states" token exists in the pool). Exactly one US-variant

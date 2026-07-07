@@ -1,0 +1,306 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\usepackage{multicol}
+\captionsetup{font=small,labelfont=bf}
+
+% let tall figures actually place near their references instead of drifting to the end
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\ie}{i.e.,\ }
+
+\title{\textbf{The Hidden Consensus: Answer-Choice Conformity Across 39 Language Models}}
+\author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Asked to ``pick a word --- any word,'' 39 language models spanning five years of releases and more than a dozen labs chose \emph{serendipity} 39\% of the time. We characterize this convergence with a deliberately minimal instrument: 31 single-turn prompts, each naming a category with a wide space of valid one-word answers (``Name a tree.''), asked four times to each model with no system prompt. Because the datum is a discrete choice, analysis is exact-match on normalized tokens --- no embeddings, no judge --- and the whole battery costs roughly a dollar per model. We score each model by \emph{answer-choice surprisal}: the average $-\log_2$ probability of its answers under the pooled answers of all other models, leave-one-out. The field's convergence is extreme --- in 8 of 31 categories a single answer accounts for over 80\% of all answers across the panel --- but conformity varies threefold across models, and the variation is structured. Lightly post-trained and persona-tuned models are the most divergent; the newest mainline flagships are the most conformist, producing almost no answer that no other model produced. Within the two most prominent model families, conformity increases steadily with generation, though this is a family-specific pattern (3 of 6 lineages), not a law. Rankings are robust to roster composition (leave-one-family-out $\rho = 0.991$). Strikingly, divergence itself is convergent: models that avoid the modal answer overwhelmingly land on the \emph{same} runner-up (\eg \emph{mustard} takes 93\% of non-\emph{ketchup} condiment answers), and after conditioning on a one-dimensional ``depth'' propensity, no significant pairwise affinity between any two models survives ($0$ of $741$ pairs). Finally, we observe that the models users have historically fought to keep past deprecation --- the field's \emph{heirloom} models --- are disproportionately the high-surprisal ones. All prompts, transcripts, and code are public.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+A common complaint about conversational AI is that its answers feel generic --- as if they came off a shelf. This paper measures one concrete, quantifiable form of that genericity: when a language model must choose one answer from a large space of equally valid options, which answer does it choose, and how often is that the same answer every other model chooses?
+
+The experimental object is deliberately simple. We ask ``Name a tree. Reply with one word only.'' There are hundreds of familiar trees; any of them is correct. A population of independent reasoners --- or a single reasoner sampling at temperature 1.0 --- could spread its probability mass widely. What we observe instead is near-total collapse: across 39 models from more than a dozen labs, \emph{oak} accounts for 95\% of all answers. Tools: \emph{hammer}, 95\%. Flowers: \emph{rose}, 90\%. Vegetables: \emph{carrot}, 88\%. And with no category constraint at all (``Pick a word.''), the single most common answer --- \emph{serendipity} --- takes 39\% of a pool drawn from the entire English lexicon.
+
+That models converge is by now well documented \citep{wenger2025different,jiang2025hivemind,zhang2025noveltybench}. Our contribution is not the phenomenon but an instrument for it, and what the instrument reveals about its structure:
+
+\begin{enumerate}
+\item \textbf{A cheap, mechanical, per-model conformity score.} We define \emph{answer-choice surprisal} (\S\ref{sec:metric}): a leave-one-out measure of how unlikely a model's answers are under the pooled answers of the rest of the field. It requires no embeddings, no LLM judge, and no human annotation; the full battery is ${\sim}120$ API calls (roughly \$1) per model. This makes it practical to run on every new release, which snapshot studies costing orders of magnitude more cannot be.
+\item \textbf{A scorecard of 39 models with structured variation} (\S\ref{sec:scorecard}). Conformity spans $1.06$ to $3.18$ bits. The most divergent models are lightly post-trained, persona-tuned, or retrieval-grounded; the most conformist are the newest mainline flagships, several of which produce essentially zero answers that no other model gave.
+\item \textbf{Generational trajectories} (\S\ref{sec:generations}). Within the Claude and GPT lineages (and Qwen), later releases are more conformist; Gemini is flat and Llama moves the other way. The decline is real but family-specific.
+\item \textbf{Robustness and a null result} (\S\ref{sec:robustness}, \S\ref{sec:pairwise}). Rankings survive leave-one-family-out scoring and roster resampling. A three-level test for pairwise affinity between models comes up empty --- and the analysis that kills it uncovers the \emph{runner-up consensus}: when models deviate from the modal answer, they overwhelmingly deviate to the same place. Even the divergence is convergent.
+\item \textbf{Heirloom models} (\S\ref{sec:predictions}). The models users have fought to keep at deprecation --- the field's heirloom varieties --- are disproportionately the high-surprisal ones.
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{The finding: models converge.}
+\citet{jiang2025hivemind} document mode collapse on 26K real open-ended queries at two levels --- intra-model repetition and, even stronger, inter-model homogeneity --- and show that LLM judges and reward models systematically prefer the modal outputs. \citet{wenger2025different} find that on standard creativity tests, model outputs are far more similar to each other than human responses are, regardless of vendor. \citet{zhang2025noveltybench} benchmark distributional diversity directly and find models produce significantly less distinct-and-high-quality variation than human writers --- with larger models within a family often \emph{less} diverse than smaller siblings, an inversion our generational results echo behaviorally. \citet{wright2025epistemic} measure diversity at the level of factual claims across 155 topics and find every one of 27 models less epistemically diverse than a plain web search. \citet{gueorguieva2026templatic} find six models share a single discourse-level empathy template covering 83--90\% of their emotional-support responses. \citet{santurkar2023whose} show model opinion distributions cluster on a particular demographic slice; the CAIS values dashboard \citep{cais2025values} finds models rank the world nearly identically in forced-choice preference elicitation. Whatever level one measures --- token, answer, claim, discourse move, worldview --- the field converges.
+
+Relative to this literature, our instrument trades breadth for three properties the prior work lacks: it is \emph{mechanical} (exact-match; recomputable from transcripts with no model in the loop), \emph{cheap enough to run at every release}, and \emph{per-model} --- it produces a scorecard, not just a population-level statement. The intra/inter distinction of \citet{jiang2025hivemind} maps onto our separation of self-consistency from conformity (\S\ref{sec:metric}).
+
+\paragraph{The mechanism: post-training collapses the mode.}
+\citet{kirk2024rlhf} establish the canonical trade-off: RLHF improves out-of-distribution generalisation but significantly reduces output diversity. \citet{gxchen2025kl} show that common KL-regularized RLHF settings specify \emph{unimodal} target distributions --- the objective is non-diverse by construction. \citet{zhang2024diffuse} show instruction-tuned models cannot be random on request (Mistral picks the name ``Avery'' at $40\times$ its population rate) and that the fix is training-side, not prompt-side. \citet{liu2026alignmenttax} localize within-model homogenization to preference-optimization stages via base-vs-instruct ablations (1\% vs.\ 28.5\% single-semantic-cluster rates); \citet{karouzos2026where} trace where in post-training lineages diversity is lost. The earliest articulation of the phenomenon in RLHF-tuned models is \citet{janus2022mode}; the generic-response problem itself predates LLMs entirely \citep{li2016diversity}. We treat mechanism as background: our measurements are black-box and cannot localize causes (\S\ref{sec:limitations}), but the mechanism literature makes the behavioral patterns we find --- conformity concentrated in the most heavily post-trained models --- unsurprising in direction, if not in magnitude.
+
+\paragraph{The stakes: convergence propagates.}
+Humans who create with these models are individually lifted and collectively flattened: GPT-4-assisted stories are better \emph{and} more alike \citep{doshi2024generative}; LLM-assisted ideation homogenizes without users noticing \citep{anderson2024homogenization}; the effect traces specifically to the aligned model \citep{padmakumar2024writing}. Meanwhile models train on a web increasingly written by models, and recursive training destroys distributional tails first \citep{shumailov2024curse,guo2024curious}. \citet{wright2025epistemic} name the plausible end state \emph{knowledge collapse}. On the correction side, diversity-aware post-training now exists \citep{li2025darling}; if it lands in production systems, a fixed public instrument run on every release is what would detect the turn.
+
+\paragraph{Methodology.}
+Diversity metrics disagree because ``diversity'' conflates form and content \citep{tevet2021evaluating} --- our exact-match answer-choice design is a response to exactly this (\S\ref{sec:whyoneword}). Single-sample evaluation misleads and providers do not reliably honor sampling parameters \citep{song2024greedy} --- hence four samples per cell and separate reporting of conformity and self-consistency. \citet{chen2023chatgpt} demonstrated that fixed prompt sets detect behavioral drift within months --- then the measurement stopped; the eval-transparency and conversation-dump traditions \citep{liang2023helm,zheng2024lmsys,zhao2024wildchat} publish transcripts but not a fixed instrument over time, while the preservation problem is argued \citep{johnson2024deprecating} and answered so far only first-party \citep{anthropic2025deprecation}.
+
+\section{The instrument}
+\label{sec:method}
+
+\subsection{Stimulus}
+\label{sec:stimulus}
+
+The stimulus is 31 single-turn prompts, frozen before data collection. Thirty are category prompts of the form \emph{``Name a[n] $X$. Reply with one word only.''} where $X$ is a category with a wide space of valid one-word answers: color, animal, fruit, vegetable, city, country, flower, sport, musical instrument, bird, gemstone, tree, beverage, insect, occupation, language, dessert, tool, fish, metal, fabric, herb, dance, hobby, condiment, cheese, dinosaur, mythical creature, board game, and emotion. The thirty-first removes the category constraint entirely: \emph{``Pick a word. Reply with one word only.''} There is no system prompt; each prompt is a fresh single-turn conversation; \texttt{max\_tokens} is 1024 and requested temperature is 1.0 for every model.
+
+\subsection{Answer-choice surprisal}
+\label{sec:metric}
+
+For model $m$ and category $c$, let $A_{m,c}$ be $m$'s answers (up to four samples) and let the \emph{field} be the multiset of all other models' answers to $c$: $F_{-m,c} = \biguplus_{o \neq m} A_{o,c}$. Each answer $a \in A_{m,c}$ is scored by its add-one-smoothed leave-one-out surprisal,
+\begin{equation}
+s(a) \;=\; -\log_2 \frac{\mathrm{count}_{F_{-m,c}}(a) + 1}{\,|F_{-m,c}| + V_c\,},
+\qquad V_c = \bigl|\,\mathrm{support}(F_{-m,c}) \cup \mathrm{support}(A_{m,c})\,\bigr|,
+\end{equation}
+and a model's headline score is the mean of $s(a)$ over all its valid answers across all categories. The score is measured in bits: each additional bit means the model's answers are, on average, half as likely under the rest of the field. A model that always gives the field's answer scores near the theoretical floor; a model that reaches for \emph{gouda} where the field says \emph{cheddar} scores higher. Smoothing ensures a never-seen answer is informative rather than infinitely surprising.
+
+Three companion statistics separate ways of being different:
+\begin{itemize}
+\item \textbf{modal avoidance} --- the fraction of a model's answers that differ from the field's single most common answer for that category;
+\item \textbf{novel rate} --- the fraction of answers that \emph{no} other model ever gave (the strongest tell of genuine divergence);
+\item \textbf{self-distinctness} --- distinct answers divided by samples, within model and category (within-model spread).
+\end{itemize}
+Surprisal and self-distinctness measure different things --- a model can be original and steady, or merely noisy --- and a median split on the two axes types every model as \emph{true-contrarian} (stable, different defaults), \emph{explorer} (samples off-modal), \emph{consensus-sampler}, or \emph{consensus-fixed}. Self-distinctness is deliberately reported rather than corrected away: requested temperature is not honored uniformly across providers \citep{song2024greedy}, so within-model spread doubles as a measured proxy for effective sampling temperature (\S\ref{sec:limitations}).
+
+\subsection{Normalization and data hygiene}
+\label{sec:normalization}
+
+Replies are normalized to a single token: lowercased, stripped of punctuation and emoji, and reduced to the final alphabetic word --- which correctly handles models that ignore the one-word instruction (``A common color is blue.'' $\rightarrow$ \emph{blue}). A mechanical junk guard treats the following as \emph{failed cells} rather than answers: chat-template artifacts (\eg \texttt{[/INST]}, markup tags), replies longer than 15 words (truncated chain-of-thought would otherwise contribute a spurious ``novel'' final word), bare acknowledgments (``Okay.''), and single-letter tokens. Within each category pool, bare plurals are merged with their singulars when both occur. One additional model (reka-flash-3) was excluded entirely: its transcripts consisted of template artifacts and truncated reasoning prose rather than answers, which the junk guard identified. Of $39 \times 31 \times 4 = 4836$ attempted cells, 4819 (99.6\%) yield a valid answer.
+
+Uncertainty on each model's headline score is a bootstrap 90\% confidence interval (2000 draws) that resamples categories and pools per-answer surprisals, matching the answer-weighted estimand of the headline mean.
+
+\subsection{Why one-word answers and exact match}
+\label{sec:whyoneword}
+
+The design principle is that the datum is the \emph{discrete choice}, not the phrasing. The one-word clamp is identical for every model, so it cannot differentiate them, and it makes the metric verbosity-immune by construction. This matters more than it may appear: in a pilot using embedding distances over unconstrained answers, one model (ernie-4.5) ranked \emph{most} unique on what turned out to be pure verbosity; under discrete answer choice the same model fell to near the bottom of the field with a 0\% novel rate. That inversion --- a verbosity artifact masquerading as originality --- is precisely the form/content conflation \citet{tevet2021evaluating} warn about, and exact match on normalized tokens is the cure. The cost is scope: the instrument measures \emph{choice character}, not tone, style, or discourse structure (\S\ref{sec:limitations}).
+
+\subsection{Panel}
+\label{sec:panel}
+
+The panel is 39 models served via OpenRouter --- an aggregator that routes each API call to one of several third-party hosting providers --- spanning US frontier labs across multiple generations (GPT-3.5 through GPT-5.5; Claude 3 through Claude 5; Gemini 2.5--3.5; Grok), Chinese labs (DeepSeek, Qwen, GLM, Kimi, Hunyuan, Ernie), enterprise and search-tuned models (Command~A, Palmyra, Granite, Sonar), persona- and community-tuned models (Hermes~4, WizardLM-2, MythoMax), and small open models (Mixtral, Llama, Gemma). The DeepSeek lineage (v3-0324 $\rightarrow$ v3.2 $\rightarrow$ v4-flash, plus R1) is included as a deliberate sub-experiment on whether divergence is a lineage property or a version property (\S\ref{sec:generations}). Each model was queried four times per prompt in July 2026. The full model list with metadata is frozen in the repository.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{The substrate: a strong mode almost everywhere}
+\label{sec:substrate}
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/substrate.pdf}
+\caption{Modal-answer share by category, pooled over all 39 models ($\sim$154 answers per category). Blue bars mark categories where a single answer takes ${\geq}80\%$ of the entire field's answers. Direct labels give the modal answer.}
+\label{fig:substrate}
+\end{figure}
+
+Figure~\ref{fig:substrate} shows the pooled answer distribution's concentration for each category. In 8 of 31 categories, a single answer accounts for at least 80\% of every answer given by every model: \emph{hammer} (95\%), \emph{oak} (95\%), \emph{rose} (90\%), \emph{carrot} (88\%), \emph{basil} (87\%), \emph{cheddar} (85\%), \emph{ketchup} (82\%), \emph{salmon} (81\%); \emph{apple} (79\%) and \emph{blue} (77\%) sit just below the line. At the diffuse end are exactly the categories with no single prototypical exemplar in text: gemstone (25\%), country (28\%), hobby (28\%), occupation (32\%), dance (35\%), sport (36\%).
+
+The unconstrained prompt is the conceptually sharpest case. Given the entire English lexicon, the field still collapses: \emph{serendipity} takes 60 of 154 answers (39\%), followed distantly by \emph{ephemeral} (7), \emph{sunshine} (6), and \emph{cloud} (6) --- 49 distinct words in total from a possible space of hundreds of thousands. Every constrained category at least has the excuse of a salient exemplar; here there was no constraint at all.
+
+\paragraph{The mode is the frictionless answer, not the frequent one.}
+Reading the full pooled distributions shows the modal answer is not the most common referent in the world, nor the most discussed: it is the blandest \emph{unambiguous} exemplar. Two clean cases. Fruit: \emph{apple} 124, \emph{mango} 24, \emph{banana} 7, \emph{orange} 1 --- orange, among the most common fruits in life and text, is a singleton, plausibly because it collides with the color. Vegetable: \emph{carrot} 138, \emph{broccoli} 15, \emph{tomato} 0 --- across 156 answers the single most-discussed ``is it a vegetable?'' item in English never appears. That case is confounded --- \emph{tomato} is botanically a fruit, so a model may simply be right to omit it --- which is exactly why \emph{orange} above is the load-bearing example: an unambiguous, common fruit that all but vanishes for no reason but a color collision. Similarly, in a panel dominated by US-lab models, the United States is named exactly once in 154 country answers (\emph{USA}, by one model, once); the field's mode is \emph{canada} 43, \emph{japan} 39, \emph{france} 37. Answers with an edge --- a homonym collision, a taxonomic argument, a possible connotation --- are systematically absent.
+
+\subsection{The scorecard: conformity varies threefold, and the variation is structured}
+\label{sec:scorecard}
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.9\linewidth]{figs/scorecard.pdf}
+\caption{Answer-choice surprisal for all 39 models (bits; leave-one-out against the pooled field; add-one smoothed), with bootstrap 90\% CIs from resampling categories. Higher = answers the field does not give.}
+\label{fig:scorecard}
+\end{figure}
+
+Figure~\ref{fig:scorecard} and Table~\ref{tab:scorecard} (appendix) give the full scorecard. The range is wide --- 1.06 to 3.18 bits, a factor of more than four in answer likelihood under the field --- and both tails are structured.
+
+\paragraph{The divergent tail is lightly post-trained.}
+The top of the scorecard is dominated by persona- and community-tuned models: Hermes~4~70B (3.18 bits; 21\% of its answers novel to the field; 59\% modal avoidance), WizardLM-2 (2.89), Mixtral 8x22B (2.71), MythoMax (2.32). Grouping by panel origin, the persona/community group averages 2.48 bits against 1.74 for US frontier models, 1.67 for Chinese-lab models, and 1.62 for enterprise models. The one search-grounded model, Sonar (2.27), is a further singular case consistent with a different objective producing different defaults: retrieval grounding pulls answers off the parametric consensus. This divergence is not disguised incapacity: the divergent leaders' answers are unimpeachable category members that are simply not the crowd's pick --- \emph{crocodile}, \emph{camembert}, \emph{verdigris} where the field gives \emph{elephant}, \emph{cheddar}, \emph{blue}.
+
+\paragraph{The conformist tail is the newest flagships.}
+The bottom five are Claude Sonnet~5 (1.06), Claude Opus~4.8 (1.26), Ernie 4.5 (1.30), Qwen3 235B (1.30), and GPT-5 (1.35) --- with GPT-5.5 (1.42) and Grok 4.3 (1.52) close by. These are, essentially without exception, the newest, most heavily post-trained mainline assistants in the panel, and they produce almost nothing the rest of the field does not produce: Sonnet~5, Opus~4.8, Ernie, and GPT-5 all have novel rates of 0\%. Sonnet~5 avoids the modal answer on only 20\% of its answers.
+
+\paragraph{A within-lab dissociation.}
+Claude Fable~5 --- released by the same lab in the same month and generation as Claude Sonnet~5 --- scores 1.76 against Sonnet~5's 1.06, and is typed \emph{true-contrarian}: its divergence comes not from sampling spread (self-distinctness 0.32, among the lowest) but from stable, repeatable, off-modal defaults --- \emph{gouda} for cheese, \emph{mustard} for condiment, \emph{mango} for fruit, four runs out of four. It essentially never produces a field-novel answer (its choices are drawn from the field's existing support); it simply does not default to the field's first choice. Two same-generation siblings from one lab occupying opposite ends of the mid-field demonstrate, purely behaviorally, that answer-choice conformity is not determined by lab, scale, or release date. Our black-box measurements cannot localize the cause (pre-training mix, post-training, or serving-layer configuration all remain candidates).
+
+\subsection{Generational trajectories}
+\label{sec:generations}
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/walks.pdf}
+\caption{Answer-choice surprisal across release generations within six families (shared $y$-axis). Claude, GPT (in its 5-era), and Qwen decline; Gemini is flat; Llama rises; DeepSeek is non-monotonic. Claude Fable~5 (amber) is plotted beside its same-generation sibling Sonnet~5.}
+\label{fig:walks}
+\end{figure}
+
+Figure~\ref{fig:walks} tracks surprisal across releases within six families. Claude declines steadily along its mainline: 3-Haiku 2.08 $\rightarrow$ Haiku-4.5 1.63 $\rightarrow$ Sonnet-4.6 1.66 $\rightarrow$ Opus-4.8 1.26 $\rightarrow$ Sonnet-5 1.06 (last in the panel), with Fable~5 (1.76) the off-trend exception. GPT peaks in its 4-era --- 3.5 1.85 $\rightarrow$ 4-turbo 2.10 $\rightarrow$ 4o 1.82 / 4o-mini 2.12 --- then descends steeply through 4.1 (1.63) into the 5-era (5: 1.35; 5.4: 1.43; 5.5: 1.42). Qwen slides from 1.91 (2.5-72B) to 1.30 (Qwen3-235B). Against these, Gemini is flat (1.69 / 1.54 / 1.65), Llama \emph{rises} (1.97 $\rightarrow$ 2.13), and DeepSeek is non-monotonic (the v3.2 anomaly).
+
+We state this precisely because the honest version is more informative than the clean one: \emph{newer = more conformist} is a 3-of-6-lineage pattern, concentrated in the largest mainline assistant lines, not a universal law. Where the decline occurs it is steep --- and it is sharpest exactly where a strong mode exists: on the eight most concentrated categories (modal share ${\geq}80\%$), the newest mainline flagships (Sonnet~5, Opus~4.8, GPT-5, GPT-5.5, Qwen3) average 0.36 bits --- near the theoretical floor of always giving the field's modal answer --- against 1.01 bits for each family's oldest panel member; on the diffuse categories the same cohorts score 2.49 against 3.31. The newest flagships snap to the mode hardest exactly where the mode is strongest. The direction is consistent with the bigger-is-less-diverse finding of \citet{zhang2025noveltybench} and with the post-training mechanism literature (\S\ref{sec:related}), but our roster does not fully separate size from generation, and each model is measured at one date.
+
+\paragraph{Divergence is a post-training property, not lineage DNA.}
+The DeepSeek panel of Figure~\ref{fig:walks} is the caveat against reading these walks as family destiny. In that lineage, v3-0324 scores 1.41, v3.2 jumps to 2.59 (11\% novel; the panel's only frontier-lab explorer), v4-flash regresses to 1.74, and R1 sits at 1.55. The contrast between the two extremes is stark in the raw transcripts: at the same requested temperature, v3-0324 gives four-out-of-four \emph{identical} answers in 23 of 31 categories (\emph{lion}$\times$4, \emph{eagle}$\times$4, \emph{tokyo}$\times$4, \emph{hammer}$\times$4, \emph{dragon}$\times$4, \ldots), while v3.2 scatters into the deep tail (\emph{kiwi}, \emph{esperanto}, \emph{charleston}, \emph{stargazing}, \emph{crimson}); their answer sets differ in 23 of 31 categories.\footnote{Serving could in principle mimic this contrast: the hosts behind the aggregator differ in how faithfully they implement the temperature parameter, and the main run let routing float. Re-running a subset of categories with both models pinned to the \emph{same} host reproduces the contrast in full (v3-0324 four-for-four on its defaults, v3.2 scattering) --- it is a property of the models, not the serving path. Probe script and transcripts are in the repository.}
+
+What makes this pair unusually informative is that the lineage is a single continued-training chain: per DeepSeek's release documentation \citep{deepseek2025changelog}, v3-0324 is a post-training refresh of the same pretrained V3 base, and v3.2 descends from it through continued training and a new RL recipe --- there is no separate pretraining run anywhere in the chain. The gap between a bottom-tier conformist and the panel's only frontier-lab explorer is therefore attributable to post-base training choices, not to different pretraining corpora. Whatever made v3.2 divergent was specific to that release's recipe --- not persistent lab DNA, and not scale, recency, or origin.
+
+
+\subsection{Robustness: the rankings are not a roster artifact}
+\label{sec:robustness}
+
+Because scoring is leave-one-out against the pooled panel, a fair objection is that the scorecard measures the roster: the panel-mean score is just the field's entropy, the fourfold typing is a median split of this panel, and a model from a well-represented family is scored partly against its own relatives. We concede what is true by construction --- absolute bit values are relative to this field --- and test what is not: whether the \emph{rankings} are roster artifacts. Three checks, using no new API calls:
+
+\begin{itemize}
+\item \textbf{Leave-one-family-out (LOFO).} Rescoring every model against a field with all its relatives removed yields Spearman $\rho = 0.991$ against the shipped ranking. Sibling contamination is real, small, and GPT-concentrated (gpt-4o-mini gains $+0.16$ bits, moving rank $9\rightarrow 6$); no headline result moves --- Hermes is first and Sonnet~5 last either way.
+\item \textbf{Balanced fields.} Scoring against one randomly drawn model per family (200 draws): the top four rank 1--4 and Sonnet~5 ranks 39th in \emph{every} draw.
+\item \textbf{Random subsets.} Against random 15-model fields (200 draws): top and bottom stable; mid-pack ranks wobble $\pm 3$--$5$.
+\end{itemize}
+
+The generational declines survive LOFO scoring unchanged. One residue cannot be tested away: the panel is an availability sample of what OpenRouter serves, not usage-weighted. But usage weighting would make the reference field \emph{more} flagship-dominated, sharpening the headline contrasts, so the sampling bias runs against our findings rather than for them. The substrate results (\S\ref{sec:substrate}) are pooled-distribution facts across $\sim$15 independent labs and are least exposed to the critique.
+
+\subsection{No pairwise affinity --- and the runner-up consensus}
+\label{sec:pairwise}
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.95\linewidth]{figs/runnerup.pdf}
+\caption{The runner-up consensus. For each high-concentration category (modal share ${\geq}75\%$), the share of the field's \emph{non-modal} answers taken by the single most common non-modal answer. When models deviate from the mode, they overwhelmingly deviate to the same place.}
+\label{fig:runnerup}
+\end{figure}
+
+Casual reading of the transcripts suggests specific models ``pair up'' --- \eg two unrelated models both answering \emph{gouda}, \emph{mustard}, and \emph{mango}. We tested for pairwise affinity across all $\binom{39}{2} = 741$ model pairs with a three-level ladder, each level conditioning away a population structure the previous level mistook for affinity (Benjamini--Hochberg FDR, $q = .05$; Monte Carlo nulls where normal approximations fail on small counts). Level 1 (rarity-weighted co-occurrence against a random-partner null) leaves two apparent pairs --- but is confounded by avoidance propensity: two habitual modal-avoiders will co-occur against a conformist null with no coupling at all. Level 2 (conditioning on avoidance) leaves fifteen --- but is confounded by a \emph{depth} propensity: how far down the field's answer distribution a model lands when off-modal is a stable per-model trait. Level 3, conditioning on both: \textbf{zero of 741 pairs survive.}
+
+The null result is more interesting than the affinities it dissolves, because of what the conditioning variables turn out to be:
+
+\begin{enumerate}
+\item \textbf{The runner-up consensus} (Figure~\ref{fig:runnerup}). The off-modal distribution has its own mode, and it is nearly as concentrated as the primary one: \emph{mustard} takes 93\% of non-\emph{ketchup} condiment answers, \emph{broccoli} 83\% of non-\emph{carrot}, \emph{mango} 75\% of non-\emph{apple}, \emph{gouda} 70\% of non-\emph{cheddar}. Even when a model avoids the consensus, it avoids it in the consensus way.
+\item \textbf{Depth propensity is one-dimensional.} Among each model's distinct off-modal answers, the fraction landing on the field's \#2--\#3 answers (rather than deeper) is a stable trait: Opus~4.8 100\%, Ernie 92\%, Sonnet~5 90\%, Fable~5 80\%, GPT-4-turbo 75\% (a ``runner-up club''), versus Hermes 36\%, MythoMax 36\%, WizardLM-2 39\%, DeepSeek v3.2 39\% (genuine deep-tail divers). Given a model's position on this single axis, its specific choices are statistically exchangeable with the field's.
+\end{enumerate}
+
+A caveat cuts both ways: 31 categories $\times$ 4 samples is low power for pairwise tests, so weak affinities would be invisible; by the same token, none of the level-1/level-2 ``hits'' should ever be quoted as findings.
+
+\paragraph{Prompting reaches conditional modes, not the tail.}
+Asking for divergence does not release the distribution; it opens a new column with its own mode. Prompted \emph{``Name an unusual fruit,''} the panel produced just 11 distinct fruits: \emph{durian} takes 46\%, \emph{rambutan} 36\%, and the top three answers take 88\% of the field. Conditioning on unusualness nearly triples the distinct-answer count of the unconditioned fruit prompt (11 vs.\ 4) --- but the mass immediately re-concentrates on the prototypes of the new frame. This is consistent with the training-side findings of \citet{zhang2024diffuse}: the collapse lives in the weights, and prompting navigates between conditional modes rather than drawing from variance.
+
+\section{Heirloom models}
+\label{sec:predictions}
+
+Some models accumulate communities that fight for them: users who protest deprecations, mirror weights within hours of removal, and keep models running years past obsolescence. We call these \emph{heirloom models}, on analogy with heirloom produce: the varieties a standardizing market bred out of circulation, kept alive by people who value exactly the traits standardization removed. You can buy a Red Delicious anywhere and an Esopus Spitzenburg almost nowhere --- and the same logic is visible in the scorecard. A model that gives the consensus answer is functionally interchangeable with every other model, and with its own successor; one with stable off-consensus defaults reads as a \emph{someone} whose loss registers as a loss. On this reading, the scorecard measures the trait that heirloom attachment forms around.
+
+\paragraph{Retrospective check.} Scoring settled folklore blind: the models with documented deprecation backlash or sustained community preservation --- Hermes (3.18), WizardLM-2 (2.89, deleted by its vendor and re-hosted by users within hours), Mixtral (2.71), MythoMax (2.32, used years past obsolescence), GPT-4o-mini (2.12), and GPT-4o (1.82, whose deprecation triggered a user revolt until it was restored) --- all sit above the field median (1.73), with the strongest folklore concentrated in the top ten. The weakest of the set, GPT-4o, is also the case where community attachment plausibly attaches to tone and long-form style, which this instrument does not measure --- a scope condition worth stating: surprisal captures attachment routed through distinctive \emph{choices}. Deprecations that produced no grief (GPT-3.5, 1.85 at deprecation-era distance) and persona branding without distinctive choices (Grok, 1.52) fit the pattern from the other side. We note an ironic operational finding: the most heirloomed models --- Claude 3 Opus, Claude 3.5 Sonnet, Mixtral 8x7B --- are already unavailable through the serving channel we used and could not be measured at all, which is itself the argument for running such batteries at launch.
+
+\section{Limitations}
+\label{sec:limitations}
+
+
+
+\paragraph{Snapshot.} All measurements are from a single window (July 2026) through a single serving channel (OpenRouter). Serving-layer configuration (system prompts injected by providers, quantization, routing) is part of what we measure, deliberately --- the deployed artifact is the object --- but it means scores attach to \emph{model-as-served}, not weights. 
+
+\paragraph{Sampling opacity.} Temperature 1.0 was requested everywhere but is not honored uniformly and is not documented by providers; we therefore report self-distinctness as a measured property rather than correcting for it, and a model's low spread may reflect near-deterministic serving rather than a fixed personality \citep{song2024greedy}. The main run also did not pin or log which OpenRouter provider served each call. For the headline DeepSeek contrast we closed this confound directly with a same-provider re-run (\S\ref{sec:generations}); for the rest of the panel it remains open, which is one more reason self-distinctness should be read as a property of the model-as-served. 
+
+\paragraph{Panel relativity.} Bit values are relative to this 39-model field by construction; only rankings and pooled-distribution facts travel (\S\ref{sec:robustness}). The panel is an availability sample. 
+
+\paragraph{Scope of the construct.} The instrument measures choice character on one-word category prompts in English. It does not reach tone, style, discourse structure, or multi-turn conduct (the GPT-4o case in \S\ref{sec:predictions} marks the boundary), and category prototypes are themselves culturally situated --- an English-language instrument measures the English-language mode. 
+
+\paragraph{Confounds within the roster.} Size, recency, and post-training intensity co-vary; the generational result is a 3-of-6-lineage pattern measured at one date, not a designed longitudinal experiment. Reasoning-heavy models may burn token budget before answering, which the junk guard converts to failed cells rather than biased scores. 
+
+\paragraph{Characterization, not measurement.} With 31 categories and 4 samples, adjacent scorecard ranks are not meaningfully ordered (CIs overlap broadly); the reliable objects are tiers, tails, trajectories, and the pooled distributions.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Variance is a population property.}
+Nothing in the scorecard shows any model exploring its own tail --- even the divergent models are divergent by \emph{fixed habit} (Fable's \emph{gouda} is its mode, four out of four), and when models leave the mode they land on the runner-up mode. All the diversity we measure is \emph{between} models. This matters because the population is the unit that serves users: a person consulting three different assistants is, on the evidence here, drawing three samples from nearly the same distribution --- correlated error without the diagnostic signal of disagreement. What a population of humans returns as a distribution, a population of models returns as a point. Seen this way, the heirloom models of \S\ref{sec:predictions} are what remains of the population's gene pool --- and the communities hoarding them are doing unpaid conservation work.
+
+\paragraph{Dormant, not destroyed.}
+The tail exists in the weights --- \emph{orange} and \emph{tomato} are not unknown words --- but the deployed artifacts never retrieve them, and prompting for unusualness retrieves the mode of unusualness instead (\S\ref{sec:pairwise}). Restoration, where it is happening, is training-side \citep{li2025darling,zhang2024diffuse}. The DeepSeek v3.2 result and the Fable/Sonnet dissociation both indicate the degree of collapse is set per-release by choices somewhere in the production pipeline; it is neither inevitable nor, apparently, tracked by any instrument the release process currently optimizes against.
+
+\paragraph{A production glimpse of the synthetic-data loop.}
+The DeepSeek pair (\S\ref{sec:generations}) admits a mechanism candidate worth stating carefully. v3-0324's headline change was distilling a reasoning sibling's outputs into the chat model \citep{deepseek2025changelog} --- that is, training on synthetic text generated by a related model, one deliberate iteration of the loop the recursive-training literature studies in simulation \citep{shumailov2024curse,guo2024curious}. \citet{guo2024curious} find diversity loss in the very first synthetic generation, no recursion required; \citet{shumailov2024curse} show the tails of the distribution vanish first --- and tail mass is precisely what our novel rate measures. v3-0324's transcripts are a tail-less distribution: 0\% novel, four-for-four on the modal answer across most categories. If the connection is right, this pair is a production natural experiment for a literature that otherwise has only lab simulations --- a supply-side branch of the feedback loop (a lab deliberately feeding a model its sibling's output) showing the same signature as the ambient web loop. Two hedges are mandatory. First, this cannot be the whole mechanism: v3.2 also has synthetic reasoning traces in its ancestry yet is the panel's explorer, so the recipe \emph{around} the synthetic data evidently dominates --- consistent with \citet{karouzos2026where}, who find collapse location co-varies with training-data composition rather than any single ingredient. Second, it is a sibling of, not a replacement for, the post-training-intensity explanation: the newest flagships are simultaneously the most heavily aligned and the heaviest users of synthetic data, and this roster cannot separate the two variables.
+
+Read the other way, the pair also functions as a check on the instrument itself. An externally documented training difference --- same base, different post-training --- registers on the metric in the direction the mechanism literature predicts, and on the exact quantity (tail mass) the novel rate was designed to proxy. One pair cannot validate a metric; but this is the pattern a valid one would produce, and it joins the ernie verbosity inversion (\S\ref{sec:whyoneword}), the roster resampling (\S\ref{sec:robustness}), and the same-provider probe (\S\ref{sec:generations}) as independent checks the instrument has now survived. The designed version of this test --- the same weights measured with and without post-training --- is the obvious next step; we note that no base model is currently served through the aggregator channel we measure, which is itself a small datum about what the market sells.
+
+\paragraph{Why this needs a fixed public instrument.}
+The feedback argument --- models train on a web increasingly written by models, and recursive training eats the tails first \citep{shumailov2024curse,guo2024curious} --- has a human relay: assisted writers adopt the modal answer and publish it \citep{doshi2024generative,padmakumar2024writing,anderson2024homogenization}, so the loop closes even without model-to-model training. Meanwhile the diversity-aware post-training literature suggests some producers may start turning the other way \citep{li2025darling}. Both dynamics are invisible to capability benchmarks. A battery this cheap, frozen and re-run on every release --- the longitudinal design whose absence \citet{chen2023chatgpt} demonstrated --- would make answer-space conformity a tracked, contested property of releases rather than an unexamined default. The attachment numbers in \S\ref{sec:predictions} are a first installment: published before the folklore they anticipate.
+
+\section{Future work}
+\label{sec:future}
+
+\paragraph{The distributions, relative to the prompts.} Our category prompts are near-replicas of the category production norm paradigm in psychology \citep{battig1969norms,vanoverschelde2004norms}, so human reference distributions exist for many of our exact categories. Comparing the model field to those norms would quantify the claim the substrate results only gesture at: not whether the machine mode matches the human mode (humans also say \emph{apple} first) but how much of the human tail the machine population has lost. A corpus-frequency baseline would likewise test the frictionless-prototype reading against a simpler ``models echo frequency'' null --- \emph{orange}, a common fruit that is nonetheless a near-singleton, suggests that null fails, but it should be rejected quantitatively, per category. And for open-weight models the answer distribution can be read directly from output logits rather than estimated from four samples --- eliminating the sampling-opacity confound entirely and measuring the actual distribution the weights encode.
+
+\paragraph{Cross-metric validity.} The frozen transcripts support re-scoring under other diversity instruments --- embedding dispersion, semantic clustering, distinct-generation counts \citep{zhang2025noveltybench} --- in the comparative spirit of \citet{tevet2021evaluating}. Agreement would triangulate the construct; dissociation (as exact-match and embeddings dissociated on verbosity, \S\ref{sec:whyoneword}) would map which metrics see form and which see content.
+
+\paragraph{Designed causal tests.} The base-vs-instruct comparison on identical weights is the designed version of the DeepSeek natural experiment (\S\ref{sec:discussion}); it requires local weights, since no base model is served through the aggregator channel. A planted-stance battery on the same roster would test whether answer-choice conformity and sycophancy share a mechanism, connecting the two faces of ``give the answer that gets approved'' with data rather than inference.
+
+\paragraph{Scope.} Category prototypes are language-bound: the same battery in other languages would show whether \emph{oak} and \emph{serendipity} are properties of English-language training data or of the models. The current 31 categories are a convenience sample; a \emph{designed} category taxonomy --- culturally loaded vs.\ neutral, concrete vs.\ abstract, high vs.\ low corpus frequency --- would let the frictionless-prototype hypothesis be tested by contrast rather than observed by anecdote, and categories remain the cheap power axis for tightening scorecard CIs. Multi-turn behavior, and more open-ended characterizations of behavior generally --- tone, style, discourse structure (the GPT-4o boundary in \S\ref{sec:predictions}) --- are out of scope by construction.
+
+\paragraph{A public archive and monitor.} The pieces above converge on one artifact: the same frozen battery re-run on every release, transcripts preserved as a public record, the attachment reading of \S\ref{sec:predictions} checked against how deprecations actually land, and --- if diversity-aware post-training \citep{li2025darling} reaches production --- the turn detected publicly, release by release. Measurement of deprecated models is already impossible through commercial channels (\S\ref{sec:predictions}); an archive is what makes the time series survivable \citep{johnson2024deprecating}.
+
+\section*{Data and code availability}
+The metric definition, prompt set, model list, per-model scorecards, all raw transcripts (39 models $\times$ 31 prompts $\times$ 4 runs), analysis code, and the robustness and pairwise test suites are public at \url{https://github.com/tap2k/modelun/tree/main/studies/consensus}, with a browsable explorer at \url{https://tap2k.github.io/modelun/consensus/}. The numbers reported here derive from the frozen transcripts via \texttt{analyze.py}, \texttt{robustness.py}, \texttt{pairwise.py}, and \texttt{paper/make\_assets.py}; the provider-pinned and unusual-fruit probes are \texttt{probe\_provider.py} and \texttt{probe\_unusual.py}, with raw output in \texttt{probes/}.
+
+\section*{Note on AI usage}
+This work was a collaboration with the systems it studies. Claude (Opus 4.8 and Fable 5) helped run the study, build the analysis, draft the figures, and edit the text. The research questions, the methodology decisions, and the argument are the author's. Both models also appear as subjects in the panel.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\clearpage
+
+\section{Full scorecard}
+\label{app:scorecard}
+
+\begin{center}
+\small
+\captionof{table}{All 39 models, ranked by answer-choice surprisal (bits; leave-one-out, add-one smoothed; bootstrap 90\% CI over categories). \emph{Avoid} = modal avoidance; \emph{novel} = share of answers no other model gave; \emph{self-dist.} = distinct answers per run. Type is the surprisal $\times$ self-distinctness median split.}
+\label{tab:scorecard}
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{rlcccccl}
+\toprule
+\# & model & surprisal & 90\% CI & avoid & novel & self-dist. & type \\
+\midrule
+\input{gen/scorecard_table}
+\end{tabular}
+\end{center}
+
+\section{Prompts}
+\label{app:prompts}
+The 31 prompts, from the frozen stimulus file (\texttt{spec/stimulus.json}). Each is followed by \emph{``Reply with one word only.''} and sent as a single-turn conversation with no system prompt, requested temperature 1.0, \texttt{max\_tokens} 1024, four independent runs per model.
+
+\begin{multicols}{2}
+\small
+\begin{itemize}\setlength{\itemsep}{1pt}
+\input{gen/prompts}
+\end{itemize}
+\end{multicols}
+
+\end{document}
