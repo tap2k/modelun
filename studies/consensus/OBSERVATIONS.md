@@ -284,36 +284,34 @@ RANKINGS are roster artifacts. `robustness.py` (zero new calls):
 
 Trigger (user eyeball): gpt-4-turbo and claude-fable-5 both say gouda + mustard + mango. Pair affinity?
 `pairwise.py` runs the ladder — each level conditions away a population structure the previous level
-mistook for affinity (numbers at the current 42-model field, 861 pairs, BH-FDR q=.05):
+mistook for affinity (numbers at the 39-model field, 741 pairs, junk-guard-fixed data, BH-FDR q=.05):
 
-- **L1** rarity-weighted co-occurrence vs random-partner null: 8 survive (deepseek-v3.2×wizardlm top at
-  z=4.9, plus command/gpt family-sibling pairs — good positive controls). Confound: avoidance propensity —
-  two habitual modal-avoiders beat a mostly-conformist null without any coupling.
-- **L2** condition on avoidance (given both off-modal, same off-modal answer?): 21 survive, including
+- **L1** rarity-weighted co-occurrence vs random-partner null: 2 survive — deepseek-v3.2×wizardlm
+  (z=5.4) and gpt-4.1×gpt-4o (a family-sibling pair, good positive control). Confound: avoidance
+  propensity — two habitual modal-avoiders beat a mostly-conformist null without any coupling.
+- **L2** condition on avoidance (given both off-modal, same off-modal answer?): 15 survive, including
   fable×gpt-4-turbo. Confound: DEPTH propensity — where a model lands off-modal is a stable trait.
-  Of distinct off-modal answers hitting the field's #2-#3: opus-4.8 100%, ernie 92%, sonnet-5 91%,
-  **fable 80%, gpt-4-turbo 71%** (the "runner-up club") vs hermes 32%, wizardlm 38%, mythomax 38%,
-  command-r-plus 28% going rank>=5 half the time (the deep divers). Club members co-land on
+  Of distinct off-modal answers hitting the field's #2-#3: opus-4.8 100%, ernie 92%, sonnet-5 90%,
+  **fable 80%, gpt-4-turbo 75%** (the "runner-up club") vs hermes 36%, wizardlm 39%, mythomax 36%,
+  deepseek-v3.2 39% — the deep divers go rank>=5 half the time. Club members co-land on
   gouda/mustard/mango against any null that pools in the divers. (Fable pairs with FOUR different gpt
-  generations at near-identical z — a trait signature, not a lineage bond.)
+  generations — 4-turbo, 4o, 4o-mini, 5 — at near-identical z≈3.2 — a trait signature, not a lineage
+  bond.)
 - **L3** condition on depth too (rank>=4 answers only, null from the field's deep-tail distribution,
-  Monte Carlo p-values — the normal approximation badly overstates 1-2-match statistics): **0 of 861
-  survive.** Best raw p ≈ .003, which is what the minimum over 861 null pairs looks like. Even
-  deepseek-v3.2×wizardlm (8 shared deep answers: australia, finnish, sydney, parsley, ladybug...) lands
-  at p=.013 once you grant that two models each throwing 20+ darts into the tail will share some.
+  Monte Carlo p-values — the normal approximation badly overstates 1-2-match statistics): **0 of 741
+  survive.** Best raw p ≈ .003 (mixtral×qwen-2.5), which is what the minimum over 741 null pairs looks
+  like. Even deepseek-v3.2×wizardlm (8 shared deep answers: australia, finnish, sydney, parsley,
+  ladybug...) lands at p=.02 once you grant that two models each throwing 20+ darts into the tail will
+  share some.
 
 **Verdict: no certified pairwise affinity.** The co-occurrence is fully explained by three population
 structures: (1) the modal consensus; (2) the **runner-up consensus** — the off-modal distribution has
-its own mode (mustard takes 85% of non-ketchup answers, broccoli 73%, mango 71%; at the 39-model
-roster it was 93/83/75); (3) the 1-D depth-propensity trait above. Given a model's position on that
+its own mode (mustard takes 93% of non-ketchup answers, broccoli 83%, mango 75%, gouda 70%); (3) the
+1-D depth-propensity trait above. Given a model's position on that
 trait, its specific choices are exchangeable with the field's. **Even the divergence is converged:
 when a model avoids the consensus, it avoids it in the consensus way** — the population-level
 confirmation of the rambutan effect, without prompting for it. Caveats: 31 categories × 4 runs is low
 power (weak affinities invisible); L1/L2 "hits" should never be quoted as findings.
-
-Roster note: the L-numbers above are at 42 models (861 pairs) — command-r×3 + gemma-2 transcripts
-landed 2026-07-07 and are ahead of the committed analysis.json (still 39-model). Rerun analyze.py
-before quoting scorecard numbers alongside these.
 
 ## Junk-guard round 2 + CI estimand fix (2026-07-07) — pre-paper data hygiene
 
