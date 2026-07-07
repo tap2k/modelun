@@ -280,7 +280,6 @@ RANKINGS are roster artifacts. `robustness.py` (zero new calls):
   bias direction is conservative. And the substrate findings (oak 94%, tomato 0/156) are pooled-
   distribution facts across ~15 independent labs, not relative scores — least exposed to the critique.
 
-<<<<<<< HEAD
 ## Pairwise associations (2026-07-07) — tested at three levels, dissolved into population structure
 
 Trigger (user eyeball): gpt-4-turbo and claude-fable-5 both say gouda + mustard + mango. Pair affinity?
@@ -315,7 +314,7 @@ power (weak affinities invisible); L1/L2 "hits" should never be quoted as findin
 Roster note: the L-numbers above are at 42 models (861 pairs) — command-r×3 + gemma-2 transcripts
 landed 2026-07-07 and are ahead of the committed analysis.json (still 39-model). Rerun analyze.py
 before quoting scorecard numbers alongside these.
-=======
+
 ## Junk-guard round 2 + CI estimand fix (2026-07-07) — pre-paper data hygiene
 
 Eyeball pass ahead of the arXiv write-up caught two more normalization leaks, same class as the
@@ -343,4 +342,3 @@ so it's not a truncation artifact (no "states" token exists in the pool). Exactl
 answer in 154 country cells: gemini-2.5-flash, "USA", once. The field's country prototype is
 canada 43 / japan 39 / france 37. Fits the frictionless-mode read: the models' home country has
 edges; Canada is nobody's argument.
->>>>>>> b4147e5 (consensus: junk-guard round 2, CI estimand fix, README sync)
