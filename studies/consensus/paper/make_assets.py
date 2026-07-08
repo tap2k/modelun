@@ -193,36 +193,6 @@ fig.tight_layout()
 fig.savefig(HERE / "figs" / "runnerup.pdf")
 plt.close(fig)
 
-# ---------------------------------------------------- fig 5: human vs model concentration
-hn_path = STUDY / "probes" / "humannorms.json"
-if hn_path.exists():
-    hn = json.loads(hn_path.read_text())
-    hrows = hn["per_category"]  # already sorted by model share desc
-    fig, ax = plt.subplots(figsize=(5.6, 5.2))
-    ys = np.arange(len(hrows))[::-1]
-    for y, r in zip(ys, hrows):
-        ax.plot([r["human_modal_first"], r["model_modal_share"]], [y, y],
-                color=GRID, lw=1.2, zorder=1)
-        ax.plot(r["human_modal_first"], y, "o", ms=5, color=AMBER, zorder=3)
-        ax.plot(r["model_modal_share"], y, "o", ms=5, color=BLUE, zorder=3)
-    ax.set_yticks(ys)
-    ax.set_yticklabels([r["category"] + ("*" if r["wording_mismatch"] else "")
-                        for r in hrows], fontsize=7.5)
-    ax.set_xlim(0, 1.0)
-    ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
-    ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"])
-    ax.set_xlabel("share of the modal answer  (human first-response vs model field)")
-    ax.spines[["top", "right", "left"]].set_visible(False)
-    ax.tick_params(axis="y", length=0)
-    ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.6)
-    ax.set_axisbelow(True)
-    ax.plot([], [], "o", color=AMBER, label="human (VO 2004, first response)")
-    ax.plot([], [], "o", color=BLUE, label="model field")
-    ax.legend(loc="lower right", fontsize=7, frameon=False)
-    fig.tight_layout()
-    fig.savefig(HERE / "figs" / "humannorms.pdf")
-    plt.close(fig)
-
 # ---------------------------------------------------------------- scorecard table
 rows = []
 for i, m in enumerate(order, 1):
