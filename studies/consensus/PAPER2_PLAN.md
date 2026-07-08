@@ -1,91 +1,73 @@
-# Paper 2 plan — the human-simulation paper
+# Paper 2 plan — the human-comparison / diversity-metrics paper
 
-Split from paper 1 ("The Hidden Consensus", the *distributions* paper) on 2026-07-07.
-Paper 1 measures the model field's own answer distribution (self-referential, no human).
-Paper 2 asks whether that distribution can **simulate a human population** — and shows it
-can't, in either direction.
+Split from paper 1 ("The Hidden Consensus", the inter-model convergence paper) on 2026-07-07.
+Paper 1 measures the model field's answer distribution *relative to itself*; paper 2 compares
+it to a *human* answer distribution.
 
-## Working titles
-- *You Can't Prompt Your Way to a Population: LLMs Under- and Over-Disperse Relative to Humans*
-- *The Effective Population Size of a Language Model is Two*
-- *Entropy Is Not Fidelity: Why LLMs Can't Simulate Answer Distributions*
+## Scope correction (2026-07-07)
+An earlier draft of this plan framed paper 2 as a critique of **silicon sampling / synthetic
+survey respondents**. It is not, and should not claim to be. Silicon sampling conditions *one*
+model on a *distribution of demographic personas* and checks whether the answer spread matches
+a real subpopulation (Argyle et al., *Out of One, Many*; Santurkar, OpinionQA). Our experiments
+do something different: fixed open-ended prompts, a panel of *different* models, and *generic*
+diversity instructions — no persona-conditioning, no demographic baseline, no opinion questions.
+The one-word proxy is a clean instrument for **answer-distribution shape on open-ended
+generation**; it is the wrong instrument for persona-conditioned population simulation. Paper 2
+makes the honest, narrower claim and **explicitly disclaims silicon sampling** as a related but
+untested use case (see "Future, separate" below).
 
-## Thesis (sharpened by the completed prompt-strength sweep)
-There is no prompt that makes an LLM field reproduce a human population's answer distribution,
-and **the standard diversity/coverage metric points the wrong way.**
+## Working titles (honest, narrow)
+- *Diversity Is Not Fidelity: LLM Answer Distributions Against Human Norms*
+- *You Can't Prompt an LLM Field to a Human Answer Distribution*
 
-Prompt-strength sweep (5 rungs × 20 categories × 39 models; `probes/sweep_curve.json`):
+## Thesis
+On open-ended generation, the LLM field's answer distribution does not match a human
+population's, this is not recoverable by prompting, and the diversity metric you would use to
+check points the wrong way.
 
-| rung | prompt | eff-N | JS→human | modal |
-|---|---|---|---|---|
-| L0 | none (baseline) | 2.62 | 0.377 | 61% |
-| L1 | "answer naturally" | 2.49 | 0.380 | 63% |
-| L2 | "be a random person, first thing to mind" | **1.97** | 0.365 | **72%** |
-| L3 | steelman anti-mode | 7.80 | 0.448 | 30% |
-| L4 | extreme "give an unusual answer" | **21.16** | **0.922** | 19% |
-| human | — | 6.01 | 0 | 36% |
+Evidence (all collected; `probes/humannorms.json`, `probes/sweep_curve.json`):
+1. **Under-concentration by default.** Matched wording, the model field is more concentrated
+   than the human first-response distribution in **19 of 20** categories (modal 61% vs 36%;
+   effective N ≈ 2.6 vs ≈ 6). One principled exception: `country` (models avoid their home
+   country; humans default to it).
+2. **Un-promptable.** A 5-rung prompt-strength ladder (none → extreme anti-mode) never
+   recovers the human distribution: JS-to-human floor ≈ 0.365, and that rung is the *most*
+   concentrated. Persona/"be a random person" prompts backfire (72% modal, *more* stereotyped);
+   only explicit anti-mode prompts spread the field, and they overshoot.
+3. **Diversity is anti-fidelity (the novel hook).** Effective population size and
+   JS-distance-from-human rise in lockstep. The extreme prompt hits effective N = 21 (3.5×
+   human) at JS = 0.92 (near-maximal distance). The "coverage/diversity" check people would use
+   to validate a synthetic panel is the *same line* as "we have left the target distribution."
 
-Three findings:
-1. **Diversity is anti-fidelity.** Effective population size and JS-distance-from-human rise
-   in *lockstep*. L4 hits effective N = 21 (3.5× human) at JS = 0.92 (near-maximal distance).
-   The metric you'd use to claim "our synthetic panel covers the population" is the same line
-   as "we have left the population." A coverage/diversity check is worse than uninformative.
-2. **Humanizing prompts backfire.** "Be a random member of the public" (L2) makes the field
-   *more* stereotyped than no prompt at all (72% modal, eff-N 1.97) — it reaches harder for
-   the prototype. Mild "answer naturally" (L1) does nothing.
-3. **No rung recovers the distribution.** The JS floor across all prompt strengths is ~0.365
-   (L2), barely below baseline and achieved by *increasing* concentration. Persona prompts
-   collapse harder; diversity prompts explode into noise; neither is the population.
+## Honest calibration of contribution
+- Findings 1–2 partly **replicate** known results (NoveltyBench, Wenger: models < human
+  diversity; Zhang *Forcing Diffuse Distributions*: prompting doesn't fix it, the fix is
+  training-side). Our value-add there is a cheap mechanical instrument + a direct human-norm
+  comparison.
+- Finding 3 (**diversity metrics anti-correlate with distributional fidelity, demonstrated
+  across a controlled prompt ladder**) is the genuinely novel, quotable part — a cautionary
+  result about using coverage/diversity as a validity check.
+- Realistic size: this is a **short / workshop paper or a technical note** built around
+  Finding 3, with 1–2 as support. It is *not* a flagship. Do not pour flagship effort into it.
 
-Stakes: a direct critique of LLMs as **synthetic survey respondents / silicon sampling /
-simulated populations** — and specifically of validating them with diversity/coverage metrics.
-The mode is recoverable; the *distribution* is not, at any prompt strength.
+## What paper 2 needs
+1. Honest write-up around Finding 3; positioning in the **generation-diversity / mode-collapse**
+   literature (NoveltyBench, Wenger, Zhang, Tevet & Berant), explicitly disclaiming silicon
+   sampling. Cite paper 1 for the instrument.
+2. (Optional, strengthens) A fresher/broader human baseline than the 2004 undergrad norms
+   (e.g. the 2020 US cross-sectional norms) to show Findings 1–3 hold under a modern comparator.
+3. The one figure is already built (`probes/sweep_curve.pdf`); F2 = the human-vs-model dumbbell.
 
-## Data that already exists (committed, from paper-1 session)
-- `probes/humannorms.json` — Van Overschelde et al. (2004) first-response norms vs model
-  field, 20 overlapping categories (derived numbers only; raw norms not redistributed).
-- `probes/exactword.json` — VO exact-wording rerun (removes the prompt-wording confound;
-  collapses 3 of 4 apparent reversals; leaves `country` as the one real one).
-- `probes/persona.json` — steelman persona/anti-mode system prompt, 20 cats × 39 models × 4.
-- `analyze_humancompare.py` — modal share, effective-N, JS(field, human) for baseline vs
-  persona. Reproduces every number above.
-- Figure: `paper/figs/humannorms.pdf` (baseline human-vs-model dumbbell; regenerate for p2).
+## Future, separate (NOT paper 2)
+The real silicon-sampling study is a different endeavor and a possible later project:
+persona-condition a model on demographic marginals, ask **opinion** questions, and compare the
+synthetic population to matched human subpopulations (OpinionQA-style). Different task, method,
+and baseline; does not reuse the one-word instrument. Our diversity-is-anti-fidelity result
+would be a relevant secondary finding there.
 
-## What paper 2 still needs (the design pass that makes it robust)
-0. ~~**Prompt-strength sweep** (the headline experiment)~~ — **DONE** (2026-07-07). The money
-   figure exists (`probes/sweep_curve.pdf`): eff-N and JS-to-human rise in lockstep; no rung
-   recovers the distribution. The result came out *stronger* than the predicted U (it's a
-   diversity-is-anti-fidelity lockstep, not a U with a sweet spot). Remaining items below.
-1. **A second / fresher human baseline** to de-risk the 2004-undergrad comparator: either the
-   2020 US cross-sectional norms (PMC7937767) or a small purpose-built single-response survey.
-   Show the result holds under a modern baseline.
-3. **More categories** — extend past the 20 VO-overlap to strengthen breadth (and to include
-   opinion/preference categories closer to the silicon-sampling use case, not just concrete
-   nouns).
-4. **The `country` exception, examined** — the one real reversal (models avoid their home
-   country; humans default to it) is a clean sub-story about embodied vs lexical prototypes;
-   worth a short section, not a footnote.
-5. **(Stretch) persona-conditioned distributions** — condition on demographic personas (the
-   actual silicon-sampling setup) and test whether the distribution matches that subpopulation,
-   not just the general one.
-
-## Positioning (cite, sharpen, don't contradict)
-- Silicon sampling / synthetic respondents: Argyle et al. *Out of One, Many*; Bisbee et al.
-  (LLM survey flattening); Santurkar et al. *Whose Opinions* (already in paper 1's refs). Our
-  delta: a cheap mechanical instrument, a human-norm comparator, and the **two-sided
-  un-recoverability** (both under- and over-dispersion fail) — which the "personas reduce
-  variance" literature hasn't framed as a prompt-strength impossibility.
-- Diversity/mode-collapse: NoveltyBench, Wenger, Zhang *Forcing Diffuse Distributions*.
-- Ground the instrument by citing paper 1.
-
-## Key figures
-- F1: prompt-strength sweep — effective-N and JS(field, human) vs prompt strength (the U).
-- F2: baseline human-vs-model dumbbell (already built; 19/20 more concentrated).
-- F3: per-category JS, baseline vs persona (shows overshoot lands further from human).
-
-## Risks
-- Salami concern: mitigated by the sweep + fresh baseline + opinion categories — genuinely a
-  different question/method/literature from paper 1, not a spun-off table.
-- Comparator age: mitigated by the second baseline.
-- "You prompted it wrong": mitigated by the sweep spanning weak→strong, incl. an explicit
-  diversity instruction as the steelman.
+## Data already collected (committed)
+- `probes/humannorms.json`, `probes/exactword.json` — human comparison, exact-wording rerun.
+- `probes/persona.json`, `probes/sweep_{L1,L2,L4}.json`, `probes/sweep_curve.{json,pdf}` — the
+  5-rung prompt-strength sweep and the anti-fidelity curve.
+- `analyze_humancompare.py`, `analyze_sweep.py` — reproduce every number (need local VO PDF;
+  derived numbers only, raw norms not redistributed).
