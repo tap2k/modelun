@@ -85,7 +85,7 @@ For model $m$ and category $c$, let $A_{m,c}$ be $m$'s answers (up to four sampl
 s(a) \;=\; -\log_2 \frac{\mathrm{count}_{F_{-m,c}}(a) + 1}{\,|F_{-m,c}| + V_c\,},
 \qquad V_c = \bigl|\,\mathrm{support}(F_{-m,c}) \cup \mathrm{support}(A_{m,c})\,\bigr|,
 \end{equation}
-and a model's headline score is the mean of $s(a)$ over all its valid answers across all categories. The score is measured in bits: each additional bit means the model's answers are, on average, half as likely under the rest of the field. A model that always gives the field's answer scores near the theoretical floor; a model that reaches for \emph{gouda} where the field says \emph{cheddar} scores higher. Smoothing ensures a never-seen answer is informative rather than infinitely surprising.
+and a model's headline score is the mean of $s(a)$ over all its valid answers across all categories (informally: the \emph{Mustard Quotient}). The score is measured in bits: each additional bit means the model's answers are, on average, half as likely under the rest of the field. A model that always gives the field's answer scores near the theoretical floor; a model that reaches for \emph{gouda} where the field says \emph{cheddar} scores higher. Smoothing ensures a never-seen answer is informative rather than infinitely surprising.
 
 Three companion statistics separate ways of being different:
 \begin{itemize}
@@ -179,7 +179,7 @@ What makes this pair unusually informative is that the lineage is a single conti
 Because scoring is leave-one-out against the pooled panel, a fair objection is that the scorecard measures the roster: the panel-mean score is just the field's entropy, the fourfold typing is a median split of this panel, and a model from a well-represented family is scored partly against its own relatives. We concede what is true by construction --- absolute bit values are relative to this field --- and test what is not: whether the \emph{rankings} are roster artifacts. Three checks, using no new API calls:
 
 \begin{itemize}
-\item \textbf{Leave-one-family-out (LOFO).} Rescoring every model against a field with all its relatives removed yields Spearman $\rho = 0.991$ against the shipped ranking. Sibling contamination is real, small, and GPT-concentrated (gpt-4o-mini gains $+0.16$ bits, moving rank $9\rightarrow 6$); no headline result moves --- Hermes is first and Sonnet~5 last either way.
+\item \textbf{Leave-one-family-out (LOFO).} Rescoring every model against a field with all its relatives removed yields Spearman $\rho = 0.991$ against the shipped ranking. Sibling contamination is real, small, and GPT-concentrated (gpt-4o-mini gains $+0.16$ bits, moving rank $8\rightarrow 6$); no headline result moves --- Hermes is first and Sonnet~5 last either way.
 \item \textbf{Balanced fields.} Scoring against one randomly drawn model per family (200 draws): the top four rank 1--4 and Sonnet~5 ranks 39th in \emph{every} draw.
 \item \textbf{Random subsets.} Against random 15-model fields (200 draws): top and bottom stable; mid-pack ranks wobble $\pm 3$--$5$.
 \end{itemize}
