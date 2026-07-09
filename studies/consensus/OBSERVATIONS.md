@@ -414,3 +414,20 @@ so it's not a truncation artifact (no "states" token exists in the pool). Exactl
 answer in 154 country cells: gemini-2.5-flash, "USA", once. The field's country prototype is
 canada 43 / japan 39 / france 37. Fits the frictionless-mode read: the models' home country has
 edges; Canada is nobody's argument.
+
+## Battery psychometrics (2026-07-09, `battery.py`, zero new calls)
+
+Category-side robustness, complementing robustness.py's roster-side tests. LOCO: rankings
+survive dropping any single category (rho >= 0.982; worst any_word). Split-half: median
+rho 0.625 across 200 random 15/16 splits -> Spearman-Brown full-battery reliability ~0.77 —
+tier membership solid, adjacent mid-field ranks noisy. Item-rest analysis splits the battery
+cleanly in two: discrimination lives in the DIFFUSE categories (country +0.52, any_word +0.48,
+sport, emotion, instrument, mythical_creature...), while the PEAKED categories (tree, tool,
+fruit, condiment, gemstone ~0.00, dinosaur -0.03) are at a psychometric ceiling — when 95% of
+answers are oak, every model scores alike. So §4.1's substrate and §4.2's scorecard are largely
+DISJOINT subsets of the battery: the effective scorecard is ~15 items. Not added to the paper
+(CIs already carry the rank-uncertainty message; space is tight) — kept here for the census
+paper and battery-v2 design, where it's load-bearing: new categories should target the diffuse
+profile (modal share < ~60%, cultural/abstract flavor); another tree buys no reliability.
+Peaked categories stay in the core anyway: they're the substrate finding, and they're the
+tripwire that would fire first if a diversity-trained field ever comes off ceiling.
