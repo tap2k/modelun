@@ -1,6 +1,6 @@
 # paper — arXiv write-up of the consensus study
 
-"The Hidden Consensus: Answer-Choice Conformity Across 39 Language Models" (Parikh, 2026).
+"The One-Word Census: Answer-Choice Conformity Across 39 Language Models" (Parikh, 2026).
 
 ## Build
 
