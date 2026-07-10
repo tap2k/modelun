@@ -38,7 +38,7 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 ## Spec
 
 - [`spec/stimulus.json`](spec/stimulus.json) — 31 categories, single-turn, no system prompt, frozen.
-- [`spec/models.json`](spec/models.json) — 39 models: US frontier (multi-generation), Chinese labs,
+- [`spec/models.json`](spec/models.json) — 44 models: US frontier (multi-generation), Chinese labs,
   enterprise, search-tuned, persona/roleplay, small open, plus an expansion wave of heirloom
   retro-tests and generation fillers (gpt-4o, gpt-4-turbo, wizardlm-2, sonnet-4.6, …). The
   **deepseek lineage**
