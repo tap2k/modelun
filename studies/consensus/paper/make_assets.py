@@ -126,8 +126,9 @@ WALKS = [
                 "claude-opus-4.8", "claude-sonnet-5"],
      ["3-haiku", "haiku-4.5", "sonnet-4.6", "opus-4.8", "sonnet-5"]),
     ("GPT", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18",
-             "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5"],
-     ["3.5", "4-turbo", "4o", "4o-mini", "4.1", "5", "5.4", "5.5"]),
+             "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-sol"],
+     ["3.5", "4-turbo", "4o", "4o-mini", "4.1", "5", "5.4", "5.5", "5.6-sol"]),
+    ("Grok", ["grok-4.20", "grok-4.3", "grok-4.5"], ["4.20", "4.3", "4.5"]),
     ("Qwen", ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507"], ["2.5-72b", "3-235b"]),
     ("Gemini", ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash"],
      ["2.5-flash", "3.1-pro", "3.5-flash"]),
@@ -135,7 +136,7 @@ WALKS = [
     ("DeepSeek", ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash"],
      ["v3-0324", "v3.2", "v4-flash"]),
 ]
-fig, axes = plt.subplots(2, 3, figsize=(5.6, 3.3), sharey=True)
+fig, axes = plt.subplots(2, 4, figsize=(7.0, 3.3), sharey=True)
 for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
     xs = np.arange(len(labels))
     vals = [pm[l]["surprisal"] for l in labels]
@@ -145,6 +146,13 @@ for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
         axi.annotate("fable-5", (4, pm["claude-fable-5"]["surprisal"]),
                      textcoords="offset points", xytext=(2, 5),
                      fontsize=6.5, color=AMBER, ha="right")
+    if name == "GPT":  # 5.6 tier siblings (terra, luna) beside the flagship
+        gx = len(labels) - 1
+        for sib, lab, dy in [("gpt-5.6-terra", "terra", 4), ("gpt-5.6-luna", "luna", -10)]:
+            axi.plot([gx], [pm[sib]["surprisal"]], "o", ms=4, color=AMBER)
+            axi.annotate(lab, (gx, pm[sib]["surprisal"]),
+                         textcoords="offset points", xytext=(-3, dy),
+                         fontsize=6.5, color=AMBER, ha="right")
     axi.set_title(name, fontsize=8)
     axi.set_xticks(xs)
     axi.set_xticklabels(ticks, fontsize=6, rotation=45, ha="right")
@@ -152,6 +160,8 @@ for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
     axi.spines[["top", "right"]].set_visible(False)
     axi.grid(axis="y", color=GRID, lw=0.5, alpha=0.6)
     axi.set_axisbelow(True)
+for axi in axes.flat[len(WALKS):]:
+    axi.set_visible(False)
 for axi in axes[:, 0]:
     axi.set_ylabel("surprisal (bits)", fontsize=7)
 fig.tight_layout()
