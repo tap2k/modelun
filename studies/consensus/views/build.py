@@ -28,11 +28,11 @@ from analyze import load, analyze  # noqa: E402
 # maintained by hand — models.json carries no generation field)
 WALKS = {
     "claude": ["claude-3-haiku", "claude-haiku-4.5", "claude-sonnet-4.6", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5"],
-    "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+    "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"],
     "gemini": ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash"],
     "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-r1"],
     "llama": ["llama-3.3-70b-instruct", "llama-4-maverick"],
-    "grok": ["grok-4.3", "grok-4.20", "grok-4.5"],
+    "grok": ["grok-4.20", "grok-4.3", "grok-4.5"],
     "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507"],
 }
 
