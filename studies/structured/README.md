@@ -23,15 +23,18 @@ never saw, and the tail thins. The three flips are all weak-mode categories — 
 like the example-payload canon of documentation corpora. β-story reading: the register
 amplifies its own conditional prior, which only wins where the chat prototype was weak.
 
-**3. The register separates conviction from costume — read from discrete behavior.**
-gpt-5.6-terra and claude-fable-5 give the *same* off-modal defaults in chat (mustard,
-mango, four runs of four). Inside the register they part: terra snaps to the field's answers
-(0% modal avoidance in XML) while fable keeps mustard four-of-four. The plain census
-conflates these two kinds of personality; one format column dissociates them. (Their
-surprisal deltas point the same way — fable +0.23, terra −0.43 — but are individually n.s.
-at this battery size; the claim rests on the deterministic answer flips, which need no
-statistics.) The Meta-lineage rise is the aggregate version of the same phenomenon, and it
-IS significant at family level (finding 5).
+**3. Defaults are register-indexed — the register erases about half of them.** Across the
+panel, models hold 144 stable off-modal defaults (same non-modal answer four-of-four in
+chat); only 47% survive into JSON. Retention is a per-model trait: gpt-5.6-terra loses its
+signature defaults (mustard→ketchup, mango→apple, four-of-four flips) keeping 1/4;
+claude-fable-5 keeps 5/7 (mustard, mango survive; gouda→cheddar does not) — and *acquires
+five new JSON-only stable defaults* (cerulean for color, carpenter for occupation, 4-of-4 in
+the register, never in chat). llama-4-maverick holds the panel's largest defaults set (10)
+and keeps 6, which is what its positive Δ is made of. So "conviction vs costume" is a
+continuum, and the true object is a per-register defaults profile — a model's personality is
+indexed to the channel, the same way the census found answers indexed to wording. (All read
+from deterministic 4-of-4 answer behavior; the surprisal deltas for individual models are
+n.s. — see finding 5.)
 
 **4. The register gradient (full-battery, compliance-conditioned, permutation-tested).**
 JSON and XML compress the field and the effect is highly significant on both exchangeable
@@ -52,11 +55,14 @@ format). Parse survival ≥99% per column after junk-guarding.
 **5. The Δ ordering has exactly three tiers of meaning — read it that way.** (a) Seven models
 have individually significant Δs (BH-FDR q=.10), all compressions: deepseek-v3.2 −1.31,
 hermes −0.96, gpt-4o-mini −0.92, gpt-4-turbo −0.87, gpt-5.6-sol −0.65, qwen3 −0.45,
-gemini-3.1-pro −0.31. (b) One family-level effect: the Meta-tuned lineage (maverick,
-llama-3.3, mythomax [a Llama-2 merge]) *diverges* under JSON — no member significant alone,
-but pooled Δ +0.44 (p=.009) and +0.70 vs the rest of the field (two-sample permutation,
-p<.0001, surviving a ×19 family-selection penalty). hermes-4 (Llama base, Nous retune)
-compresses hardest of anyone — the signature follows the tuner, not the base weights.
+gemini-3.1-pro −0.31. (b) One family-level effect: the Llama-derived group (maverick,
+llama-3.3, mythomax [a community Llama-2 merge]) *diverges* under JSON — no member
+significant alone, but pooled Δ +0.44 (p=.009) and +0.70 vs the rest of the field
+(two-sample permutation, p<.0001, surviving a ×19 family-selection penalty). Interpretation
+is open: hermes-4 (also Llama-based, heavily Nous-retuned) compresses hardest of anyone, so
+base weights alone don't explain it — but with community derivatives splitting both ways
+(mythomax up, hermes down), a clean "follows the tuner" story doesn't hold either.
+Pre-registered for the clean re-run; mechanistically unresolved.
 (c) The remaining ~37 models are a noise plateau (Δ range −0.67…+0.56, none distinguishable
 from zero individually): their ordering means nothing, exactly the census's tiers-not-ranks
 rule applied to deltas. The conviction/costume contrast (fable vs terra) rests on discrete

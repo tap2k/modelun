@@ -134,3 +134,19 @@ print("\nparse+junk survival rate (json), models with positive Δ:")
 for l in sorted(labels, key=lambda x: s_plain[x] - s_json[x]):
     if s_json[l] > s_plain[l]:
         print(f"  {l:26} {parse_rate('json', l):.0%}")
+
+# ---- default retention: which stable off-modal chat defaults survive into json? ----
+field_modal = {c: Counter(a for l in labels for a in plain_answers(l, c)).most_common(1)[0][0]
+               for c in cats_json}
+tot = kept_tot = 0
+for l in labels:
+    stable = [c for c in cats_json
+              if len(set(plain_answers(l, c))) == 1 and len(plain_answers(l, c)) == 4
+              and plain_answers(l, c)[0] != field_modal[c]]
+    kept = sum(1 for c in stable
+               if (jc := Counter(fmt_answers("json", l, c)))
+               and jc.most_common(1)[0][0] == plain_answers(l, c)[0]
+               and jc.most_common(1)[0][1] >= 3)
+    tot += len(stable); kept_tot += kept
+print(f"\ndefault retention: {kept_tot}/{tot} stable off-modal chat defaults survive into json "
+      f"({kept_tot/tot:.0%}) — defaults are register-indexed")

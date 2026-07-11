@@ -41,15 +41,18 @@ answers fall from 53 to 28; mean answer-choice surprisal drops 1.80 to 1.58 bits
 individually (BH-FDR $q=.10$), all toward the mode, led by the panel's two most distinctive
 frontier models (the strongest explorer loses 1.32 bits --- half its measured
 distinctiveness) while the conformist floor is unmoved; one family-level effect survives
-aggregation --- the Meta-tuned lineage \emph{diverges} under JSON ($+0.70$ bits against the
-rest of the field, $p<10^{-4}$) --- and the remaining deltas form a noise plateau we decline
-to rank. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
+aggregation --- the Llama-derived models (excepting a heavily third-party-retuned one)
+\emph{diverge} under JSON ($+0.70$ bits against the rest of the field, $p<10^{-4}$) --- and
+the remaining deltas form a noise plateau we decline to rank. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
 survives in 28 of 31 categories, and the three flips occur exactly where the plain mode was
-weakest. The column also dissociates two kinds of distinctiveness the plain census conflates,
-read from discrete behavior rather than score deltas: GPT-5.6 Terra's stable off-modal
-defaults (\emph{mustard}, \emph{mango}, four runs of four in chat) vanish inside the register
-(0\% modal avoidance in XML), while Claude Fable 5 holds the same defaults four-of-four ---
-divergence as costume vs.\ conviction. Full-battery controls reveal a register gradient: the compression is significant and specific
+weakest. The column also shows that a model's \emph{defaults are register-indexed}, read from discrete
+behavior rather than score deltas: of the panel's 144 stable off-modal defaults (the same
+non-modal answer, four runs of four, in chat), only 47\% survive into JSON. Retention is a
+per-model trait --- GPT-5.6 Terra loses its signature defaults (\emph{mustard}$\to$ketchup,
+\emph{mango}$\to$apple, four-of-four flips), while Claude Fable 5 retains most of its own
+(5 of 7) and acquires \emph{new} stable defaults that exist only in the register
+(\emph{cerulean}, \emph{carpenter}, four-of-four in JSON, never in chat). Personality is
+indexed to the channel, as the census found answers indexed to wording. Full-battery controls reveal a register gradient: the compression is significant and specific
 to the answer-delivery formats models are trained to speak (JSON $-0.22$ bits, $p=10^{-4}$;
 XML $-0.18$, $p=.003$; sign-flip permutation over models, corroborated over categories),
 absent for YAML and CSV ($p>.15$), and \emph{reversed} for an arbitrary non-data wrapper ---
@@ -80,8 +83,9 @@ surface on which models are evaluated, compared, and chosen.
 %   3. conviction/costume dissociation on DISCRETE behavior (Terra vs Fable 4-of-4 flips)
 %   4. register gradient: json/xml compress (trained answer-delivery formats), yaml/csv
 %      n.s., brackets loosens (p=.002) => mechanism weighs toward tool-use post-training
-%   5. family-level register response (Meta lineage +0.70 vs field, p<1e-4; follows the
-%      tuner not the base weights; pre-registered for re-run)
+%   5. family-level register response (Llama-derived group +0.70 vs field, p<1e-4;
+%      interpretation open — hermes (llama+Nous) compresses, mythomax (llama merge) rises,
+%      so neither pure base-weights nor clean tuner story; pre-registered for re-run)
 %   6. cheap, mechanical, reusable: one extra column on a frozen instrument; compliance
 %      falls out as a standing capability metric
 
@@ -197,13 +201,21 @@ surface on which models are evaluated, compared, and chosen.
 %    −0.65 p=.0015 | qwen3 −0.45 | gemini-3.1-pro −0.31. The other 37 (incl. every positive
 %    Δ and mixtral's −0.67) are individually n.s. — the mid-table ORDER is noise; only
 %    quote the seven, the aggregates, and the family test.
-% 5. FAMILY TRAIT (survives at family altitude): Meta-tuned lineage (maverick, llama-3.3,
-%    mythomax [llama-2 merge]) pooled Δ +0.44 (93 model-cats, p=.009); vs rest of field
-%    +0.70, two-sample label permutation p<1e-4 — survives ×19 selection penalty. No member
-%    significant alone. hermes-4 (llama base, Nous retune) compresses hardest => signature
-%    follows the TUNER, not base weights. Frame conviction/costume (fable/terra) on the
-%    DISCRETE 4-of-4 answer flips, not Δ magnitudes (fable's +0.22 is n.s.).
-%    Pre-register the Meta-family prediction for the clean re-run.
+% 5. FAMILY TRAIT (survives at family altitude): Llama-derived group (maverick, llama-3.3,
+%    mythomax [community llama-2 merge — NOT Meta-tuned, be precise]) pooled Δ +0.44
+%    (93 model-cats, p=.009); vs rest of field +0.70, two-sample label permutation p<1e-4 —
+%    survives ×19 selection penalty. No member significant alone. INTERPRETATION OPEN:
+%    hermes-4 (llama base, Nous retune) compresses hardest, so not pure base weights; but
+%    community derivatives split both ways (mythomax up, hermes down), so not a clean
+%    tuner-signature either. State the statistic, pre-register, decline the mechanism.
+% 6. DEFAULT RETENTION (the corrected conviction/costume — verified answer-level, 2026-07-11):
+%    144 stable off-modal chat defaults across the panel; 47% survive into JSON.
+%    terra keeps 1/4 (loses mustard->ketchup, mango->apple 4-of-4); fable keeps 5/7 (mustard,
+%    mango yes; gouda->cheddar NO) and gains 5 JSON-only stable defaults (cerulean/color,
+%    carpenter/occupation — 4-of-4 in register, never in chat). maverick holds the panel's
+%    largest defaults set (10), keeps 6. => defaults are REGISTER-INDEXED; per-register
+%    personality profiles, continuum not binary. NOTE: earlier "fable holds four-of-four"
+%    and "terra 0% XML avoidance" claims were pilot-scoped/overstated — do not reuse.
 % 6-cat pilot's "brackets = null" was category luck; full battery flips it to loosening.
 % SIGNIFICANCE (probe_significance.py, sign-flip permutation, 20k draws, two units):
 %   field entropy/31 cats:  json -0.204 p=.0006 | xml -0.196 p=.0006 | yaml -0.021 p=.76
