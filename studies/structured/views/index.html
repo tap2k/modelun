@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>structured — ask for JSON, lose the mustard</title>
+<style>
+:root{--bg:#faf9f6;--panel:#fff;--line:#e4e2dc;--txt:#0b0b0b;--mut:#8a8880;--acc:#2a78d6;--amber:#b07500;--red:#b03a2e}
+@media (prefers-color-scheme: dark){:root{--bg:#141311;--panel:#1c1b18;--line:#2e2c27;--txt:#ece9e2;--mut:#8a8880;--acc:#5b9be0;--amber:#d69a2d;--red:#d0604f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 -apple-system,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 8px} h3{font-size:13px;color:var(--mut);margin:18px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.note{color:var(--mut);font-size:13px;max-width:70ch}
+a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+nav{display:flex;gap:14px;margin:18px 0;border-bottom:1px solid var(--line);padding-bottom:10px;flex-wrap:wrap}
+nav a{font-size:13px;color:var(--mut)} nav a.cur{color:var(--acc);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:500;font-size:12px;cursor:default}
+tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
+.bar{display:inline-block;height:9px;background:var(--acc);border-radius:2px;vertical-align:middle}
+.bar.p{background:var(--mut);opacity:.55}
+.delta-neg{color:var(--red)} .delta-pos{color:var(--acc);font-weight:600}
+.pill{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:2px 9px;margin:2px 4px 2px 0;font-size:12px}
+.pill b{font-weight:600}
+.pill.off{border-color:var(--acc);color:var(--acc)}
+.pill.gone{opacity:.45;text-decoration:line-through}
+.wide{overflow-x:auto}
+.mut{color:var(--mut)}
+code{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+<h1>structured</h1>
+<p class="note"><b>Ask for JSON, lose the mustard.</b> The <a href="../consensus/">One-Word Census</a>
+asked <span id="npanel"></span> models questions with a hundred right answers. This study asks the same
+questions with one change: <code>Reply with JSON only, in the form {"word": "&lt;your answer&gt;"}</code>.
+No schema enforcement, no constrained decoding — just the request. The field converges harder, and the
+distinctive models lose the most. Controls (full battery each): XML compresses like JSON; YAML and CSV
+show no reliable net effect; bare square brackets significantly <i>loosens</i> the field — the collapse
+is specific to the formats models are trained to answer in.</p>
+<nav id="nav"></nav>
+<div id="view"></div>
+</main>
+<script src="data.js"></script>
+<script>
+const COLS = ["plain","json","xml","yaml","csv","brackets"];
+const $ = (h) => { document.getElementById("view").innerHTML = h; };
+const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+document.getElementById("npanel").textContent = D.meta.panel;
+
+function nav(cur){
+  const tabs = [["#/","scorecard"],["#/cats","categories"],["#/compliance","compliance"],["#/about","method"]];
+  document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
+    `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
+    (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
+}
+
+var SORT = "delta";
+function scorecard(){
+  nav("#/");
+  const keyf = {plain: l => -D.models[l].plain, json: l => -D.models[l].json,
+                delta: l => D.models[l].delta}[SORT];
+  const order = [...D.order].sort((a,b) => keyf(a) - keyf(b));
+  const rows = order.map(l => {
+    const m = D.models[l];
+    const d = m.delta;
+    const cls = d > 0.05 ? "delta-pos" : (d < -0.05 ? "delta-neg" : "mut");
+    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'">
+      <td>${esc(l)}</td>
+      <td><span class="bar p" style="width:${m.plain*38}px"></span> ${m.plain.toFixed(2)}</td>
+      <td><span class="bar" style="width:${m.json*38}px"></span> ${m.json.toFixed(2)}</td>
+      <td class="${cls}">${d>0?"+":""}${d.toFixed(2)}</td></tr>`;
+  }).join("");
+  const th = (k, lab) => `<th style="cursor:pointer" onclick="SORT='${k}';scorecard()">${lab}${SORT===k?" ▾":""}</th>`;
+  $(`<h2>answer-choice surprisal: plain chat vs JSON</h2>
+  <p class="note">Bits, leave-one-out against the same column's field, add-one smoothed — the census
+  metric, computed within each register. <span class="delta-neg">Negative Δ</span>: personality lost in
+  the data register. <span class="delta-pos">Positive Δ</span>: convictions held while the field
+  collapsed — relatively <i>more</i> distinctive in JSON. Individual Δs are noisy at this battery size:
+  seven clear per-model significance (all negative); the Meta-tuned family's rise is significant as a
+  group; mid-table order is noise. Click a column header to sort; click a model to drill down.</p>
+  <div class="wide"><table><tr><th>model</th>${th("plain","plain")}${th("json","json")}${th("delta","Δ")}</tr>${rows}</table></div>`);
+}
+
+function cats(){
+  nav("#/cats");
+  const rows = D.meta.cats_full.map(c => {
+    const f = D.field[c];
+    const cells = COLS.map(k => {
+      if (!f[k]) return `<td class="mut">—</td>`;
+      const [w, n] = f[k].top[0];
+      const share = Math.round(100 * n / f[k].n);
+      const flip = f.plain && f[k].top[0][0] !== f.plain.top[0][0];
+      return `<td>${flip?`<b class="delta-pos">${esc(w)}</b>`:esc(w)} <span class="mut">${share}% · ${f[k].distinct}d</span></td>`;
+    }).join("");
+    return `<tr><td><b>${esc(c.replace(/_/g," "))}</b></td>${cells}</tr>`;
+  }).join("");
+  $(`<h2>the field's modal answer, by column</h2>
+  <p class="note">Share = modal answer's slice of the whole field; <i>d</i> = distinct answers.
+  <b class="delta-pos">Blue bold</b> = the register changed the field's favorite (only where the plain
+  mode was weak: butterfly, monopoly, tango). XML/YAML/CSV/brackets ran on six control categories.</p>
+  <div class="wide"><table><tr><th>category</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>${rows}</table></div>`);
+}
+
+function model(l){
+  nav("#/m/"+l);
+  const m = D.models[l];
+  if (!m) { $(`<p class="note">unknown model</p>`); return; }
+  const rows = D.meta.cats_full.map(c => {
+    const cols = m.cats[c];
+    const plainSet = new Set(cols.plain);
+    const fieldModal = D.field[c].plain.top[0][0];
+    const cells = COLS.map(k => {
+      if (!cols[k]) return `<td class="mut">—</td>`;
+      const counts = {};
+      cols[k].forEach(a => counts[a] = (counts[a]||0)+1);
+      return `<td>` + Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([a,n]) => {
+        const off = a !== fieldModal;
+        const gone = k !== "plain" && off === false && cols.plain.every(p => p !== a);
+        return `<span class="pill ${off?"off":""}">${esc(a)}${n>1?` <b>×${n}</b>`:""}</span>`;
+      }).join("") + `</td>`;
+    }).join("");
+    return `<tr><td><b>${esc(c.replace(/_/g," "))}</b></td>${cells}</tr>`;
+  }).join("");
+  $(`<h2>${esc(l)}</h2>
+  <p class="note">plain ${m.plain.toFixed(2)} bits → json ${m.json.toFixed(2)}
+  (<span class="${m.delta>0.05?"delta-pos":m.delta<-0.05?"delta-neg":"mut"}">${m.delta>0?"+":""}${m.delta.toFixed(2)}</span>).
+  <span class="pill off" style="margin-left:8px">blue outline</span> = differs from the field's plain-chat
+  modal answer for that category.</p>
+  <div class="wide"><table><tr><th>category</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>${rows}</table></div>`);
+}
+
+function compliance(){
+  nav("#/compliance");
+  const fmts = D.meta.formats;
+  const rows = D.order.map(l => {
+    const cells = fmts.map(f => {
+      const c = (D.compliance[l]||{})[f];
+      if (!c || !c.n) return `<td class="mut">—</td>`;
+      const w = Math.round(100*c.wrapped/c.n), u = Math.round(100*c.usable/c.n);
+      const bad = w < 90;
+      return `<td class="${bad?"delta-neg":""}">${w}%${u<w?` <span class="mut">(${u}% usable)</span>`:""}</td>`;
+    }).join("");
+    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td>${esc(l)}</td>${cells}</tr>`;
+  }).join("");
+  $(`<h2>format compliance</h2>
+  <p class="note">Share of replies carrying the requested wrapper (regex hit), per model per format;
+  parenthetical shows the rate surviving the junk guard where lower. <span class="delta-neg">Red</span>
+  = under 90%. Unwrapped replies fall back to census normalization, so low compliance doesn't
+  fabricate answers — but it's a capability datum in its own right, and the reason parse artifacts
+  can't explain the surprisal deltas (audited ≥99% usable on every column).</p>
+  <div class="wide"><table><tr><th>model</th>${fmts.map(f=>`<th>${f}</th>`).join("")}</tr>${rows}</table></div>`);
+}
+
+function about(){
+  nav("#/about");
+  const p = D.meta.prompts || {};
+  const clauses = Object.entries(p).map(([f, cats]) => {
+    const sample = cats[Object.keys(cats)[0]] || "";
+    return `<li><b>${esc(f)}</b>: <code>${esc(sample)}</code></li>`;
+  }).join("");
+  $(`<h2>method</h2>
+  <p class="note">Same instrument as the <a href="../consensus/">census</a>: ${D.meta.panel} models,
+  single-turn, no system prompt, temperature 1.0, four runs per cell, exact match on normalized tokens
+  with the census junk guard. The format wrapper is stripped mechanically (regex) before scoring; parse
+  survival is ≥99% per column. All five formats ran the full ${D.meta.cats_full.length}-category battery.
+  Surprisal is computed within each column, so a column's compression is a property of the register, not
+  a cross-register comparison artifact. Effects are permutation-tested over categories and models
+  (probe_significance.py): json/xml compression p≤.003; yaml/csv n.s.; brackets loosening p≤.005.</p>
+  <h3>sample prompts</h3><ul class="note">${clauses}</ul>
+  <p class="note">Raw replies, runners, and analysis:
+  <a href="https://github.com/tap2k/modelun/tree/main/studies/structured" target="_blank" rel="noopener">source ↗</a></p>`);
+}
+
+function route(){
+  const h = location.hash || "#/";
+  if (h === "#/") scorecard();
+  else if (h === "#/cats") cats();
+  else if (h === "#/compliance") compliance();
+  else if (h === "#/about") about();
+  else if (h.startsWith("#/m/")) model(decodeURIComponent(h.slice(4)));
+  else scorecard();
+}
+addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>

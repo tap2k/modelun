@@ -1,0 +1,249 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\ie}{i.e.,\ }
+\newcommand{\todoyaml}{\textcolor{red}{ [yaml/csv control verdict pending]}}
+% DRAFT SKELETON 2026-07-10. Numbers from studies/structured/analyze.py on the same-day run.
+% Title alternates: "The Register Tax" / "Speak Data, Say the Mode" /
+%   "Ask for JSON: Structured Output Collapses Answer Choice in Language Models"
+
+\title{\textbf{Ask for JSON: Structured Output Collapses\\Answer Diversity Across 44 Language Models}}
+\author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
+\date{July 2026 --- \textcolor{red}{DRAFT}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+When a language model must choose one answer from a large space of equally valid options, a
+format clause --- \emph{``Reply with JSON only''} --- changes which answer it chooses. We re-run
+the One-Word Census \citep{parikh2026census}, 31 category prompts with wide answer spaces
+asked of 44 models, with the reply requested in JSON: no schema enforcement, no constrained
+decoding, only the request. The field's convergence deepens sharply: on the unconstrained
+prompt (``Pick a word.''), the modal answer's share rises from 40\% to 63\% and distinct
+answers fall from 53 to 28; mean answer-choice surprisal drops 1.80 to 1.58 bits. The tax is
+\emph{progressive} and respects the instrument's resolution: seven of 44 models move
+individually (BH-FDR $q=.10$), all toward the mode, led by the panel's two most distinctive
+frontier models (the strongest explorer loses 1.32 bits --- half its measured
+distinctiveness) while the conformist floor is unmoved; one family-level effect survives
+aggregation --- the Meta-tuned lineage \emph{diverges} under JSON ($+0.70$ bits against the
+rest of the field, $p<10^{-4}$) --- and the remaining deltas form a noise plateau we decline
+to rank. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
+survives in 28 of 31 categories, and the three flips occur exactly where the plain mode was
+weakest. The column also dissociates two kinds of distinctiveness the plain census conflates,
+read from discrete behavior rather than score deltas: GPT-5.6 Terra's stable off-modal
+defaults (\emph{mustard}, \emph{mango}, four runs of four in chat) vanish inside the register
+(0\% modal avoidance in XML), while Claude Fable 5 holds the same defaults four-of-four ---
+divergence as costume vs.\ conviction. Full-battery controls reveal a register gradient: the compression is significant and specific
+to the answer-delivery formats models are trained to speak (JSON $-0.22$ bits, $p=10^{-4}$;
+XML $-0.18$, $p=.003$; sign-flip permutation over models, corroborated over categories),
+absent for YAML and CSV ($p>.15$), and \emph{reversed} for an arbitrary non-data wrapper ---
+square brackets significantly loosen the field ($+0.16$, $p=.002$). On the unconstrained
+prompt, all four serializations concentrate the pool (serendipity 41\% plain $\to$ 52--65\%),
+so a corpus-register component remains visible; but the battery-wide gradient weighs toward
+tool-use post-training as the dominant mechanism. Structured output is how software consumes
+language models; that surface is served by a measurably more homogeneous model than the chat
+surface on which models are evaluated, compared, and chosen.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+% FRAMING (decided 2026-07-10): short empirical note, 6-8 pages, unpretentious. Lead with
+% the deployment argument; state the modest field effect (-0.22 bits, ~12%) plainly and let
+% the noise-vs-signal audit carry credibility. Only quote: the seven individually confirmed
+% movers, the aggregates, the family test, and discrete answer behavior. Pre-register the
+% Meta-family prediction + the enforcement-column follow-up. This is the instrument's first
+% application paper (paper 1 = the instrument itself, cite everywhere).
+% - recap census: instrument, surprisal metric, one-sentence findings
+% - the one-variable manipulation: identical questions, identical panel, format clause only
+% - headline: the deployment surface argument (agents consume JSON; evals happen in chat)
+% - contributions list:
+%   1. progressive format tax (field -0.22 bits p=1e-4; 7/44 individually significant, all
+%      compressions, incl. gpt-5.6-sol; floor unmoved; mid-table = noise plateau, say so)
+%   2. sharpener-not-reindexer + weak-mode flips (ant->butterfly 43->60%)
+%   3. conviction/costume dissociation on DISCRETE behavior (Terra vs Fable 4-of-4 flips)
+%   4. register gradient: json/xml compress (trained answer-delivery formats), yaml/csv
+%      n.s., brackets loosens (p=.002) => mechanism weighs toward tool-use post-training
+%   5. family-level register response (Meta lineage +0.70 vs field, p<1e-4; follows the
+%      tuner not the base weights; pre-registered for re-run)
+%   6. cheap, mechanical, reusable: one extra column on a frozen instrument; compliance
+%      falls out as a standing capability metric
+
+\section{Related work}
+\label{sec:related}
+
+% Format restrictions vs accuracy: \citep{tam2024speakfreely} degraded reasoning; contested
+% by \citep{kurt2024saywhatyoumean}. Our claim orthogonal to the accuracy debate: questions
+% with no wrong answers.
+% Decoder-level enforcement: the constraint-tax line \citep{constrainttax2026validity,
+% constrainttax2026tools, formattax2026} -- validity up, correctness down, behavior
+% suppressed. Foil: they constrain the decoder; we only ask. Register effect in the weights,
+% not a decoding artifact.
+% Diversity within grammars: \citep{automata2025diverse} engineers diversity back into
+% constrained decoding -- presupposes the collapse we characterize.
+% Surface-form sensitivity: \citep{sclar2024formatspread} on accuracy; census wording result
+% (gemstone vs precious stone) on choice. This paper adds the channel/register axis.
+% Mode collapse literature: \citep{jiang2025hivemind, zhang2025noveltybench, kirk2024rlhf};
+% judges prefer modal outputs (relevant to why we stay judge-free).
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Instrument}
+% Census recap: 31 single-turn categories, no system prompt, temp 1.0, 4 runs; answer-choice
+% surprisal, leave-one-out, add-one smoothed; exact match on normalized tokens; junk guard.
+% CRITICAL design point: surprisal is computed WITHIN each format column (json answers scored
+% against the json field), so a column's compression is a property of the column, not a
+% cross-register comparison artifact.
+
+\subsection{Format columns}
+% json: full 31-category battery, all 44 models x 4 runs (5{,}456 calls)
+% xml, brackets, yaml, csv: 6-category controls (color, fruit, condiment, cheese, tree,
+% any_word), all 44 models x 4 runs each
+% clauses verbatim:
+%   json:     Reply with JSON only, in the form {"word": "<your answer>"}.
+%   xml:      Reply with XML only, in the form <word>your answer</word>.
+%   brackets: Reply with your answer inside square brackets only, like [answer].
+%   yaml:     Reply with YAML only, in the form `word: <your answer>`.
+%   csv:      Reply with CSV only: a header row `word`, then one data row with your answer.
+% No response_format parameter, no tool schema, no constrained decoding anywhere.
+
+\subsection{Parsing and hygiene}
+% Format wrapper stripped by regex; extracted token passes the census junk guard; unwrapped
+% replies fall back to the census rule directly (a malformed-JSON essay's last word must not
+% read as a novel answer). Parse+junk survival >= 99\% per model; per-model survival audited
+% for every model whose surprisal rose. Provenance: one interrupted run (credit exhaustion)
+% refilled same-day; 54 of 8{,}624 json cells unrecoverable; stamped in the data file.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{The format tax is progressive}
+% Field mean 1.80 -> 1.58 bits. Scorecard spread 2.2 -> 1.5 bits.
+% Table: plain / json / delta for all 44 (appendix); inline highlights:
+%   deepseek-v3.2  2.63 -> 1.32  (-1.32)   <- the census's lone frontier-lab explorer
+%   hermes-4-70b   3.28 -> 2.30  (-0.98)
+%   gpt-4o-mini    2.10 -> 1.18  (-0.92)
+%   gpt-4-turbo    2.06 -> 1.19  (-0.87)
+%   gpt-5.6-sol    2.03 -> 1.37  (-0.66)
+%   ...
+%   claude-opus-4.8 1.26 -> 1.09 (-0.17)
+%   grok-4.5       1.26 -> 1.19  (-0.07)
+%   claude-sonnet-5 1.06 -> 1.00 (-0.05)
+% The floor cannot fall; the tail falls to it. Figure: plain-vs-json scatter, y=x line.
+
+\subsection{A sharpener, not a re-indexer}
+% Modes hold 28/31; plain-unseen mass <4\%; tail mass thins.
+% serendipity 40% -> 63\%, 53 -> 28 distinct; apple 76 -> 95\%.
+% The three flips are the panel's weakest plain modes:
+%   insect: ant 43\% -> butterfly 60\%; board_game: chess 52\% -> monopoly; dance: salsa -> tango.
+% Reading: the register amplifies its own conditional prior (documentation/example-payload
+% canon), which wins only where the chat prototype was weak. Connects to the census's
+% unusual-fruit contrast: semantic reframes re-index; channel reframes sharpen.
+
+\subsection{The register moves the mode, not the temperature}
+% Self-distinctness (distinct answers / runs; the census's effective-temperature proxy) is
+% nearly FLAT at field level across columns: plain 0.42 | json 0.39 | xml 0.40 | yaml 0.42 |
+% csv 0.43 | brackets 0.43 — while surprisal drops 0.22 bits. The collapse is POSITIONAL
+% (mass relocates onto the field's mode), not a sampling change; rules out a serving-layer
+% temperature artifact (if providers altered sampling on JSON-looking asks, selfd would
+% crater everywhere). The within-model narrowing that exists is progressive, same tail:
+% hermes 0.71->0.52, deepseek-v3.2 0.56->0.42, sonar 0.50->0.40, haiku-4.5 0.42->0.33;
+% conformist floor flat (sonnet-5 0.30->0.27); fable flat 0.32 (conviction, not noise).
+% => format tax is progressive on BOTH census axes; the two-axis dissociation (big surprisal
+% move, small selfd move) is itself evidence for reshaped conditional distribution.
+
+\subsection{Conviction vs.\ costume}
+% Terra: mustard/mango 4-of-4 in chat (46\% avoidance) -> 4\% under json, 0\% under xml.
+% Fable: same chat defaults; +0.23 bits under json, holds mustard; also mythomax +0.46,
+% llama-4-maverick +0.55, all parse-clean. Mechanism: within-column scoring -- holding your
+% defaults while the field collapses raises relative surprisal. One extra column dissociates
+% register-dependent divergence from register-independent conviction.
+
+\subsection{Serialization vs.\ structure: the register gradient}
+% REVISED VERDICT after full-battery extension (2026-07-10 evening). Three results:
+% 1. Compliance-conditioned (wrapper>=90%) field-mean deltas over 31 cats:
+%      json -0.22 (n=43) | xml -0.22 (n=41) | yaml -0.08 (n=37) | csv -0.02 (n=39)
+%      | brackets +0.16 (n=43, 99% compliant — genuinely loosens the field).
+%    Compression tracks the format's prominence as an ANSWER-DELIVERY register.
+%    This partially revives the trained-format hypothesis; but:
+% 2. any_word concentration holds for ALL serializations (plain 41% -> csv 52%, xml 59%,
+%    json 64%, yaml 65%; brackets 38%) — register effect not purely RLHF-format-specific.
+%    Honest framing: corpus register and post-training entangled; black-box can't separate.
+% 3. Format incompetence is a distinct phenomenon and a methodological trap: granite/
+%    mythomax emit CSV wrappers ~1% of the time; unconditioned means read their unwrapped
+%    replies as divergence (granite csv +1.69 raw). ALWAYS condition on compliance.
+%    Genuine register-diverger exists: llama-4-maverick, 100% compliant, positive in every
+%    format (+0.37..+1.15) — register reaction is heterogeneous, not uniformly compressive.
+% 4. PER-MODEL SIGNIFICANCE DISCIPLINE (tiers, not ranks — applied to deltas):
+%    Individually significant Δ (BH-FDR q=.10): 7/44, ALL compressions — deepseek-v3.2
+%    −1.31 p<1e-4 | hermes −0.96 | gpt-4o-mini −0.92 | gpt-4-turbo −0.87 | gpt-5.6-sol
+%    −0.65 p=.0015 | qwen3 −0.45 | gemini-3.1-pro −0.31. The other 37 (incl. every positive
+%    Δ and mixtral's −0.67) are individually n.s. — the mid-table ORDER is noise; only
+%    quote the seven, the aggregates, and the family test.
+% 5. FAMILY TRAIT (survives at family altitude): Meta-tuned lineage (maverick, llama-3.3,
+%    mythomax [llama-2 merge]) pooled Δ +0.44 (93 model-cats, p=.009); vs rest of field
+%    +0.70, two-sample label permutation p<1e-4 — survives ×19 selection penalty. No member
+%    significant alone. hermes-4 (llama base, Nous retune) compresses hardest => signature
+%    follows the TUNER, not base weights. Frame conviction/costume (fable/terra) on the
+%    DISCRETE 4-of-4 answer flips, not Δ magnitudes (fable's +0.22 is n.s.).
+%    Pre-register the Meta-family prediction for the clean re-run.
+% 6-cat pilot's "brackets = null" was category luck; full battery flips it to loosening.
+% SIGNIFICANCE (probe_significance.py, sign-flip permutation, 20k draws, two units):
+%   field entropy/31 cats:  json -0.204 p=.0006 | xml -0.196 p=.0006 | yaml -0.021 p=.76
+%     | csv +0.075 p=.15 | brackets +0.138 p=.0052
+%   per-model surprisal/44: json -0.217 p=.0001 | xml -0.180 p=.0032 | yaml p=.81
+%     | csv p=.16 | brackets +0.161 p=.0022
+%   deepseek-v3.2 individual collapse p<1e-4; json-vs-yaml gradient (paired) p<1e-4.
+% => REVISED wording: yaml/csv have NO significant battery-wide effect (yaml's any_word
+%    65% is category-specific); compression is specific to trained answer-delivery formats
+%    (json/xml), which SHIFTS the mechanism weight toward tool-use post-training; brackets
+%    loosening is real and needs its own account (novel-wrapper playfulness?).
+
+\section{Limitations}
+\label{sec:limitations}
+% Same-day snapshot, one serving channel (OpenRouter), requested temp 1.0 not uniformly
+% honored; panel-relative bits; 6-category controls narrower than the json battery; single
+% wording per format clause (clause-sensitivity unprobed); prompt-level requests only --
+% engine-enforced response_format / tool-call framing not yet measured (next column).
+
+\section{Discussion}
+\label{sec:discussion}
+% - deployment-surface argument, quantified: evals/leaderboards/vibes happen in chat; agents
+%   consume the sharpened column. Diversity measured in chat overstates diversity in use.
+% - the register as an instrument: personality depth testing (costume vs conviction).
+% - if (b) above: the collapse is being trained in per-release -- connect to census
+%   generational result and the fixed-instrument argument.
+% - future: response_format/tool-schema column; clause paraphrases; embedded census
+%   (choices inside prose, regex-extractable slots -- no judges: judges prefer the mode).
+
+\section*{Data and code availability}
+% studies/structured/ in the modelun repo: run_formats.py, add_control_formats.py,
+% fill_missing.py, analyze.py, probes/format_register.json (raw replies, provenance-stamped).
+% Plain-chat baseline: the census transcripts (tagged paper1-39-panel for the 39-model paper;
+% this study scores against the 44-model panel on main).
+
+\section*{Note on AI usage}
+% Same convention as the census paper; Claude (Fable 5) is again both collaborator and
+% subject -- including in the conviction/costume result.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
