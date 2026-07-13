@@ -325,6 +325,28 @@ RANKINGS are roster artifacts. `robustness.py` (zero new calls):
   bias direction is conservative. And the substrate findings (oak 94%, tomato 0/156) are pooled-
   distribution facts across ~15 independent labs, not relative scores — least exposed to the critique.
 
+## Release-cohort robustness (2026-07-13) — the recency skew doesn't set the mode's LOCATION
+
+Sharper form of the roster critique (user): the metric scores distance from the pooled field mode, the
+roster is recency-skewed, and the newest flagships both snap to the mode hardest AND outnumber the rest —
+so they partly CO-DEFINE the consensus they're scored against (leave-one-out removes sonnet-5 but leaves
+gpt-5.5/opus-4.8/qwen3/grok-4.5 in the reference). Distinct from the family check — balanced-per-family
+draws are still recency-heavy (one recent-ish model per family). Decompose the mode into LOCATION vs MASS:
+location (blue/oak/apple/serendipity) is anchored by the human-norms match + ~15-lab substrate, so it's
+not a recent-cohort invention; only the MASS (peakedness) is cohort-driven, and over-representing the
+conformist cohort inflates absolute spread (already conceded — bits are panel-relative).
+
+Test (`robustness.py`, new `cohort_field` draw, zero new calls): coarse 3-era buckets (heirloom/mid/newest,
+hand-assigned in the probe NOT the frozen spec), reference field = 5 models/era = 15-model cohort-UNIFORM,
+200 draws — forces the divergent old heirlooms (mixtral, mythomax, wizardlm, gpt-4-turbo, 3-haiku) into the
+reference at equal weight, de-peaking the mode. Result: **LOO-vs-cohort-uniform rho = 0.992; sonnet-5 rank
+44 [44,44] EVERY draw; top-4 (hermes, wizardlm, mixtral, deepseek-v3.2) ranks 1-4 EVERY draw.** The newest
+flagships' conformity is INTRINSIC, not co-definition. Coherent wrinkle: fable-5 gets slightly MORE
+divergent de-skewed (rank 24 -> median 21) — exactly the predicted direction (less recent-conformist mass
+= its stable off-modal defaults stand out more). Folded into paper §robustness as a clause on the
+"generational declines survive LOFO" sentence (NOT a standalone bullet — three rho≈0.99 draws already
+establish rank-robustness; the co-definition point belongs with the generational claim it defends).
+
 ## Pairwise associations (2026-07-07) — tested at three levels, dissolved into population structure
 
 Trigger (user eyeball): gpt-4-turbo and claude-fable-5 both say gouda + mustard + mango. Pair affinity?

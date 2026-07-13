@@ -40,6 +40,39 @@ fam = {m: (meta.get(m, {}).get('family') or m) for m in models}
 fam_sizes = Counter(fam.values())
 print("families (size>1):", {f: n for f, n in fam_sizes.most_common() if n > 1})
 
+# --- release-era tiers (coarse, hand-assigned here, NOT in the frozen spec) ---
+# The reference field's MODE MASS is set by whichever release cohort dominates the roster,
+# and the roster is recency-skewed. This buckets models into three release eras so a
+# cohort-UNIFORM reference field can be drawn (equal models per era), neutralizing the
+# skew. Boundaries are coarse on purpose — the test only needs the newest cohort to stop
+# dominating the mode, not fine dating (half the roster is beyond the assigner's cutoff).
+#   0 = heirloom / ~2023-early-2024   1 = ~late-2024-2025   2 = 2026 / newest flagships
+ERA = {
+    # tier 0 — old
+    'claude-3-haiku': 0, 'gpt-3.5-turbo': 0, 'gpt-4-turbo': 0, 'mixtral-8x22b-instruct': 0,
+    'mythomax-l2-13b': 0, 'wizardlm-2-8x22b': 0,
+    # tier 1 — mid
+    'gpt-4o': 1, 'gpt-4o-mini-2024-07-18': 1, 'gpt-4.1': 1, 'gpt-5': 1,
+    'gemini-2.5-flash': 1, 'gemma-3-27b-it': 1, 'llama-3.3-70b-instruct': 1,
+    'llama-4-maverick': 1, 'qwen-2.5-72b-instruct': 1, 'qwen3-235b-a22b-2507': 1,
+    'deepseek-chat-v3-0324': 1, 'deepseek-r1': 1, 'ernie-4.5-vl-424b-a47b': 1,
+    'hunyuan-a13b-instruct': 1, 'command-a': 1, 'palmyra-x5': 1, 'sonar': 1, 'hermes-4-70b': 1,
+    # tier 2 — newest
+    'claude-haiku-4.5': 2, 'claude-sonnet-4.6': 2, 'claude-opus-4.8': 2, 'claude-sonnet-5': 2,
+    'claude-fable-5': 2, 'gpt-5.4': 2, 'gpt-5.5': 2, 'gpt-5.6-sol': 2, 'gpt-5.6-terra': 2,
+    'gpt-5.6-luna': 2, 'gemini-3.1-pro-preview': 2, 'gemini-3.5-flash': 2, 'grok-4.3': 2,
+    'grok-4.20': 2, 'grok-4.5': 2, 'deepseek-v3.2': 2, 'deepseek-v4-flash': 2, 'glm-4.7': 2,
+    'kimi-k2.5': 2, 'granite-4.1-8b': 2,
+}
+missing = [m for m in models if m not in ERA]
+if missing:
+    print("WARNING: no era assigned (excluded from cohort draw):", missing)
+era = {m: ERA[m] for m in models if m in ERA}
+by_era = defaultdict(list)
+for m, e in era.items():
+    by_era[e].append(m)
+print("era sizes:", {e: len(by_era[e]) for e in sorted(by_era)})
+
 def surprisal(m, field):
     """mean -log2 P(answer | field's answers), add-one smoothed. field excludes m already."""
     ss = []
@@ -102,11 +135,33 @@ def random_field(m):
     pool = [o for o in models if o != m]
     return list(rng.choice(pool, 15, replace=False))
 
+# cohort-uniform: K models per release era (K = smallest era - 1, so m's own era can spare it).
+K_ERA = min(len(v) for v in by_era.values()) - 1
+def cohort_field(m):
+    field = []
+    for e in by_era:
+        pool = [x for x in by_era[e] if x != m]
+        field += list(rng.choice(pool, K_ERA, replace=False))
+    return field
+
 bal = draw_ranks(balanced_field)
 sub = draw_ranks(random_field)
+coh = draw_ranks(cohort_field)
+print(f"\ncohort-uniform field: {K_ERA} models/era x {len(by_era)} eras = {K_ERA*len(by_era)}-model reference")
 
 print("\nrank stability (median rank [5th,95th pct] across 200 draws)")
-print(f"{'model':30} {'full-LOO':>8} {'balanced':>16} {'random15':>16}")
+print(f"{'model':30} {'era':>3} {'full-LOO':>8} {'balanced':>16} {'random15':>16} {'cohort-unif':>16}")
 for m in sorted(models, key=lambda m: r_loo[m]):
-    b, s = bal[m], sub[m]
-    print(f"{m:30} {r_loo[m]:8d} {b[0]:6.0f} [{b[1]:2.0f},{b[2]:2.0f}] {s[0]:8.0f} [{s[1]:2.0f},{s[2]:2.0f}]")
+    b, s, c = bal[m], sub[m], coh[m]
+    print(f"{m:30} {era.get(m,'?'):>3} {r_loo[m]:8d} {b[0]:6.0f} [{b[1]:2.0f},{b[2]:2.0f}] "
+          f"{s[0]:8.0f} [{s[1]:2.0f},{s[2]:2.0f}] {c[0]:8.0f} [{c[1]:2.0f},{c[2]:2.0f}]")
+
+# headline: does the recency-neutralized field preserve the ranking / keep sonnet-5 at the floor?
+r_coh_med = ranks({m: -coh[m][0] for m in models})  # rank of the median cohort-rank (lower rank# = more divergent)
+print(f"\nLOO vs cohort-uniform (median ranks): spearman rho = {spearman(r_loo, r_coh_med):.3f}")
+last = max(models, key=lambda m: r_loo[m])
+print(f"panel-last under full-LOO: {last} (rank {r_loo[last]}) -> cohort-uniform median rank {coh[last][0]:.0f} [{coh[last][1]:.0f},{coh[last][2]:.0f}]")
+top4 = sorted(models, key=lambda m: r_loo[m])[:4]
+print("top-4 under full-LOO, their cohort-uniform median [5,95]:")
+for m in top4:
+    print(f"  {m:30} {coh[m][0]:.0f} [{coh[m][1]:.0f},{coh[m][2]:.0f}]")
