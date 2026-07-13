@@ -87,7 +87,7 @@ Freely, EMNLP 2024 — contested by the dottxt rebuttal), *validity-vs-correctne
 decoder-level enforcement (the 2026 "constraint tax" line), and *engineering fixes* for
 diversity within grammars (automata steering). Nobody measures **which answer** gets chosen
 under a mere format request, across a cross-vendor panel. Prior-art map: section 9 of the
-modelun bibliography (flowstore). Note both obvious names are taken — "constraint tax"
+modelun bibliography. Note both obvious names are taken — "constraint tax"
 (arXiv:2605.26128, 2606.25605) and "The Format Tax" (arXiv:2604.03616) — and both refer to
 enforcement/accuracy effects, which this study deliberately is not.
 

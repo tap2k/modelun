@@ -79,9 +79,9 @@
 <header>
   <h1>consensus <span class="sub">— which models give answers the field doesn't?</span></h1>
   <nav id="nav">
-    <a href="#board" data-v="board">Scorecard</a>
-    <a href="#grid" data-v="grid">Grid</a>
-    <a href="#questions" data-v="questions">Questions</a>
+    <a href="#board" data-v="board">scorecard</a>
+    <a href="#grid" data-v="grid">grid</a>
+    <a href="#questions" data-v="questions">questions</a>
     <a href="https://github.com/tap2k/modelun/tree/main/studies/consensus" target="_blank" rel="noopener">source ↗</a>
   </nav>
 </header>
@@ -106,7 +106,7 @@ const MAXS = Math.max(...D.models.map(m=>m.surprisal));
 
 /* ---------- scorecard ---------- */
 function board(){
-  let h = `<h2>Scorecard</h2>
+  let h = `<h2>scorecard</h2>
   <p class="note"><b>Family Feud, in reverse.</b> We ask ${D.models.length} models a question with many right answers
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
@@ -137,7 +137,7 @@ function board(){
 
 /* ---------- grid ---------- */
 function grid(){
-  let h = `<h2>Models &times; answers</h2>
+  let h = `<h2>models &times; answers</h2>
   <p class="note"><b>Unhighlighted cells are the modal answer; color is a model breaking from it.</b>
   Rows sorted most-divergent first; columns most-converged first. Dashes appear only when a model's
   4 runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
@@ -223,7 +223,7 @@ function model(label){
 
 /* ---------- questions list ---------- */
 function questions(){
-  let h = `<h2>Questions</h2>
+  let h = `<h2>questions</h2>
   <p class="note">The ${D.cats.length} prompts, each a “Name a ___” with a wide space of valid one-word answers,
   sent identically to every model with no system prompt. Sorted most-converged first — <b>modal share</b> is
   how much of the field piles onto the single most-common answer, <b>≈ in play</b> is the effective number of

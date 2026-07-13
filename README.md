@@ -29,7 +29,7 @@ The runner is scripted (identical turns to every model, so columns compare); fai
 the file, not raised. The renderer is *dumb* — it draws transcripts and a side-by-side compare and
 knows nothing about any study; a study layers its own views (grids, plots, synthesis) on top.
 
-Full architecture, contracts, and the flowstore interchange: [`docs/harness.md`](docs/harness.md).
+Full architecture and contracts: [`docs/harness.md`](docs/harness.md).
 
 ## Layout
 

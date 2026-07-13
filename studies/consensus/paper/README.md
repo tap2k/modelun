@@ -20,6 +20,6 @@ re-check the prose against the new `gen/stats.json` before rebuilding.
 Cohort definitions for the peaked-vs-diffuse comparison (§4.3) are explicit in
 `make_assets.py` (`NEWEST` / `OLDEST`).
 
-Bibliography author lists were verified against the PDFs in the flowstore bibliography
-folder (2026-07-07); `references.bib` corrects several entries relative to BIBLIOGRAPHY.md
+Bibliography author lists were verified against the source PDFs (2026-07-07);
+`references.bib` corrects several entries relative to BIBLIOGRAPHY.md
 shorthand (GX-Chen et al., Gueorguieva et al., Karouzos et al., Liu).

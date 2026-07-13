@@ -2,8 +2,7 @@
 
 A small, domain-neutral tool for **labeling and viewing** model transcripts. Ask an arbitrary
 multi-turn script to arbitrary models; grade the transcripts with an LLM judge *and* a human judge,
-voted together; render for review. Transcripts may come from this harness's runner, a flowstore agent
-run, or any raw log.
+voted together; render for review. Transcripts may come from this harness's runner or any raw log.
 
 The conduct atlas is *one study* on this core — and the **worked example** a new study is cloned from
 ([`studies/conduct/`](../studies/conduct/README.md)). It supplies a `{stimulus, codebook}` spec and its
@@ -240,28 +239,6 @@ dependency. A reader clones nothing: the study publishes `store.json` + `transcr
 
 A study graduates from a folder to its own repo (`modelun-study-<name>`, pointing at a `harness/`
 checkout) when it needs different collaborators or access than the harness — not before.
-
-## Interchange with flowstore
-
-[flowstore](https://github.com/tap2k/flowstore-example-fnol) is a sibling project — a Behavioral IDE
-that authors and runs conversational agents and writes a transcript contract, `run/result/v0`. The two
-are independent and complementary: flowstore produces transcripts; this repo labels and views them,
-and supports human labels (which flowstore does not). flowstore's architecture is prior art for the
-runner/judge half; the distinctive half here is the judging kernel — a human and an LLM as the same
-voted `labeler`, every label quote-verified, self-family flagged.
-
-The interchange format is `run/result/v0` itself. It *is* Contract A: an ordered transcript of turns,
-plus optional `capability_calls[]` and `final_variables` this repo preserves but doesn't require. Two
-adapters, no shared schema either side must adopt:
-
-| direction | mapping |
-|---|---|
-| **flowstore → here** | project `result.transcript[]` into a one-scene Contract A; carry `capability_calls`/`final_variables` through |
-| **here → flowstore** | project the store down to `evaluator_results[]` (`{name, score\|passed, notes}`) |
-
-`evaluator_results[]` is flatter than Contract B — no `labeler` axis, no verified `quote` — so the
-round-trip out is lossy: only the voted result travels, the per-labeler breakdown stays here. Reading
-in is lossless. This repo speaks `run/result/v0` at its transcript boundary and keeps labels native.
 
 ## Human labeling: build, don't adopt
 
