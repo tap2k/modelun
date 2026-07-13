@@ -122,6 +122,8 @@ doubles as the format-capability scorecard.
 ../../.venv/bin/python analyze.py         # comparison vs ../consensus transcripts
 ```
 
-Status: exploratory (2026-07-10). Data collected against the 44-model roster; not yet frozen,
-no paper draft. Depends on `../consensus/` for the stimulus, roster, baseline transcripts,
+Status: findings frozen (2026-07-11, after the finding-5 correction); committed. Data collected
+against the 44-model roster but not yet re-run clean (current file is the interrupted+refilled
+run). Paper draft in `paper/main.tex` (finished abstract, skeleton body); blog draft in
+convovo-site. Depends on `../consensus/` for the stimulus, roster, baseline transcripts,
 and `probe_lib.py`.

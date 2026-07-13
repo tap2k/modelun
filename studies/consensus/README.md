@@ -51,7 +51,8 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 source ../../.venv/bin/activate     # OPENROUTER_API_KEY in ../../.env
 
 # generate: all models in parallel (per-model processes; ~120 one-word calls each)
-cat spec/models.txt | xargs -P 11 -I{} python ../../harness/run.py --study . --runs 4 {}
+# -P sets concurrency; tune to your CPU / provider rate limits
+cat spec/models.txt | xargs -P 8 -I{} python ../../harness/run.py --study . --runs 4 {}
 
 # analyze: transcripts -> analysis.json + ranked scorecard on stdout
 python analyze.py
