@@ -126,8 +126,8 @@ WALKS = [
                 "claude-opus-4.8", "claude-sonnet-5"],
      ["3-haiku", "haiku-4.5", "sonnet-4.6", "opus-4.8", "sonnet-5"]),
     ("GPT", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18",
-             "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-sol"],
-     ["3.5", "4-turbo", "4o", "4o-mini", "4.1", "5", "5.4", "5.5", "5.6-sol"]),
+             "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-luna"],
+     ["3.5", "4-turbo", "4o", "4o-mini", "4.1", "5", "5.4", "5.5", "5.6-luna"]),
     ("Grok", ["grok-4.20", "grok-4.3", "grok-4.5"], ["4.20", "4.3", "4.5"]),
     ("Qwen", ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507"], ["2.5-72b", "3-235b"]),
     ("Gemini", ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash"],
@@ -143,12 +143,12 @@ for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
     axi.plot(xs, vals, "-o", color=BLUE, lw=1.4, ms=3.5)
     if name == "Claude":  # fable-5 plotted beside its mainline generation
         axi.plot([4], [pm["claude-fable-5"]["surprisal"]], "o", ms=4, color=AMBER)
-        axi.annotate("fable-5", (4, pm["claude-fable-5"]["surprisal"]),
+        axi.annotate("fable", (4, pm["claude-fable-5"]["surprisal"]),
                      textcoords="offset points", xytext=(2, 5),
                      fontsize=6.5, color=AMBER, ha="right")
-    if name == "GPT":  # 5.6 tier siblings (terra, luna) beside the flagship
+    if name == "GPT":  # 5.6 premium tiers (terra, sol) break up off the mainline (luna)
         gx = len(labels) - 1
-        for sib, lab, dy in [("gpt-5.6-terra", "terra", 4), ("gpt-5.6-luna", "luna", -10)]:
+        for sib, lab, dy in [("gpt-5.6-terra", "terra", -4), ("gpt-5.6-sol", "sol", 5)]:
             axi.plot([gx], [pm[sib]["surprisal"]], "o", ms=4, color=AMBER)
             axi.annotate(lab, (gx, pm[sib]["surprisal"]),
                          textcoords="offset points", xytext=(-3, dy),
@@ -225,11 +225,12 @@ if hn_path.exists():
     ax.tick_params(axis="y", length=0)
     ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.6)
     ax.set_axisbelow(True)
-    ax.plot([], [], "o", color=AMBER, label="human (VO 2004, first response)")
+    ax.plot([], [], "o", color=AMBER, label="human (VO 2004)")
     ax.plot([], [], "o", color=BLUE, label="model field")
-    ax.legend(loc="lower right", fontsize=7.5, frameon=False)
+    ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, fontsize=7.5,
+              frameon=False, columnspacing=1.5, handletextpad=0.5, borderaxespad=0)
     fig.tight_layout()
-    fig.savefig(HERE / "figs" / "humannorms.pdf")
+    fig.savefig(HERE / "figs" / "humannorms.pdf", bbox_inches="tight")
     plt.close(fig)
 
 # ---------------------------------------------------------------- scorecard table
@@ -240,7 +241,7 @@ for i, m in enumerate(order, 1):
     rows.append(
         f"{i} & \\texttt{{{disp(m)}}} & {v['surprisal']:.2f} & "
         f"[{ci[0]:.2f}, {ci[1]:.2f}] & {v['modal_avoid']:.0%} & {v['novel_rate']:.0%} & "
-        f"{v['self_distinct']:.0%} & {v['type']} \\\\".replace("%", "\\%"))
+        f"{v['self_distinct']:.0%} \\\\".replace("%", "\\%"))
 # \bottomrule lives in this file: a booktabs rule straight after \input hits a
 # TeX alignment edge case (Misplaced \noalign) at the file boundary
 (HERE / "gen" / "scorecard_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
