@@ -20,11 +20,13 @@ def _key():
     raise RuntimeError("OPENROUTER_API_KEY not found")
 
 
-def _ask(slug, prompt, system, key):
+def _ask(slug, prompt, system, key, extra=None):
     msgs = ([{"role": "system", "content": system}] if system else []) + \
            [{"role": "user", "content": prompt}]
-    body = json.dumps({"model": slug, "messages": msgs,
-                       "temperature": 1.0, "max_tokens": 1024}).encode()
+    payload = {"model": slug, "messages": msgs, "temperature": 1.0, "max_tokens": 1024}
+    if extra:
+        payload.update(extra)
+    body = json.dumps(payload).encode()
     req = Request("https://openrouter.ai/api/v1/chat/completions", data=body,
                   headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     for attempt in range(3):
@@ -37,8 +39,11 @@ def _ask(slug, prompt, system, key):
             time.sleep(2 * (attempt + 1))
 
 
-def run_battery(prompts, models, runs, out_path, system=None, workers=20, meta=None):
-    """prompts: {cat: prompt}. models: [{label, slug}]. Writes {..., replies:{label:{cat:[...]}}}."""
+def run_battery(prompts, models, runs, out_path, system=None, workers=20, meta=None, extra=None):
+    """prompts: {cat: prompt}. models: [{label, slug}]. Writes {..., replies:{label:{cat:[...]}}}.
+
+    extra: optional dict merged into each request body (e.g. a response_format schema for
+    enforced structured output). Applied to every call in the run."""
     key = _key()
     tasks = [(m["label"], m["slug"], c, p, r)
              for m in models for c, p in prompts.items() for r in range(runs)]
@@ -47,7 +52,7 @@ def run_battery(prompts, models, runs, out_path, system=None, workers=20, meta=N
     done = 0
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        fut = {ex.submit(_ask, slug, p, system, key): (lab, c, r)
+        fut = {ex.submit(_ask, slug, p, system, key, extra): (lab, c, r)
                for (lab, slug, c, p, r) in tasks}
         for f in as_completed(fut):
             lab, c, r = fut[f]
