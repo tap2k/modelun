@@ -62,7 +62,7 @@ significant alone, but pooled Δ +0.44 (p=.009) and +0.70 vs the rest of the fie
 is open: hermes-4 (also Llama-based, heavily Nous-retuned) compresses hardest of anyone, so
 base weights alone don't explain it — but with community derivatives splitting both ways
 (mythomax up, hermes down), a clean "follows the tuner" story doesn't hold either.
-Pre-registered for the clean re-run; mechanistically unresolved.
+The mechanism is unresolved.
 (c) The remaining ~37 models are a noise plateau (Δ range −0.67…+0.56, none distinguishable
 from zero individually): their ordering means nothing, exactly the census's tiers-not-ranks
 rule applied to deltas. The conviction/costume contrast (fable vs terra) rests on discrete
@@ -123,7 +123,7 @@ doubles as the format-capability scorecard.
 ```
 
 Status: findings frozen (2026-07-11, after the finding-5 correction); committed. Data collected
-against the 44-model roster but not yet re-run clean (current file is the interrupted+refilled
-run). Paper draft in `paper/main.tex` (finished abstract, skeleton body); blog draft in
+against the 44-model roster (2026-07-10). Paper draft in `paper/main.tex` (abstract + full body
+prose); blog draft in
 convovo-site. Depends on `../consensus/` for the stimulus, roster, baseline transcripts,
 and `probe_lib.py`.
