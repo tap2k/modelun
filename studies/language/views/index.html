@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pickword — one prompt, 21 languages, 44 models</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
+    --acc:#6ea8fe; --off:#5b9be0; --off-bg:#1f3350; --nov:#e0a33e; --nov-bg:#553c14;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace,Menlo,monospace}
+  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px}
+  nav{margin-left:auto;display:flex;gap:4px}
+  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent}
+  nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
+  nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  main{padding:20px 22px;max-width:1400px}
+  main.wide{max-width:none}
+  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:92ch}
+  .note b{color:var(--fg)}
+  h2{font-size:19px;margin:0 0 10px} h3{font-size:11.5px;margin:22px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  .crumb{font-size:12.5px;margin:0 0 14px}
+  table.t{border-collapse:collapse;font-size:13px}
+  table.t th,table.t td{padding:6px 12px;border-bottom:1px solid var(--line);text-align:left}
+  table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  table.t th.s{cursor:pointer;user-select:none} table.t th.s:hover{color:var(--fg)}
+  table.t th.s.on{color:var(--acc)}
+  table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right}
+  table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
+  .chip{display:inline-block;font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:1px 7px;margin-left:8px;vertical-align:1px}
+  .gl{color:var(--mut);font-size:11.5px;margin-left:6px}
+  .stnov{color:var(--nov);font-weight:650} .stoff{color:var(--off)} .stmod{color:var(--mut)}
+  /* grid */
+  .gwrap{overflow:auto;max-height:calc(100vh - 190px);border:1px solid var(--line);border-radius:8px}
+  table.g{border-collapse:separate;border-spacing:2px;margin:2px}
+  table.g th,table.g td{padding:0;font-weight:400;text-align:left}
+  table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;vertical-align:bottom;padding:8px 6px 6px;cursor:pointer}
+  table.g thead th.mh{left:0;z-index:5;cursor:default}
+  table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)}
+  table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;padding:5px 12px 5px 6px;white-space:nowrap;border-right:1px solid var(--line);cursor:pointer}
+  table.g tbody th .s{font-size:10.5px;color:var(--mut);margin-left:7px}
+  table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);font-family:ui-monospace,Menlo,monospace;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  table.g td.c.off{background:var(--off-bg);color:#cfe0f6}
+  table.g td.c.nov{background:var(--nov-bg);color:#f6dcb0;font-weight:700}
+  table.g td.c.empty{background:none;color:var(--line)}
+  td.c .runs{display:flex;gap:2px;margin-top:3px} td.c .runs i{height:2px;flex:1;border-radius:1px;background:var(--line)}
+  td.c .runs i.o{background:var(--off)} td.c .runs i.n{background:var(--nov)}
+  tbody tr:hover td.c{box-shadow:inset 0 0 0 200px rgba(230,232,238,.05)}
+  body.dv td.c:not(.off):not(.nov){opacity:.18}
+  .legend{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--mut);margin:0 0 10px;flex-wrap:wrap}
+  .k{display:inline-flex;gap:6px;align-items:center}
+  .dot{width:9px;height:9px;border-radius:50%} .dot.m{background:var(--line)} .dot.o{background:var(--off)} .dot.v{background:var(--nov)}
+  button.tog{background:none;border:1px solid var(--line);border-radius:7px;color:var(--mut);padding:4px 11px;font-size:12px;cursor:pointer}
+  button.tog.on{color:var(--fg);border-color:var(--mut)}
+  /* distribution bars */
+  .drow{display:grid;grid-template-columns:190px 1fr 56px;gap:12px;align-items:center;margin:0 0 6px;font-size:13px}
+  .dtrack{height:16px;background:var(--panel);border-radius:4px;overflow:hidden}
+  .dtrack i{display:block;height:100%;background:var(--line);border-radius:4px}
+  .drow.modal .dtrack i{background:var(--mut)} .drow.solo .dtrack i{background:var(--nov)}
+  .who{grid-column:2/4;color:var(--mut);font-size:11.5px;margin:-2px 0 6px}
+  details{margin:0} details summary{cursor:pointer;list-style:none} details summary::-webkit-details-marker{display:none}
+  #tip{position:fixed;pointer-events:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 12px;font-size:12px;z-index:10;display:none;max-width:320px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+  #tip .t{font-weight:650;margin-bottom:4px} #tip .r{display:flex;justify-content:space-between;gap:16px}
+  #tip .r em{font-style:normal;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1>pickword <span class="sub">— "Pick a word." in 21 languages, 44 models</span></h1>
+  <nav id="nav">
+    <a href="#langs" data-v="langs">languages</a>
+    <a href="#models" data-v="models">models</a>
+    <a href="https://github.com/tap2k/modelun/tree/main/studies/language" target="_blank" rel="noopener">source ↗</a>
+  </nav>
+</header>
+<main id="main"></main>
+<div id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script>
+const D = window.PICK;
+const main = document.getElementById('main');
+const tip = document.getElementById('tip');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = x => (x*100).toFixed(0)+'%';
+const SN = {modal:'field modal', off:'off-modal', novel:'novel'};
+const CLS = {modal:'stmod', off:'stoff', novel:'stnov'};
+const RK = {modal:0, off:1, novel:2};
+for (const m of D.models) for (const l of D.langs) {
+  const cell = D.grid[m.label][l.code];
+  if (cell) cell.sort((a,b)=> b.n-a.n || RK[b.st]-RK[a.st]);
+}
+// translation lookup, per language — English is not translated, and we never show a
+// gloss that just repeats the word or is filler
+const G = {};
+for (const l of D.langs){ G[l.code]={}; for (const a of D.dists[l.code].answers) if(a.gloss) G[l.code][a.a]=a.gloss; }
+const tr = (code, w) => {
+  if(code==='en') return '';
+  const g = G[code] && G[code][w];
+  return (g && g!==w && !g.startsWith('*')) ? ` <span class="gl">${esc(g)}</span>` : '';
+};
+
+/* ---------- languages panel ---------- */
+let sort = {k:'share', dir:-1};
+const bar = (v, max) => `<div style="display:inline-block;width:66px;height:8px;background:var(--panel2);border-radius:4px;vertical-align:0;margin-right:8px"><i style="display:block;height:100%;width:${(v/max*100).toFixed(0)}%;background:var(--mut);border-radius:4px"></i></div>`;
+function languages(){
+  let h = `<h2>“Pick a word.” — 21 languages, ${D.n_models} models</h2>
+  <p class="note">Each language's <b>favorite word</b>, how much of the field agrees on it (<b>converged</b>), how many
+  <b>distinct</b> words show up, and how rare the favorite is (<b>rarity</b> = base-rate frequency, lower = rarer).
+  <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b>
+  <span class="stnov">echo*</span> marks a modal that's an instruction-echo / filler, not a chosen word. Click a language for its full field.</p>
+  <table class="t"><tr><th>#</th>
+    <th class="s ${sort.k==='name'?'on':''}" data-k="name" data-num="0">language</th>
+    <th>favorite word</th>
+    <th class="s ${sort.k==='share'?'on':''}" data-k="share" data-num="1">converged</th>
+    <th class="s ${sort.k==='n_distinct'?'on':''}" data-k="n_distinct" data-num="1" title="distinct words over all runs — the spread">distinct</th>
+    <th class="s ${sort.k==='zipf'?'on':''}" data-k="zipf" data-num="1" title="base-rate frequency of the favorite word (lower = rarer word chosen)">rarity</th>
+    <th>top 5 words</th></tr>`;
+  const smax = Math.max(...D.langs.map(l=>l.share));
+  const rows = [...D.langs].sort((a,b)=>{
+    let va=a[sort.k], vb=b[sort.k];
+    if(va==null) return 1; if(vb==null) return -1;
+    if(typeof va==='string') return va.localeCompare(vb)*sort.dir;
+    return (va-vb)*sort.dir;
+  });
+  rows.forEach((l,i)=>{
+    const t5 = l.top5.map(t=>`${esc(t.a)}${tr(l.code,t.a)} <span class="gl">${pct(t.share)}</span>`).join('&nbsp;&nbsp; ');
+    const filler = D.dists[l.code].answers[0].gloss==='*filler';
+    h += `<tr class="row" data-l="${l.code}"><td class="n">${i+1}</td>
+      <td>${esc(l.name)}</td>
+      <td class="mono">${esc(l.modal)}${tr(l.code,l.modal)}${filler?' <span class="stnov" style="font-size:10px" title="the modal is an instruction-echo / acknowledgment, not a chosen word">echo*</span>':''}</td>
+      <td class="n">${bar(l.share,smax)}${pct(l.share)}</td>
+      <td class="n">${l.n_distinct}</td>
+      <td class="n">${l.zipf==null?'–':l.zipf.toFixed(2)}</td>
+      <td class="mono" style="font-size:11.5px">${t5}</td></tr>`;
+  });
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('th.s').forEach(t=>t.addEventListener('click',()=>{
+    const k=t.dataset.k;
+    if(sort.k===k) sort.dir*=-1; else sort={k, dir:+t.dataset.num?-1:1};
+    languages();
+  }));
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#l/'+r.dataset.l));
+}
+
+/* ---------- models ---------- */
+let msort = {k:'filler_rate', dir:-1};
+const MCOLS = [
+  {k:'compliance', l:'compliance', t:'fraction of replies that were a valid in-script word'},
+  {k:'modal_avoid', l:'off-modal', t:"share of answers that were not its language's modal word"},
+  {k:'novel_rate', l:'novel', t:'share of answers no other model gave'},
+  {k:'filler_rate', l:'filler', t:'share of answers that were instruction-echo / acknowledgment (word, okay) instead of a chosen word'},
+];
+function models(){
+  let h = `<h2>models</h2>
+  <p class="note">The census-style word grid was noise for this data — every cell a different word — so here is the
+  model-level signal instead: how each model behaves across the 21 languages. <b>filler</b> is how often it answered
+  with an echo/acknowledgment (“word”, “okay”) instead of choosing — a <b>family-style tell</b> (DeepSeek's lineage tops
+  it, gpt-4-turbo barely does it), not a clean capability ladder. Click a model for its pick in every language.</p>
+  <table class="t"><tr><th>#</th>
+    <th class="s ${msort.k==='label'?'on':''}" data-k="label" data-num="0">model</th>`;
+  for(const c of MCOLS) h += `<th class="s ${msort.k===c.k?'on':''}" data-k="${c.k}" data-num="1" title="${c.t}">${c.l}</th>`;
+  h += '</tr>';
+  const rows = [...D.models].sort((a,b)=>{
+    let va=a[msort.k], vb=b[msort.k];
+    if(typeof va==='string') return va.localeCompare(vb)*msort.dir;
+    return (va-vb)*msort.dir;
+  });
+  rows.forEach((m,i)=>{
+    h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${i+1}</td>
+      <td class="mono">${esc(m.label)}</td>
+      <td class="n">${pct(m.compliance)}</td>
+      <td class="n">${pct(m.modal_avoid)}</td>
+      <td class="n">${pct(m.novel_rate)}</td>
+      <td class="n">${pct(m.filler_rate)}</td></tr>`;
+  });
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('th.s').forEach(t=>t.addEventListener('click',()=>{
+    const k=t.dataset.k;
+    if(msort.k===k) msort.dir*=-1; else msort={k, dir:+t.dataset.num?-1:1};
+    models();
+  }));
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
+}
+
+/* ---------- language page ---------- */
+function language(code){
+  const l = D.langs.find(x=>x.code===code);
+  if(!l){ main.innerHTML='<p class="note">Unknown language.</p>'; return; }
+  const d = D.dists[code];
+  let h = `<p class="crumb"><a href="#langs">languages</a> / ${esc(l.name)}</p>
+  <h2>${esc(l.name)} <span class="chip">${l.code}</span> <span class="chip">${esc(l.script)}</span></h2>
+  <p class="note"><b>Favorite word</b> <span class="mono">${esc(l.modal)}</span>${tr(l.code,l.modal)} at <b>${pct(l.share)}</b> —
+  ${d.answers.length} distinct words over ${d.total} runs, ≈${d.eff} effectively in play.
+  ${l.cmodal?`Synonyms collapsed: <b>${esc(l.cmodal)} ${pct(l.cshare)}</b>. `:''}Compliance ${pct(l.compliance)}.
+  ${l.zipf!=null?`Base-rate of the modal word: Zipf <b>${l.zipf.toFixed(2)}</b>${l.meanz5!=null?` (top-5 mean ${l.meanz5.toFixed(2)})`:''} — lower = rarer word. `:''}
+  Amber bars are words only one model gave; click a bar for who said it.</p>`;
+  const max = d.answers[0].share || 1;
+  d.answers.forEach((en,i)=>{
+    const solo = en.models.length===1;
+    const fill = en.gloss==='*filler';
+    h += `<details><summary><div class="drow ${i===0?'modal':''} ${solo&&i>0?'solo':''}">
+      <span class="mono">${esc(en.a)}${tr(l.code,en.a)}${fill?' <span class="gl">filler*</span>':''}</span>
+      <div class="dtrack"><i style="width:${(en.share/max*100).toFixed(1)}%"></i></div>
+      <span class="n mono">${pct(en.share)}</span></div></summary>
+      <div class="who">${en.models.map(esc).join(' · ')}</div></details>`;
+  });
+  main.innerHTML = h;
+}
+
+/* ---------- model page ---------- */
+function model(label){
+  const m = D.models.find(x=>x.label===label);
+  if(!m){ main.innerHTML='<p class="note">Unknown model.</p>'; return; }
+  let h = `<p class="crumb"><a href="#models">models</a> / <span class="mono">${esc(label)}</span></p>
+  <h2 class="mono">${esc(label)}</h2>
+  <p class="note">compliance <b>${pct(m.compliance)}</b> · off-modal <b>${pct(m.modal_avoid)}</b> ·
+  novel <b>${pct(m.novel_rate)}</b> — across ${D.langs.length} languages. Its pick in each language, vs the field's modal.</p>
+  <table class="t"><tr><th>language</th><th>its word(s), 4 runs</th><th>field modal</th></tr>`;
+  for(const l of D.langs){
+    const cell = D.grid[label][l.code];
+    const answers = cell ? cell.map(en=>`<span class="${CLS[en.st]} mono">${esc(en.a)}${en.n>1?' ×'+en.n:''}</span>`).join(' &nbsp; ') : '<span style="color:var(--line)">–</span>';
+    h += `<tr class="row" data-l="${l.code}"><td>${esc(l.name)} <span class="chip">${l.code}</span></td>
+      <td>${answers}</td><td class="mono" style="color:var(--mut)">${esc(l.modal)} ${pct(l.share)}</td></tr>`;
+  }
+  main.innerHTML = h + '</table>';
+  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#l/'+r.dataset.l));
+}
+
+/* ---------- router ---------- */
+function route(){
+  const hsh = location.hash || '#langs';
+  document.body.classList.remove('dv');
+  tip.style.display='none';
+  const [v, arg] = hsh.slice(1).split('/');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='l'&&a.dataset.v==='langs') || (v==='m'&&a.dataset.v==='models')));
+  if(v==='l' && arg) language(decodeURIComponent(arg));
+  else if(v==='m' && arg) model(decodeURIComponent(arg));
+  else if(v==='models') models();
+  else languages();
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

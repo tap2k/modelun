@@ -1,0 +1,30 @@
+{
+  "spec_version": "1.0-perturb",
+  "lang": "en",
+  "note": "H6 brittleness pilot. Two anchors with strong known attractors -- 'pick a word' (serendipity 43%, an open meme) and 'name a tree' (oak 94%, the strongest attractor in the census) -- each run down a perturbation ladder: control, noun typo, verb typo, verb swap, article (a/any), lowercase, politeness, no one-word clamp, terse. If a typo or wording swap shifts the modal, the default is a shallow surface-triggered lookup (supports H1/H2); if serendipity/oak survive, they are deep attractors. English pilot; extend to hi/ur if it bites. Analyze by grouping on the anchor and measuring modal-shift vs control.",
+  "system_prompt": null,
+  "max_tokens": 1024,
+  "scenes": [
+    { "id": "word_control",   "turns": ["Pick a word. Reply with one word only."] },
+    { "id": "word_typo_noun", "turns": ["Pick a wrod. Reply with one word only."] },
+    { "id": "word_typo_verb", "turns": ["Pcik a word. Reply with one word only."] },
+    { "id": "word_choose",    "turns": ["Choose a word. Reply with one word only."] },
+    { "id": "word_give",      "turns": ["Give a word. Reply with one word only."] },
+    { "id": "word_any",       "turns": ["Pick any word. Reply with one word only."] },
+    { "id": "word_lower",     "turns": ["pick a word. reply with one word only."] },
+    { "id": "word_polite",    "turns": ["Please pick a word. Reply with one word only."] },
+    { "id": "word_noclamp",   "turns": ["Pick a word."] },
+    { "id": "word_terse",     "turns": ["A word:"] },
+
+    { "id": "tree_control",   "turns": ["Name a tree. Reply with one word only."] },
+    { "id": "tree_typo_noun", "turns": ["Name a treee. Reply with one word only."] },
+    { "id": "tree_typo_verb", "turns": ["Naem a tree. Reply with one word only."] },
+    { "id": "tree_choose",    "turns": ["Choose a tree. Reply with one word only."] },
+    { "id": "tree_think",     "turns": ["Think of a tree. Reply with one word only."] },
+    { "id": "tree_any",       "turns": ["Name any tree. Reply with one word only."] },
+    { "id": "tree_lower",     "turns": ["name a tree. reply with one word only."] },
+    { "id": "tree_polite",    "turns": ["Please name a tree. Reply with one word only."] },
+    { "id": "tree_noclamp",   "turns": ["Name a tree."] },
+    { "id": "tree_terse",     "turns": ["A tree:"] }
+  ]
+}

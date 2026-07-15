@@ -1,0 +1,18 @@
+{
+  "spec_version": "1.0-crosslingual",
+  "lang": "hi",
+  "note": "Perturbation kind 6: is brittleness English-specific? The misspelling/wording/article ladder rerun in Hindi. Anchors chosen for a strong Hindi attractor: flower (गुलाब ~93%) and color. Typos are safe, extremely-common variants -- फूल->फुल (long-u to short-u), रंग->रँग (anusvara to chandrabindu). VALIDATE before the full run: confirm control gives गुलाब/नीला and the typo is still understood. Urdu follows once Hindi checks out. Scene id = <anchor>_<condition>; analyze with the Hindi normalizer.",
+  "system_prompt": null,
+  "max_tokens": 1024,
+  "scenes": [
+    { "id": "flower_control",   "turns": ["एक फूल बताइए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "flower_typo_noun", "turns": ["एक फुल बताइए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "flower_wording",   "turns": ["एक फूल चुनिए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "flower_any",       "turns": ["कोई भी फूल बताइए। केवल एक शब्द में उत्तर दें।"] },
+
+    { "id": "color_control",    "turns": ["एक रंग बताइए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "color_typo_noun",  "turns": ["एक रँग बताइए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "color_wording",    "turns": ["एक रंग चुनिए। केवल एक शब्द में उत्तर दें।"] },
+    { "id": "color_any",        "turns": ["कोई भी रंग बताइए। केवल एक शब्द में उत्तर दें।"] }
+  ]
+}
