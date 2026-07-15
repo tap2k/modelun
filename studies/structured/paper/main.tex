@@ -22,7 +22,7 @@
 
 \title{\textbf{Structured Output Collapses\\Answer Diversity Across 44 Language Models}}
 \author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
-\date{July 2026 --- \textcolor{red}{DRAFT}}
+\date{July 2026}
 
 \begin{document}
 \maketitle
@@ -39,10 +39,8 @@ answers fall from 53 to 28; mean answer-choice surprisal drops 1.80 to 1.58 bits
 \emph{progressive} and respects the instrument's resolution: seven of 44 models move
 individually (BH-FDR $q=.10$), all toward the mode, led by the panel's two most distinctive
 frontier models (the strongest explorer loses 1.32 bits --- half its measured
-distinctiveness) while the conformist floor is unmoved; one family-level effect survives
-aggregation --- the Llama-derived models (excepting a heavily third-party-retuned one)
-\emph{diverge} under JSON ($+0.70$ bits against the rest of the field, $p<10^{-4}$) --- and
-the remaining deltas form a noise plateau we decline to rank. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
+distinctiveness). The Llama-derived models
+\emph{diverge} under JSON ($+0.70$ bits against the rest of the field, $p<10^{-4}$). The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
 survives in 28 of 31 categories, and the three flips occur exactly where the plain mode was
 weakest. The column also shows that a model's \emph{defaults are register-indexed}, read from discrete
 behavior rather than score deltas: of the panel's 144 stable off-modal defaults (the same
@@ -58,9 +56,11 @@ absent for YAML and CSV ($p>.15$), and \emph{reversed} for an arbitrary non-data
 square brackets significantly loosen the field ($+0.16$, $p=.002$). On the unconstrained
 prompt, all four serializations concentrate the pool (serendipity 41\% plain $\to$ 52--65\%),
 so a corpus-register component remains visible; but the battery-wide gradient weighs toward
-tool-use post-training as the dominant mechanism. Structured output is how software consumes
-language models; that surface is served by a measurably more homogeneous model than the chat
-surface on which models are evaluated, compared, and chosen.
+tool-use post-training as the dominant mechanism. Enforcing the schema at the decoder
+(\texttt{response\_format}) compresses no further than the request ($-0.03$ bits), locating the
+collapse in the model's response to the register rather than the decoder. Structured output is
+how software consumes language models; that surface is served by a measurably more homogeneous
+model than the chat surface on which models are evaluated, compared, and chosen.
 \end{abstract}
 
 \section{Introduction}
@@ -160,7 +160,7 @@ reason our instrument stays judge-free.
 \label{sec:method}
 
 \subsection{Instrument}
-The instrument is the census unchanged \citep{parikh2026census}: 31 single-turn prompts (30
+The instrument is the \emph{one-word census} unchanged \citep{parikh2026census}: 31 single-turn prompts (30
 category prompts of the form \emph{``Name a[n] $X$''} plus one unconstrained \emph{``Pick a
 word''}), no system prompt, requested temperature 1.0, four samples per cell. Each answer is
 scored by its add-one-smoothed leave-one-out answer-choice surprisal against the pooled answers
@@ -191,8 +191,9 @@ serialization from mere structure. The clauses are appended verbatim to the cens
 
 No \texttt{response\_format} parameter, no tool schema, and no constrained decoding is used
 anywhere: every column is an ordinary chat completion whose only difference from the census is
-the appended clause. This is a deliberate scope choice --- we measure the effect of the
-\emph{request}; engine-level enforcement is a separate column left to future work (\S\ref{sec:limitations}).
+the appended clause. This is a deliberate scope choice: these columns measure the effect of the
+\emph{request}. An engine-enforced \texttt{response\_format} column is analyzed separately in
+\S\ref{sec:enforced}.
 
 \subsection{Parsing and hygiene}
 \label{sec:hygiene}
@@ -387,6 +388,19 @@ Nor is it a clean ``follows the tuner'' story: community derivatives split, \tex
 diverging while \textsc{hermes} compresses. We report the effect and leave the mechanism
 unresolved.
 
+\subsection{Enforcement adds little the request did not}
+\label{sec:enforced}
+A natural objection is that the collapse is a decoding artifact. It is not: enforcing the schema
+at the decoder compresses no further than asking for it. We ran one more column --- the JSON
+clause plus a strict \texttt{response\_format} json\_schema --- on the 36 of 44 models whose
+providers support it (the other eight return no valid output, a feature-acquisition signal in
+itself). Field-mean surprisal is 1.57 bits under the request and 1.54 under enforcement, against
+1.79 in open chat: the request does the $-0.22$-bit work and enforcement adds $-0.03$ more. The
+effect lives in the model's response to the register, not in the sampler. Per-model reactions are
+heterogeneous and confounded --- \texttt{response\_format} is a native decoder constraint for
+some providers and a gateway coercion for others --- so we read only the battery-wide mean and
+release the data for a native-only replication.
+
 \section{Limitations}
 \label{sec:limitations}
 Several limitations bound these claims. The data are a single snapshot served through one
@@ -396,17 +410,11 @@ on discrete four-of-four behavior. Surprisal is panel-relative: a model's bits d
 field it is scored against, so the absolute numbers are not portable across panels, although the
 within-column and $\Delta$ comparisons are internal to this one. Each format is probed with a
 \emph{single} clause wording, so we cannot separate the register from the particular phrasing
-that invokes it; a clause-paraphrase column is the natural control. Most importantly, every
-prior column is a prompt-level \emph{request}. As a check on whether the effect is a decoding
-artifact, we also collected an engine-enforced \texttt{response\_format} json\_schema column on
-the 36 of 44 models whose providers support strict schemas (the other 8 return no valid output
-under it --- itself a small capability signal). Field-mean compression is $-0.25$ bits, against
-$-0.22$ for the mere request: enforcement adds essentially nothing beyond the ask, consistent
-with a weights-level register effect rather than a decoder constraint. Per-model reactions are
-heterogeneous and confounded by non-uniform provider enforcement --- \texttt{response\_format}
-is served as a native grammar constraint by some providers and a gateway-mediated coercion by
-others --- so we do not lean on them; the data and scripts are released for a clean native-only
-replication.
+that invokes it; a clause-paraphrase column is the natural control. Finally, we vary the register
+through prompt-level \emph{requests} and one enforced \texttt{response\_format} counterpart
+(\S\ref{sec:enforced}); tool-call framing and other structured-output pathways remain unmeasured,
+and enforcement is itself served heterogeneously across providers, so a provider-controlled
+native-enforcement replication would sharpen the per-model picture.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -426,9 +434,9 @@ acquisition has a date a re-run will record. If the battery-wide compression we 
 to tool-use post-training is being trained in per release, a fixed public instrument run on
 every model is what would detect it --- the same argument the census makes for measuring
 conformity over time, now pointed at the register in which conformity is worst. The immediate
-next columns are engine-level enforcement (\texttt{response\_format} and tool schemas), clause
-paraphrases, and an embedded variant that reads choices out of prose through regex-addressable
-slots --- never LLM judges, which prefer the mode.
+next columns are a provider-controlled native-enforcement replication and tool-call framing
+(\S\ref{sec:enforced}), clause paraphrases, and an embedded variant that reads choices out of
+prose through regex-addressable slots --- never LLM judges, which prefer the mode.
 
 \section*{Data and code availability}
 All code and data are in the \texttt{studies/structured/} directory of the modelun repository:
