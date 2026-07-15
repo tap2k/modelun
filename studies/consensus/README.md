@@ -8,7 +8,7 @@ on the *generative-defaults* axis — the open-world twin of CAIS's forced-choic
 [values dashboard](https://values.safe.ai) (which measures what models *prefer*; we measure what they
 *produce*; grok is an outlier there and a conformist here, so the constructs demonstrably differ).
 
-Like [`language`](../language/), this is runner + analysis with the grading slot left open — no
+Like [`gujarati`](../gujarati/), this is runner + analysis with the grading slot left open — no
 codebook, no judge. The analysis is **fully mechanical**: exact-match on normalized one-word answers.
 No embeddings, no LLM anywhere in the loop. A junk guard drops non-answers (chat-template artifacts,
 reasoning-leak essays, bare acknowledgments like "Okay.") as failed cells rather than scoring them.
