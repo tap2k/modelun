@@ -1,12 +1,12 @@
 """
-Build the language study's review site: views/data.js (+ a copy of the renderer).
+Build the gujarati study's review site: views/data.js (+ a copy of the renderer).
 
 Bakes every transcript and the scene list into one blob the page draws. No markers,
 no judge, no store — this study is generate-and-view, so the blob is just transcripts +
 scenes. The site imports the generic renderer from harness/viewer/core.js; this blob is
 the data it draws. After running, open views/index.html directly (no server, no deps).
 
-    python studies/language/views/build.py
+    python studies/gujarati/views/build.py
 """
 
 import json

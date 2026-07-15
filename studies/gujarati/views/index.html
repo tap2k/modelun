@@ -68,7 +68,7 @@
 <header>
   <h1>language <span class="sub">— transcript &amp; compare review</span></h1>
   <nav id="nav"></nav>
-  <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/language" target="_blank" rel="noopener">source ↗</a>
+  <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/gujarati" target="_blank" rel="noopener">source ↗</a>
 </header>
 <div class="wrap">
   <aside id="side"></aside>
@@ -79,7 +79,7 @@
 <script src="data.js"></script>
 <script>
 /* Generic transcript rendering comes from the harness core (renderArc / renderCompare);
-   this file holds only the language study's view shell — model list, compare grid, tabs.
+   this file holds only the gujarati study's view shell — model list, compare grid, tabs.
    No markers, no verdicts: this study is generate-and-view. */
 const { esc, renderArc, renderCompare } = window.Core;
 const L = window.LANG;
@@ -97,7 +97,7 @@ function showTranscripts(){
   side.innerHTML = '<div class="fam">Models</div>' + MODELS.map(m =>
     '<button class="'+(m===current?'on':'')+'" onclick="pick(\''+m+'\')">'+esc(m)+'</button>'
   ).join('');
-  if(!current){ main.innerHTML = '<p class="note">No transcripts yet. Run the study:<br><code>python harness/run.py --study studies/language &lt;slug&gt;...</code><br>then <code>python studies/language/views/build.py</code>.</p>'; return; }
+  if(!current){ main.innerHTML = '<p class="note">No transcripts yet. Run the study:<br><code>python harness/run.py --study studies/gujarati &lt;slug&gt;...</code><br>then <code>python studies/gujarati/views/build.py</code>.</p>'; return; }
   const M = L.models[current];
   let h = '<div class="mh"><h2>'+esc(current)+'</h2><span class="slug">'+esc(M.slug)+'</span></div>';
   h += '<p class="note">System prompt: '+esc(L.system_prompt)+'</p>';
