@@ -58,7 +58,8 @@ def surprisal(get, cats):
 
 cats_json = CATS["json"]
 s_plain = surprisal(plain_answers, cats_json)
-s_json = surprisal(lambda l, c: fmt_answers("json", l, c), cats_json)
+s_fmt = {f: surprisal(lambda l, c, f=f: fmt_answers(f, l, c), CATS[f]) for f in FORMATS}
+s_json = s_fmt["json"]
 
 # per-category field distributions per column (plain + each format)
 field = {}
@@ -80,8 +81,9 @@ for l in labels:
             if c in CATS[f]:
                 cols[f] = fmt_answers(f, l, c)
         percat[c] = cols
+    mq = {"plain": s_plain[l], **{f: s_fmt[f][l] for f in FORMATS}}
     models[l] = {"plain": s_plain[l], "json": s_json[l],
-                 "delta": round(s_json[l] - s_plain[l], 3), "cats": percat}
+                 "delta": round(s_json[l] - s_plain[l], 3), "mq": mq, "cats": percat}
 
 # format compliance per model: did the reply carry the requested wrapper, and did a
 # usable answer survive parsing + junk guard? (n excludes null replies — API failures)
@@ -99,6 +101,24 @@ for l in labels:
                 usable += parse_word(f, r) is not None
         compliance[l][f] = {"n": n, "wrapped": wrapped, "usable": usable}
 
+# aggregate register gradient: field-mean surprisal per column + significance verdict.
+# p-values from probe_significance.py (per-model sign-flip permutation, 20k draws).
+SIG = {"json": (0.0001, "compresses"), "xml": (0.0032, "compresses"),
+       "yaml": (0.81, "no net effect"), "csv": (0.16, "no net effect"),
+       "brackets": (0.0022, "loosens")}
+
+def field_mean(sf):
+    vals = [v for v in sf.values() if v is not None]
+    return round(sum(vals) / len(vals), 3) if vals else None
+
+plain_mean = field_mean(s_plain)
+gradient = {"plain_mean": plain_mean, "rows": []}
+for f in FORMATS:
+    mf = field_mean(s_fmt[f])
+    p, verdict = SIG[f]
+    gradient["rows"].append({"fmt": f, "mean": mf, "delta": round(mf - plain_mean, 3),
+                             "p": p, "verdict": verdict})
+
 data = {
     "meta": {"panel": len(labels), "run_date": probe.get("run_date", "2026-07-10"),
              "formats": FORMATS, "cats_full": cats_json,
@@ -106,6 +126,7 @@ data = {
              "prompts": probe.get("formats", {})},
     "field": field,
     "models": models,
+    "gradient": gradient,
     "compliance": compliance,
     "order": sorted(labels, key=lambda l: -s_plain[l]),
 }

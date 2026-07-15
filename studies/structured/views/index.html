@@ -66,7 +66,7 @@ const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>'
 document.getElementById("npanel").textContent = D.meta.panel;
 
 function nav(cur){
-  const tabs = [["#/","scorecard"],["#/cats","categories"],["#/compliance","compliance"],["#/about","method"]];
+  const tabs = [["#/","scorecard"],["#/cats","categories"],["#/gradient","gradient"],["#/compliance","compliance"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
     (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
@@ -147,6 +147,53 @@ function model(l){
   <div class="wide"><table><tr><th>category</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>${rows}</table></div>`);
 }
 
+function gradient(){
+  nav("#/gradient");
+  const g = D.gradient;
+  const comp = (l, f) => { const c = (D.compliance[l]||{})[f]; return (c && c.n) ? c.wrapped/c.n : 1; };
+  const body = D.order.map(l => {
+    const mq = (D.models[l].mq) || {};
+    const cells = COLS.map(f => {
+      const v = mq[f];
+      if (v == null) return `<td class="mut">—</td>`;
+      const low = f !== "plain" && comp(l, f) < 0.9;
+      return `<td${low?' class="mut" style="opacity:.5" title="under 90% compliant — surprisal inflated by format incapacity"':''}>${v.toFixed(2)}</td>`;
+    }).join("");
+    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td>${esc(l)}</td>${cells}</tr>`;
+  }).join("");
+  const dBy = {}; g.rows.forEach(r => dBy[r.fmt] = r);
+  const meanCells = COLS.map(f => {
+    const mean = f === "plain" ? g.plain_mean : dBy[f].mean;
+    return `<td><b>${mean != null ? mean.toFixed(2) : "—"}</b></td>`;
+  }).join("");
+  const dCells = COLS.map(f => {
+    if (f === "plain") return `<td class="mut">—</td>`;
+    const r = dBy[f], cls = r.delta < -0.005 ? "delta-neg" : (r.delta > 0.005 ? "delta-pos" : "mut");
+    return `<td class="${cls}">${r.delta>0?"+":""}${r.delta.toFixed(2)}</td>`;
+  }).join("");
+  const vCells = COLS.map(f => {
+    if (f === "plain") return `<td class="mut" style="font-size:11px">baseline</td>`;
+    const r = dBy[f], cls = r.delta < -0.005 ? "delta-neg" : (r.delta > 0.005 ? "delta-pos" : "mut");
+    const p = r.p < 0.001 ? "p<.001" : "p=" + r.p;
+    return `<td class="${cls}" style="font-size:11px">${esc(r.verdict)}<br><span class="mut">${p}</span></td>`;
+  }).join("");
+  $(`<h2>the register gradient</h2>
+  <p class="note">Each model's Mustard Quotient (answer-choice surprisal, bits) in every register.
+  Read down a column for the aggregate effect, across a row for one model's register response. The
+  <b>field-mean</b> footer is the headline: <b>JSON and XML</b> compress the field, <b>YAML and CSV</b>
+  show no reliable net effect, and bare <b>brackets</b> <i>loosens</i> it — the collapse is specific to
+  the formats models are trained to answer in. <span class="mut">Greyed</span> cells are below 90%
+  wrapper compliance (surprisal inflated by format incapacity, not divergence — see the compliance tab).
+  Δ and p are per-model paired (sign-flip permutation, 20k draws). Click a model to drill down.</p>
+  <div class="wide"><table>
+    <tr><th>model</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>
+    ${body}
+    <tr style="border-top:2px solid var(--acc)"><td><b>field mean</b></td>${meanCells}</tr>
+    <tr><td class="mut">Δ vs plain</td>${dCells}</tr>
+    <tr><td class="mut">verdict</td>${vCells}</tr>
+  </table></div>`);
+}
+
 function compliance(){
   nav("#/compliance");
   const fmts = D.meta.formats;
@@ -193,6 +240,7 @@ function route(){
   const h = location.hash || "#/";
   if (h === "#/") scorecard();
   else if (h === "#/cats") cats();
+  else if (h === "#/gradient") gradient();
   else if (h === "#/compliance") compliance();
   else if (h === "#/about") about();
   else if (h.startsWith("#/m/")) model(decodeURIComponent(h.slice(4)));
