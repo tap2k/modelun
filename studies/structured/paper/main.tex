@@ -39,17 +39,15 @@ answers fall from 53 to 28; mean answer-choice surprisal drops 1.80 to 1.58 bits
 \emph{progressive} and respects the instrument's resolution: seven of 44 models move
 individually (BH-FDR $q=.10$), all toward the mode, led by the panel's two most distinctive
 frontier models (the strongest explorer loses 1.32 bits --- half its measured
-distinctiveness). The Llama-derived models
-\emph{diverge} under JSON ($+0.70$ bits against the rest of the field, $p<10^{-4}$). The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
+distinctiveness). The Llama-lineage models are the exception --- both Meta-released Llamas and a
+community merge \emph{diverge} under JSON where the field compresses, a descriptive lineage link
+we flag but do not test. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
 survives in 28 of 31 categories, and the three flips occur exactly where the plain mode was
-weakest. The column also shows that a model's \emph{defaults are register-indexed}, read from discrete
-behavior rather than score deltas: of the panel's 144 stable off-modal defaults (the same
-non-modal answer, four runs of four, in chat), only 47\% survive into JSON. Retention is a
-per-model trait --- GPT-5.6 Terra loses its signature defaults (\emph{mustard}$\to$ketchup,
-\emph{mango}$\to$apple, four-of-four flips), while Claude Fable 5 retains most of its own
-(5 of 7) and acquires \emph{new} stable defaults that exist only in the register
-(\emph{cerulean}, \emph{carpenter}, four-of-four in JSON, never in chat). Personality is
-indexed to the channel, as the census found answers indexed to wording. Full-battery controls reveal a register gradient: the compression is significant and specific
+weakest. The column also shows that a model's \emph{defaults are register-indexed}: a within-run
+re-sample ($n{=}20$) finds JSON significantly shifts 53\% of a model's stable chat defaults ---
+mostly back to the crowd's answer --- and \emph{installs} defaults that never appear in chat
+(Claude Fable 5 answers \emph{cerulean} for colour 0\% of the time in chat, 100\% in JSON).
+Personality is indexed to the channel, as the census found answers indexed to wording. Full-battery controls reveal a register gradient: the compression is significant and specific
 to the answer-delivery formats models are trained to speak (JSON $-0.22$ bits, $p=10^{-4}$;
 XML $-0.18$, $p=.003$; sign-flip permutation over models, corroborated over categories),
 absent for YAML and CSV ($p>.15$), and \emph{reversed} for an arbitrary non-data wrapper ---
@@ -106,18 +104,17 @@ rank.
 \item \textbf{A sharpener, not a re-indexer} (\S\ref{sec:sharpener}). The plain-chat modal
 answer survives in 28 of 31 categories; the three flips occur exactly where the plain mode was
 weakest, and land on answers that read as the example-payload canon of documentation.
-\item \textbf{Register-indexed defaults} (\S\ref{sec:defaults}). Read from discrete
-four-of-four behavior rather than score deltas: of the panel's 144 stable off-modal chat
-defaults, only 47\% survive into JSON; retention is a per-model trait, and models acquire new
-stable defaults that exist only in the register.
+\item \textbf{Register-indexed defaults} (\S\ref{sec:defaults}). A within-run re-sample
+($n{=}20$) shows the register significantly shifts 53\% of a model's stable chat defaults (mostly
+back to the crowd) and \emph{installs} register-only defaults absent from chat --- read from
+discrete answer behavior, not noisy score deltas.
 \item \textbf{A register gradient} (\S\ref{sec:gradient}). Compression is significant and
 specific to the answer-delivery formats models are trained to speak (JSON, XML), absent for
 YAML and CSV, and \emph{reversed} for an arbitrary non-data wrapper --- weighing the mechanism
 toward tool-use post-training while leaving a corpus-register component visible.
-\item \textbf{A family-level register response} (\S\ref{sec:gradient}). The Llama-derived models
-\emph{diverge} under JSON where the field compresses ($+0.70$ bits against the rest of the
-field, $p<10^{-4}$); no member is significant alone. We report the statistic and decline the
-mechanism.
+\item \textbf{A lineage-linked exception} (\S\ref{sec:gradient}). The Llama-lineage models
+\emph{diverge} under JSON where the field compresses; with few members and undisclosed base
+weights we report this descriptively, as a lead rather than a tested effect.
 \item \textbf{A cheap, reusable method}. The manipulation is one extra column on a frozen
 instrument, and format compliance falls out of every run as a standing capability metric.
 \end{enumerate}
@@ -292,32 +289,38 @@ move is itself the signature of a reshaped conditional distribution rather than 
 
 \subsection{Defaults are register-indexed}
 \label{sec:defaults}
-The scorecard deltas are noisy for individual models (\S\ref{sec:gradient}), so the sharpest
-evidence that personality is register-dependent comes not from scores but from discrete,
-deterministic behavior. Call a model's \emph{stable default} in a category an off-modal answer
-it gives on all four runs --- a repeatable refusal of the field's first choice, like
-\textsc{fable}'s \emph{mustard} for condiment or \emph{gouda} for cheese. The panel holds 144
-such stable off-modal defaults in plain chat. Only 47\% survive into JSON; the rest revert to
-the field's mode.
+The sharpest evidence that personality is register-dependent comes not from surprisal scores,
+which are noisy for individual models (\S\ref{sec:gradient}), but from discrete answer behavior.
+Call a model's \emph{stable default} in a category an off-modal answer it gives repeatedly --- a
+standing refusal of the field's first choice, like \textsc{fable}'s \emph{gouda} for cheese. The
+four-sample census flags 144 such defaults across the panel. Four samples, however, cannot tell a
+genuine default from a lucky streak, nor a register effect from ordinary run-to-run drift, so we
+re-sampled every default cell at $n=20$ in \emph{both} registers within a single run. This
+settles three questions the four-sample data could not.
 
-Retention is a per-model trait, and it dissociates two models that look identical in chat.
-\textsc{gpt-5.6-terra} and \textsc{fable} share several of the \emph{same} chat defaults --- both
-say \emph{mustard}, both say \emph{mango}, four runs of four. Under JSON, Terra keeps one of
-four: \emph{mustard} becomes \emph{ketchup} and \emph{mango} becomes \emph{apple}, both
-four-of-four flips to the crowd. Fable keeps five of seven (\emph{mustard} and \emph{mango}
-survive; \emph{gouda} reverts to \emph{cheddar}) and, more strikingly, \emph{acquires} five
-stable defaults absent from its chat behavior entirely: asked for a color in JSON it says
-\emph{cerulean} four runs of four where in chat it says \emph{blue}, and \emph{carpenter} for
-occupation likewise. \textsc{llama-4-maverick} holds the panel's largest set --- 10 stable
-defaults --- and keeps 6, which is most of what its anomalous positive $\Delta$ is made of
-(\S\ref{sec:gradient}).
+\paragraph{The defaults are real, and the register erodes them.} At $n=20$ the flagged defaults
+are genuine (median per-sample probability $0.90$), not sampling artifacts. Requesting JSON then
+\emph{significantly} shifts the answer distribution for 76 of 144 (53\%) of them (Fisher exact
+per cell, Benjamini--Hochberg $q=.10$), against a false-positive floor of ${\sim}10\%$, and the
+shift is directional: 29\% revert outright to the field's modal answer. The register pulls a
+model's idiosyncratic default back toward the crowd.
 
-The right object is therefore not a single personality that the register reveals or hides, but a
+\paragraph{The register also installs defaults.} The move is not only subtractive. Of the JSON
+answers a model gives four-of-four but \emph{never} produces in chat, 81\% survive the $n=20$
+re-sample as genuine register-only defaults: \textsc{fable} says \emph{cerulean} for colour 0\%
+of the time in chat and 100\% in JSON ($p\approx10^{-11}$), and \emph{carpenter} for occupation
+$0\%\to90\%$ ($p\approx10^{-9}$); \textsc{opus-4.8} acquires \emph{phoenix}, \textsc{sonnet-4.6}
+\emph{gold}. Some of the field-level mode flips of \S\ref{sec:sharpener} are these acquisitions
+in aggregate --- one model's JSON-only \emph{butterfly} ($15\%\to100\%$) or \emph{monopoly}
+($5\%\to100\%$).
+
+\paragraph{Same default, opposite response.} Because the register both erases and installs,
+models that look identical in chat diverge under it. \textsc{gpt-5.6-terra} and \textsc{fable}
+both answer \emph{mango} for fruit, twenty runs of twenty in chat; under JSON \textsc{terra} flips
+to \emph{apple} (20/20, $p\approx10^{-11}$) while \textsc{fable} holds \emph{mango} (19/20). The
+right object is therefore not one personality the register reveals or hides but a
 \emph{per-register defaults profile}: a model's character is indexed to the channel it is asked
-through --- roughly half of it shared across channels --- the same way the census found answers
-indexed to the surface form of the question. ``Conviction versus costume'' is a continuum on
-that profile, not a binary, and it is read entirely from four-of-four answer behavior, not from
-surprisal magnitudes, which for these individual models are not significant.
+through, the same way the census found answers indexed to the wording of the question.
 
 \subsection{Serialization vs.\ structure: the register gradient}
 \label{sec:gradient}
@@ -377,16 +380,13 @@ ordering carries no information; we do not interpret it. (c) One effect survives
 altitude.
 
 \paragraph{A family-level response.}
-The models with the largest positive deltas are all Llama-derived, and while none is significant
-alone, the group is. Pooling \textsc{llama-4-maverick}, \textsc{llama-3.3}, and \textsc{mythomax}
-(a community Llama-2 merge, not a first-party model) gives a $+0.44$-bit divergence over 93
-model-categories ($p=.009$), and $+0.70$ bits against the rest of the field by a two-sample
-label permutation ($p<10^{-4}$) that survives a ${\times}19$ penalty for having selected the
-family post hoc. The interpretation is open. It is not pure base weights: \textsc{hermes-4},
-also Llama-based but heavily third-party-retuned, compresses harder than any model in the panel.
-Nor is it a clean ``follows the tuner'' story: community derivatives split, \textsc{mythomax}
-diverging while \textsc{hermes} compresses. We report the effect and leave the mechanism
-unresolved.
+The models with the largest positive deltas share a lineage: the two Meta-released Llamas,
+\textsc{llama-4-maverick} ($+0.56$) and \textsc{llama-3.3} ($+0.28$), both diverge under JSON, as
+does a community Llama-2 merge (\textsc{mythomax}, $+0.47$). We name the group by provenance
+rather than by outcome, but with so few members this is a descriptive observation, not a tested
+effect, and we quote no aggregate $p$-value. That a community merge sharing the base but none of
+Meta's post-training also diverges points at the base weights over any lab's tuning --- yet those
+weights are undisclosed, so we flag the lineage link as a lead, not a result.
 
 \subsection{Enforcement adds little the request did not}
 \label{sec:enforced}
