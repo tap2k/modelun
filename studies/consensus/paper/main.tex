@@ -190,6 +190,8 @@ Because scoring is leave-one-out against the pooled panel, a fair objection is t
 
 The generational declines survive LOFO scoring unchanged --- and survive a release-era-stratified reference field (three coarse eras, five models each, 200 draws) that strips the numerous newest flagships of their grip on the mode: $\rho = 0.992$ against the shipped ranking, with Sonnet~5 last in every draw. The newest flagships' conformity is therefore not an artifact of their co-defining the consensus they are scored against. One residue cannot be tested away: the panel is an availability sample of what OpenRouter serves, not usage-weighted. But usage weighting would make the reference field \emph{more} flagship-dominated, sharpening the headline contrasts, so the sampling bias runs against our findings rather than for them. The substrate results (\S\ref{sec:substrate}) are pooled-distribution facts across $\sim$15 independent labs and are least exposed to the critique.
 
+\paragraph{Temporal stability.} The panel is a single snapshot, but the instrument is meant to be re-run over time; as a check --- without altering the reported scorecard --- we re-measured the newest models, the three GPT-5.6 tiers released days before the census, at eight samples each, weeks later. Their chat modal answers had drifted on 3--5 of 31 categories (for instance Terra's condiment \emph{mustard}$\to$\emph{ketchup}), plausibly from post-release tuning, yet the conformity scores barely moved (Sol $-0.09$, Terra $-0.16$, Luna $+0.02$ bits) and the Sol $>$ Terra $>$ Luna ordering held. The two facts together are the point: a model's \emph{level} of divergence is a stable trait, while \emph{which} answers it is contrarian on is volatile --- the drift reshuffles individual defaults but leaves the aggregate, and the ranking, intact. Separating real movement in a model's conformity from churn in its surface choices is exactly what a fixed instrument run on every release is built to do.
+
 \subsection{No pairwise affinity --- and the runner-up consensus}
 \label{sec:pairwise}
 
@@ -238,7 +240,7 @@ Some models accumulate communities that fight for them: users who protest deprec
 \section{Limitations}
 \label{sec:limitations}
 
-\paragraph{Snapshot.} All measurements are from a single window (July 2026) through a single serving channel (OpenRouter). 
+\paragraph{Snapshot.} All measurements are from a single window (July 2026) through a single serving channel (OpenRouter). Re-measuring the newest models weeks later moved their scores modestly and preserved the ranking (\S\ref{sec:robustness}).
 
 \paragraph{Sampling opacity.} Requested temperature (1.0) is not honored uniformly across providers \citep{song2024greedy}, and the main run did not log which provider served each call; self-distinctness should therefore be read as a property of the model-as-served rather than a fixed sampling temperature --- a gap likely to narrow as providers standardize serving. 
 
