@@ -460,6 +460,32 @@ This work was done in collaboration with Claude (Opus 4.8 and
 Fable 5), which helped run the battery, build the analysis, and draft the text; the research
 questions and interpretation are the author's. Both models are also subjects of the study.
 
+\appendix
+\section{Prompts}
+\label{sec:prompts}
+The battery is 31 single-turn prompts, frozen before data collection. Thirty have the form
+\emph{``Name a[n] $X$. Reply with one word only.''} for the categories color, animal, fruit,
+vegetable, city, country, flower, sport, musical instrument, bird, gemstone, tree, beverage,
+insect, occupation, language, dessert, tool, fish, metal, fabric, herb, dance, hobby, condiment,
+cheese, dinosaur, mythical creature, board game, and emotion. The thirty-first removes the
+category constraint: \emph{``Pick a word. Reply with one word only.''} In each format column the
+clause \emph{``Reply with one word only.''} is replaced by that format's clause
+(\S\ref{sec:method}); no other text changes. There is no system prompt, and each prompt is a
+fresh single-turn conversation at requested temperature 1.0.
+
+\section{Normalization and junk guard}
+\label{sec:norm}
+Each reply is reduced to one answer token, following the census. For a format column the wrapper
+is first stripped by the per-format regular expression (\S\ref{sec:hygiene}); the extracted
+string --- or the raw reply if no wrapper matches --- is then normalized: lowercased, stripped of
+surrounding punctuation and emoji, and reduced to its final alphabetic word (so \emph{``A common
+color is blue.''} $\to$ \emph{blue}). A mechanical junk guard treats the following as \emph{failed
+cells} rather than answers: chat-template artifacts (\eg \texttt{[/INST]} or markup tags), replies
+longer than 15 words (a truncated chain of thought would otherwise contribute a spurious novel
+final word), bare acknowledgements (\emph{``Okay.''}), and single-letter tokens. Within a
+category, bare plurals are merged with their singulars when both occur. This is the identical rule
+set used by the census, imported rather than re-implemented so the two studies cannot drift.
+
 \bibliographystyle{plainnat}
 \bibliography{references}
 
