@@ -220,7 +220,7 @@ Field-mean answer-choice surprisal falls from 1.80 bits in plain chat to 1.58 in
 over the 44 models the per-model $\Delta$ is $-0.22$ bits, significant on both exchangeable
 units (\S\ref{sec:gradient}); but the mean is the least informative summary available, because
 the effect is concentrated rather than spread. The shape is a divergent tail collapsing onto a
-fixed floor.
+fixed floor (Figure~\ref{fig:openvsjson}).
 
 The models that lose the most are the ones that had the most to lose. \textsc{deepseek-v3.2},
 the census's one genuine explorer among frontier-lab models, falls from 2.63 to 1.32 bits
@@ -228,8 +228,10 @@ the census's one genuine explorer among frontier-lab models, falls from 2.63 to 
 \textsc{hermes-4} loses 0.98, \textsc{gpt-4o-mini} 0.92, \textsc{gpt-4-turbo} 0.87,
 \textsc{gpt-5.6-sol} 0.66. The conformist floor barely moves: \textsc{claude-opus-4.8} $-0.17$,
 \textsc{grok-4.5} $-0.07$, \textsc{claude-sonnet-5} $-0.05$. There is nowhere below the floor to
-go, and the tail falls toward it; the scorecard's spread compresses from roughly 2.2 bits to
-1.5. On the unconstrained ``Pick a word'' prompt the same collapse appears with no category to
+go, and the tail falls toward it, though the raw range is nearly unchanged (2.2 to 2.0 bits): a
+Llama-derived minority \emph{diverges} under JSON (\S\ref{sec:gradient}) and holds up the top,
+so the compression is in the mean and the collapsing tail, not the extremes. On the
+unconstrained ``Pick a word'' prompt the same collapse appears with no category to
 anchor it: \emph{serendipity} rises from 40\% of the pool to 63\% and the number of distinct
 words falls from 53 to 28.
 
@@ -237,7 +239,18 @@ Which individual movements are real we take up in \S\ref{sec:gradient}; the prog
 \emph{shape} --- tail down, floor fixed --- is a property of the aggregate and does not depend
 on ranking the middle of the table.
 
-% FIGURE (make_assets.py, TODO): plain-vs-JSON surprisal scatter with y=x line; delta-sorted scorecard.
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.62\linewidth]{figs/openvsjson.pdf}
+\caption{Answer-choice surprisal for all 44 models, open chat (gray dot)
+versus JSON (colored dot), sorted by the open-chat score. Blue marks a model that becomes
+\emph{more generic} under JSON (31 of 44); amber marks one that \emph{diverges} (13 --- the
+Llama-derived group and a few others, \S\ref{sec:gradient}). The distinctive models at the top
+slide farthest toward the conformist floor, which is itself immobile, and the field mean falls
+from 1.80 to 1.58 bits. The raw range is nearly unchanged ($2.2 \to 2.0$) because the
+amber divergers hold up the top: the compression is in the mean and the tail, not the extremes.}
+\label{fig:openvsjson}
+\end{figure}
 
 \subsection{A sharpener, not a re-indexer}
 \label{sec:sharpener}
@@ -427,10 +440,9 @@ explorer --- scorecard, per-category and per-format tables, per-model drill-down
 compliance tab --- is published alongside.
 
 \section*{Note on AI usage}
-Following the census's convention: this work was done in collaboration with Claude (Opus 4.8 and
+This work was done in collaboration with Claude (Opus 4.8 and
 Fable 5), which helped run the battery, build the analysis, and draft the text; the research
-questions and the calls are the author's. Both models are also subjects of the study ---
-including in the register-indexed-defaults result, where Fable's behavior is among the data.
+questions and interpration are the author's. Both models are also subjects of the study.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
