@@ -261,9 +261,9 @@ answer-mass lands on words the plain census never produced. The register moves m
 The three exceptions are diagnostic: each is a category whose plain-chat mode was weak, and in
 each the JSON winner is a documentation-flavored prototype. Insect flips from \emph{ant} (43\%)
 to \emph{butterfly} (60\%), board game from \emph{chess} to \emph{monopoly}, dance from
-\emph{salsa} to \emph{tango}. \emph{Butterfly}, \emph{monopoly}, and \emph{tango} are the
-example-payload canon of API tutorials --- the strings that fill placeholder fields in
-documentation. The register amplifies its own conditional prior, and that prior wins only where
+\emph{salsa} to \emph{tango}. \emph{Butterfly}, \emph{monopoly}, and \emph{tango} have the
+flavour of documentation example-payloads --- placeholder values rather than conversational
+English --- though we do not verify this against a corpus. The register amplifies its own conditional prior, and that prior wins only where
 the chat prototype was too weak to hold. This mirrors a contrast from the census: a
 \emph{semantic} reframe re-indexes the distribution onto a new mode, while a \emph{channel}
 reframe like this one sharpens the peak the model already had.
@@ -283,7 +283,7 @@ The within-model narrowing that does exist is progressive, on the same models as
 effect: \textsc{hermes} $0.71\to0.52$, \textsc{deepseek-v3.2} $0.56\to0.42$, \textsc{sonar}
 $0.50\to0.40$, \textsc{haiku-4.5} $0.42\to0.33$, while the conformist floor is flat
 (\textsc{sonnet-5} $0.30\to0.27$) and \textsc{claude-fable-5} holds at 0.32 in both registers ---
-its steadiness is conviction, not a cold sampler. The tax is thus progressive on both of the
+stable self-distinctness rather than a cooled sampler. The tax is thus progressive on both of the
 census's axes, and the dissociation between a large surprisal move and a small self-distinctness
 move is itself the signature of a reshaped conditional distribution rather than a rescaled one.
 
@@ -346,7 +346,12 @@ entropy, $p=.005$; $+0.16$ per model, $p=.002$). The JSON-versus-YAML difference
 category, is itself significant ($p<10^{-4}$), and \textsc{deepseek-v3.2}'s individual collapse
 clears $p<10^{-4}$ alone. The compression is thus specific to the trained answer-delivery
 formats, which moves the weight of the mechanism toward tool-use post-training rather than a
-generic property of serialized text.
+generic property of serialized text. The gradient is not an artifact of the differing per-format
+compliance subsets (compliant $n$: JSON 43, XML 41, YAML 37, CSV 39, brackets 43 of 44): on the
+34 models compliant in \emph{all} five formats it reproduces and sharpens (JSON $-0.27$, XML
+$-0.26$, brackets $+0.14$), while YAML and CSV stay weakly negative and non-significant --- the
+raw full-panel CSV sign is composition-sensitive, which is why we read neither as a reliable net
+effect.
 
 \paragraph{But not post-training alone.}
 The corpus-register account is not dead, because on the unconstrained ``Pick a word'' prompt
@@ -424,7 +429,10 @@ surface --- but software consumes them through structured output, and that surfa
 more collapsed. Every diversity number the census reported is, for the deployment tier that
 increasingly matters, an overstatement: the model an agent consults has narrower tastes than the
 one a user chatted with, and the gap is a fixed cost of the register rather than a tail risk.
-Synthetic-survey, LLM-judge, and tool-selecting pipelines all read the JSON persona.
+Synthetic-survey, LLM-judge, and tool-selecting pipelines all read the JSON persona. This bites
+where the task admits many acceptable answers --- surveys, recommendations, brainstorming,
+judgement, tool choice --- not where structured output carries a single correct value
+(extraction, classification, routing), for which reduced diversity is no cost.
 
 The register is also a cheap instrument in its own right. One extra column on a frozen battery
 dissociates register-dependent divergence (a costume) from register-independent conviction (a
@@ -450,7 +458,7 @@ compliance tab --- is published alongside.
 \section*{Note on AI usage}
 This work was done in collaboration with Claude (Opus 4.8 and
 Fable 5), which helped run the battery, build the analysis, and draft the text; the research
-questions and interpration are the author's. Both models are also subjects of the study.
+questions and interpretation are the author's. Both models are also subjects of the study.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
