@@ -32,6 +32,7 @@ jobs:
       - run: python studies/consensus/views/build.py   # consensus: views/data.js (self-contained)
       - run: python studies/convergence/views/build.py # convergence: views/data.js (answers-only)
       - run: python studies/structured/views/build.py  # structured: views/data.js (plain-vs-format)
+      - run: python studies/suggestibility/views/build.py # suggestibility: views/data.js (the "right?" reflex)
 
       # Assemble one Pages tree: a landing index + each study at its own slug. Pages serves
       # a single artifact, so multiple studies share one site via subpaths, not separate URLs.
@@ -44,6 +45,7 @@ jobs:
           cp -r studies/consensus/views site/consensus
           cp -r studies/convergence/views site/convergence
           cp -r studies/structured/views site/structured
+          cp -r studies/suggestibility/views site/suggestibility
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
