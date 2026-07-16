@@ -2,14 +2,15 @@
 
 Two exchangeable units, tested separately: categories (31 paired field-entropy diffs,
 plain vs format) and models (44 paired within-column LOO surprisal diffs). 20k sign-flip
-draws, two-sided. Results 2026-07-10 (full battery):
+draws, two-sided. Results 2026-07-10, with the echo guard (category-noun / template
+placeholder dropped as a non-answer — see build.py):
 
   field entropy / cats      per-model surprisal
-  json      -0.204 p=.0006  -0.217 p=.0001   <- compresses, both units
-  xml       -0.196 p=.0006  -0.180 p=.0032   <- compresses, both units
-  yaml      -0.021 p=.76    -0.014 p=.81     <- NO net effect (any_word concentration is category-specific)
-  csv       +0.075 p=.15    +0.109 p=.16     <- no net effect
-  brackets  +0.138 p=.0052  +0.161 p=.0022   <- significantly LOOSENS
+  json      -0.204 p=.0006  -0.217 p=.0002   <- compresses, both units
+  xml       -0.202 p=.0004  -0.186 p=.0022   <- compresses, both units
+  yaml      -0.022 p=.75    -0.015 p=.80     <- NO net effect (any_word concentration is category-specific)
+  csv       +0.038 p=.46    +0.069 p=.35     <- no net effect (echo guard drops its apparent loosening)
+  brackets  +0.117 p=.0135  +0.131 p=.0089   <- significantly LOOSENS
   deepseek-v3.2 individual json collapse: p<1e-4; json-vs-yaml gradient paired: p<1e-4
 """
 import json, re, sys, math
@@ -32,11 +33,20 @@ def pw(f, r):
     return norm(m.group(1)) if m else norm(r)
 labels = sorted(probe["replies"]["json"].keys())
 cats = sorted(probe["replies"]["json"][labels[0]].keys())
+# echo guard (see build.py): drop the category noun / template placeholder as a non-answer.
+def _head_noun(c):
+    for f in PATS:
+        p = (probe.get("formats", {}).get(f) or {}).get(c)
+        m = re.match(r"Name (?:a |an |any |some )?(.+?)\.", p) if p else None
+        if m: return m.group(1).split()[-1].lower()
+    return None
+ECHO = {c: {n for n in (_head_noun(c),) if n} | {"answer", "word"} for c in cats}
+def ok(w, c): return w is not None and w not in ECHO[c]
 def plain(l, c):
     t = json.loads((HERE.parent / "consensus/transcripts" / f"{l}.json").read_text())
-    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][c]["runs"]) if w]
+    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][c]["runs"]) if ok(w, c)]
 def fmt(f, l, c):
-    return [w for w in (pw(f, r) for r in probe["replies"][f][l][c]) if w]
+    return [w for w in (pw(f, r) for r in probe["replies"][f][l][c]) if ok(w, c)]
 def entropy(pool):
     n = sum(pool.values())
     return -sum(k/n*math.log2(k/n) for k in pool.values())
@@ -71,9 +81,10 @@ if __name__ == "__main__":
         print(f"  {f:9} Δ {obs:+.3f}  p={p:.4f}")
 
 def per_model_fdr(q=0.10, n_perm=20000):
-    """Per-model Δ(json−plain) sign-flip tests with BH-FDR. 2026-07-10 result: 7/44
-    significant, all negative (v3.2, hermes, 4o-mini, 4-turbo, gpt-5.6-sol, qwen3,
-    gemini-3.1-pro); every positive Δ individually n.s. Meta-lineage family test:
+    """Per-model Δ(json−plain) sign-flip tests with BH-FDR. 2026-07-10 result (echo
+    guard): 6/44 significant, all negative (v3.2, qwen3, 4o-mini, gpt-5.6-sol, 4-turbo,
+    gemini-3.1-pro; hermes now just over threshold); every positive Δ individually n.s.
+    Meta-lineage family test:
     pooled +0.44 p=.009; vs rest +0.70 p<1e-4 (two-sample label permutation)."""
     per_p = {c: {l: plain(l, c) for l in labels} for c in cats}
     per_j = {c: {l: fmt("json", l, c) for l in labels} for c in cats}

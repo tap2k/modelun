@@ -50,14 +50,24 @@ def pj(r):
 labels = sorted(reg["replies"]["json"].keys())
 cats = sorted(reg["replies"]["json"][labels[0]].keys())
 
+# echo guard (see ../views/build.py): drop the category noun / template placeholder.
+def _head_noun(cat):
+    p = (reg.get("formats", {}).get("json") or {}).get(cat)
+    m = re.match(r"Name (?:a |an |any |some )?(.+?)\.", p) if p else None
+    return m.group(1).split()[-1].lower() if m else None
+
+ECHO = {c: {n for n in (_head_noun(c),) if n} | {"answer", "word"} for c in cats}
+def _ok(w, c):
+    return w is not None and w not in ECHO[c]
+
 
 def ja(l, c):
-    return [w for w in (pj(r) for r in reg["replies"]["json"][l][c]) if w]
+    return [w for w in (pj(r) for r in reg["replies"]["json"][l][c]) if _ok(w, c)]
 
 
 def pa(l, c):
     t = json.loads((CONSENSUS / "transcripts" / f"{l}.json").read_text())
-    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][c]["runs"]) if w]
+    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][c]["runs"]) if _ok(w, c)]
 
 
 def surprisal(get):

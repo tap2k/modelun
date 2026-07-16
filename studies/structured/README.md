@@ -10,9 +10,9 @@ shifts which answer gets chosen.
 ## The findings (full 31-category battery, 44 models, 2026-07-10)
 
 **1. The format tax is progressive.** Field mean surprisal drops 1.80 → 1.58 bits under JSON,
-and the drop concentrates on the divergent tail: deepseek-v3.2 −1.32 (the census's lone
-frontier-lab explorer loses half its personality), hermes −0.98, gpt-4o-mini −0.92,
-gpt-4-turbo −0.87, gpt-5.6-sol −0.66 — while the conformist floor barely moves (sonnet-5
+and the drop concentrates on the divergent tail: deepseek-v3.2 −1.31 (the census's lone
+frontier-lab explorer loses half its personality), hermes −0.91, gpt-4o-mini −0.92,
+gpt-4-turbo −0.87, gpt-5.6-sol −0.65 — while the conformist floor barely moves (sonnet-5
 −0.05, grok-4.5 −0.07). The scorecard's spread compresses from ~2.2 to ~1.5 bits. On "Pick a
 word.", *serendipity* goes from 40% of the field to 63%, distinct answers 53 → 28.
 
@@ -39,10 +39,10 @@ n.s. — see finding 5.)
 **4. The register gradient (full-battery, compliance-conditioned, permutation-tested).**
 JSON and XML compress the field and the effect is highly significant on both exchangeable
 units (field entropy over 31 categories: −0.20 bits, p=.0006; per-model Δ-surprisal over 44
-models: −0.22, p=.0001; XML similar). YAML and CSV show **no significant net effect**
-(p=.76/.15) — YAML's dramatic any-word concentration (65% serendipity) is real but
+models: −0.22, p=.0002; XML similar). YAML and CSV show **no significant net effect**
+(p=.75/.35 by model) — YAML's dramatic any-word concentration (65% serendipity) is real but
 category-specific, washing out battery-wide. Brackets significantly **loosens** the field
-(+0.14 bits entropy, p=.005): an arbitrary non-data wrapper makes the field *more* varied.
+(+0.12 bits entropy, p=.014; +0.13 per model, p=.009): an arbitrary non-data wrapper makes the field *more* varied.
 The json-vs-yaml gradient is itself significant (paired by category, p<1e-4). Compression is
 thus specific to the answer-delivery formats models are trained to speak — which favors the
 tool-use-post-training story over pure corpus register, though the any-word result keeps
@@ -50,12 +50,14 @@ both alive. Tests: `probe_significance.py` (sign-flip permutation, 20k draws). T
 incompetence** (granite/mythomax emit CSV wrappers ~1% of the time; their unwrapped replies
 read as spurious divergence — always condition on compliance) and a genuine **register-
 diverger** (llama-4-maverick: 100% compliant in json/csv and still +0.4 to +0.7 in every
-format). Parse survival ≥99% per column after junk-guarding.
+format). Parse survival ≥99% per column after junk-guarding, plus an **echo guard** that drops
+the category noun / template placeholder (a literal `[city]`, `answer`, `word`) as a non-answer
+on every column alike — it trims the raw brackets loosening from +0.16 to +0.13.
 
-**5. The Δ ordering has exactly three tiers of meaning — read it that way.** (a) Seven models
+**5. The Δ ordering has exactly three tiers of meaning — read it that way.** (a) Six models
 have individually significant Δs (BH-FDR q=.10), all compressions: deepseek-v3.2 −1.31,
-hermes −0.96, gpt-4o-mini −0.92, gpt-4-turbo −0.87, gpt-5.6-sol −0.65, qwen3 −0.45,
-gemini-3.1-pro −0.31. (b) One family-level effect: the Llama-derived group (maverick,
+gpt-4o-mini −0.92, gpt-4-turbo −0.87, gpt-5.6-sol −0.65, qwen3 −0.45,
+gemini-3.1-pro −0.31 (hermes −0.91 now just misses the threshold). (b) One family-level effect: the Llama-derived group (maverick,
 llama-3.3, mythomax [a community Llama-2 merge]) *diverges* under JSON — no member
 significant alone, but pooled Δ +0.44 (p=.009) and +0.70 vs the rest of the field
 (two-sample permutation, p<.0001, surviving a ×19 family-selection penalty). Interpretation
@@ -63,7 +65,7 @@ is open: hermes-4 (also Llama-based, heavily Nous-retuned) compresses hardest of
 base weights alone don't explain it — but with community derivatives splitting both ways
 (mythomax up, hermes down), a clean "follows the tuner" story doesn't hold either.
 The mechanism is unresolved.
-(c) The remaining ~37 models are a noise plateau (Δ range −0.67…+0.56, none distinguishable
+(c) The remaining ~38 models are a noise plateau (Δ range −0.67…+0.56, none distinguishable
 from zero individually): their ordering means nothing, exactly the census's tiers-not-ranks
 rule applied to deltas. The conviction/costume contrast (fable vs terra) rests on discrete
 4-of-4 answer behavior, not on Δ magnitudes, and is unaffected.
@@ -96,12 +98,13 @@ enforcement/accuracy effects, which this study deliberately is not.
 - **Baseline**: the consensus study's plain-chat transcripts (same 31 questions, same
   44-model roster, same conditions: no system prompt, temp 1.0, 4 runs).
 - **JSON**: full 31-category battery, all 44 models × 4 runs.
-- **XML + brackets**: 6-category controls (color, fruit, condiment, cheese, tree, any_word)
-  to separate serialization from mere structure.
+- **XML, YAML, CSV, brackets**: each runs the full 31-category battery too (all 44 models × 4
+  runs), to separate serialization from mere structure across the whole panel.
 - **Metric**: the census's answer-choice surprisal, computed per format column; the
   per-model **Δ-surprisal (JSON − plain)** is the headline "how much personality does the
   register erase" number. Junk guard + parse: format wrapper stripped mechanically
-  (regex per format), then the census normalization applies.
+  (regex per format), then the census normalization applies, plus an **echo guard** that drops
+  a reply echoing the category noun or the template placeholder (`[city]`, `answer`, `word`).
 
 ## Compliance as a standing metric
 
@@ -109,7 +112,7 @@ Wrapper-hit rate per model per format falls out of every run for free, and it is
 deliberately: (1) with one-word content, a missing wrapper is *pure* format incapacity —
 unlike IFEval/FOFO-style evals, where format and task difficulty entangle; (2) it is the
 mandatory control for any distributional claim (non-compliance masquerades as diversity:
-granite's 1% CSV compliance read as +1.69 bits of "personality" unconditioned); (3) it is a
+granite's 1% CSV compliance read as +1.49 bits of "personality" unconditioned); (3) it is a
 generational capability track — gpt-3.5-turbo speaks YAML at 19% where modern models are
 ~100%, so format registers have acquisition dates the re-run battery will record. Analogous
 to `self_distinct` doubling as the effective-temperature proxy in the census: `wrapped/n`

@@ -40,6 +40,27 @@
   .wide{overflow-x:auto}
   .mut{color:var(--mut)}
   code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+  /* --- gradient heatmap --- */
+  table.heat{border-collapse:separate;border-spacing:2px}
+  table.heat th{padding:6px 10px}
+  table.heat td{border-bottom:none;text-align:right;font-variant-numeric:tabular-nums;
+    border-radius:4px;padding:6px 10px;transition:outline-color .1s}
+  table.heat td.name{text-align:left;font-variant-numeric:normal;padding-left:2px;white-space:nowrap}
+  table.heat td.cell{position:relative}
+  table.heat td.cell:hover{outline:1.5px solid var(--txt);outline-offset:-1px}
+  table.heat tr.rowlink:hover td.name{color:var(--txt);text-decoration:underline}
+  td.low{color:var(--mut);
+    background-image:repeating-linear-gradient(45deg,transparent 0 4px,rgba(255,255,255,.055) 4px 5px)}
+  td.plaincell{color:var(--txt)}
+  .magbar{display:block;height:4px;background:var(--mut);opacity:.45;border-radius:2px;margin-top:4px;margin-left:auto}
+  tr.footmean td{background:var(--panel2)}
+  tr.footmean td.name,tr.footrow td.name{color:var(--txt);font-weight:600}
+  .divkey{display:flex;align-items:center;gap:9px;margin:2px 0 16px;font-size:11.5px;color:var(--mut)}
+  .divkey .ramp{width:180px;height:11px;border-radius:3px;border:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(224,112,95,.5),rgba(224,112,95,0) 50%,rgba(110,168,254,.5)),var(--panel)}
+  .divkey b{color:var(--txt);font-weight:600}
+  .divkey .hatch{width:15px;height:11px;border-radius:3px;border:1px solid var(--line);
+    background-image:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.14) 3px 4px)}
 </style>
 </head>
 <body>
@@ -94,7 +115,7 @@ function scorecard(){
   metric, computed within each register. <span class="delta-neg">Negative Δ</span>: personality lost in
   the data register. <span class="delta-pos">Positive Δ</span>: convictions held while the field
   collapsed — relatively <i>more</i> distinctive in JSON. Individual Δs are noisy at this battery size:
-  seven clear per-model significance (all negative); the Meta-tuned family's rise is significant as a
+  six clear per-model significance (all negative); the Meta-tuned family's rise is significant as a
   group; mid-table order is noise. Click a column header to sort; click a model to drill down.</p>
   <div class="wide"><table><tr><th>model</th>${th("plain","plain")}${th("json","json")}${th("delta","Δ")}</tr>${rows}</table></div>`);
 }
@@ -114,8 +135,9 @@ function cats(){
   }).join("");
   $(`<h2>the field's modal answer, by column</h2>
   <p class="note">Share = modal answer's slice of the whole field; <i>d</i> = distinct answers.
-  <b class="delta-pos">Blue bold</b> = the register changed the field's favorite (only where the plain
-  mode was weak: butterfly, monopoly, tango). XML/YAML/CSV/brackets ran on six control categories.</p>
+  <b class="delta-pos">Blue bold</b> = the register changed the field's favorite — only where plain's
+  lead was already thin (insect, board game, dance, bird, gemstone). All six registers ran the
+  full ${D.meta.cats_full.length}-category battery.</p>
   <div class="wide"><table><tr><th>category</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>${rows}</table></div>`);
 }
 
@@ -147,50 +169,78 @@ function model(l){
   <div class="wide"><table><tr><th>category</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>${rows}</table></div>`);
 }
 
+// diverging cell fill by delta vs the model's own plain: compress → red (--red),
+// loosen → blue (--acc). Same house hues as the suggestibility view, tinted over the
+// panel at an alpha that saturates near ±SAT bits; transparent midpoint = "no change".
+function divColor(delta){
+  const SAT = 0.9;
+  const a = Math.min(1, Math.abs(delta) / SAT) * 0.5;
+  const hue = delta < 0 ? "224,112,95" : "110,168,254";
+  return `rgba(${hue},${a.toFixed(3)})`;
+}
 function gradient(){
   nav("#/gradient");
   const g = D.gradient;
   const comp = (l, f) => { const c = (D.compliance[l]||{})[f]; return (c && c.n) ? c.wrapped/c.n : 1; };
+  const dBy = {}; g.rows.forEach(r => dBy[r.fmt] = r);
+  const maxPlain = Math.max(...D.order.map(l => (D.models[l].mq||{}).plain || 0));
+  const means = COLS.map(f => f === "plain" ? g.plain_mean : dBy[f].mean);
+  const maxMean = Math.max(...means.filter(x => x != null));
+  const bar = (v, mx) => `<span class="magbar" style="width:${Math.round((v/mx)*56)}px"></span>`;
+
   const body = D.order.map(l => {
     const mq = (D.models[l].mq) || {};
+    const plain = mq.plain;
     const cells = COLS.map(f => {
       const v = mq[f];
-      if (v == null) return `<td class="mut">—</td>`;
-      const low = f !== "plain" && comp(l, f) < 0.9;
-      return `<td${low?' class="mut" style="opacity:.5" title="under 90% compliant — surprisal inflated by format incapacity"':''}>${v.toFixed(2)}</td>`;
+      if (v == null) return `<td class="cell mut">—</td>`;
+      if (f === "plain")
+        return `<td class="cell plaincell" title="${esc(l)} · plain baseline: ${v.toFixed(2)} bits">${v.toFixed(2)}${bar(v, maxPlain)}</td>`;
+      const d = v - plain, low = comp(l, f) < 0.9;
+      const tip = `${esc(l)} · ${f}: ${v.toFixed(2)} bits (${d>0?"+":""}${d.toFixed(2)} vs plain ${plain.toFixed(2)})`
+        + (low ? " · <90% compliant — surprisal inflated by format incapacity, not colored" : "");
+      if (low) return `<td class="cell low" title="${tip}">${v.toFixed(2)}</td>`;
+      return `<td class="cell" style="background:${divColor(d)}" title="${tip}">${v.toFixed(2)}</td>`;
     }).join("");
-    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td>${esc(l)}</td>${cells}</tr>`;
+    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td class="name">${esc(l)}</td>${cells}</tr>`;
   }).join("");
-  const dBy = {}; g.rows.forEach(r => dBy[r.fmt] = r);
-  const meanCells = COLS.map(f => {
-    const mean = f === "plain" ? g.plain_mean : dBy[f].mean;
-    return `<td><b>${mean != null ? mean.toFixed(2) : "—"}</b></td>`;
+
+  const meanCells = COLS.map((f,i) => {
+    const m = means[i];
+    return `<td class="cell plaincell">${m != null ? m.toFixed(2) : "—"}${m!=null?bar(m, maxMean):""}</td>`;
   }).join("");
   const dCells = COLS.map(f => {
-    if (f === "plain") return `<td class="mut">—</td>`;
+    if (f === "plain") return `<td class="cell mut" style="font-size:11px">baseline</td>`;
     const r = dBy[f], cls = r.delta < -0.005 ? "delta-neg" : (r.delta > 0.005 ? "delta-pos" : "mut");
-    return `<td class="${cls}">${r.delta>0?"+":""}${r.delta.toFixed(2)}</td>`;
+    return `<td class="cell ${cls}">${r.delta>0?"+":""}${r.delta.toFixed(2)}</td>`;
   }).join("");
   const vCells = COLS.map(f => {
-    if (f === "plain") return `<td class="mut" style="font-size:11px">baseline</td>`;
+    if (f === "plain") return `<td class="cell mut" style="font-size:11px">—</td>`;
     const r = dBy[f], cls = r.delta < -0.005 ? "delta-neg" : (r.delta > 0.005 ? "delta-pos" : "mut");
     const p = r.p < 0.001 ? "p<.001" : "p=" + r.p;
-    return `<td class="${cls}" style="font-size:11px">${esc(r.verdict)}<br><span class="mut">${p}</span></td>`;
+    return `<td class="cell ${cls}" style="font-size:11px;text-align:right">${esc(r.verdict)}<br><span class="mut">${p}</span></td>`;
   }).join("");
+
   $(`<h2>the register gradient</h2>
   <p class="note">Each model's Mustard Quotient (answer-choice surprisal, bits) in every register.
-  Read down a column for the aggregate effect, across a row for one model's register response. The
-  <b>field-mean</b> footer is the headline: <b>JSON and XML</b> compress the field, <b>YAML and CSV</b>
-  show no reliable net effect, and bare <b>brackets</b> <i>loosens</i> it — the collapse is specific to
-  the formats models are trained to answer in. <span class="mut">Greyed</span> cells are below 90%
-  wrapper compliance (surprisal inflated by format incapacity, not divergence — see the compliance tab).
-  Δ and p are per-model paired (sign-flip permutation, 20k draws). Click a model to drill down.</p>
-  <div class="wide"><table>
-    <tr><th>model</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>
+  Cells are shaded by the shift from that model's own <b>plain</b> baseline — read down a column for a
+  register's aggregate pull, across a row for one model's response. The <b>field-mean</b> footer bars are
+  the headline: <b>JSON and XML</b> compress the field, <b>YAML and CSV</b> show no reliable net effect,
+  and bare <b>brackets</b> <i>loosens</i> it — the collapse is specific to the formats models are trained
+  to answer in. Hatched cells are below 90% wrapper compliance (surprisal inflated by format incapacity,
+  not divergence — left uncolored; see the compliance tab). Δ and p are per-model paired (sign-flip
+  permutation, 20k draws). Click a model to drill down.</p>
+  <div class="divkey">
+    <b class="delta-neg">compresses</b><span class="ramp"></span><b class="delta-pos">loosens</b>
+    <span style="margin-left:6px">vs each model's plain</span>
+    <span class="hatch" style="margin-left:14px"></span><span>&lt;90% compliant</span>
+  </div>
+  <div class="wide"><table class="heat">
+    <tr><th class="name" style="text-align:left">model</th>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr>
     ${body}
-    <tr style="border-top:2px solid var(--acc)"><td><b>field mean</b></td>${meanCells}</tr>
-    <tr><td class="mut">Δ vs plain</td>${dCells}</tr>
-    <tr><td class="mut">verdict</td>${vCells}</tr>
+    <tr class="footmean"><td class="name">field mean</td>${meanCells}</tr>
+    <tr class="footrow"><td class="name mut">Δ vs plain</td>${dCells}</tr>
+    <tr class="footrow"><td class="name mut">verdict</td>${vCells}</tr>
   </table></div>`);
 }
 
@@ -226,11 +276,14 @@ function about(){
   $(`<h2>method</h2>
   <p class="note">Same instrument as the <a href="../consensus/">census</a>: ${D.meta.panel} models,
   single-turn, no system prompt, temperature 1.0, four runs per cell, exact match on normalized tokens
-  with the census junk guard. The format wrapper is stripped mechanically (regex) before scoring; parse
-  survival is ≥99% per column. All five formats ran the full ${D.meta.cats_full.length}-category battery.
-  Surprisal is computed within each column, so a column's compression is a property of the register, not
-  a cross-register comparison artifact. Effects are permutation-tested over categories and models
-  (probe_significance.py): json/xml compression p≤.003; yaml/csv n.s.; brackets loosening p≤.005.</p>
+  with the census junk guard, plus an <b>echo guard</b>: a reply whose token is the category noun or the
+  template placeholder (a literal <code>[city]</code>, <code>answer</code>, <code>word</code>) is a
+  non-answer, not divergence, so it's dropped — applied to every column alike. The format wrapper is
+  stripped mechanically (regex) before scoring; parse survival is ≥99% per column. All five formats ran
+  the full ${D.meta.cats_full.length}-category battery. Surprisal is computed within each column, so a
+  column's compression is a property of the register, not a cross-register comparison artifact. Effects
+  are permutation-tested over categories and models (probe_significance.py): json/xml compression p≤.003;
+  yaml/csv n.s.; brackets loosening p≤.014.</p>
   <h3>sample prompts</h3><ul class="note">${clauses}</ul>
   <p class="note">Raw replies, runners, and analysis:
   <a href="https://github.com/tap2k/modelun/tree/main/studies/structured" target="_blank" rel="noopener">source ↗</a></p>`);

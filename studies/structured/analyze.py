@@ -34,12 +34,28 @@ def parse_word(fmt, reply):
     m = re.search(PATS[fmt], reply)
     return norm(m.group(1)) if m else norm(reply)
 
+# echo guard (see views/build.py): the category noun or the template placeholder
+# ("[city]", "answer", "word") is a non-answer the junk guard misses — drop it, every column alike.
+def _head_noun(cat):
+    for f in FORMATS:
+        p = (probe.get("formats", {}).get(f) or {}).get(cat)
+        m = re.match(r"Name (?:a |an |any |some )?(.+?)\.", p) if p else None
+        if m:
+            return m.group(1).split()[-1].lower()
+    return None
+
+ECHO = {c: {n for n in (_head_noun(c),) if n} | {"answer", "word"}
+        for c in sorted(probe["replies"][FORMATS[0]][sorted(probe["replies"][FORMATS[0]])[0]].keys())}
+
+def _ok(w, cat):
+    return w is not None and w not in ECHO[cat]
+
 def fmt_answers(fmt, label, cat):
-    return [w for w in (parse_word(fmt, r) for r in probe["replies"][fmt][label][cat]) if w]
+    return [w for w in (parse_word(fmt, r) for r in probe["replies"][fmt][label][cat]) if _ok(w, cat)]
 
 def plain_answers(label, cat):
     t = json.loads((CONSENSUS / "transcripts" / f"{label}.json").read_text())
-    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][cat]["runs"]) if w]
+    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][cat]["runs"]) if _ok(w, cat)]
 
 def parse_rate(fmt, label):
     """Share of non-None raw replies that survive parsing+junk guard."""
@@ -48,7 +64,7 @@ def parse_rate(fmt, label):
         for r in probe["replies"][fmt][label][c]:
             if r is not None:
                 tot += 1
-                ok += parse_word(fmt, r) is not None
+                ok += _ok(parse_word(fmt, r), c)
     return ok / tot if tot else 0.0
 
 labels = sorted(probe["replies"][FORMATS[0]].keys())

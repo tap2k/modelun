@@ -16,7 +16,9 @@
 
 \newcommand{\eg}{e.g.,\ }
 \newcommand{\ie}{i.e.,\ }
-% DRAFT SKELETON 2026-07-10. Numbers from studies/structured/analyze.py on the same-day run.
+% DRAFT SKELETON 2026-07-10. Numbers from studies/structured/analyze.py on the same-day run,
+% refreshed 2026-07-16 with the echo guard (category-noun / template-placeholder non-answers
+% dropped; see analyze.py and probe_significance.py). Recompile with the regenerated figs/.
 % Title alternates: "The Register Tax" / "Speak Data, Say the Mode" /
 %   "Ask for JSON: Structured Output Collapses Answer Choice in Language Models"
 
@@ -36,9 +38,9 @@ asked of 44 models, with the reply requested in JSON: no schema enforcement, no 
 decoding, only the request. The field's convergence deepens sharply: on the unconstrained
 prompt (``Pick a word.''), the modal answer's share rises from 40\% to 63\% and distinct
 answers fall from 53 to 28; mean answer-choice surprisal drops 1.80 to 1.58 bits. The tax is
-\emph{progressive} and respects the instrument's resolution: seven of 44 models move
-individually (BH-FDR $q=.10$), all toward the mode, led by the panel's two most distinctive
-frontier models (the strongest explorer loses 1.32 bits --- half its measured
+\emph{progressive} and respects the instrument's resolution: six of 44 models move
+individually (BH-FDR $q=.10$), all toward the mode, led by the panel's most distinctive
+frontier model (the strongest explorer loses 1.31 bits --- half its measured
 distinctiveness). The Llama-lineage models are the exception --- both Meta-released Llamas and a
 community merge \emph{diverge} under JSON where the field compresses, a descriptive lineage link
 we flag but do not test. The format acts as a sharpener, not a re-indexer --- the plain-chat modal answer
@@ -48,10 +50,10 @@ re-sample ($n{=}20$) finds JSON significantly shifts 53\% of a model's stable ch
 mostly back to the crowd's answer --- and \emph{installs} defaults that never appear in chat
 (Claude Fable 5 answers \emph{cerulean} for colour 0\% of the time in chat, 100\% in JSON).
 Personality is indexed to the channel, as the census found answers indexed to wording. Full-battery controls reveal a register gradient: the compression is significant and specific
-to the answer-delivery formats models are trained to speak (JSON $-0.22$ bits, $p=10^{-4}$;
-XML $-0.18$, $p=.003$; sign-flip permutation over models, corroborated over categories),
-absent for YAML and CSV ($p>.15$), and \emph{reversed} for an arbitrary non-data wrapper ---
-square brackets significantly loosen the field ($+0.16$, $p=.002$). On the unconstrained
+to the answer-delivery formats models are trained to speak (JSON $-0.22$ bits, $p=.0002$;
+XML $-0.19$, $p=.002$; sign-flip permutation over models, corroborated over categories),
+absent for YAML and CSV ($p>.3$), and \emph{reversed} for an arbitrary non-data wrapper ---
+square brackets significantly loosen the field ($+0.13$, $p=.009$). On the unconstrained
 prompt, all four serializations concentrate the pool (serendipity 41\% plain $\to$ 52--65\%),
 so a corpus-register component remains visible; but the battery-wide gradient weighs toward
 tool-use post-training as the dominant mechanism. Enforcing the schema at the decoder
@@ -96,9 +98,9 @@ The field converges harder, and it does so unevenly. Our contributions:
 
 \begin{enumerate}
 \item \textbf{A progressive format tax} (\S\ref{sec:progressive}). Field-mean surprisal falls
-from 1.80 to 1.58 bits ($-0.22$ per model, $p=10^{-4}$), but the drop is not uniform: seven of
+from 1.80 to 1.58 bits ($-0.22$ per model, $p=.0002$), but the drop is not uniform: six of
 44 models move individually (BH-FDR $q=.10$), all toward the mode, led by the panel's most
-distinctive models (the strongest explorer loses 1.32 bits, half its measured distinctiveness),
+distinctive models (the strongest explorer loses 1.31 bits, half its measured distinctiveness),
 while the conformist floor is immobile. The remaining deltas form a noise plateau we decline to
 rank.
 \item \textbf{A sharpener, not a re-indexer} (\S\ref{sec:sharpener}). The plain-chat modal
@@ -200,7 +202,13 @@ the text between \texttt{<word>} tags, and so on --- and the extracted string is
 through the census normalization and junk guard unchanged. A reply that does not match its
 format's wrapper falls back to the census rule applied to the raw text, so that a malformed
 reply cannot smuggle in a spurious ``novel'' answer: the last word of a broken-JSON essay is
-scored exactly as the census would score it. Parse-plus-junk survival is at least 99\% per
+scored exactly as the census would score it. One guard is added beyond the census rule, because
+a fill-in wrapper invites an artifact the census prompt cannot: a reply whose token is the
+category noun or the template placeholder --- a literal \texttt{[city]} for ``name a city'', or
+\texttt{answer}/\texttt{word} lifted from the slot --- is an \emph{echo}, not a choice, and is
+dropped as a failed cell. It is applied to every column identically (a no-op on plain chat,
+which has no slot to echo), and it trims the apparent brackets loosening from $+0.16$ to $+0.13$
+without disturbing any other column's verdict. Parse-plus-junk survival is at least 99\% per
 model per column, and we audited per-model survival for every model whose surprisal
 \emph{rose}, since non-compliance is the one artifact that manufactures apparent divergence
 (\S\ref{sec:gradient}).
@@ -222,9 +230,9 @@ fixed floor (Figure~\ref{fig:openvsjson}).
 
 The models that lose the most are the ones that had the most to lose. \textsc{deepseek-v3.2},
 the census's one genuine explorer among frontier-lab models, falls from 2.63 to 1.32 bits
-($-1.32$) --- half its measured distinctiveness --- the moment the answer is requested as JSON.
-\textsc{hermes-4} loses 0.98, \textsc{gpt-4o-mini} 0.92, \textsc{gpt-4-turbo} 0.87,
-\textsc{gpt-5.6-sol} 0.66. The conformist floor barely moves: \textsc{claude-opus-4.8} $-0.17$,
+($-1.31$) --- half its measured distinctiveness --- the moment the answer is requested as JSON.
+\textsc{hermes-4} loses 0.91, \textsc{gpt-4o-mini} 0.92, \textsc{gpt-4-turbo} 0.87,
+\textsc{gpt-5.6-sol} 0.65. The conformist floor barely moves: \textsc{claude-opus-4.8} $-0.16$,
 \textsc{grok-4.5} $-0.07$, \textsc{claude-sonnet-5} $-0.05$. There is nowhere below the floor to
 go, and the tail falls toward it, though the raw range is nearly unchanged (2.2 to 2.0 bits): a
 Llama-derived minority \emph{diverges} under JSON (\S\ref{sec:gradient}) and holds up the top,
@@ -330,8 +338,8 @@ Extending the same battery to four further formats separates \emph{serialization
 \emph{structure}, and the result is a gradient rather than a uniform effect. Conditioning on
 compliance --- restricting each format to the models that produce its wrapper at least 90\% of
 the time, so incapacity stays out of the distributional signal --- the field-mean
-$\Delta$-surprisal is $-0.22$ bits for JSON, $-0.22$ for XML, $-0.08$ for YAML, $-0.02$ for CSV,
-and $+0.16$ for brackets. The two formats that compress the field are the two models are trained
+$\Delta$-surprisal is $-0.22$ bits for JSON, $-0.23$ for XML, $-0.09$ for YAML, $-0.09$ for CSV,
+and $+0.13$ for brackets. The two formats that compress the field are the two models are trained
 to \emph{answer} in: JSON and XML, the registers of function calls, tool use, and
 structured-output modes. The data formats models mostly only \emph{read} --- YAML and CSV --- do
 not reliably compress it, and an arbitrary non-data wrapper (square brackets) \emph{loosens} it.
@@ -339,17 +347,17 @@ not reliably compress it, and an arbitrary non-data wrapper (square brackets) \e
 \paragraph{Significance.}
 We test both exchangeable units with a sign-flip permutation (20{,}000 draws): field entropy
 paired over the 31 categories, and within-column surprisal paired over the 44 models. JSON and
-XML compress on both units (entropy $-0.20$, $p=.0006$ each; per model $-0.22$, $p=10^{-4}$ and
-$-0.18$, $p=.003$). YAML and CSV are not significant on either unit ($p=.76$ and $.15$ by
-category; $.81$ and $.16$ by model). Brackets significantly \emph{loosens} on both ($+0.14$
-entropy, $p=.005$; $+0.16$ per model, $p=.002$). The JSON-versus-YAML difference, paired by
+XML compress on both units (entropy $-0.20$, $p=.0006$ and $-0.20$, $p=.0004$; per model
+$-0.22$, $p=.0002$ and $-0.19$, $p=.002$). YAML and CSV are not significant on either unit
+($p=.75$ and $.46$ by category; $.80$ and $.35$ by model). Brackets significantly \emph{loosens}
+on both ($+0.12$ entropy, $p=.014$; $+0.13$ per model, $p=.009$). The JSON-versus-YAML difference, paired by
 category, is itself significant ($p<10^{-4}$), and \textsc{deepseek-v3.2}'s individual collapse
 clears $p<10^{-4}$ alone. The compression is thus specific to the trained answer-delivery
 formats, which moves the weight of the mechanism toward tool-use post-training rather than a
 generic property of serialized text. The gradient is not an artifact of the differing per-format
 compliance subsets (compliant $n$: JSON 43, XML 41, YAML 37, CSV 39, brackets 43 of 44): on the
 34 models compliant in \emph{all} five formats it reproduces and sharpens (JSON $-0.27$, XML
-$-0.26$, brackets $+0.14$), while YAML and CSV stay weakly negative and non-significant --- the
+$-0.26$, brackets $+0.13$), while YAML and CSV stay weakly negative and non-significant --- the
 raw full-panel CSV sign is composition-sensitive, which is why we read neither as a reliable net
 effect.
 
@@ -357,7 +365,7 @@ effect.
 The corpus-register account is not dead, because on the unconstrained ``Pick a word'' prompt
 \emph{every} serialization concentrates the pool, including the two with no net battery effect:
 \emph{serendipity} rises from 41\% in plain chat to 52\% (CSV), 59\% (XML), 64\% (JSON), and
-65\% (YAML), while brackets holds at 38\%. YAML's single-category concentration is real; it
+65\% (YAML), while brackets holds at 41\%. YAML's single-category concentration is real; it
 simply washes out across the full battery, which is why its net effect is null. A black-box
 study cannot fully separate what the training corpus taught --- that text inside a data
 structure is the canonical value --- from what tool-use tuning reflexively reinforced; our
@@ -368,18 +376,18 @@ gradient.
 Compliance is not a nuisance to discard but a control that must be applied. \emph{Format
 incompetence} masquerades as divergence: \textsc{granite} and \textsc{mythomax} emit a valid CSV
 wrapper only about 1\% of the time, and their unwrapped replies, scored naively, read as high
-surprisal --- \textsc{granite} shows a spurious $+1.69$ bits in CSV before conditioning. This is
+surprisal --- \textsc{granite} shows a spurious $+1.49$ bits in CSV before conditioning. This is
 why every distributional figure above is compliance-conditioned. Distinct from incompetence,
 there is a genuine \emph{register-diverger}: \textsc{llama-4-maverick} is 100\% compliant in
 JSON and CSV and still moves \emph{away} from the field in every format ($+0.4$ to $+0.7$ bits).
 Register reaction is heterogeneous, not uniformly compressive.
 
 \paragraph{Per-model deltas: three tiers.}
-Applying the census's tiers-not-ranks discipline to the deltas: (a) exactly seven of 44 models
-have an individually significant $\Delta$ at BH-FDR $q=.10$, and all seven are compressions ---
-\textsc{deepseek-v3.2} $-1.31$, \textsc{hermes} $-0.96$, \textsc{gpt-4o-mini} $-0.92$,
-\textsc{gpt-4-turbo} $-0.87$, \textsc{gpt-5.6-sol} $-0.65$, \textsc{qwen3} $-0.45$,
-\textsc{gemini-3.1-pro} $-0.31$. (b) The remaining ${\sim}37$ models --- including every model
+Applying the census's tiers-not-ranks discipline to the deltas: (a) exactly six of 44 models
+have an individually significant $\Delta$ at BH-FDR $q=.10$, and all six are compressions ---
+\textsc{deepseek-v3.2} $-1.31$, \textsc{gpt-4o-mini} $-0.92$, \textsc{gpt-4-turbo} $-0.87$,
+\textsc{gpt-5.6-sol} $-0.65$, \textsc{qwen3} $-0.45$, \textsc{gemini-3.1-pro} $-0.31$
+(\textsc{hermes}, $-0.91$, now falls just short of the threshold). (b) The remaining ${\sim}38$ models --- including every model
 with a positive $\Delta$ --- are individually indistinguishable from zero, and their mid-table
 ordering carries no information; we do not interpret it. (c) One effect survives only at family
 altitude.
@@ -387,7 +395,7 @@ altitude.
 \paragraph{A family-level response.}
 The models with the largest positive deltas share a lineage: the two Meta-released Llamas,
 \textsc{llama-4-maverick} ($+0.56$) and \textsc{llama-3.3} ($+0.28$), both diverge under JSON, as
-does a community Llama-2 merge (\textsc{mythomax}, $+0.47$). We name the group by provenance
+does a community Llama-2 merge (\textsc{mythomax}, $+0.43$). We name the group by provenance
 rather than by outcome, but with so few members this is a descriptive observation, not a tested
 effect, and we quote no aggregate $p$-value. That a community merge sharing the base but none of
 Meta's post-training also diverges points at the base weights over any lab's tuning --- yet those
@@ -399,7 +407,7 @@ A natural objection is that the collapse is a decoding artifact. It is not: enfo
 at the decoder compresses no further than asking for it. We ran one more column --- the JSON
 clause plus a strict \texttt{response\_format} json\_schema --- on the 36 of 44 models whose
 providers support it (the other eight return no valid output, a feature-acquisition signal in
-itself). Field-mean surprisal is 1.57 bits under the request and 1.54 under enforcement, against
+itself). Field-mean surprisal is 1.56 bits under the request and 1.53 under enforcement, against
 1.79 in open chat: the request does the $-0.22$-bit work and enforcement adds $-0.03$ more. The
 effect lives in the model's response to the register, not in the sampler. Per-model reactions are
 heterogeneous and confounded --- \texttt{response\_format} is a native decoder constraint for
@@ -484,7 +492,14 @@ cells} rather than answers: chat-template artifacts (\eg \texttt{[/INST]} or mar
 longer than 15 words (a truncated chain of thought would otherwise contribute a spurious novel
 final word), bare acknowledgements (\emph{``Okay.''}), and single-letter tokens. Within a
 category, bare plurals are merged with their singulars when both occur. This is the identical rule
-set used by the census, imported rather than re-implemented so the two studies cannot drift.
+set used by the census, imported rather than re-implemented so the two studies cannot drift. The
+format columns add one guard the plain census does not need: a reply whose normalized token is
+the category noun or the fill-in placeholder (\texttt{[city]}, \texttt{answer}, \texttt{word}) is
+an \emph{echo} of the wrapper's own slot rather than an answer, and is treated as a failed cell.
+The guard runs on every column alike --- it removes nothing from plain chat, which has no slot to
+echo --- and its only material effect is to remove the echo mass a fill-in wrapper elicits (most
+of it in CSV and brackets), which is why the raw and compliance-conditioned brackets deltas agree
+after it is applied.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

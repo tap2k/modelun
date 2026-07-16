@@ -35,12 +35,30 @@ def parse_word(fmt, reply):
 labels = sorted(probe["replies"]["json"].keys())
 CATS = {f: sorted(probe["replies"][f][labels[0]].keys()) for f in FORMATS}
 
+# Echo guard: a wrapper format hands the model a fill-in slot ({"word":"<answer>"},
+# [answer], word: …), and some models return the slot's own words — the category noun
+# ("[city]" for "name a city") or the placeholder ("answer"/"word"). Those are real strings,
+# so the census junk guard passes them, but they are non-answers, not divergence. Drop them.
+# Applied to plain too (a no-op there — nothing to echo) so every column is scored alike.
+def _head_noun(cat):
+    for f in FORMATS:
+        p = (probe.get("formats", {}).get(f) or {}).get(cat)
+        m = re.match(r"Name (?:a |an |any |some )?(.+?)\.", p) if p else None
+        if m:
+            return m.group(1).split()[-1].lower()
+    return None
+
+ECHO = {c: {n for n in (_head_noun(c),) if n} | {"answer", "word"} for c in CATS["json"]}
+
+def is_answer(w, cat):
+    return w is not None and w not in ECHO[cat]
+
 def fmt_answers(fmt, label, cat):
-    return [w for w in (parse_word(fmt, r) for r in probe["replies"][fmt][label][cat]) if w]
+    return [w for w in (parse_word(fmt, r) for r in probe["replies"][fmt][label][cat]) if is_answer(w, cat)]
 
 def plain_answers(label, cat):
     t = json.loads((CONSENSUS / "transcripts" / f"{label}.json").read_text())
-    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][cat]["runs"]) if w]
+    return [w for w in (norm(r[0].get("reply")) for r in t["scenes"][cat]["runs"]) if is_answer(w, cat)]
 
 def surprisal(get, cats):
     per_cat = {c: {l: get(l, c) for l in labels} for c in cats}
@@ -98,14 +116,14 @@ for l in labels:
                     continue
                 n += 1
                 wrapped += bool(re.search(PATS[f], r))
-                usable += parse_word(f, r) is not None
+                usable += is_answer(parse_word(f, r), c)
         compliance[l][f] = {"n": n, "wrapped": wrapped, "usable": usable}
 
 # aggregate register gradient: field-mean surprisal per column + significance verdict.
 # p-values from probe_significance.py (per-model sign-flip permutation, 20k draws).
-SIG = {"json": (0.0001, "compresses"), "xml": (0.0032, "compresses"),
-       "yaml": (0.81, "no net effect"), "csv": (0.16, "no net effect"),
-       "brackets": (0.0022, "loosens")}
+SIG = {"json": (0.0002, "compresses"), "xml": (0.0022, "compresses"),
+       "yaml": (0.80, "no net effect"), "csv": (0.35, "no net effect"),
+       "brackets": (0.0089, "loosens")}
 
 def field_mean(sf):
     vals = [v for v in sf.values() if v is not None]
