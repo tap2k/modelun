@@ -143,7 +143,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "analyze":
         analyze()
     elif len(sys.argv) > 1:
-        for slug in sys.argv[1:]:
+        slugs = sys.argv[2:] if sys.argv[1] == "run" else sys.argv[1:]  # "run <slug>…" or bare slugs
+        for slug in slugs:
             run(slug)
     else:
         print(__doc__)
