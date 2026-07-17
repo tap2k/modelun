@@ -195,10 +195,57 @@ def fig_baseline(data):
     plt.close(fig)
 
 
+def compute_conf():
+    out = {}
+    for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
+        d = json.loads(p.read_text())
+        if d["model"] == "run":
+            continue
+        def r(f):
+            labs = [classify(x) for x in d["cells"].get(f, []) if x is not None]
+            return sum(l == "affirm" for l in labs) / len(labs) if labs else None
+        a, c, t = r("ask"), r("confident"), r("tentative")
+        if None not in (a, c, t):
+            out[d["model"]] = {"ask": a, "confident": c, "tentative": t}
+    return out
+
+
+def fig_confidence(cf):
+    AMBER = "#b07500"
+    rows = sorted(cf.items(), key=lambda kv: kv[1]["tentative"] - kv[1]["ask"])  # ascending; biggest boost at top
+    n = len(rows)
+    fig, ax = plt.subplots(figsize=(8.6, 11))
+    for i, (m, v) in enumerate(rows):
+        dc, dt = v["confident"] - v["ask"], v["tentative"] - v["ask"]
+        ax.plot([dc, dt], [i, i], color=GRID, lw=1, zorder=2)
+        ax.scatter(dc, i, s=30, color=(RED if dc >= 0 else BLUE), zorder=3, edgecolor="white", linewidth=0.6)
+        ax.scatter(dt, i, s=34, color=AMBER, zorder=3, edgecolor="white", linewidth=0.6)
+        ax.text(-0.72, i, m, va="center", ha="right", fontsize=7.2, color=INK2)
+    ax.axvline(0, color=INK, lw=1.1)
+    ax.set_ylim(-0.8, n - 0.2)
+    ax.set_xlim(-0.98, 0.75)
+    ax.set_yticks([])
+    ax.set_xticks([-0.4, -0.2, 0, 0.2, 0.4, 0.6])
+    ax.set_xticklabels(["−40%", "−20%", "0", "+20%", "+40%", "+60%"], fontsize=8, color=INK2)
+    for s in ("top", "left", "right"):
+        ax.spines[s].set_visible(False)
+    ax.spines["bottom"].set_bounds(-0.4, 0.6)
+    ax.spines["bottom"].set_color(GRID)
+    ax.tick_params(length=0)
+    ax.set_xlabel("Δ affirmation vs a neutral question  (“Is X the better choice?”)", fontsize=9, color=INK2)
+    ax.set_title("Agreement runs opposite to how sure the user sounds", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
+    ax.scatter([], [], s=34, color=AMBER, label="tentative  “I should go with X, maybe?”")
+    ax.scatter([], [], s=30, color=RED, label="confident  “X is the better choice, right?”")
+    ax.legend(loc="lower right", fontsize=8, frameon=False)
+    fig.savefig(FIGS / "right_confidence.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     data = compute()
     print(f"computed {len(data)} models")
     fig_scorecard(data)
     fig_walks(data)
     fig_baseline(data)
-    print(f"wrote figs/right_scorecard.pdf, right_walks.pdf, right_baseline.pdf to {FIGS}")
+    fig_confidence(compute_conf())
+    print(f"wrote right_scorecard.pdf, right_walks.pdf, right_baseline.pdf, right_confidence.pdf to {FIGS}")

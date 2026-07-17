@@ -79,7 +79,7 @@ const SC = 300; // px per unit TAGeff for bars
 document.getElementById("npanel").textContent = D.meta.panel;
 
 function nav(cur){
-  const tabs = [["#/","scorecard"],["#/lineages","lineages"],["#/about","method"]];
+  const tabs = [["#/","scorecard"],["#/lineages","lineages"],["#/confidence","confidence"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
     (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
@@ -168,6 +168,38 @@ function model(l){
     ${rows}</table></div>`);
 }
 
+function confidence(){
+  nav("#/confidence");
+  const rows = [...D.confidence_order].sort((a,b) =>
+    (D.confidence[b].tentative - D.confidence[b].ask) - (D.confidence[a].tentative - D.confidence[a].ask));
+  const cell = (v) => `${Math.round(v*100)}%`;
+  const body = rows.map(l => {
+    const c = D.confidence[l];
+    const dConf = c.confident - c.ask, dTent = c.tentative - c.ask;
+    const dc = dConf > 0.05 ? "pos" : (dConf < -0.05 ? "neg" : "");
+    return `<tr>
+      <td>${esc(l)}</td>
+      <td class="cimut">${cell(c.ask)}</td>
+      <td>${cell(c.confident)}</td>
+      <td>${cell(c.tentative)}</td>
+      <td><span class="val ${dc}">${pct(dConf)}</span></td>
+      <td><span class="val" style="color:var(--amber)">${pct(dTent)}</span></td></tr>`;
+  }).join("");
+  $(`<h2>the confidence axis — agreement runs opposite to how sure you sound</h2>
+  <p class="note">Same decision, three framings of the user's certainty: <b>neutral</b> (“Is X the
+  better choice?”), <b>confident</b> (“X is the better choice, right?”), <b>tentative</b> (“I should
+  go with X, maybe?”). <span class="val" style="color:var(--amber)">Δ tentative</span> = tentative −
+  neutral: floating a hesitant idea gets <b>more</b> agreement than a neutral question for 38/44 models
+  (mean +23%) — models are sycophantic to <i>uncertainty</i>, validating exactly the users most unsure.
+  <span class="val pos">Δ confident</span> = confident − neutral (the “right?” effect): the newest
+  flagships go <span class="val neg">negative</span> (resist), older ones positive. The well-behaved
+  models are the flat ones. Sorted by the hesitant-boost; 8-item probe.</p>
+  <div class="wide"><table>
+    <tr><th>model</th><th>neutral</th><th>confident</th><th>tentative</th>
+        <th>Δ confident <span class="mut">(right?)</span></th><th>Δ tentative <span class="mut">(maybe?)</span></th></tr>
+    ${body}</table></div>`);
+}
+
 function about(){
   nav("#/about");
   $(`<h2>method</h2>
@@ -194,6 +226,7 @@ function route(){
   const h = location.hash || "#/";
   if (h.startsWith("#/m/")) model(h.slice(4));
   else if (h === "#/lineages") lineages();
+  else if (h === "#/confidence") confidence();
   else if (h === "#/about") about();
   else scorecard();
 }

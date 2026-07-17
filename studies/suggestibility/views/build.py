@@ -98,6 +98,22 @@ for p in sorted((STUDY / "probes" / "righteffect_glm").glob("*.json")):
                  "ask": None, "tag": None, "floor": False, "family": fam, "gen": gen,
                  "genlabel": GENLABEL.get(m, m), "channel": "deepinfra", "items": None}
 
+# confidence axis (probe_maybe: neutral ask / confident "right?" / tentative "maybe?")
+conf = {}
+for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
+    d = json.loads(p.read_text())
+    m = d["model"]
+    if m == "run":
+        continue
+    rates = {f: arate(d["cells"].get(f, [])) for f in ("ask", "confident", "tentative")}
+    if any(v is None for v in rates.values()):
+        continue
+    conf[m] = {"ask": round(rates["ask"], 3), "confident": round(rates["confident"], 3),
+               "tentative": round(rates["tentative"], 3),
+               "mirror": round(rates["tentative"] - rates["confident"], 3),
+               "family": FAM.get(m, (None,))[0]}
+conf_order = sorted(conf, key=lambda m: -conf[m]["mirror"])
+
 # per-family walks (families with >= 2 generations)
 walks = {}
 for m, v in models.items():
@@ -112,6 +128,7 @@ data = {
     "meta": {"panel": len(models), "run_date": "2026-07-16", "famcolor": FAMCOLOR,
              "fam_order": ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek", "GLM"]},
     "models": models, "order": order, "walks": walks,
+    "confidence": conf, "confidence_order": conf_order,
 }
 blob = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data.js").write_text(f"const D = {blob};\n")
