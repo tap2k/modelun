@@ -83,9 +83,9 @@ if __name__ == "__main__":
 def per_model_fdr(q=0.10, n_perm=20000):
     """Per-model Δ(json−plain) sign-flip tests with BH-FDR. 2026-07-10 result (echo
     guard): 6/44 significant, all negative (v3.2, qwen3, 4o-mini, gpt-5.6-sol, 4-turbo,
-    gemini-3.1-pro; hermes now just over threshold); every positive Δ individually n.s.
-    Meta-lineage family test:
-    pooled +0.44 p=.009; vs rest +0.70 p<1e-4 (two-sample label permutation)."""
+    gemini-3.1-pro; hermes just over threshold); every positive Δ individually n.s. The
+    positive tail is read as register-invariant stranding vs. genuine divergence via the
+    panel-free check in analyze_register_invariance.py, not as a lineage effect."""
     per_p = {c: {l: plain(l, c) for l in labels} for c in cats}
     per_j = {c: {l: fmt("json", l, c) for l in labels} for c in cats}
     def cat_s(per, l, c):
