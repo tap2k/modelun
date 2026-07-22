@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pickword — one prompt, 21 languages, 44 models</title>
+<title>pickword — one prompt, 37 languages, 44 models</title>
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
@@ -72,7 +72,7 @@
 </head>
 <body>
 <header>
-  <h1>pickword <span class="sub">— "Pick a word." in 21 languages, 44 models</span></h1>
+  <h1>pickword <span class="sub">— "Pick a word." in 37 languages, 44 models</span></h1>
   <nav id="nav">
     <a href="#langs" data-v="langs">languages</a>
     <a href="#models" data-v="models">models</a>
@@ -110,7 +110,7 @@ const tr = (code, w) => {
 let sort = {k:'share', dir:-1};
 const bar = (v, max) => `<div style="display:inline-block;width:66px;height:8px;background:var(--panel2);border-radius:4px;vertical-align:0;margin-right:8px"><i style="display:block;height:100%;width:${(v/max*100).toFixed(0)}%;background:var(--mut);border-radius:4px"></i></div>`;
 function languages(){
-  let h = `<h2>“Pick a word.” — 21 languages, ${D.n_models} models</h2>
+  let h = `<h2>“Pick a word.” — 37 languages, ${D.n_models} models</h2>
   <p class="note">Each language's <b>favorite word</b>, how much of the field agrees on it (<b>converged</b>), how many
   <b>distinct</b> words show up, and how rare the favorite is (<b>rarity</b> = base-rate frequency, lower = rarer).
   <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b>
@@ -160,7 +160,7 @@ const MCOLS = [
 function models(){
   let h = `<h2>models</h2>
   <p class="note">The census-style word grid was noise for this data — every cell a different word — so here is the
-  model-level signal instead: how each model behaves across the 21 languages. <b>filler</b> is how often it answered
+  model-level signal instead: how each model behaves across the 37 languages. <b>filler</b> is how often it answered
   with an echo/acknowledgment (“word”, “okay”) instead of choosing — a <b>family-style tell</b> (DeepSeek's lineage tops
   it, gpt-4-turbo barely does it), not a clean capability ladder. Click a model for its pick in every language.</p>
   <table class="t"><tr><th>#</th>

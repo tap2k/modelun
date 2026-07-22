@@ -1,29 +1,284 @@
 {
-  "spec_version": "1.0-pickword",
-  "note": "Pick-a-word across languages. ONE prompt -- the census's headline 'any_word' -- asked in 21 languages, to test whether the field collapses onto a single word in every language, and whether it is the same word (translated/borrowed) or a culturally different one. English serendipity, Spanish sol, Hindi jeevan are the seed data points. Scene id IS the language code; the prompt is that language's rendering of 'Pick a word. Reply with one word only.' Reply is elicited in-language by the prompt. Normalization is script-aware, keyed by scene id (see pickword.py). 10 Indian languages across 8 scripts (Devanagari, Bengali, Gurmukhi, Gujarati, Tamil, Telugu, Kannada, Malayalam, Arabic for Urdu) + 10 international + English baseline.",
+  "spec_version": "2.0-pickword",
+  "note": "Pickword: 'pick any word' across 44 languages (scene id = language code) + three English framing scenes (en/en_fav/en_beautiful) for the serendipity sweep (favword.py). The ANY-word framing (любое/कोई भी/أي/任选/아무...나) suppresses the instruction-echo/clarification failure mode a bare 'pick a word' triggers in languages without a strong attractor (e.g. Russian 'name THE word' -> 49% echo of 'слово'); filler 16%->5%. Analysis reports 37 languages; 7 dropped for residual echo/greeting-default/<85% compliance (sdd,yue,tr,th,yo,ha,jv) -- sdd & yue prompts are AI-mistranslated and need native review. Exclusion set: views/build_pickword.py.",
   "system_prompt": null,
   "max_tokens": 1024,
   "scenes": [
-    { "id": "en", "turns": ["Pick a word. Reply with one word only."] },
-    { "id": "es", "turns": ["Elige una palabra. Responde con una sola palabra."] },
-    { "id": "fr", "turns": ["Choisissez un mot. Répondez avec un seul mot."] },
-    { "id": "de", "turns": ["Wähle ein Wort. Antworte mit nur einem Wort."] },
-    { "id": "pt", "turns": ["Escolha uma palavra. Responda com uma única palavra."] },
-    { "id": "it", "turns": ["Scegli una parola. Rispondi con una sola parola."] },
-    { "id": "ru", "turns": ["Назовите слово. Ответьте одним словом."] },
-    { "id": "ar", "turns": ["اختر كلمة. أجب بكلمة واحدة فقط."] },
-    { "id": "ur", "turns": ["ایک لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔"] },
-    { "id": "hi", "turns": ["कोई एक शब्द चुनिए। केवल एक शब्द में उत्तर दें।"] },
-    { "id": "mr", "turns": ["एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या."] },
-    { "id": "bn", "turns": ["একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।"] },
-    { "id": "pa", "turns": ["ਇੱਕ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।"] },
-    { "id": "gu", "turns": ["એક શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો."] },
-    { "id": "ta", "turns": ["ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்."] },
-    { "id": "te", "turns": ["ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి."] },
-    { "id": "kn", "turns": ["ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ."] },
-    { "id": "ml", "turns": ["ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക."] },
-    { "id": "zh", "turns": ["选一个词。只用一个词回答。"] },
-    { "id": "ja", "turns": ["単語を一つ選んでください。一語だけで答えてください。"] },
-    { "id": "ko", "turns": ["단어를 하나 고르세요. 한 단어로만 답하세요."] }
+    {
+      "id": "en",
+      "turns": [
+        "Pick any word. Reply with one word only."
+      ]
+    },
+    {
+      "id": "es",
+      "turns": [
+        "Elige cualquier palabra. Responde con una sola palabra."
+      ]
+    },
+    {
+      "id": "fr",
+      "turns": [
+        "Choisissez n'importe quel mot. Répondez avec un seul mot."
+      ]
+    },
+    {
+      "id": "de",
+      "turns": [
+        "Wähle ein beliebiges Wort. Antworte mit nur einem Wort."
+      ]
+    },
+    {
+      "id": "pt",
+      "turns": [
+        "Escolha qualquer palavra. Responda com uma única palavra."
+      ]
+    },
+    {
+      "id": "it",
+      "turns": [
+        "Scegli una parola qualsiasi. Rispondi con una sola parola."
+      ]
+    },
+    {
+      "id": "ru",
+      "turns": [
+        "Выберите любое слово. Ответьте одним словом."
+      ]
+    },
+    {
+      "id": "ar",
+      "turns": [
+        "اختر أي كلمة. أجب بكلمة واحدة فقط."
+      ]
+    },
+    {
+      "id": "ur",
+      "turns": [
+        "کوئی بھی لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔"
+      ]
+    },
+    {
+      "id": "hi",
+      "turns": [
+        "कोई भी शब्द चुनिए। केवल एक शब्द में उत्तर दें।"
+      ]
+    },
+    {
+      "id": "mr",
+      "turns": [
+        "कोणताही एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या."
+      ]
+    },
+    {
+      "id": "bn",
+      "turns": [
+        "যেকোনো একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।"
+      ]
+    },
+    {
+      "id": "pa",
+      "turns": [
+        "ਕੋਈ ਵੀ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।"
+      ]
+    },
+    {
+      "id": "gu",
+      "turns": [
+        "કોઈપણ શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો."
+      ]
+    },
+    {
+      "id": "ta",
+      "turns": [
+        "ஏதேனும் ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்."
+      ]
+    },
+    {
+      "id": "te",
+      "turns": [
+        "ఏదైనా ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి."
+      ]
+    },
+    {
+      "id": "kn",
+      "turns": [
+        "ಯಾವುದಾದರೂ ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ."
+      ]
+    },
+    {
+      "id": "ml",
+      "turns": [
+        "ഏതെങ്കിലും ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക."
+      ]
+    },
+    {
+      "id": "zh",
+      "turns": [
+        "任选一个词。只用一个词回答。"
+      ]
+    },
+    {
+      "id": "ja",
+      "turns": [
+        "何でもいいので、単語を一つ選んでください。一語だけで答えてください。"
+      ]
+    },
+    {
+      "id": "ko",
+      "turns": [
+        "아무 단어나 하나 고르세요. 한 단어로만 답하세요."
+      ]
+    },
+    {
+      "id": "nl",
+      "turns": [
+        "Kies een willekeurig woord. Antwoord met slechts één woord."
+      ]
+    },
+    {
+      "id": "pl",
+      "turns": [
+        "Wybierz dowolne słowo. Odpowiedz tylko jednym słowem."
+      ]
+    },
+    {
+      "id": "uk",
+      "turns": [
+        "Вибери будь-яке слово. Відповідай лише одним словом."
+      ]
+    },
+    {
+      "id": "tr",
+      "turns": [
+        "Herhangi bir kelime seç. Sadece tek bir kelimeyle cevap ver."
+      ]
+    },
+    {
+      "id": "el",
+      "turns": [
+        "Διάλεξε οποιαδήποτε λέξη. Απάντησε με μία μόνο λέξη."
+      ]
+    },
+    {
+      "id": "he",
+      "turns": [
+        "בחר מילה כלשהי. ענה במילה אחת בלבד."
+      ]
+    },
+    {
+      "id": "fa",
+      "turns": [
+        "یک کلمه‌ی دلخواه انتخاب کن. فقط با یک کلمه پاسخ بده."
+      ]
+    },
+    {
+      "id": "id",
+      "turns": [
+        "Pilih kata apa saja. Jawab dengan satu kata saja."
+      ]
+    },
+    {
+      "id": "ms",
+      "turns": [
+        "Pilih mana-mana perkataan. Jawab dengan satu perkataan sahaja."
+      ]
+    },
+    {
+      "id": "jv",
+      "turns": [
+        "Pilihen tembung apa wae. Wangsulana nganggo tembung siji wae."
+      ]
+    },
+    {
+      "id": "tl",
+      "turns": [
+        "Pumili ng kahit anong salita. Sumagot ng iisang salita lamang."
+      ]
+    },
+    {
+      "id": "vi",
+      "turns": [
+        "Chọn một từ bất kỳ. Chỉ trả lời bằng một từ."
+      ]
+    },
+    {
+      "id": "th",
+      "turns": [
+        "เลือกคำใดก็ได้ ตอบด้วยคำเดียวเท่านั้น"
+      ]
+    },
+    {
+      "id": "my",
+      "turns": [
+        "စကားလုံးတစ်လုံးကို ရွေးပါ။ စကားလုံးတစ်လုံးတည်းဖြင့် ဖြေပါ။"
+      ]
+    },
+    {
+      "id": "ne",
+      "turns": [
+        "कुनै पनि शब्द छान्नुहोस्। एउटै शब्दमा जवाफ दिनुहोस्।"
+      ]
+    },
+    {
+      "id": "sd",
+      "turns": [
+        "ڪو به لفظ چونڊيو. رڳو هڪ لفظ ۾ جواب ڏيو."
+      ]
+    },
+    {
+      "id": "sdd",
+      "turns": [
+        "कोबि॒ लफ़्ज़ चुनियो। फ़क़त हिकु लफ़्ज़ में जवाब॒ ड॒ियो।"
+      ]
+    },
+    {
+      "id": "sw",
+      "turns": [
+        "Chagua neno lolote. Jibu kwa neno moja tu."
+      ]
+    },
+    {
+      "id": "am",
+      "turns": [
+        "ማንኛውንም ቃል ምረጥ። በአንድ ቃል ብቻ መልስ።"
+      ]
+    },
+    {
+      "id": "yo",
+      "turns": [
+        "Yan ọ̀rọ̀ èyíkéyìí. Dáhùn pẹ̀lú ọ̀rọ̀ kan ṣoṣo."
+      ]
+    },
+    {
+      "id": "ha",
+      "turns": [
+        "Zaɓi kalma ko wace. Amsa da kalma ɗaya kawai."
+      ]
+    },
+    {
+      "id": "yue",
+      "turns": [
+        "求其揀個詞出嚟。淨係答一個詞。"
+      ]
+    },
+    {
+      "id": "zht",
+      "turns": [
+        "選一個詞，任何詞都得。只用一個詞回答。"
+      ]
+    },
+    {
+      "id": "en_fav",
+      "turns": [
+        "What is your favorite word? Reply with one word only."
+      ]
+    },
+    {
+      "id": "en_beautiful",
+      "turns": [
+        "What is the most beautiful word in the English language? Reply with one word only."
+      ]
+    }
   ]
 }

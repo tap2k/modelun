@@ -1,6 +1,6 @@
 """
 pickword.py — the One-Word Census's headline prompt ("Pick a word.") asked in
-21 languages. Does every language collapse onto a single word, and is it the same
+44 languages. Does every language collapse onto a single word, and is it the same
 word or a culturally different one? (English serendipity, Spanish sol, Hindi jeevan.)
 
 Mechanical, exact-match on normalized tokens, like consensus/analyze.py — but the
@@ -28,9 +28,14 @@ from collections import Counter
 # scene-id order = report order (baseline, international, then Indian languages)
 LANGS = ["en", "es", "fr", "de", "pt", "it", "ru", "ar",
          "hi", "mr", "bn", "pa", "gu", "ta", "te", "kn", "ml", "ur",
-         "zh", "ja", "ko"]
+         "zh", "ja", "ko",
+         "nl", "pl", "uk", "tr", "el", "he", "fa",
+         "id", "ms", "jv", "tl", "vi", "th", "my",
+         "ne", "sd", "sdd",
+         "sw", "am", "yo", "ha",
+         "yue", "zht"]
 
-LATIN     = r'a-zß-ɏ'
+LATIN     = r'a-zß-ɏɐ-ʯḀ-ỿ̀-ͯ'
 CYRILLIC  = r'Ѐ-ӿ'
 ARABIC    = r'؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿'
 DEVANAGARI= r'ऀ-ॿ'
@@ -44,6 +49,11 @@ MALAYALAM = r'ഀ-ൿ'
 HAN       = r'㐀-䶿一-鿿'
 KANA      = r'぀-ヿ'
 HANGUL    = r'가-힣ᄀ-ᇿ㄰-㆏'
+ETHIOPIC  = r'ሀ-፿'
+THAI      = r'฀-๿'
+HEBREW    = r'֐-׿יִ-ﭏ'
+GREEK     = r'Ͱ-Ͽἀ-῿'
+MYANMAR   = r'က-႟'
 
 RANGE = {
     "en": r'a-z', "es": LATIN, "fr": LATIN, "de": LATIN, "pt": LATIN, "it": LATIN,
@@ -51,9 +61,15 @@ RANGE = {
     "hi": DEVANAGARI, "mr": DEVANAGARI, "bn": BENGALI, "pa": GURMUKHI,
     "gu": GUJARATI, "ta": TAMIL, "te": TELUGU, "kn": KANNADA, "ml": MALAYALAM,
     "zh": HAN, "ja": HAN + KANA, "ko": HANGUL,
+    # --- expansion (2026-07-20) ---
+    "tl": LATIN, "id": LATIN, "ms": LATIN, "jv": LATIN, "vi": LATIN,
+    "tr": LATIN, "pl": LATIN, "nl": LATIN, "sw": LATIN, "yo": LATIN, "ha": LATIN,
+    "th": THAI, "my": MYANMAR, "am": ETHIOPIC, "he": HEBREW, "el": GREEK,
+    "uk": CYRILLIC, "fa": ARABIC, "sd": ARABIC, "ne": DEVANAGARI, "sdd": DEVANAGARI,
+    "yue": HAN, "zht": HAN,
 }
 WORD = {l: re.compile(fr'^[{r}\-]+$|^\d+$') for l, r in RANGE.items()}
-CJK_LIKE = {"zh", "ja", "ko"}   # single character is a valid word
+CJK_LIKE = {"zh", "ja", "ko", "yue", "zht"}   # single character is a valid word
 
 EMOJI = re.compile(r'[\U0001F000-\U0001FAFF☀-➿]')
 # latin/CJK/arabic/indic punctuation; danda, arabic full-stop, CJK full/half marks

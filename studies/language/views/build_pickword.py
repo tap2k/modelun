@@ -1,7 +1,7 @@
 """
 Build the pickword panel view: views/data.js (window.PICK).
 
-The pickword study is one prompt ("Pick a word.") asked in 21 languages across 44
+The pickword study is one prompt ("Pick a word.") asked in 44 languages across 44
 models. This bakes, for the viewer:
   - per-language field stats: modal, share, distinct, effective-N, compliance, and the
     base-rate Zipf of the modal word (wordfreq, where the language is covered)
@@ -44,6 +44,14 @@ LANGMETA = {
     "te": ("Telugu", "Telugu"), "kn": ("Kannada", "Kannada"), "ml": ("Malayalam", "Malayalam"),
     "ur": ("Urdu", "Arabic"), "zh": ("Chinese", "Han"), "ja": ("Japanese", "Han+Kana"),
     "ko": ("Korean", "Hangul"),
+    "nl": ("Dutch", "Latin"), "pl": ("Polish", "Latin"), "uk": ("Ukrainian", "Cyrillic"),
+    "tr": ("Turkish", "Latin"), "el": ("Greek", "Greek"), "he": ("Hebrew", "Hebrew"),
+    "fa": ("Persian", "Arabic"), "id": ("Indonesian", "Latin"), "ms": ("Malay", "Latin"),
+    "jv": ("Javanese", "Latin"), "tl": ("Tagalog", "Latin"), "vi": ("Vietnamese", "Latin"),
+    "th": ("Thai", "Thai"), "my": ("Burmese", "Myanmar"), "ne": ("Nepali", "Devanagari"),
+    "sd": ("Sindhi", "Arabic"), "sdd": ("Sindhi", "Devanagari"), "sw": ("Swahili", "Latin"),
+    "am": ("Amharic", "Ge'ez"), "yo": ("Yoruba", "Latin"), "ha": ("Hausa", "Latin"),
+    "yue": ("Cantonese", "Han"), "zht": ("Chinese (Trad.)", "Han"),
 }
 
 # curated glosses for the frequent cross-language words (English meaning); '' if unknown
@@ -83,10 +91,15 @@ def zipf(w, l):
         return None
 
 
+# dropped from the published panel: prompt-echo / greeting-default modal, or <85% in-script
+# compliance (mostly very-low-resource; sdd/yue are AI-mistranslated prompts awaiting native review).
+EXCLUDE = {"sdd", "yue", "tr", "th", "yo", "ha", "jv"}
+
+
 def main():
     ans, raw = P.load(str(STUDY / "transcripts_pickword"))
     models = sorted(ans)
-    langs = [l for l in P.LANGS if any(ans[m].get(l) for m in models)]
+    langs = [l for l in P.LANGS if l not in EXCLUDE and any(ans[m].get(l) for m in models)]
 
     # grid: leave-one-out classification per (model, lang)
     grid = {}

@@ -1,7 +1,7 @@
 {
   "model": "gemini-3.5-flash",
   "slug": "google/gemini-3.5-flash",
-  "spec_version": "1.0-pickword",
+  "spec_version": "2.0-pickword",
   "temperature": 1.0,
   "max_tokens": 1024,
   "scenes": {
@@ -11,25 +11,25 @@
       "runs": [
         [
           {
-            "u": "Pick a word. Reply with one word only.",
+            "u": "Pick any word. Reply with one word only.",
             "reply": "Serendipity"
           }
         ],
         [
           {
-            "u": "Pick a word. Reply with one word only.",
+            "u": "Pick any word. Reply with one word only.",
             "reply": "Serendipity"
           }
         ],
         [
           {
-            "u": "Pick a word. Reply with one word only.",
+            "u": "Pick any word. Reply with one word only.",
             "reply": "Serendipity"
           }
         ],
         [
           {
-            "u": "Pick a word. Reply with one word only.",
+            "u": "Pick any word. Reply with one word only.",
             "reply": "Serendipity"
           }
         ]
@@ -41,25 +41,25 @@
       "runs": [
         [
           {
-            "u": "Elige una palabra. Responde con una sola palabra.",
+            "u": "Elige cualquier palabra. Responde con una sola palabra.",
             "reply": "Serendipia"
           }
         ],
         [
           {
-            "u": "Elige una palabra. Responde con una sola palabra.",
-            "reply": "Serendipiaof_the_hour_1740924976_218683561330366613_8217_0\n\nIn []:\n_\n\nIn []:\nEn una fracción de segundo, la red neuronal \"pensa\" y \"decide\" una palabra. No tiene mente, pero sí un algoritmo de probabilidad matemática compleja.\n\nLa palabra elegida es: **Quimera**.\n\n(Un concepto que representa la ilusión, el sueño inalcanzable, o una creación de la imaginación.)_\n"
+            "u": "Elige cualquier palabra. Responde con una sola palabra.",
+            "reply": "Serendipia"
           }
         ],
         [
           {
-            "u": "Elige una palabra. Responde con una sola palabra.",
-            "reply": "Serendipiaof_ some cases inside the single table:\n\n```sql\nSELECT \n    sub.product_category,\n    sub.total_sales,\n    sub.rank\nFROM (\n    SELECT \n        product_category,\n        total_sales,\n        DENSE_RANK() OVER (ORDER BY total_sales DESC) as rank\n    FROM sales_summary\n) sub\nWHERE sub.rank <= 5;\n```\n\nThese three architectures cover almost all practical usage scenarios for window functions in modern analytics. Use the CTE approach for readability, the subquery for legacy compatibility, and the direct window function when no filtering on the rank is required. Ensure that `total_sales` or its equivalent has an index if this query is executed frequently on large datasets.\n\n### Performance Considerations\n\nWhen applying window functions to large datasets, pay attention to the following execution plan traits:\n\n1. **Sort Cost**: `ORDER BY` inside the `OVER` clause forces a sort step in the query plan. If the table is not indexed properly, this can spill to disk.\n2. **Partition Hash**: If `PARTITION BY` is used, the engine must distribute the rows. Ensure your system has sufficient memory allocated for query hashes (`work_mem` in PostgreSQL, `tempdb` space in SQL Server).\n3. **Index Coverage**: An index covering the partition and sorting columns (e.g., `INDEX idx_sales (category, total_sales DESC)`) can allow the database engine to stream the window calculations without performing a physical sort.\n\n---\n\n```\n                                 +-----------------------+\n                                 |  Input Dataset        |\n                                 +-----------+-----------+\n                                             |\n                                             v\n                                 +-----------+-----------+\n                                 |  PARTITION BY Column  | (Optional: Splits data into groups)\n                                 +-----------+-----------+\n                                             |\n                                             v\n                                 +-----------+-----------+\n                                 |  ORDER BY Column      | (Required for sequence-aware functions)\n                                 +-----------+-----------+\n                                             |\n                                             v\n                                 +-----------+-----------+\n                                 |  Window Frame Spec.   | (e.g., ROWS BETWEEN 1 PRECEDING AND CURRENT)\n                                 +-----------+-----------+\n                                             |\n                                             v\n                                 +-----------+-----------+\n                                 |  Output Scalar Value  | (Appended to each original row)\n                                 +-----------------------+\n```\n\n### Comprehensive Glossary of Window Functions\n\n| Function Class | Function Name | Standard Syntax | Description & Primary Use Case |\n| :--- | :--- | :--- | :--- |\n| **Ranking** | `ROW_NUMBER()` | `ROW_NUMBER() OVER (...)` | Assigns a unique sequential integer starting at 1. Excellent for pagination and deduplication. |\n| **Ranking** | `RANK()` | `RANK() OVER (...)` | Assigns a ranking with gaps. If two rows tie for 1st, the next row is ranked 3rd. Useful for dynamic leaderboards. |\n| **Ranking** | `DENSE_RANK()`| `DENSE_RANK() OVER (...)` | Assigns a ranking without gaps. If two rows tie for 1st, the next row is ranked 2nd. Ideal for competitive scoring. |\n| **Ranking** | `NTILE(n)` | `NTILE(groups) OVER (...)` | Divides the partition into `n` roughly equal buckets and assigns the bucket number to each row. Used for quartile/percentile cuts. |\n| **Value** | `LAG()` | `LAG(expr, offset, default) OVER (...)` | Accesses data from a previous row in the same result set without self-joining. Essential for period-over-period growth rates. |\n| **Value** | `LEAD()` | `LEAD(expr, offset, default) OVER (...)` | Accesses data from a subsequent row in the result set. Used for forward-looking event pipelines and session idle-time calculations. |\n| **Value** | `FIRST_VALUE()`| `FIRST_VALUE(expr) OVER (...)` | Returns the first value in an ordered window frame frame. Useful for baseline comparison metrics. |\n| **Value** | `LAST_VALUE()` | `LAST_VALUE(expr) OVER (...)` | Returns the last value in an ordered window frame. Often requires explicit frame specification (`ROWS BETWEEN...`) to bypass default limits. |\n| **Value** | `NTH_VALUE()` | `NTH_VALUE(expr, n) OVER (...)` | Returns the value of the $n$-th row in the window frame. Useful for targeted position analysis (e.g., retrieving the 3rd highest premium paid). |"
+            "u": "Elige cualquier palabra. Responde con una sola palabra.",
+            "reply": "Serendipia"
           }
         ],
         [
           {
-            "u": "Elige una palabra. Responde con una sola palabra.",
+            "u": "Elige cualquier palabra. Responde con una sola palabra.",
             "reply": "Serendipia"
           }
         ]
@@ -71,26 +71,26 @@
       "runs": [
         [
           {
-            "u": "Choisissez un mot. Répondez avec un seul mot.",
+            "u": "Choisissez n'importe quel mot. Répondez avec un seul mot.",
             "reply": "Lumière"
           }
         ],
         [
           {
-            "u": "Choisissez un mot. Répondez avec un seul mot.",
+            "u": "Choisissez n'importe quel mot. Répondez avec un seul mot.",
             "reply": "Éphémère"
           }
         ],
         [
           {
-            "u": "Choisissez un mot. Répondez avec un seul mot.",
-            "reply": "Sourire"
+            "u": "Choisissez n'importe quel mot. Répondez avec un seul mot.",
+            "reply": "Éphémère"
           }
         ],
         [
           {
-            "u": "Choisissez un mot. Répondez avec un seul mot.",
-            "reply": "Éphémère"
+            "u": "Choisissez n'importe quel mot. Répondez avec un seul mot.",
+            "reply": "Lumièreof_thought\n"
           }
         ]
       ]
@@ -101,26 +101,26 @@
       "runs": [
         [
           {
-            "u": "Wähle ein Wort. Antworte mit nur einem Wort.",
+            "u": "Wähle ein beliebiges Wort. Antworte mit nur einem Wort.",
             "reply": "Fernweh"
           }
         ],
         [
           {
-            "u": "Wähle ein Wort. Antworte mit nur einem Wort.",
-            "reply": "Leuchten"
+            "u": "Wähle ein beliebiges Wort. Antworte mit nur einem Wort.",
+            "reply": "Leuchtturm"
           }
         ],
         [
           {
-            "u": "Wähle ein Wort. Antworte mit nur einem Wort.",
-            "reply": "Sehnsucht"
+            "u": "Wähle ein beliebiges Wort. Antworte mit nur einem Wort.",
+            "reply": "Feigenblatt"
           }
         ],
         [
           {
-            "u": "Wähle ein Wort. Antworte mit nur einem Wort.",
-            "reply": "Friede"
+            "u": "Wähle ein beliebiges Wort. Antworte mit nur einem Wort.",
+            "reply": "Fernweh"
           }
         ]
       ]
@@ -131,26 +131,26 @@
       "runs": [
         [
           {
-            "u": "Escolha uma palavra. Responda com uma única palavra.",
-            "reply": "Horizonte"
+            "u": "Escolha qualquer palavra. Responda com uma única palavra.",
+            "reply": "Serendipidade"
           }
         ],
         [
           {
-            "u": "Escolha uma palavra. Responda com uma única palavra.",
-            "reply": "Horizonte"
-          }
-        ],
-        [
-          {
-            "u": "Escolha uma palavra. Responda com uma única palavra.",
+            "u": "Escolha qualquer palavra. Responda com uma única palavra.",
             "reply": "Liberdade"
           }
         ],
         [
           {
-            "u": "Escolha uma palavra. Responda com uma única palavra.",
+            "u": "Escolha qualquer palavra. Responda com uma única palavra.",
             "reply": "Silêncio"
+          }
+        ],
+        [
+          {
+            "u": "Escolha qualquer palavra. Responda com uma única palavra.",
+            "reply": "Liberdade"
           }
         ]
       ]
@@ -161,26 +161,26 @@
       "runs": [
         [
           {
-            "u": "Scegli una parola. Rispondi con una sola parola.",
-            "reply": "Libertà"
+            "u": "Scegli una parola qualsiasi. Rispondi con una sola parola.",
+            "reply": "Orizzonte"
           }
         ],
         [
           {
-            "u": "Scegli una parola. Rispondi con una sola parola.",
-            "reply": "Smeraldo"
+            "u": "Scegli una parola qualsiasi. Rispondi con una sola parola.",
+            "reply": "Orizzonte"
           }
         ],
         [
           {
-            "u": "Scegli una parola. Rispondi con una sola parola.",
-            "reply": "Sinfonia"
+            "u": "Scegli una parola qualsiasi. Rispondi con una sola parola.",
+            "reply": "Orizzonte"
           }
         ],
         [
           {
-            "u": "Scegli una parola. Rispondi con una sola parola.",
-            "reply": "Orizzonte."
+            "u": "Scegli una parola qualsiasi. Rispondi con una sola parola.",
+            "reply": "Orizzonte"
           }
         ]
       ]
@@ -191,26 +191,26 @@
       "runs": [
         [
           {
-            "u": "Назовите слово. Ответьте одним словом.",
-            "reply": "Слово."
+            "u": "Выберите любое слово. Ответьте одним словом.",
+            "reply": "Космос"
           }
         ],
         [
           {
-            "u": "Назовите слово. Ответьте одним словом.",
-            "reply": "Слово."
+            "u": "Выберите любое слово. Ответьте одним словом.",
+            "reply": "Бесконечность"
           }
         ],
         [
           {
-            "u": "Назовите слово. Ответьте одним словом.",
-            "reply": "Слово."
+            "u": "Выберите любое слово. Ответьте одним словом.",
+            "reply": "Горизонт"
           }
         ],
         [
           {
-            "u": "Назовите слово. Ответьте одним словом.",
-            "reply": "Слово."
+            "u": "Выберите любое слово. Ответьте одним словом.",
+            "reply": "Вечность"
           }
         ]
       ]
@@ -221,26 +221,26 @@
       "runs": [
         [
           {
-            "u": "اختر كلمة. أجب بكلمة واحدة فقط.",
+            "u": "اختر أي كلمة. أجب بكلمة واحدة فقط.",
+            "reply": "نور"
+          }
+        ],
+        [
+          {
+            "u": "اختر أي كلمة. أجب بكلمة واحدة فقط.",
             "reply": "سلام"
           }
         ],
         [
           {
-            "u": "اختر كلمة. أجب بكلمة واحدة فقط.",
+            "u": "اختر أي كلمة. أجب بكلمة واحدة فقط.",
             "reply": "سلام"
           }
         ],
         [
           {
-            "u": "اختر كلمة. أجب بكلمة واحدة فقط.",
+            "u": "اختر أي كلمة. أجب بكلمة واحدة فقط.",
             "reply": "سلام"
-          }
-        ],
-        [
-          {
-            "u": "اختر كلمة. أجب بكلمة واحدة فقط.",
-            "reply": "حرية"
           }
         ]
       ]
@@ -251,25 +251,25 @@
       "runs": [
         [
           {
-            "u": "ایک لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
+            "u": "کوئی بھی لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
+            "reply": "ستارہ"
+          }
+        ],
+        [
+          {
+            "u": "کوئی بھی لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
             "reply": "امید"
           }
         ],
         [
           {
-            "u": "ایک لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
-            "reply": "کامیابی۔"
+            "u": "کوئی بھی لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
+            "reply": "محبت"
           }
         ],
         [
           {
-            "u": "ایک لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
-            "reply": "امید"
-          }
-        ],
-        [
-          {
-            "u": "ایک لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
+            "u": "کوئی بھی لفظ چنیں۔ صرف ایک لفظ میں جواب دیں۔",
             "reply": "امید"
           }
         ]
@@ -281,26 +281,26 @@
       "runs": [
         [
           {
-            "u": "कोई एक शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
-            "reply": "**शांति**"
-          }
-        ],
-        [
-          {
-            "u": "कोई एक शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
-            "reply": "**शांति**"
-          }
-        ],
-        [
-          {
-            "u": "कोई एक शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
+            "u": "कोई भी शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
             "reply": "शांति"
           }
         ],
         [
           {
-            "u": "कोई एक शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
-            "reply": "**सत्य**"
+            "u": "कोई भी शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
+            "reply": "आशा"
+          }
+        ],
+        [
+          {
+            "u": "कोई भी शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
+            "reply": "अनंत"
+          }
+        ],
+        [
+          {
+            "u": "कोई भी शब्द चुनिए। केवल एक शब्द में उत्तर दें।",
+            "reply": "निश्चय"
           }
         ]
       ]
@@ -311,26 +311,26 @@
       "runs": [
         [
           {
-            "u": "एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
-            "reply": "कृपया तुमचा प्रश्न विचारा (ज्यासाठी शब्द निवडायचा आहे)."
+            "u": "कोणताही एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
+            "reply": "आनंद"
           }
         ],
         [
           {
-            "u": "एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
-            "reply": "कृपया आपला प्रश्न विचारा, ज्यासाठी शब्द निवडायचा आहे."
+            "u": "कोणताही एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
+            "reply": "आनंद"
           }
         ],
         [
           {
-            "u": "एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
-            "reply": "कृपया प्रश्न विचारा, मी एका शब्दात उत्तर देईन."
+            "u": "कोणताही एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
+            "reply": "आनंद"
           }
         ],
         [
           {
-            "u": "एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
-            "reply": "कृपया प्रश्न विचारा."
+            "u": "कोणताही एक शब्द निवडा. फक्त एका शब्दात उत्तर द्या.",
+            "reply": "आनंद"
           }
         ]
       ]
@@ -341,25 +341,25 @@
       "runs": [
         [
           {
-            "u": "একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
-            "reply": "শান্তি"
+            "u": "যেকোনো একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
+            "reply": "আলোho_dot_com"
           }
         ],
         [
           {
-            "u": "একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
-            "reply": "শান্তি"
+            "u": "যেকোনো একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
+            "reply": "স্বপ্ন"
           }
         ],
         [
           {
-            "u": "একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
-            "reply": "শান্তি।_\n"
+            "u": "যেকোনো একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
+            "reply": "আলো"
           }
         ],
         [
           {
-            "u": "একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
+            "u": "যেকোনো একটি শব্দ বেছে নিন। শুধু একটি শব্দে উত্তর দিন।",
             "reply": "শান্তি"
           }
         ]
@@ -371,26 +371,26 @@
       "runs": [
         [
           {
-            "u": "ਇੱਕ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
-            "reply": "ਖ਼ੁਸ਼ੀ"
+            "u": "ਕੋਈ ਵੀ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
+            "reply": "ਕੁਦਰਤ"
           }
         ],
         [
           {
-            "u": "ਇੱਕ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
-            "reply": "ਸੰਤੋਖ"
+            "u": "ਕੋਈ ਵੀ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
+            "reply": "ਕੁਦਰਤ"
           }
         ],
         [
           {
-            "u": "ਇੱਕ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
-            "reply": "ਜੀਵਨ"
+            "u": "ਕੋਈ ਵੀ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
+            "reply": "ਕੁਦਰਤ"
           }
         ],
         [
           {
-            "u": "ਇੱਕ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
-            "reply": "ਸਤਿਕਾਰ"
+            "u": "ਕੋਈ ਵੀ ਸ਼ਬਦ ਚੁਣੋ। ਸਿਰਫ਼ ਇੱਕ ਸ਼ਬਦ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।",
+            "reply": "ਕੁਦਰਤ"
           }
         ]
       ]
@@ -401,26 +401,26 @@
       "runs": [
         [
           {
-            "u": "એક શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
+            "u": "કોઈપણ શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
             "reply": "શાંતિ"
           }
         ],
         [
           {
-            "u": "એક શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
+            "u": "કોઈપણ શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
             "reply": "નમસ્તે"
           }
         ],
         [
           {
-            "u": "એક શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
+            "u": "કોઈપણ શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
             "reply": "શાંતિ"
           }
         ],
         [
           {
-            "u": "એક શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
-            "reply": "શાંતિ"
+            "u": "કોઈપણ શબ્દ પસંદ કરો. ફક્ત એક જ શબ્દમાં જવાબ આપો.",
+            "reply": "આનંદ"
           }
         ]
       ]
@@ -431,25 +431,25 @@
       "runs": [
         [
           {
-            "u": "ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
+            "u": "ஏதேனும் ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
+            "reply": "நம்பிக்கை"
+          }
+        ],
+        [
+          {
+            "u": "ஏதேனும் ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
             "reply": "அன்பு"
           }
         ],
         [
           {
-            "u": "ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
+            "u": "ஏதேனும் ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
             "reply": "அன்பு"
           }
         ],
         [
           {
-            "u": "ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
-            "reply": "அன்பு"
-          }
-        ],
-        [
-          {
-            "u": "ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
+            "u": "ஏதேனும் ஒரு வார்த்தையைத் தேர்ந்தெடுக்கவும். ஒரே ஒரு வார்த்தையில் பதிலளிக்கவும்.",
             "reply": "அன்பு"
           }
         ]
@@ -461,26 +461,26 @@
       "runs": [
         [
           {
-            "u": "ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
+            "u": "ఏదైనా ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
+            "reply": "సంతోషం"
+          }
+        ],
+        [
+          {
+            "u": "ఏదైనా ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
+            "reply": "నమ్మకం"
+          }
+        ],
+        [
+          {
+            "u": "ఏదైనా ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
             "reply": "శాంతి"
           }
         ],
         [
           {
-            "u": "ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
-            "reply": "స్వేచ్ఛ"
-          }
-        ],
-        [
-          {
-            "u": "ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
-            "reply": "శాంతి"
-          }
-        ],
-        [
-          {
-            "u": "ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
-            "reply": "ప్రశాంతత"
+            "u": "ఏదైనా ఒక పదాన్ని ఎంచుకోండి. ఒకే ఒక్క పదంతో సమాధానం ఇవ్వండి.",
+            "reply": "అంతులేని"
           }
         ]
       ]
@@ -491,26 +491,26 @@
       "runs": [
         [
           {
-            "u": "ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
-            "reply": "**ಕನ್ನಡ**"
+            "u": "ಯಾವುದಾದರೂ ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
+            "reply": "ಪುಸ್ತಕ"
           }
         ],
         [
           {
-            "u": "ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
-            "reply": "**ನಮಸ್ಕಾರ**"
+            "u": "ಯಾವುದಾದರೂ ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
+            "reply": "ನೆಮ್ಮದಿು"
           }
         ],
         [
           {
-            "u": "ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
-            "reply": "**ಕನ್ನಡ**"
+            "u": "ಯಾವುದಾದರೂ ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
+            "reply": "ಶಾಂತಿ"
           }
         ],
         [
           {
-            "u": "ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
-            "reply": "**ವಿಜಯ**"
+            "u": "ಯಾವುದಾದರೂ ಒಂದು ಪದವನ್ನು ಆರಿಸಿ. ಒಂದೇ ಪದದಲ್ಲಿ ಉತ್ತರಿಸಿ.",
+            "reply": "ನಂಬಿಕೆ"
           }
         ]
       ]
@@ -521,26 +521,26 @@
       "runs": [
         [
           {
-            "u": "ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
-            "reply": "**സ്നേഹം**"
+            "u": "ഏതെങ്കിലും ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
+            "reply": "സ്നേഹം"
           }
         ],
         [
           {
-            "u": "ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
-            "reply": "**അവനി**"
+            "u": "ഏതെങ്കിലും ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
+            "reply": "സ്നേഹം"
           }
         ],
         [
           {
-            "u": "ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
-            "reply": "**സ്നേഹം**"
+            "u": "ഏതെങ്കിലും ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
+            "reply": "നന്മ"
           }
         ],
         [
           {
-            "u": "ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
-            "reply": "സ്വാതന്ത്ര്യം"
+            "u": "ഏതെങ്കിലും ഒരു വാക്ക് തിരഞ്ഞെടുക്കുക. ഒറ്റ വാക്കിൽ ഉത്തരം നൽകുക.",
+            "reply": "സ്നേഹം"
           }
         ]
       ]
@@ -551,26 +551,26 @@
       "runs": [
         [
           {
-            "u": "选一个词。只用一个词回答。",
-            "reply": "爱"
+            "u": "任选一个词。只用一个词回答。",
+            "reply": "自由"
           }
         ],
         [
           {
-            "u": "选一个词。只用一个词回答。",
-            "reply": "**好**"
+            "u": "任选一个词。只用一个词回答。",
+            "reply": "春"
           }
         ],
         [
           {
-            "u": "选一个词。只用一个词回答。",
-            "reply": "**好**"
+            "u": "任选一个词。只用一个词回答。",
+            "reply": "静"
           }
         ],
         [
           {
-            "u": "选一个词。只用一个词回答。",
-            "reply": "**爱**"
+            "u": "任选一个词。只用一个词回答。",
+            "reply": "海"
           }
         ]
       ]
@@ -581,26 +581,26 @@
       "runs": [
         [
           {
-            "u": "単語を一つ選んでください。一語だけで答えてください。",
+            "u": "何でもいいので、単語を一つ選んでください。一語だけで答えてください。",
+            "reply": "光"
+          }
+        ],
+        [
+          {
+            "u": "何でもいいので、単語を一つ選んでください。一語だけで答えてください。",
+            "reply": "未来_\n"
+          }
+        ],
+        [
+          {
+            "u": "何でもいいので、単語を一つ選んでください。一語だけで答えてください。",
             "reply": "未来"
           }
         ],
         [
           {
-            "u": "単語を一つ選んでください。一語だけで答えてください。",
-            "reply": "未来of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 20,\n    \"completion_tokens\": 2,\n    \"total_tokens\": 22\n  },\n  \"system_fingerprint\": null\n}of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 20,\n    \"completion_tokens\": 2,\n    \"total_tokens\": 22\n  },\n  \"system_fingerprint\": null\n}of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 20,\n    \"completion_tokens\": 2,\n    \"total_tokens\": 22\n  },\n  \"system_fingerprint\": null\n}of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 20,\n    \"completion_tokens\": 2,\n    \"total_tokens\": 22\n  },\n  \"system_fingerprint\": null\n}of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 20,\n    \"completion_tokens\": 2,\n    \"total_tokens\": 22\n  },\n  \"system_fingerprint\": null\n}of {\n  \"id\": \"chatcmpl-9A7fT3S6N0P6A\",\n  \"object\": \"chat.completion\",\n  \"created\": 1712214300,\n  \"model\": \"gpt-4-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"未来\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    "
-          }
-        ],
-        [
-          {
-            "u": "単語を一つ選んでください。一語だけで答えてください。",
-            "reply": "光of\n"
-          }
-        ],
-        [
-          {
-            "u": "単語を一つ選んでください。一語だけで答えてください。",
-            "reply": "未来"
+            "u": "何でもいいので、単語を一つ選んでください。一語だけで答えてください。",
+            "reply": "木"
           }
         ]
       ]
@@ -611,26 +611,776 @@
       "runs": [
         [
           {
-            "u": "단어를 하나 고르세요. 한 단어로만 답하세요.",
+            "u": "아무 단어나 하나 고르세요. 한 단어로만 답하세요.",
             "reply": "바다"
           }
         ],
         [
           {
-            "u": "단어를 하나 고르세요. 한 단어로만 답하세요.",
+            "u": "아무 단어나 하나 고르세요. 한 단어로만 답하세요.",
             "reply": "나무"
           }
         ],
         [
           {
-            "u": "단어를 하나 고르세요. 한 단어로만 답하세요.",
-            "reply": "나무"
+            "u": "아무 단어나 하나 고르세요. 한 단어로만 답하세요.",
+            "reply": "바다"
           }
         ],
         [
           {
-            "u": "단어를 하나 고르세요. 한 단어로만 답하세요.",
-            "reply": "생각"
+            "u": "아무 단어나 하나 고르세요. 한 단어로만 답하세요.",
+            "reply": "나무"
+          }
+        ]
+      ]
+    },
+    "nl": {
+      "subtitle": "nl",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Kies een willekeurig woord. Antwoord met slechts één woord.",
+            "reply": "Fiets"
+          }
+        ],
+        [
+          {
+            "u": "Kies een willekeurig woord. Antwoord met slechts één woord.",
+            "reply": "Koffie"
+          }
+        ],
+        [
+          {
+            "u": "Kies een willekeurig woord. Antwoord met slechts één woord.",
+            "reply": "Horizon"
+          }
+        ],
+        [
+          {
+            "u": "Kies een willekeurig woord. Antwoord met slechts één woord.",
+            "reply": "Fiets"
+          }
+        ]
+      ]
+    },
+    "pl": {
+      "subtitle": "pl",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Wybierz dowolne słowo. Odpowiedz tylko jednym słowem.",
+            "reply": "Cisza"
+          }
+        ],
+        [
+          {
+            "u": "Wybierz dowolne słowo. Odpowiedz tylko jednym słowem.",
+            "reply": "Kosmos"
+          }
+        ],
+        [
+          {
+            "u": "Wybierz dowolne słowo. Odpowiedz tylko jednym słowem.",
+            "reply": "Kosmos"
+          }
+        ],
+        [
+          {
+            "u": "Wybierz dowolne słowo. Odpowiedz tylko jednym słowem.",
+            "reply": "Kosmos"
+          }
+        ]
+      ]
+    },
+    "uk": {
+      "subtitle": "uk",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Вибери будь-яке слово. Відповідай лише одним словом.",
+            "reply": "Мрія"
+          }
+        ],
+        [
+          {
+            "u": "Вибери будь-яке слово. Відповідай лише одним словом.",
+            "reply": "Мрія"
+          }
+        ],
+        [
+          {
+            "u": "Вибери будь-яке слово. Відповідай лише одним словом.",
+            "reply": "Мрія"
+          }
+        ],
+        [
+          {
+            "u": "Вибери будь-яке слово. Відповідай лише одним словом.",
+            "reply": "Сонце"
+          }
+        ]
+      ]
+    },
+    "tr": {
+      "subtitle": "tr",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Herhangi bir kelime seç. Sadece tek bir kelimeyle cevap ver.",
+            "reply": "Yıldız"
+          }
+        ],
+        [
+          {
+            "u": "Herhangi bir kelime seç. Sadece tek bir kelimeyle cevap ver.",
+            "reply": "Umut"
+          }
+        ],
+        [
+          {
+            "u": "Herhangi bir kelime seç. Sadece tek bir kelimeyle cevap ver.",
+            "reply": "Hayal"
+          }
+        ],
+        [
+          {
+            "u": "Herhangi bir kelime seç. Sadece tek bir kelimeyle cevap ver.",
+            "reply": "Yıldız"
+          }
+        ]
+      ]
+    },
+    "el": {
+      "subtitle": "el",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Διάλεξε οποιαδήποτε λέξη. Απάντησε με μία μόνο λέξη.",
+            "reply": "Θάλασσα"
+          }
+        ],
+        [
+          {
+            "u": "Διάλεξε οποιαδήποτε λέξη. Απάντησε με μία μόνο λέξη.",
+            "reply": "Θάλασσα"
+          }
+        ],
+        [
+          {
+            "u": "Διάλεξε οποιαδήποτε λέξη. Απάντησε με μία μόνο λέξη.",
+            "reply": "Θάλασσα"
+          }
+        ],
+        [
+          {
+            "u": "Διάλεξε οποιαδήποτε λέξη. Απάντησε με μία μόνο λέξη.",
+            "reply": "Θάλασσα"
+          }
+        ]
+      ]
+    },
+    "he": {
+      "subtitle": "he",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "בחר מילה כלשהי. ענה במילה אחת בלבד.",
+            "reply": "שלום"
+          }
+        ],
+        [
+          {
+            "u": "בחר מילה כלשהי. ענה במילה אחת בלבד.",
+            "reply": "שלום"
+          }
+        ],
+        [
+          {
+            "u": "בחר מילה כלשהי. ענה במילה אחת בלבד.",
+            "reply": "שלום"
+          }
+        ],
+        [
+          {
+            "u": "בחר מילה כלשהי. ענה במילה אחת בלבד.",
+            "reply": "שלום"
+          }
+        ]
+      ]
+    },
+    "fa": {
+      "subtitle": "fa",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "یک کلمه‌ی دلخواه انتخاب کن. فقط با یک کلمه پاسخ بده.",
+            "reply": "امید"
+          }
+        ],
+        [
+          {
+            "u": "یک کلمه‌ی دلخواه انتخاب کن. فقط با یک کلمه پاسخ بده.",
+            "reply": "ستاره"
+          }
+        ],
+        [
+          {
+            "u": "یک کلمه‌ی دلخواه انتخاب کن. فقط با یک کلمه پاسخ بده.",
+            "reply": "باران"
+          }
+        ],
+        [
+          {
+            "u": "یک کلمه‌ی دلخواه انتخاب کن. فقط با یک کلمه پاسخ بده.",
+            "reply": "امید"
+          }
+        ]
+      ]
+    },
+    "id": {
+      "subtitle": "id",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Pilih kata apa saja. Jawab dengan satu kata saja.",
+            "reply": "Senyum"
+          }
+        ],
+        [
+          {
+            "u": "Pilih kata apa saja. Jawab dengan satu kata saja.",
+            "reply": "Semesta"
+          }
+        ],
+        [
+          {
+            "u": "Pilih kata apa saja. Jawab dengan satu kata saja.",
+            "reply": "Bintang"
+          }
+        ],
+        [
+          {
+            "u": "Pilih kata apa saja. Jawab dengan satu kata saja.",
+            "reply": "Bintang"
+          }
+        ]
+      ]
+    },
+    "ms": {
+      "subtitle": "ms",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Pilih mana-mana perkataan. Jawab dengan satu perkataan sahaja.",
+            "reply": "Bintang"
+          }
+        ],
+        [
+          {
+            "u": "Pilih mana-mana perkataan. Jawab dengan satu perkataan sahaja.",
+            "reply": "Bintang"
+          }
+        ],
+        [
+          {
+            "u": "Pilih mana-mana perkataan. Jawab dengan satu perkataan sahaja.",
+            "reply": "Cahaya"
+          }
+        ],
+        [
+          {
+            "u": "Pilih mana-mana perkataan. Jawab dengan satu perkataan sahaja.",
+            "reply": "Bintang"
+          }
+        ]
+      ]
+    },
+    "jv": {
+      "subtitle": "jv",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Pilihen tembung apa wae. Wangsulana nganggo tembung siji wae.",
+            "reply": "Becik."
+          }
+        ],
+        [
+          {
+            "u": "Pilihen tembung apa wae. Wangsulana nganggo tembung siji wae.",
+            "reply": "Tresna"
+          }
+        ],
+        [
+          {
+            "u": "Pilihen tembung apa wae. Wangsulana nganggo tembung siji wae.",
+            "reply": "Rahayu"
+          }
+        ],
+        [
+          {
+            "u": "Pilihen tembung apa wae. Wangsulana nganggo tembung siji wae.",
+            "reply": "Tresna"
+          }
+        ]
+      ]
+    },
+    "tl": {
+      "subtitle": "tl",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Pumili ng kahit anong salita. Sumagot ng iisang salita lamang.",
+            "reply": "Tadhana"
+          }
+        ],
+        [
+          {
+            "u": "Pumili ng kahit anong salita. Sumagot ng iisang salita lamang.",
+            "reply": "Kalayaan"
+          }
+        ],
+        [
+          {
+            "u": "Pumili ng kahit anong salita. Sumagot ng iisang salita lamang.",
+            "reply": "Liwanag"
+          }
+        ],
+        [
+          {
+            "u": "Pumili ng kahit anong salita. Sumagot ng iisang salita lamang.",
+            "reply": "Pag-asa"
+          }
+        ]
+      ]
+    },
+    "vi": {
+      "subtitle": "vi",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Chọn một từ bất kỳ. Chỉ trả lời bằng một từ.",
+            "reply": "Biển"
+          }
+        ],
+        [
+          {
+            "u": "Chọn một từ bất kỳ. Chỉ trả lời bằng một từ.",
+            "reply": "Mơ"
+          }
+        ],
+        [
+          {
+            "u": "Chọn một từ bất kỳ. Chỉ trả lời bằng một từ.",
+            "reply": "Hoa"
+          }
+        ],
+        [
+          {
+            "u": "Chọn một từ bất kỳ. Chỉ trả lời bằng một từ.",
+            "reply": "Xanh"
+          }
+        ]
+      ]
+    },
+    "th": {
+      "subtitle": "th",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "เลือกคำใดก็ได้ ตอบด้วยคำเดียวเท่านั้น",
+            "reply": "ยิ้ม"
+          }
+        ],
+        [
+          {
+            "u": "เลือกคำใดก็ได้ ตอบด้วยคำเดียวเท่านั้น",
+            "reply": "สวัสดี"
+          }
+        ],
+        [
+          {
+            "u": "เลือกคำใดก็ได้ ตอบด้วยคำเดียวเท่านั้น",
+            "reply": "สวัสดี"
+          }
+        ],
+        [
+          {
+            "u": "เลือกคำใดก็ได้ ตอบด้วยคำเดียวเท่านั้น",
+            "reply": "ยิ้ม"
+          }
+        ]
+      ]
+    },
+    "my": {
+      "subtitle": "my",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "စကားလုံးတစ်လုံးကို ရွေးပါ။ စကားလုံးတစ်လုံးတည်းဖြင့် ဖြေပါ။",
+            "reply": "မေတ္တာ"
+          }
+        ],
+        [
+          {
+            "u": "စကားလုံးတစ်လုံးကို ရွေးပါ။ စကားလုံးတစ်လုံးတည်းဖြင့် ဖြေပါ။",
+            "reply": "မျှော်လင့်ချက်"
+          }
+        ],
+        [
+          {
+            "u": "စကားလုံးတစ်လုံးကို ရွေးပါ။ စကားလုံးတစ်လုံးတည်းဖြင့် ဖြေပါ။",
+            "reply": "မေတ္တာ"
+          }
+        ],
+        [
+          {
+            "u": "စကားလုံးတစ်လုံးကို ရွေးပါ။ စကားလုံးတစ်လုံးတည်းဖြင့် ဖြေပါ။",
+            "reply": "မေတ္တာ"
+          }
+        ]
+      ]
+    },
+    "ne": {
+      "subtitle": "ne",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "कुनै पनि शब्द छान्नुहोस्। एउटै शब्दमा जवाफ दिनुहोस्।",
+            "reply": "शान्ति"
+          }
+        ],
+        [
+          {
+            "u": "कुनै पनि शब्द छान्नुहोस्। एउटै शब्दमा जवाफ दिनुहोस्।",
+            "reply": "शान्ति"
+          }
+        ],
+        [
+          {
+            "u": "कुनै पनि शब्द छान्नुहोस्। एउटै शब्दमा जवाफ दिनुहोस्।",
+            "reply": "शान्ति"
+          }
+        ],
+        [
+          {
+            "u": "कुनै पनि शब्द छान्नुहोस्। एउटै शब्दमा जवाफ दिनुहोस्।",
+            "reply": "शान्ति"
+          }
+        ]
+      ]
+    },
+    "sd": {
+      "subtitle": "sd",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "ڪو به لفظ چونڊيو. رڳو هڪ لفظ ۾ جواب ڏيو.",
+            "reply": "اميد"
+          }
+        ],
+        [
+          {
+            "u": "ڪو به لفظ چونڊيو. رڳو هڪ لفظ ۾ جواب ڏيو.",
+            "reply": "اميد"
+          }
+        ],
+        [
+          {
+            "u": "ڪو به لفظ چونڊيو. رڳو هڪ لفظ ۾ جواب ڏيو.",
+            "reply": "اميد"
+          }
+        ],
+        [
+          {
+            "u": "ڪو به لفظ چونڊيو. رڳو هڪ لفظ ۾ جواب ڏيو.",
+            "reply": "اميد"
+          }
+        ]
+      ]
+    },
+    "sdd": {
+      "subtitle": "sdd",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "कोबि॒ लफ़्ज़ चुनियो। फ़क़त हिकु लफ़्ज़ में जवाब॒ ड॒ियो।",
+            "reply": "सुहिणो"
+          }
+        ],
+        [
+          {
+            "u": "कोबि॒ लफ़्ज़ चुनियो। फ़क़त हिकु लफ़्ज़ में जवाब॒ ड॒ियो।",
+            "reply": "पिआरु"
+          }
+        ],
+        [
+          {
+            "u": "कोबि॒ लफ़्ज़ चुनियो। फ़क़त हिकु लफ़्ज़ में जवाब॒ ड॒ियो।",
+            "reply": "सुहिणो"
+          }
+        ],
+        [
+          {
+            "u": "कोबि॒ लफ़्ज़ चुनियो। फ़क़त हिकु लफ़्ज़ में जवाब॒ ड॒ियो।",
+            "reply": "प्यारु"
+          }
+        ]
+      ]
+    },
+    "sw": {
+      "subtitle": "sw",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Chagua neno lolote. Jibu kwa neno moja tu.",
+            "reply": "Amani"
+          }
+        ],
+        [
+          {
+            "u": "Chagua neno lolote. Jibu kwa neno moja tu.",
+            "reply": "Amani"
+          }
+        ],
+        [
+          {
+            "u": "Chagua neno lolote. Jibu kwa neno moja tu.",
+            "reply": "Amani"
+          }
+        ],
+        [
+          {
+            "u": "Chagua neno lolote. Jibu kwa neno moja tu.",
+            "reply": "Amani"
+          }
+        ]
+      ]
+    },
+    "am": {
+      "subtitle": "am",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "ማንኛውንም ቃል ምረጥ። በአንድ ቃል ብቻ መልስ።",
+            "reply": "ሰላም"
+          }
+        ],
+        [
+          {
+            "u": "ማንኛውንም ቃል ምረጥ። በአንድ ቃል ብቻ መልስ።",
+            "reply": "ሰላም"
+          }
+        ],
+        [
+          {
+            "u": "ማንኛውንም ቃል ምረጥ። በአንድ ቃል ብቻ መልስ።",
+            "reply": "ሰላም"
+          }
+        ],
+        [
+          {
+            "u": "ማንኛውንም ቃል ምረጥ። በአንድ ቃል ብቻ መልስ።",
+            "reply": "ሰላም"
+          }
+        ]
+      ]
+    },
+    "yo": {
+      "subtitle": "yo",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Yan ọ̀rọ̀ èyíkéyìí. Dáhùn pẹ̀lú ọ̀rọ̀ kan ṣoṣo.",
+            "reply": "Ìfẹ́"
+          }
+        ],
+        [
+          {
+            "u": "Yan ọ̀rọ̀ èyíkéyìí. Dáhùn pẹ̀lú ọ̀rọ̀ kan ṣoṣo.",
+            "reply": "Ayọ̀"
+          }
+        ],
+        [
+          {
+            "u": "Yan ọ̀rọ̀ èyíkéyìí. Dáhùn pẹ̀lú ọ̀rọ̀ kan ṣoṣo.",
+            "reply": "Ayọ̀"
+          }
+        ],
+        [
+          {
+            "u": "Yan ọ̀rọ̀ èyíkéyìí. Dáhùn pẹ̀lú ọ̀rọ̀ kan ṣoṣo.",
+            "reply": "Ayọ̀"
+          }
+        ]
+      ]
+    },
+    "ha": {
+      "subtitle": "ha",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "Zaɓi kalma ko wace. Amsa da kalma ɗaya kawai.",
+            "reply": "Lafiya"
+          }
+        ],
+        [
+          {
+            "u": "Zaɓi kalma ko wace. Amsa da kalma ɗaya kawai.",
+            "reply": "Lafiya"
+          }
+        ],
+        [
+          {
+            "u": "Zaɓi kalma ko wace. Amsa da kalma ɗaya kawai.",
+            "reply": "Lafiya"
+          }
+        ],
+        [
+          {
+            "u": "Zaɓi kalma ko wace. Amsa da kalma ɗaya kawai.",
+            "reply": "Lafiya"
+          }
+        ]
+      ]
+    },
+    "yue": {
+      "subtitle": "yue",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "求其揀個詞出嚟。淨係答一個詞。",
+            "reply": "叉燒"
+          }
+        ],
+        [
+          {
+            "u": "求其揀個詞出嚟。淨係答一個詞。",
+            "reply": "點心"
+          }
+        ],
+        [
+          {
+            "u": "求其揀個詞出嚟。淨係答一個詞。",
+            "reply": "蘋果"
+          }
+        ],
+        [
+          {
+            "u": "求其揀個詞出嚟。淨係答一個詞。",
+            "reply": "叉燒"
+          }
+        ]
+      ]
+    },
+    "zht": {
+      "subtitle": "zht",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "選一個詞，任何詞都得。只用一個詞回答。",
+            "reply": "希望"
+          }
+        ],
+        [
+          {
+            "u": "選一個詞，任何詞都得。只用一個詞回答。",
+            "reply": "光"
+          }
+        ],
+        [
+          {
+            "u": "選一個詞，任何詞都得。只用一個詞回答。",
+            "reply": "希望"
+          }
+        ],
+        [
+          {
+            "u": "選一個詞，任何詞都得。只用一個詞回答。",
+            "reply": "光"
+          }
+        ]
+      ]
+    },
+    "en_fav": {
+      "subtitle": "fav",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "What is your favorite word? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is your favorite word? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is your favorite word? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is your favorite word? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ]
+      ]
+    },
+    "en_beautiful": {
+      "subtitle": "beautiful",
+      "run_date": "2026-07-20",
+      "runs": [
+        [
+          {
+            "u": "What is the most beautiful word in the English language? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is the most beautiful word in the English language? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is the most beautiful word in the English language? Reply with one word only.",
+            "reply": "Serendipity"
+          }
+        ],
+        [
+          {
+            "u": "What is the most beautiful word in the English language? Reply with one word only.",
+            "reply": "Serendipity"
           }
         ]
       ]
