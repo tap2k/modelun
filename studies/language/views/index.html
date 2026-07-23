@@ -25,12 +25,13 @@
   .note b{color:var(--fg)}
   h2{font-size:19px;margin:0 0 10px} h3{font-size:11.5px;margin:22px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
   .crumb{font-size:12.5px;margin:0 0 14px}
+  .scroll{overflow-x:auto;max-width:100%}
   table.t{border-collapse:collapse;font-size:13px}
   table.t th,table.t td{padding:6px 12px;border-bottom:1px solid var(--line);text-align:left}
   table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
   table.t th.s{cursor:pointer;user-select:none} table.t th.s:hover{color:var(--fg)}
   table.t th.s.on{color:var(--acc)}
-  table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right}
+  table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
   table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
   .chip{display:inline-block;font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:1px 7px;margin-left:8px;vertical-align:1px}
   .gl{color:var(--mut);font-size:11.5px;margin-left:6px}
@@ -115,7 +116,7 @@ function languages(){
   <b>distinct</b> words show up, and how rare the favorite is (<b>rarity</b> = base-rate frequency, lower = rarer).
   <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b>
   <span class="stnov">echo*</span> marks a modal that's an instruction-echo / filler, not a chosen word. Click a language for its full field.</p>
-  <table class="t"><tr><th>#</th>
+  <div class="scroll"><table class="t"><tr><th>#</th>
     <th class="s ${sort.k==='name'?'on':''}" data-k="name" data-num="0">language</th>
     <th>favorite word</th>
     <th class="s ${sort.k==='share'?'on':''}" data-k="share" data-num="1">converged</th>
@@ -140,7 +141,7 @@ function languages(){
       <td class="n">${l.zipf==null?'–':l.zipf.toFixed(2)}</td>
       <td class="mono" style="font-size:11.5px">${t5}</td></tr>`;
   });
-  main.innerHTML = h + '</table>';
+  main.innerHTML = h + '</table></div>';
   main.querySelectorAll('th.s').forEach(t=>t.addEventListener('click',()=>{
     const k=t.dataset.k;
     if(sort.k===k) sort.dir*=-1; else sort={k, dir:+t.dataset.num?-1:1};
