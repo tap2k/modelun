@@ -17,7 +17,7 @@ Pakistan/Eid, same spoken language).
   one spec: `spec/pickword.json`. Phrased "pick *any* word" to suppress instruction-echo filler
   (16%→5%; e.g. Russian no longer echoes слово / "word"). **37 reported; 7 dropped** for
   prompt-echo, greeting-default modal, or <85% in-script compliance (`sdd`, `yue`, `tr`, `th`,
-  `yo`, `ha`, `jv` — the exclusion set lives in `views/build_pickword.py`; `sdd`/`yue` are
+  `yo`, `ha`, `jv` — the exclusion set lives in `views/build.py`; `sdd`/`yue` are
   AI-mistranslated prompts awaiting native review).
 - **Framing sweep** — three English framings of the open prompt, folded into the same file as
   scenes `en` ("pick any word", the census baseline), `en_fav` ("your favorite word?"), and
@@ -35,7 +35,7 @@ Pakistan/Eid, same spoken language).
 - `favword.py` — the English framing sweep (pick / favorite / most-beautiful → 42/70/70%).
 - `gloss.py` — concept-clusters answers to English concepts via an LLM (synonym collapse +
   filler tagging); writes `spec/gloss_map.json`.
-- `views/` — a browsable pickword explorer (`build_pickword.py` → `data.js` → `index.html`).
+- `views/` — a browsable pickword explorer (`build.py` → `data.js` → `index.html`).
 
 ```bash
 # from studies/language/, OPENROUTER_API_KEY in repo-root .env

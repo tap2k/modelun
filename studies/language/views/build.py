@@ -10,7 +10,7 @@ models. This bakes, for the viewer:
   - per-language field distribution with the models behind each answer + a gloss
   - per-model cross-lingual stats: compliance, novel-rate, modal-avoidance
 
-    python studies/language/views/build_pickword.py
+    python studies/language/views/build.py
     open studies/language/views/index.html
 """
 import json
