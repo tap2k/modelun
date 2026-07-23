@@ -20,5 +20,4 @@ FAM = {
     "qwen-2.5-72b-instruct": ("Qwen", 0), "qwen3-235b-a22b-2507": ("Qwen", 1),
     "deepseek-chat-v3-0324": ("DeepSeek", 0), "deepseek-r1": ("DeepSeek", 1),
     "deepseek-v3.2": ("DeepSeek", 2), "deepseek-v4-flash": ("DeepSeek", 3),
-    "glm-4.7": ("GLM", 0), "glm-5.2": ("GLM", 1),
 }

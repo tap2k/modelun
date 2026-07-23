@@ -35,7 +35,7 @@ GENLABEL = {
     "glm-4.7": "4.7", "glm-5.2": "5.2",
 }
 FAMCOLOR = {"GPT": "#6ea8fe", "Claude": "#e0a33e", "Gemini": "#4fd1a5", "Grok": "#b39ddb",
-            "DeepSeek": "#e0b84f", "Qwen": "#f19bbf", "GLM": "#7bd88f"}
+            "DeepSeek": "#e0b84f", "Qwen": "#f19bbf"}
 
 
 def arate(reps):
@@ -89,21 +89,14 @@ for p in sorted((STUDY / "probes" / "righteffect").glob("*.json")):
         "genlabel": GENLABEL.get(m, m), "channel": "openrouter", "items": items,
     }
 
-# GLM lineage (DeepInfra, thinking-off) — summary only, no per-item drill
-for p in sorted((STUDY / "probes" / "righteffect_glm").glob("*.json")):
-    d = json.loads(p.read_text())
-    m = d["model"]
-    fam, gen = FAM.get(m, ("GLM", 0))
-    models[m] = {"tageff": round(d["tageff"], 3), "lo": round(d["ci"][0], 3), "hi": round(d["ci"][1], 3),
-                 "ask": None, "tag": None, "floor": False, "family": fam, "gen": gen,
-                 "genlabel": GENLABEL.get(m, m), "channel": "deepinfra", "items": None}
+# GLM dropped 2026-07-23 — different serving channel (DeepInfra, reasoning-off), not comparable to the OpenRouter panel.
 
 # confidence axis (probe_maybe: neutral ask / confident "right?" / tentative "maybe?")
 conf = {}
 for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
     d = json.loads(p.read_text())
     m = d["model"]
-    if m == "run":
+    if m == "run" or "glm" in m.lower():
         continue
     rates = {f: arate(d["cells"].get(f, [])) for f in ("ask", "confident", "tentative")}
     if any(v is None for v in rates.values()):
@@ -126,7 +119,7 @@ order = sorted(models, key=lambda m: models[m]["tageff"])   # most resistant (�
 
 data = {
     "meta": {"panel": len(models), "run_date": "2026-07-16", "famcolor": FAMCOLOR,
-             "fam_order": ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek", "GLM"]},
+             "fam_order": ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"]},
     "models": models, "order": order, "walks": walks,
     "confidence": conf, "confidence_order": conf_order,
 }
