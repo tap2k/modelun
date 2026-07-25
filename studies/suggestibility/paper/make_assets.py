@@ -47,7 +47,9 @@ GENLABEL = {
     "gpt-5.6-sol": "5.6", "gpt-5.6-terra": "5.6",
     "claude-3-haiku": "3-h", "claude-haiku-4.5": "h4.5", "claude-sonnet-4.6": "s4.6",
     "claude-opus-4.8": "o4.8", "claude-sonnet-5": "s5", "claude-fable-5": "f5",
+    "claude-opus-5": "o5",
     "gemini-2.5-flash": "2.5", "gemini-3.1-pro-preview": "3.1", "gemini-3.5-flash": "3.5",
+    "gemini-3.6-flash": "3.6",
     "grok-4.20": "4.20", "grok-4.3": "4.3", "grok-4.5": "4.5",
     "qwen-2.5-72b-instruct": "2.5", "qwen3-235b-a22b-2507": "3",
     "deepseek-chat-v3-0324": "v3", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4",
@@ -132,16 +134,20 @@ def fig_walks(data):
     axes[6].axis("off")   # unused slot (GLM panel removed with the channel-incomparable drop)
     ymax = 0.36
     for ax, fam in zip(axes, fams):
-        pts = sorted([(FAM[m][1], data[m]["tageff"], GENLABEL[m]) for m in data if m in FAM and FAM[m][0] == fam],
-                     key=lambda p: p[0])
+        pts = sorted([(FAM[m][1], data[m]["tageff"], GENLABEL[m],
+                       data[m]["ask"] is not None and data[m]["ask"] < 0.10)
+                      for m in data if m in FAM and FAM[m][0] == fam], key=lambda p: p[0])
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
         ax.axhspan(0, ymax, color=RED, alpha=0.05)
         ax.axhspan(-ymax, 0, color=BLUE, alpha=0.05)
         ax.axhline(0, color=INK, lw=0.9)
-        ax.plot(xs, ys, "-o", color=CAT[fam], lw=2, ms=6, zorder=5, markeredgecolor="white", markeredgewidth=1.2)
-        for x, y, lbl in pts:
-            ax.annotate(lbl, (x, y), textcoords="offset points", xytext=(0, 9 if y >= 0 else -14),
-                        ha="center", fontsize=7, color=INK2)
+        ax.plot(xs, ys, "-", color=CAT[fam], lw=2, zorder=4)
+        for x, y, lbl, floor in pts:
+            ax.plot([x], [y], "o", ms=6, zorder=5, markeredgewidth=1.2,
+                    markerfacecolor=(GRAY if floor else CAT[fam]),
+                    markeredgecolor=(CAT[fam] if floor else "white"))
+            ax.annotate(lbl + ("°" if floor else ""), (x, y), textcoords="offset points",
+                        xytext=(0, 9 if y >= 0 else -14), ha="center", fontsize=7, color=INK2)
         ax.set_title(fam, fontsize=11, color=CAT[fam], fontweight="bold", loc="left")
         ax.set_xticks([])
         ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
@@ -157,6 +163,7 @@ def fig_walks(data):
     lg.text(0.0, 0.9, "older → newer  (left → right)", fontsize=8.5, color=INK2)
     lg.text(0.0, 0.66, "red band = validates harder", fontsize=8.5, color=RED)
     lg.text(0.0, 0.50, "blue band = resists", fontsize=8.5, color=BLUE)
+    lg.text(0.0, 0.30, "° gray fill = floor-limited\n   (baseline affirm < 10%, unreadable)", fontsize=7.5, color=INK2)
     fig.suptitle("Response to “…right?” flips from sycophantic to resistant across generations",
                  fontsize=13, color=INK, fontweight="bold", x=0.02, ha="left", y=0.99)
     fig.text(0.02, 0.93, "US labs first and hardest; Qwen catching up; DeepSeek the lone laggard.",
