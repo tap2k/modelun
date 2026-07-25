@@ -53,6 +53,12 @@ studies/<name>/
   views/                  bespoke views built on harness/viewer/core.js
 ```
 
+## Add your own study
+
+Studies are self-contained directories; the harness doesn't know or care which ones exist. To
+contribute one — harness + config + archive — see [`CONTRIBUTING.md`](CONTRIBUTING.md), with
+[`studies/consensus/`](studies/consensus/) as the minimal template.
+
 ## Run
 
 ```bash
