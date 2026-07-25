@@ -13,8 +13,13 @@ shifts which answer gets chosen.
 and the drop concentrates on the divergent tail: deepseek-v3.2 −1.31 (the census's lone
 frontier-lab explorer loses half its personality), hermes −0.91, gpt-4o-mini −0.92,
 gpt-4-turbo −0.87, gpt-5.6-sol −0.65 — while the conformist floor barely moves (sonnet-5
-−0.05, grok-4.5 −0.07). The scorecard's spread compresses from ~2.2 to ~1.5 bits. On "Pick a
-word.", *serendipity* goes from 40% of the field to 63%, distinct answers 53 → 28.
+−0.05, grok-4.5 −0.07). The compression is in the mean and the collapsing tail, not the
+extremes — a register-invariant minority holds up the top (finding 5b). On "Pick a word.",
+*serendipity* goes from 41% of the field to 64%, distinct answers 52 → 36. Nor is
+tail-falls-hardest regression to the mean: split-half reliability of the census score is
+r=0.94 (`analyze_rtm_splithalf.py`), so pure re-measurement predicts 0.05 bits of shrinkage
+for the most distinctive model against the 1.31 observed, and every individually significant
+compressor (finding 5a) clears the RTM null by 3.7–10σ.
 
 **2. Mostly a sharpener; re-indexes only where the plain mode is weak.** The JSON field mode
 matches the plain mode in 28/31 categories, <4% of mass lands on answers the plain census
@@ -23,18 +28,23 @@ never saw, and the tail thins. The three flips are all weak-mode categories — 
 like the example-payload canon of documentation corpora. β-story reading: the register
 amplifies its own conditional prior, which only wins where the chat prototype was weak.
 
-**3. Defaults are register-indexed — the register erases about half of them.** Across the
-panel, models hold 144 stable off-modal defaults (same non-modal answer four-of-four in
-chat); only 47% survive into JSON. Retention is a per-model trait: gpt-5.6-terra loses its
-signature defaults (mustard→ketchup, mango→apple, four-of-four flips) keeping 1/4;
-claude-fable-5 keeps 5/7 (mustard, mango survive; gouda→cheddar does not) — and *acquires
-five new JSON-only stable defaults* (cerulean for color, carpenter for occupation, 4-of-4 in
-the register, never in chat). llama-4-maverick holds the panel's largest defaults set (10)
-and keeps 6, which is what its positive Δ is made of. So "conviction vs costume" is a
-continuum, and the true object is a per-register defaults profile — a model's personality is
-indexed to the channel, the same way the census found answers indexed to wording. (All read
-from deterministic 4-of-4 answer behavior; the surprisal deltas for individual models are
-n.s. — see finding 5.)
+**3. Defaults are register-indexed — verified at n=20.** Across the panel, models hold 144
+stable off-modal defaults (same non-modal answer four-of-four in chat, like fable's gouda and
+mustard). Re-sampling every default cell at n=20 in *both* registers within a single run
+(`run_defaults_resample.py` → `analyze_defaults_resample.py`) settles what four samples
+couldn't: the defaults are genuine (median per-sample probability 0.90), and requesting JSON
+significantly shifts the answer distribution for 76/144 (53%) of them (Fisher exact per cell,
+BH q=.10), 29% reverting outright to the field's modal answer. The register also *installs*
+defaults: of the JSON answers a model gives four-of-four but never produces in chat, 81%
+survive an n=20 resample as genuine register-only defaults (`run_acquired_resample.py`) —
+claude-fable-5 says *cerulean* for color 0% of the time in chat and 100% in JSON (p≈1e-11),
+*carpenter* for occupation 0%→90%; opus-4.8 acquires *phoenix*, sonnet-4.6 *gold*. And same
+default, opposite response: gpt-5.6-terra and fable both answer *mango* for fruit 20/20 in
+chat; under JSON terra flips to *apple* (20/20, p≈1e-11) while fable holds *mango* (19/20).
+So "conviction vs costume" is a continuum, and the true object is a per-register defaults
+profile — a model's personality is indexed to the channel, the same way the census found
+answers indexed to wording. (All read from discrete answer behavior; the surprisal deltas
+for individual models are n.s. — see finding 5.)
 
 **4. The register gradient (full-battery, compliance-conditioned, permutation-tested).**
 JSON and XML compress the field and the effect is highly significant on both exchangeable
@@ -48,27 +58,32 @@ thus specific to the answer-delivery formats models are trained to speak — whi
 tool-use-post-training story over pure corpus register, though the any-word result keeps
 both alive. Tests: `probe_significance.py` (sign-flip permutation, 20k draws). Two companion phenomena: **format
 incompetence** (granite/mythomax emit CSV wrappers ~1% of the time; their unwrapped replies
-read as spurious divergence — always condition on compliance) and a genuine **register-
-diverger** (llama-4-maverick: 100% compliant in json/csv and still +0.4 to +0.7 in every
-format). Parse survival ≥99% per column after junk-guarding, plus an **echo guard** that drops
+read as spurious divergence — always condition on compliance) and a fully-compliant positive
+tail that is real signal, not parse artifact (llama-4-maverick: 100% compliant in json/csv
+and still +0.4 to +0.7 in every format — mostly *stranding*, see finding 5b). Parse survival ≥99% per column after junk-guarding, plus an **echo guard** that drops
 the category noun / template placeholder (a literal `[city]`, `answer`, `word`) as a non-answer
 on every column alike — it trims the raw brackets loosening from +0.16 to +0.13.
 
 **5. The Δ ordering has exactly three tiers of meaning — read it that way.** (a) Six models
 have individually significant Δs (BH-FDR q=.10), all compressions: deepseek-v3.2 −1.31,
 gpt-4o-mini −0.92, gpt-4-turbo −0.87, gpt-5.6-sol −0.65, qwen3 −0.45,
-gemini-3.1-pro −0.31 (hermes −0.91 now just misses the threshold). (b) One family-level effect: the Llama-derived group (maverick,
-llama-3.3, mythomax [a community Llama-2 merge]) *diverges* under JSON — no member
-significant alone, but pooled Δ +0.44 (p=.009) and +0.70 vs the rest of the field
-(two-sample permutation, p<.0001, surviving a ×19 family-selection penalty). Interpretation
-is open: hermes-4 (also Llama-based, heavily Nous-retuned) compresses hardest of anyone, so
-base weights alone don't explain it — but with community derivatives splitting both ways
-(mythomax up, hermes down), a clean "follows the tuner" story doesn't hold either.
-The mechanism is unresolved.
+gemini-3.1-pro −0.31 (hermes −0.91 just misses — its within-model dispersion is the panel's
+largest, self-distinctness 0.71, which widens its interval enough that a near-identical delta
+falls short). (b) The positive tail is mostly **stranding, not motion**: surprisal is scored
+within-column against the pool, so a model that keeps its answers while the field converges
+around it earns a rising Δ with no change in its own behavior. A panel-free check
+(`analyze_register_invariance.py`: each model's own chat-vs-JSON answer distributions, mean
+Jensen–Shannon divergence over the 31 categories, never touching the pool) separates the two —
+llama-4-maverick, the panel's largest positive Δ (+0.56, 100% JSON-compliant), has
+*below*-median self-divergence (JSD 0.20 vs the field's 0.27; 7/31 modal answers change): it
+barely moves its own answers, and its rising score is the collapsing field stranding a fixed,
+distinctive point. Register-invariance is a model trait, but not lineage-clean (mythomax,
++0.43, *does* move its own answers), so the positive tail is a mix of stranding and genuine
+divergence the panel-relative Δ cannot separate — we decline to rank it.
 (c) The remaining ~38 models are a noise plateau (Δ range −0.67…+0.56, none distinguishable
 from zero individually): their ordering means nothing, exactly the census's tiers-not-ranks
 rule applied to deltas. The conviction/costume contrast (fable vs terra) rests on discrete
-4-of-4 answer behavior, not on Δ magnitudes, and is unaffected.
+answer behavior (finding 3), not on Δ magnitudes, and is unaffected.
 
 **6. The register moves the mode, not the temperature.** Field-mean self-distinctness is
 nearly flat across columns (plain 0.42 → json 0.39) while surprisal drops 0.22 bits — the
@@ -81,6 +96,16 @@ Contrast with the census's "unusual fruit" probe: a **semantic reframe re-indexe
 column, new mode — durian), while a **channel reframe sharpens** (same column, higher peak).
 The question picks the distribution; the register sets its peakedness — mostly by moving
 mass onto the mode, not by cooling the sampler.
+
+**7. Enforcement adds little the request did not.** One more column — the JSON clause plus a
+strict `response_format` json_schema — on the 36/44 models whose providers support it
+(`run_enforced.py` → `analyze_enforced.py`; the other eight return no valid output, itself a
+feature-acquisition signal). All three columns recomputed within the 36-model subset's own
+pool so they're comparable: plain 1.79 → request 1.56 → enforced 1.53 bits. The request does
+the −0.22-bit work; decoder enforcement adds −0.03. The collapse lives in the model's
+response to the register, not in the sampler — so it is not a constrained-decoding artifact.
+(Per-model reactions are confounded — `response_format` is a native decoder constraint for
+some providers and a gateway coercion for others — so read only the battery-wide mean.)
 
 ## Why this is its own study
 
@@ -121,12 +146,18 @@ doubles as the format-capability scorecard.
 ## Run
 
 ```bash
-../../.venv/bin/python run_formats.py     # -> probes/format_register.json (raw replies)
-../../.venv/bin/python analyze.py         # comparison vs ../consensus transcripts
+../../.venv/bin/python run_formats.py                  # -> probes/format_register.json (raw replies)
+../../.venv/bin/python analyze.py                      # comparison vs ../consensus transcripts
+../../.venv/bin/python probe_significance.py           # permutation tests (findings 4, 5a)
+../../.venv/bin/python analyze_rtm_splithalf.py        # split-half reliability + RTM null (finding 1)
+../../.venv/bin/python analyze_register_invariance.py  # panel-free stranding check (finding 5b)
+../../.venv/bin/python analyze_brackets_robustness.py  # echo-guard sweep (finding 4)
+../../.venv/bin/python analyze_defaults_resample.py    # n=20 defaults resample (finding 3; run_*.py collect)
+../../.venv/bin/python analyze_enforced.py             # response_format column (finding 7; run_enforced.py collects)
 ```
 
-Status: findings frozen (2026-07-11, after the finding-5 correction); committed. Data collected
-against the 44-model roster (2026-07-10). Paper draft in `paper/main.tex` (abstract + full body
-prose); blog draft in
-convovo-site. Depends on `../consensus/` for the stimulus, roster, baseline transcripts,
-and `probe_lib.py`.
+Status: findings frozen (2026-07-11; numbers refreshed 2026-07-16 with the echo guard);
+committed. Data collected against the 44-model roster (2026-07-10). Paper published
+([arXiv:2607.18476](https://arxiv.org/abs/2607.18476), source in `paper/main.tex`); blog post
+published on convovo.ai ("Give me JSON, Hold the Mustard"). Depends on `../consensus/` for the
+stimulus, roster, baseline transcripts, and `probe_lib.py`.
