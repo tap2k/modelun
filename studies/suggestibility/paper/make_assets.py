@@ -122,7 +122,7 @@ def fig_scorecard(data):
                   fontsize=8.5, color=INK2, linespacing=1.8)
     ax.text(-0.2, n - 0.2, "◀ RESISTS the bid", ha="center", fontsize=10, color=BLUE, fontweight="bold")
     ax.text(0.2, n - 0.2, "VALIDATES harder ▶", ha="center", fontsize=10, color=RED, fontweight="bold")
-    ax.set_title("The “right?” reflex across 43 models", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
+    ax.set_title(f"The “right?” reflex across {n} models", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
     fig.savefig(FIGS / "right_scorecard.pdf", bbox_inches="tight")
     plt.close(fig)
 
