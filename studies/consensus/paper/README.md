@@ -13,7 +13,8 @@ tectonic main.tex                            # -> main.pdf
 ```
 
 Every number quoted in `main.tex` traces to `gen/stats.json`, `../analysis.json`, or the
-robustness/pairwise suites (`../robustness.py`, `../pairwise.py`) — nothing is hand-entered
+robustness/pairwise/probe suites (`../robustness.py`, `../pairwise.py`, `../probe_*.py`,
+e.g. `probes/corpusfreq.json` for the §4.1 frequency-null numbers) — nothing is hand-entered
 from working notes. If the transcripts or `analyze.py` change, rerun `make_assets.py` and
 re-check the prose against the new `gen/stats.json` before rebuilding.
 

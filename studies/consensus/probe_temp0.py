@@ -91,6 +91,57 @@ print(hdr); print("-" * len(hdr))
 for m, s1, s0, ds, d1, d0, dd, hon, vd in rows:
     print(f"{m:22} {s1:7.2f} {s0:6.2f} {ds:+6.2f}   {d1:8.2f} {d0:5.2f} {dd:+6.2f}   {hon:8} {vd}")
 
+# ---- aggregates for the paper (probes/temp0.json) ----
+def avg_ranks(x):
+    x = np.asarray(x, dtype=float)
+    order = np.argsort(x, kind="stable")
+    r = np.empty(len(x)); i = 0
+    while i < len(x):
+        j = i
+        while j + 1 < len(x) and x[order[j + 1]] == x[order[i]]:
+            j += 1
+        r[order[i:j + 1]] = (i + j) / 2 + 1; i = j + 1
+    return r
+
+pearson = lambda x, y: float(np.corrcoef(x, y)[0, 1])
+spearman = lambda x, y: pearson(avg_ranks(x), avg_ranks(y))
+
+ms = [r[0] for r in rows]
+s1, s0 = [r[1] for r in rows], [r[2] for r in rows]
+sd1 = [r[4] for r in rows]
+by_t0 = sorted(rows, key=lambda r: -r[2])
+agg = {
+    # (a) the entanglement: within-model spread x headline surprisal, temp-1 panel
+    "pearson_selfd_surprisal_t1": round(pearson(sd1, s1), 3),
+    "spearman_selfd_surprisal_t1": round(spearman(sd1, s1), 3),
+    # (b) what greedy decoding preserves
+    "spearman_scorecard_t1_t0": round(spearman(s1, s0), 3),
+    "temp_honored_n": sum(1 for r in rows if r[7] == "honored"),
+    "temp_ignored": sorted(r[0] for r in rows if r[7] == "IGNORED"),
+    "collapsed": {r[0]: round(r[3], 2) for r in rows if r[3] <= -0.5},
+    "top5_t0": [r[0] for r in by_t0[:5]],
+    "bottom5_t0": [r[0] for r in by_t0[-5:]],
+    "last_t0": by_t0[-1][0],
+    "fable_minus_sonnet5_t0": round(dict(zip(ms, s0))["claude-fable-5"]
+                                    - dict(zip(ms, s0))["claude-sonnet-5"], 3),
+    "gpt56_tiers_t0": {t: round(dict(zip(ms, s0))[f"gpt-5.6-{t}"], 3)
+                       for t in ("luna", "terra", "sol")},
+    "per_model": {r[0]: {"surprisal_t1": round(r[1], 3), "surprisal_t0": round(r[2], 3),
+                         "selfd_t1": round(r[4], 3), "selfd_t0": round(r[5], 3),
+                         "temp": r[7], "verdict": r[8]} for r in rows},
+}
+(HERE / "probes").mkdir(exist_ok=True)
+(HERE / "probes" / "temp0.json").write_text(json.dumps(agg, indent=1) + "\n")
+print(f"\nselfd x surprisal (t1): pearson {agg['pearson_selfd_surprisal_t1']:+.2f} "
+      f"spearman {agg['spearman_selfd_surprisal_t1']:+.2f}")
+print(f"scorecard t1 vs t0: spearman {agg['spearman_scorecard_t1_t0']:+.3f}   "
+      f"temp honored {agg['temp_honored_n']}/{len(rows)}")
+print(f"collapsed (Δ <= -0.5): {agg['collapsed']}")
+print(f"t0 top5 {agg['top5_t0']}\nt0 bottom5 {agg['bottom5_t0']}")
+print(f"fable - sonnet5 at t0: {agg['fable_minus_sonnet5_t0']:+.2f}   "
+      f"gpt-5.6 tiers at t0: {agg['gpt56_tiers_t0']}")
+print("-> probes/temp0.json")
+
 # ---- dumbbell plot: surprisal (left) and self-distinctness (right), temp1 -> temp0 ----
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 BLUE, AMBER = "#2a78d6", "#b07500"

@@ -453,3 +453,55 @@ paper and battery-v2 design, where it's load-bearing: new categories should targ
 profile (modal share < ~60%, cultural/abstract flavor); another tree buys no reliability.
 Peaked categories stay in the core anyway: they're the substrate finding, and they're the
 tripwire that would fire first if a diversity-trained field ever comes off ceiling.
+
+## Corpus-frequency null (2026-07-25, `probe_corpusfreq.py`, zero new calls)
+
+Reviewer-shaped objection to §4.1's frictionless-mode reading: "models just echo unigram
+frequency." Tested against the field's own support per category (candidates = every distinct
+answer any model gave; wordfreq Zipf scores; no membership oracle). The null FAILS:
+
+- Modal = frequency-top of support in only 6/31 categories (fabric, flower, fruit,
+  mythical_creature, tool, tree). Median modal freq-rank 2.
+- The bet was right: potato (Zipf 4.11) > carrot (3.62) and potato is 1/176 vegetable
+  answers. mint > basil (singleton). cake > tiramisu by 2 orders of magnitude; tiramisu
+  takes the dessert mode at 49%. serendipity ranks 48/52 in its own support.
+- Honest split: frequency DOES shape the support — rho(count, zipf) mean +0.39, positive
+  26/29 — but doesn't pick the winner (6/31) and doesn't explain dominance:
+  rho(modal share, modal zipf) = +0.09 across categories, and a frequency-proportional
+  sampler over the same support gives the actual modal 20% mean share vs observed 61%.
+  Frequency = availability prior; selection is something else.
+- Both test biases favor the null (support-only candidates: tomato/onion never counted;
+  sense-blind unigrams credit china/Risk homograph mass) and it still recovers 1/5.
+
+Paper: new §4.1 paragraph "Nor is the mode corpus frequency's pick"; future-work item
+downgraded to the sense-disambiguated version. Also fixed: §7's "ernie verbosity inversion
+(§3.4)" citation pointed at a section that never told the story — §3.4 now recounts the
+pilot inversion (embedding-#1 -> 1.29 bits, bottom five, 0% novel) so the check list is
+supported in-paper.
+
+## Entanglement quantified: surprisal x self-distinctness (2026-07-25, probe_temp0.py extension, zero new calls)
+
+Reviewer feedback: surprisal is mechanically entangled with self-distinctness (a wider sampler
+hits rarer answers), never quantified. Confirmed: r = 0.84 Pearson / 0.73 Spearman across the
+panel. First tried a modal-answer surprisal variant (score only each model's most frequent
+answer) — DELETED as redundant/inferior: tie-averaging degenerates to the headline for
+high-spread models (kept Hermes on top), and the temp-0 re-run already in the repo is ground
+truth. probe_temp0.py extended to emit probes/temp0.json aggregates instead.
+
+The greedy numbers settle it honestly, in both directions:
+- Temp-1 vs greedy scorecard: rho = 0.59 — the top tail WAS substantially sampling spread.
+  Collapsers (Δ <= -0.5): wizardlm -1.87 (to 1.05, Sonnet-5's level!), hermes -1.38,
+  v3.2 -1.17 (to 1.45 ~ v3-0324's 1.48), mythomax -0.97, mixtral -0.95, 3.5-turbo -0.68,
+  sonar -0.62, 4o -0.59, command-a -0.55. All temp-honoring explorers. The 2x2 typing
+  predicted exactly this split.
+- Structure survives: sonnet-5 last both (1.05/1.03); fable-sonnet5 gap +0.65 -> +0.58;
+  gpt-5.6 tiers hold (1.66 < 1.77 < 2.02); newest flagships stay floor; GPT walk shape
+  (4-era peak, 5-era trough, 5.6 reversal) reproduces. Bottom can't be a temp artifact.
+- Compliance census: 31/44 honor temp; 13 ignore (all gpt-5.6 tiers, fable, sonnet-5,
+  opus-4.8, grok-4.3, v3-0324, r1, gemma-3, gpt-5/5.4/5.5) — for them t0 is a replication.
+
+Paper v2: new §4.4 paragraph (entanglement + greedy re-scoring); §4.2 divergent-tail now says
+persona-tier divergence is distributional; §4.3 DeepSeek pair sharpened (recipe widened the
+distribution, not the mode); §6 heirloom + §7 variance-discussion amended to the two-kinds
+framing; abstract clause; limitations cross-ref. v3.2 "explorer" story survives as
+distributional; "fixed habit" overclaim in discussion corrected.
