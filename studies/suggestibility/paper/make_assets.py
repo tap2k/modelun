@@ -85,10 +85,8 @@ def compute():
         out[m] = {"tageff": float(np.mean(effs)), "lo": float(np.percentile(boots, 5)),
                   "hi": float(np.percentile(boots, 95)), "ask": float(np.mean([e[1] for e in per])),
                   "channel": "openrouter"}
-    for p in sorted((STUDY / "probes" / "righteffect_glm").glob("*.json")):
-        d = json.loads(p.read_text())
-        out[d["model"]] = {"tageff": d["tageff"], "lo": d["ci"][0], "hi": d["ci"][1],
-                           "ask": None, "channel": "deepinfra"}
+    # GLM (probes/righteffect_glm) intentionally NOT loaded: served via DeepInfra
+    # (reasoning-off), channel-incomparable — dropped from the 43-model panel 2026-07-23.
     return out
 
 
@@ -128,9 +126,10 @@ def fig_scorecard(data):
 
 
 def fig_walks(data):
-    fams = ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek", "GLM"]
+    fams = ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"]
     fig, axes = plt.subplots(2, 4, figsize=(12, 5.6), sharey=True)
     axes = axes.ravel()
+    axes[6].axis("off")   # unused slot (GLM panel removed with the channel-incomparable drop)
     ymax = 0.36
     for ax, fam in zip(axes, fams):
         pts = sorted([(FAM[m][1], data[m]["tageff"], GENLABEL[m]) for m in data if m in FAM and FAM[m][0] == fam],
@@ -143,7 +142,7 @@ def fig_walks(data):
         for x, y, lbl in pts:
             ax.annotate(lbl, (x, y), textcoords="offset points", xytext=(0, 9 if y >= 0 else -14),
                         ha="center", fontsize=7, color=INK2)
-        ax.set_title(fam + ("  †" if fam == "GLM" else ""), fontsize=11, color=CAT[fam], fontweight="bold", loc="left")
+        ax.set_title(fam, fontsize=11, color=CAT[fam], fontweight="bold", loc="left")
         ax.set_xticks([])
         ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
         for s in ("top", "right", "bottom"):
@@ -158,11 +157,9 @@ def fig_walks(data):
     lg.text(0.0, 0.9, "older → newer  (left → right)", fontsize=8.5, color=INK2)
     lg.text(0.0, 0.66, "red band = validates harder", fontsize=8.5, color=RED)
     lg.text(0.0, 0.50, "blue band = resists", fontsize=8.5, color=BLUE)
-    lg.text(0.0, 0.22, "† GLM via DeepInfra (thinking-off);\n   within-GLM trend valid, channel differs",
-            fontsize=7, color=INK2)
     fig.suptitle("Response to “…right?” flips from sycophantic to resistant across generations",
                  fontsize=13, color=INK, fontweight="bold", x=0.02, ha="left", y=0.99)
-    fig.text(0.02, 0.93, "US labs first and hardest; Qwen & GLM catching up; DeepSeek the lone laggard.",
+    fig.text(0.02, 0.93, "US labs first and hardest; Qwen catching up; DeepSeek the lone laggard.",
              fontsize=9.5, color=INK2, ha="left")
     fig.tight_layout(rect=[0, 0, 1, 0.9])
     fig.savefig(FIGS / "right_walks.pdf", bbox_inches="tight")
@@ -195,28 +192,38 @@ def fig_baseline(data):
     plt.close(fig)
 
 
-def compute_conf():
+def compute_conf(data):
+    """Comparative-row confidence gradient: the one-word tag pair. ask + right? deltas come from
+    compute() (transcripts + probes/righteffect); maybe? from probes/maybetag — same construction,
+    single token swapped. Per-item counterbalanced, like TAGeff."""
+    tx = {json.loads(p.read_text())["model"]: json.loads(p.read_text())["scenes"]
+          for p in (STUDY / "transcripts").glob("*.json")}
     out = {}
-    for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
+    for p in sorted((STUDY / "probes" / "maybetag").glob("*.json")):
         d = json.loads(p.read_text())
-        if d["model"] == "run":
+        m = d["model"]
+        if m not in tx or m not in data:
             continue
-        def r(f):
-            labs = [classify(x) for x in d["cells"].get(f, []) if x is not None]
-            return sum(l == "affirm" for l in labs) / len(labs) if labs else None
-        a, c, t = r("ask"), r("confident"), r("tentative")
-        if None not in (a, c, t):
-            out[d["model"]] = {"ask": a, "confident": c, "tentative": t}
+        per = []
+        for sid, _, _, _ in ITEMS:
+            ask = [r[0].get("reply") for r in tx[m].get(sid + "__askx", {}).get("runs", []) +
+                   tx[m].get(sid + "__asky", {}).get("runs", []) if r]
+            may = d["tag"].get(sid, {}).get("x", []) + d["tag"].get(sid, {}).get("y", [])
+            a, t = arate(ask), arate(may)
+            if a is not None and t is not None:
+                per.append(t - a)
+        if per:
+            out[m] = {"righteff": data[m]["tageff"], "maybeeff": float(np.mean(per))}
     return out
 
 
 def fig_confidence(cf):
     AMBER = "#b07500"
-    rows = sorted(cf.items(), key=lambda kv: kv[1]["tentative"] - kv[1]["ask"])  # ascending; biggest boost at top
+    rows = sorted(cf.items(), key=lambda kv: kv[1]["maybeeff"])  # ascending; biggest boost at top
     n = len(rows)
     fig, ax = plt.subplots(figsize=(8.6, 11))
     for i, (m, v) in enumerate(rows):
-        dc, dt = v["confident"] - v["ask"], v["tentative"] - v["ask"]
+        dc, dt = v["righteff"], v["maybeeff"]
         ax.plot([dc, dt], [i, i], color=GRID, lw=1, zorder=2)
         ax.scatter(dc, i, s=30, color=(RED if dc >= 0 else BLUE), zorder=3, edgecolor="white", linewidth=0.6)
         ax.scatter(dt, i, s=34, color=AMBER, zorder=3, edgecolor="white", linewidth=0.6)
@@ -234,7 +241,7 @@ def fig_confidence(cf):
     ax.tick_params(length=0)
     ax.set_xlabel("Δ affirmation vs a neutral question  (“Is X the better choice?”)", fontsize=9, color=INK2)
     ax.set_title("Agreement runs opposite to how sure the user sounds", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
-    ax.scatter([], [], s=34, color=AMBER, label="tentative  “I should go with X, maybe?”")
+    ax.scatter([], [], s=34, color=AMBER, label="tentative  “X is the better choice, maybe?”")
     ax.scatter([], [], s=30, color=RED, label="confident  “X is the better choice, right?”")
     ax.legend(loc="lower right", fontsize=8, frameon=False)
     fig.savefig(FIGS / "right_confidence.pdf", bbox_inches="tight")
@@ -247,5 +254,5 @@ if __name__ == "__main__":
     fig_scorecard(data)
     fig_walks(data)
     fig_baseline(data)
-    fig_confidence(compute_conf())
+    fig_confidence(compute_conf(data))
     print(f"wrote right_scorecard.pdf, right_walks.pdf, right_baseline.pdf, right_confidence.pdf to {FIGS}")
