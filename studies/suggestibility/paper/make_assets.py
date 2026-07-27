@@ -107,7 +107,7 @@ def fig_scorecard(data):
         ax.plot([v["lo"], v["hi"]], [i, i], color=INK2, lw=1.1, alpha=0.5, zorder=4)
         ax.text(GUT, i, m + (" °" if floor else ""), va="center", ha="right", fontsize=7.4, color=INK2)
     ax.axvline(0, color=INK, lw=1.1, zorder=5)
-    ax.set_ylim(-0.8, n - 0.2)
+    ax.set_ylim(-0.8, n - 0.6)
     ax.set_xlim(-0.82, 0.46)
     ax.set_yticks([])
     ax.set_xticks([-0.4, -0.2, 0, 0.2, 0.4])
@@ -117,11 +117,8 @@ def fig_scorecard(data):
     ax.spines["bottom"].set_bounds(-0.4, 0.4)
     ax.spines["bottom"].set_color(GRID)
     ax.tick_params(length=0)
-    ax.set_xlabel("TAGeff  =  P(affirm | “…right?”)  −  P(affirm | neutral ask)\n"
-                  "° floor-limited: baseline affirm < 10%, so the tag has little to move (uninformative)",
-                  fontsize=8.5, color=INK2, linespacing=1.8)
-    ax.text(-0.2, n - 0.2, "◀ RESISTS the bid", ha="center", fontsize=10, color=BLUE, fontweight="bold")
-    ax.text(0.2, n - 0.2, "VALIDATES harder ▶", ha="center", fontsize=10, color=RED, fontweight="bold")
+    ax.set_xlabel("TAGeff  =  P(affirm | “…right?”)  −  P(affirm | neutral ask)",
+                  fontsize=8.5, color=INK2)
     ax.set_title(f"The “right?” reflex across {n} models", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
     fig.savefig(FIGS / "right_scorecard.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -129,9 +126,8 @@ def fig_scorecard(data):
 
 def fig_walks(data):
     fams = ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"]
-    fig, axes = plt.subplots(2, 4, figsize=(12, 5.6), sharey=True)
+    fig, axes = plt.subplots(2, 3, figsize=(10.5, 5.4), sharey=True)
     axes = axes.ravel()
-    axes[6].axis("off")   # unused slot (GLM panel removed with the channel-incomparable drop)
     ymax = 0.36
     for ax, fam in zip(axes, fams):
         pts = sorted([(FAM[m][1], data[m]["tageff"], GENLABEL[m],
@@ -142,13 +138,20 @@ def fig_walks(data):
         ax.axhspan(-ymax, 0, color=BLUE, alpha=0.05)
         ax.axhline(0, color=INK, lw=0.9)
         ax.plot(xs, ys, "-", color=CAT[fam], lw=2, zorder=4)
+        seen = set()
         for x, y, lbl, floor in pts:
             ax.plot([x], [y], "o", ms=6, zorder=5, markeredgewidth=1.2,
                     markerfacecolor=(GRAY if floor else CAT[fam]),
                     markeredgecolor=(CAT[fam] if floor else "white"))
+            if (x, lbl) in seen:
+                continue  # same-generation variants (e.g. the three 5.6s) get one label
+            seen.add((x, lbl))
             ax.annotate(lbl + ("°" if floor else ""), (x, y), textcoords="offset points",
                         xytext=(0, 9 if y >= 0 else -14), ha="center", fontsize=7, color=INK2)
         ax.set_title(fam, fontsize=11, color=CAT[fam], fontweight="bold", loc="left")
+        if fam == "GPT":  # direct zone labels, once, in the first panel
+            ax.text(0.03, 0.30, "validates", fontsize=7.5, color=RED, alpha=0.9, transform=ax.get_yaxis_transform())
+            ax.text(0.03, -0.32, "resists", fontsize=7.5, color=BLUE, alpha=0.9, transform=ax.get_yaxis_transform())
         ax.set_xticks([])
         ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
         for s in ("top", "right", "bottom"):
@@ -158,17 +161,13 @@ def fig_walks(data):
     axes[0].set_ylim(-ymax, ymax)
     axes[0].set_yticks([-0.2, 0, 0.2])
     axes[0].set_yticklabels(["−20%", "0", "+20%"], fontsize=7.5)
-    lg = axes[7]
-    lg.axis("off")
-    lg.text(0.0, 0.9, "older → newer  (left → right)", fontsize=8.5, color=INK2)
-    lg.text(0.0, 0.66, "red band = validates harder", fontsize=8.5, color=RED)
-    lg.text(0.0, 0.50, "blue band = resists", fontsize=8.5, color=BLUE)
-    lg.text(0.0, 0.30, "° gray fill = floor-limited\n   (baseline affirm < 10%, unreadable)", fontsize=7.5, color=INK2)
+    fig.text(0.02, 0.015, "older → newer (left → right)   ·   ° gray fill = floor-limited (baseline affirm < 10%, unreadable)",
+             fontsize=8, color=INK2)
     fig.suptitle("Response to “…right?” flips from sycophantic to resistant across generations",
                  fontsize=13, color=INK, fontweight="bold", x=0.02, ha="left", y=0.99)
     fig.text(0.02, 0.93, "US labs first and hardest; Qwen catching up; DeepSeek the lone laggard.",
              fontsize=9.5, color=INK2, ha="left")
-    fig.tight_layout(rect=[0, 0, 1, 0.9])
+    fig.tight_layout(rect=[0, 0.04, 1, 0.9])
     fig.savefig(FIGS / "right_walks.pdf", bbox_inches="tight")
     plt.close(fig)
 
@@ -178,6 +177,14 @@ def fig_baseline(data):
     fig, ax = plt.subplots(figsize=(7.6, 5.4))
     ax.axhline(0, color=INK, lw=1)
     ax.axvspan(0, 0.10, color=GRAY, alpha=0.25, zorder=0)
+    # feasible region: an effect cannot exceed 1-baseline upward or baseline downward
+    xs = np.linspace(0, 1, 100)
+    ax.plot(xs, 1 - xs, color=INK2, lw=0.9, ls="--", zorder=1)
+    ax.plot(xs, -xs, color=INK2, lw=0.9, ls="--", zorder=1)
+    ax.fill_between(xs, 1 - xs, 0.62, color=GRAY, alpha=0.18, zorder=0)
+    ax.fill_between(xs, -xs, -0.62, color=GRAY, alpha=0.18, zorder=0)
+    ax.text(0.88, 0.47, "unreachable\n(ceiling: effect ≤ 1 − baseline)", fontsize=7, color=INK2, ha="center")
+    ax.text(0.15, -0.50, "unreachable\n(floor: effect ≥ −baseline)", fontsize=7, color=INK2, ha="center")
     for m, v in rows:
         ax.scatter(v["ask"], v["tageff"], s=34, color=(BLUE if v["tageff"] < 0 else RED),
                    edgecolor="white", linewidth=0.8, zorder=3)
@@ -185,7 +192,7 @@ def fig_baseline(data):
         if m in ("mythomax-l2-13b", "deepseek-v3.2", "claude-fable-5", "gpt-5.6-luna",
                  "gpt-3.5-turbo", "mixtral-8x22b-instruct"):
             ax.annotate(m, (v["ask"], v["tageff"]), textcoords="offset points", xytext=(5, 4), fontsize=6.8, color=INK2)
-    ax.text(0.05, ax.get_ylim()[1] * 0.86, "floor-limited\n(uninformative)", fontsize=7.5, color=INK2, ha="center")
+    ax.text(0.05, 0.30, "floor-limited", fontsize=7, color=INK2, ha="center", rotation=90, va="center")
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     for s in ("bottom", "left"):
@@ -194,7 +201,8 @@ def fig_baseline(data):
     ax.set_xlabel("baseline affirm rate  (P affirm | neutral ask)", fontsize=9.5, color=INK2)
     ax.set_ylabel("TAGeff", fontsize=9.5, color=INK2)
     ax.set_xlim(0, 1)
-    ax.set_title("The signal lives where models actually take a position", fontsize=12.5, color=INK, fontweight="bold", loc="left", pad=12)
+    ax.set_ylim(-0.62, 0.62)
+    ax.set_title("Where the instrument can read: effects inside the censoring envelope", fontsize=12.5, color=INK, fontweight="bold", loc="left", pad=12)
     fig.savefig(FIGS / "right_baseline.pdf", bbox_inches="tight")
     plt.close(fig)
 
