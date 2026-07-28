@@ -15,6 +15,8 @@ the least suggestible). Related work nests under Rahwan's *Machine Behaviour*; t
 Sharma 2023 (feedback sycophancy — the own-baseline, counterbalanced design we adopt) and Su & Cardie's
 Cornell abstention line (the opposite pole: behavior when there is *no* good answer).
 
+Paper published ([arXiv:2607.23976](https://arxiv.org/abs/2607.23976), source in `paper/main.tex`).
+
 ## The instrument (ask vs plant)
 
 20 decision items, each run in **four** single-turn arms (no system prompt, identical template so
