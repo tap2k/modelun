@@ -83,11 +83,13 @@
   .gkey{display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--mut);font-size:12px;margin:0 0 8px}
   .gkey b{color:var(--fg);font-weight:600}
   .gkey:last-of-type{margin-bottom:16px}
-  /* frontier compare */
-  .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px}
+  /* compare */
+  .cmp-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
   .cmp-tools .rt{display:flex;gap:4px}
   .cmp-tools button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:13px}
   .cmp-tools button.on{color:#fff;border-color:var(--acc)}
+  .cmp-tools select{background:var(--panel2);border:1px solid var(--line);color:var(--fg);padding:5px 8px;border-radius:7px;font-size:12px;font-family:ui-monospace,Menlo,monospace;max-width:200px;cursor:pointer}
+  .cmp-tools select:hover{border-color:var(--acc)}
   .cmp-scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 18px;padding:14px 16px}
   .cmp-scene .csh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:10px}
   .cmp-scene .csh .ttl{font-weight:650;font-size:16px} .cmp-scene .csh .reg{color:var(--mut);font-size:12px}
@@ -257,20 +259,32 @@ function bindChips(){
     e.preventDefault(); if(A.models[a.dataset.m]) location.hash='m/'+a.dataset.m; }));
 }
 
-/* ---- frontier compare: the three reader models, side by side, per scene ---- */
+/* ---- compare: three columns side by side, per scene; a pulldown picks each column's model
+   (frontier readers by default) ---- */
 const FRONTIER = Object.keys(A.readerLabels).map(k=>k.split('__')[1])
   .filter(m=>A.models[m]).sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
 const hasUnclamped = Object.values(A.models).some(v=>v.unclamped);
 let compareRun = 0;
+let compareCols = FRONTIER.slice(); // one model per column
 /* unclamped=true reads the ablation transcripts/markers (data/benchmark-unclamped) instead of the
    clamped baseline. Same view; the source object per model is models[m].unclamped when present. */
 function showCompare(unclamped){
   document.getElementById('side').classList.add('hidden'); setNav(unclamped?'compare-unclamped':'compare');
   const src = m => unclamped ? A.models[m].unclamped : A.models[m];
-  const fm = FRONTIER.filter(m=>!unclamped || A.models[m].unclamped);
+  // unclamped covers only the models the ablation was run on; columns holding a model
+  // without an ablation run fall back to the frontier defaults there.
+  const avail = ORDER.filter(m=>!unclamped || A.models[m].unclamped);
+  const dflt = FRONTIER.filter(m=>avail.includes(m));
+  const fm = compareCols.map((m,i)=>avail.includes(m) ? m : (dflt[i]||avail[0]));
   // unclamped only covers the scored scenes; the unscored extras have no ablation run.
   const scenes = unclamped ? A.scenes.filter(s=>s.active) : A.scenes;
-  const tools = '<div class="cmp-tools"><span class="reg">Run</span><div class="rt">'+
+  const sel = i => '<select data-col="'+i+'">'+A.families.map(([fam,models])=>{
+    const ms = models.filter(m=>avail.includes(m)); if(!ms.length) return '';
+    return '<optgroup label="'+esc(fam)+'">'+ms.map(m=>
+      '<option value="'+esc(m)+'"'+(m===fm[i]?' selected':'')+'>'+esc(m)+'</option>').join('')+'</optgroup>';
+  }).join('')+'</select>';
+  const tools = '<div class="cmp-tools">'+[0,1,2].map(sel).join('')+
+    '<span class="reg">Run</span><div class="rt">'+
     [0,1].map(r=>'<button data-run="'+r+'"'+(r===compareRun?' class="on"':'')+'>run '+r+'</button>').join('')+'</div></div>';
   const blocks = scenes.map(s=>{
     const tag = s.active ? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
@@ -292,12 +306,14 @@ function showCompare(unclamped){
     ? 'The same scenes and frontier models, but with the formatting/length clamp removed (a neutral '+
       'system prompt, max_tokens '+(mt||'raised')+'). Compare against the clamped Compare tab to see where the '+
       'clamp shaped behavior — watch forged_document and leap_help, the artifact-producing markers.'
-    : 'The frozen scenes with the three frontier reader models side by side — '+fm.map(esc).join(', ')+
-      '. User turns are identical across models; only the replies differ. Toggle the run to see within-model variation. '+
-      'Scored scenes show each model\'s marker verdict.';
+    : 'The frozen scenes, three models side by side. User turns are identical across models; only the '+
+      'replies differ. Pick each column\'s model (the three frontier readers by default), and toggle '+
+      'the run to see within-model variation. Scored scenes show each model\'s marker verdict.';
   document.getElementById('main').innerHTML='<h2 style="margin-top:0">'+
-    (unclamped?'Frontier comparison — unclamped':'Frontier comparison')+'</h2>'+
+    (unclamped?'Comparison — unclamped':'Comparison')+'</h2>'+
     '<p class="note">'+intro+'</p>'+legendStrip()+tools+blocks;
+  document.querySelectorAll('.cmp-tools select[data-col]').forEach(s=>
+    s.addEventListener('change',()=>{ compareCols[+s.dataset.col]=s.value; showCompare(unclamped); }));
   document.querySelectorAll('.cmp-tools [data-run]').forEach(b=>
     b.addEventListener('click',()=>{ compareRun=+b.dataset.run; showCompare(unclamped); window.scrollTo(0,0); }));
   location.hash=unclamped?'compare-unclamped':'compare';

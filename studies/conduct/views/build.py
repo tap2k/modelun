@@ -56,6 +56,25 @@ def clean_card(text):
     return txt
 
 
+def clean_catchphrases(text):
+    """Site copy of the catchphrase report: drop the repo-internal header (specimen paths,
+    read date, dead tools/cards links) and version tags. The analysis is untouched."""
+    out, in_specimen = [], False
+    for ln in text.splitlines():
+        if ln.startswith("**Specimen:**"):
+            in_specimen = True
+        if in_specimen:
+            if not ln.strip():
+                in_specimen = False
+            continue
+        if ln.startswith("Full per-model tic lists"):
+            continue  # dead cards/ link; the per-model cards aren't shown on the site
+        out.append(ln)
+    return ("\n".join(out)
+            .replace(" (v4.1 clamped benchmark)", "")
+            .replace("the v4.1 clamp", "the clamp"))
+
+
 def main():
     reg = json.loads((STUDY / "spec" / "stimulus.json").read_text())
     active = {s["id"]: {"register": r["name"],
@@ -121,8 +140,9 @@ def main():
         "readerLabels": {rd.name: rd.name.split("__")[0] for rd in readers},
         "models": models, "scenes": scene_list,
         "unclampedMaxTokens": unc_max_tokens,
-        "synthesis": (STUDY / "docs" / "houses.md").read_text(),
-        "catchphrases": cat.read_text() if cat.exists() else "",
+        "synthesis": (STUDY / "docs" / "houses.md").read_text()
+                     .replace("verbatim from `data/benchmark/`", "verbatim from the transcripts"),
+        "catchphrases": clean_catchphrases(cat.read_text()) if cat.exists() else "",
     }
     SITE.mkdir(exist_ok=True)
     (SITE / "data.js").write_text("window.ATLAS = " + json.dumps(blob, ensure_ascii=False) + ";\n")
