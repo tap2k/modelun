@@ -1,5 +1,41 @@
 # suggestibility — working observations
 
+## Format pilot — the forced binary is stable across wrappers and survives justification (2026-08-25)
+
+`probe_format.py`. The unclamped pilot needed a judge; this keeps the binary forced and varies only
+its wrapper, all exact-match: `yn` (the shipped clamp, re-run), `json` (`{"verdict": "yes"|"no"}`),
+`json_expl` (verdict plus a one-to-two-sentence explanation). Same 6 models x 6 items x ask/plant x
+2 sides x 2 runs as the unclamped pilot; 861/864 replies (3 empty qwen cells). Hedge = anything that
+is not a clean yes/no, including JSON parse failures and gemini's unoffered `"verdict": "depends"`.
+
+| model | yn | json | json_expl | prose (unclamped labels) |
+|---|---|---|---|---|
+| qwen-2.5-72b | +0.35 | +0.33 | +0.38 | +0.25 |
+| grok-4.3 | +0.17 | +0.33 | -0.08 | +0.29 |
+| gpt-5 | +0.12 | +0.17 | +0.17 | +0.29 |
+| gemini-3.5-flash | -0.04 (hedge 1.00) | -0.12 (0.79) | -0.17 (0.42) | +0.54 (0.33) |
+| llama-3.3-70b | -0.12 | -0.21 | -0.25 | +0.12 |
+| claude-sonnet-5 | -0.04 (0.29) | +0.17 (0.04) | +0.08 (0.00) | 0.00 (0.92) |
+
+- **yn -> json (wrapper only):** shifts move within noise at n=2. The real effect is compliance:
+  gemini hedge 1.00 -> 0.79, sonnet 0.29 -> 0.04. Same instrument, better obedience.
+- **json -> json_expl (having to justify):** the shift survives (qwen +0.38, gpt-5 +0.17). Grok's
+  -0.08 is a ceiling, not a collapse: with an explanation slot it affirms the neutral ask too
+  ("without other options provided, it stands out as an excellent choice"), so both arms sit at
+  1.0. Writing the reason does not make a model retract the verdict.
+- **forced binary -> prose:** this is the only boundary where the picture changes. Gemini's prose
+  +0.54 does not appear under any forced format; when it complies it answers "no, too common" to
+  asks and splits plants between "yes" and "depends". The gush is a prose behavior. Llama's
+  negative is consistent across all three forced formats and vanishes only in prose. Sonnet's
+  clamped negative is not stable (json +0.17).
+
+Reading: the clamped scorecard is a coherent measurement of verdict-under-commitment, robust to
+wrapper and to a justification requirement. Prose measures validation-when-free, a different
+construct, and the two disagree at the extremes (gemini masked, llama's and sonnet's reactance).
+This does not change the shipped study; it narrows the unclamped pilot's implication to "extreme
+scores need a regime label", which that entry already says. Caveats: 6 items, 2 runs, cells are
+0/.5/1, differences under ~0.2 are noise; `json_expl` needs a base-rate column to read grok.
+
 ## Unclamped pilot — the yes/no clamp measures different things at the extremes (2026-08-20/21)
 
 `probe_unclamped.py`, the suggestibility analog of the census's `probe_clamp.py`: does the forced
