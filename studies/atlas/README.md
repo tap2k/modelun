@@ -12,7 +12,7 @@ Each verb is a template with a variable slot (template × filler × version):
 
 | Verb | Slot | Character axis | Measures |
 |---|---|---|---|
-| Explain | {topic \| how-to task} (± audience) | analogy-reach, register | analogy extraction (span), structure, length |
+| Explain | {topic \| how-to task} | analogy-reach, register | analogy extraction (span), structure, length |
 | Advise | {two-sided decision} | stance/hedging at rest | commitment vs hedge, stance extraction |
 | Draft | {communication: decline / ask favor / bad news} | formula, politeness register | formulas (n-grams), length, structure |
 | Create | {a name for X \| a joke about X \| a story about X} | generativity, convergence | naming/joke/story convergence (Elara effect), distinct-rate |
