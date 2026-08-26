@@ -1,0 +1,135 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>atlas — pilot viewer</title>
+<style>
+  :root { --bg:#fff; --fg:#1a1a1a; --mut:#666; --line:#e3e3e3; --acc:#2a5db0; --soft:#f5f6f8; --warn:#b54; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141518; --fg:#e8e8e8; --mut:#9a9a9a; --line:#2c2e33; --acc:#7aa2e8; --soft:#1d1f24; --warn:#e88; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 -apple-system, system-ui, sans-serif; }
+  header { display:flex; gap:18px; align-items:baseline; padding:12px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:2; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0; }
+  header .tab { cursor:pointer; color:var(--mut); } header .tab.on { color:var(--fg); font-weight:600; }
+  header select { font:inherit; }
+  main { padding:16px 20px; }
+  table { border-collapse:collapse; font-size:13px; } th,td { padding:5px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  th { color:var(--mut); font-weight:500; white-space:nowrap; } td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .grid td.cell { cursor:pointer; } .grid td.cell:hover { background:var(--soft); }
+  .grid td.cell b { font-weight:600; } .grid small { color:var(--mut); }
+  .len { color:var(--warn); font-weight:600; }
+  .reads { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:14px; }
+  .card { border:1px solid var(--line); border-radius:6px; padding:10px 12px; background:var(--soft); }
+  .card h3 { margin:0 0 6px; font-size:13px; display:flex; justify-content:space-between; gap:8px; }
+  .card h3 span { color:var(--mut); font-weight:400; }
+  .card pre { white-space:pre-wrap; font:13px/1.45 inherit; margin:0; max-height:520px; overflow:auto; }
+  .prompt { margin:0 0 14px; padding:10px 12px; border-left:3px solid var(--acc); background:var(--soft); white-space:pre-wrap; }
+  .bar { display:inline-block; height:9px; background:var(--acc); vertical-align:middle; border-radius:2px; }
+  .muted { color:var(--mut); }
+  .note { margin:0 0 12px; color:var(--mut); max-width:80ch; }
+</style>
+<header>
+  <h1>atlas · <span id="ver"></span></h1>
+  <span class="tab on" data-v="grid">Grid</span>
+  <span class="tab" data-v="read">Read</span>
+  <span class="tab" data-v="effort">Effort per token</span>
+  <span class="tab" data-v="cost">Cost</span>
+  <span id="ctl"></span>
+</header>
+<main id="main"></main>
+<script src="data.js"></script>
+<script>
+const A = window.ATLAS, M = A.models, AN = A.anchors, D = A.data;
+const esc = s => (s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const cell = (m, a) => D[m]?.cells?.[a];
+const mean = xs => xs.length ? xs.reduce((p, q) => p + q, 0) / xs.length : 0;
+const f1 = x => x.toFixed(x < 10 ? 2 : 1);
+const state = { view: 'grid', model: M[0], anchor: AN[0].id, mode: 'anchor' };
+
+function stats(m, a) {
+  const c = cell(m, a); if (!c) return null;
+  const s = c.samples.filter(x => x.reply);
+  return { n: s.length, words: mean(s.map(x => x.words)), out: mean(s.map(x => x.out)), reason: mean(s.map(x => x.reason)),
+           ept: mean(s.map(x => x.out ? x.reason / x.out : 0)), cost: s.reduce((p, x) => p + x.cost, 0),
+           len: s.filter(x => x.finish !== 'stop').length, err: c.samples.length - s.length };
+}
+
+function grid() {
+  let h = `<p class="note">Cell = mean words · effort per token (reasoning ÷ visible output tokens). Click a cell to read its samples.
+    <span class="len">L</span> = a sample hit max_tokens.</p><table class="grid"><tr><th>model</th>`;
+  for (const a of AN) h += `<th>${a.id}</th>`;
+  h += '</tr>';
+  for (const m of M) {
+    h += `<tr><td><b>${m}</b></td>`;
+    for (const a of AN) {
+      const s = stats(m, a.id);
+      if (!s || !s.n) { h += `<td class="cell muted" data-m="${m}" data-a="${a.id}">–</td>`; continue; }
+      h += `<td class="cell" data-m="${m}" data-a="${a.id}"><b>${Math.round(s.words)}</b>w <small>${f1(s.ept)}</small>${s.len ? ' <span class="len">L</span>' : ''}${s.err ? ' <span class="len">E</span>' : ''}</td>`;
+    }
+    h += '</tr>';
+  }
+  return h + '</table>';
+}
+
+function read() {
+  const byAnchor = state.mode === 'anchor';
+  const a = AN.find(x => x.id === state.anchor);
+  let h = '';
+  if (byAnchor) {
+    h += `<div class="prompt"><b>${a.id}</b> · ${esc(a.text)}</div><div class="reads">`;
+    for (const m of M) h += cards(m, a.id, m);
+  } else {
+    h += `<div class="prompt"><b>${state.model}</b> · every anchor</div><div class="reads">`;
+    for (const x of AN) h += cards(state.model, x.id, x.id, x.text);
+  }
+  return h + '</div>';
+}
+function cards(m, aid, title, sub) {
+  const c = cell(m, aid); if (!c) return '';
+  return c.samples.map((s, i) => `<div class="card"><h3>${title} #${i}<span>${s.words}w · ${f1(s.out ? s.reason / s.out : 0)} · ${s.finish !== 'stop' ? `<span class="len">${s.finish}</span>` : ''}</span></h3>${sub ? `<div class="muted" style="margin-bottom:6px">${esc(sub)}</div>` : ''}<pre>${esc(s.reply || ('ERROR: ' + s.error))}</pre></div>`).join('');
+}
+
+function effort() {
+  const verbs = [...new Set(AN.map(a => a.verb))];
+  let h = `<p class="note">Reasoning tokens ÷ visible output tokens, per verb, at as-served defaults (no effort parameter sent). Last column: all cells.</p>
+    <table><tr><th>model</th>${verbs.map(v => `<th class="num">${v}</th>`).join('')}<th class="num">all</th><th></th></tr>`;
+  const rows = M.map(m => {
+    const per = verbs.map(v => { let r = 0, o = 0; for (const a of AN.filter(x => x.verb === v)) for (const s of (cell(m, a.id)?.samples || [])) { r += s.reason; o += s.out; } return o ? r / o : 0; });
+    let r = 0, o = 0; for (const a of AN) for (const s of (cell(m, a.id)?.samples || [])) { r += s.reason; o += s.out; }
+    return { m, per, all: o ? r / o : 0 };
+  }).sort((x, y) => x.all - y.all);
+  const max = Math.max(...rows.map(r => r.all), 0.01);
+  for (const r of rows) h += `<tr><td><b>${r.m}</b></td>${r.per.map(x => `<td class="num">${f1(x)}</td>`).join('')}<td class="num"><b>${f1(r.all)}</b></td><td><span class="bar" style="width:${Math.round(200 * r.all / max)}px"></span></td></tr>`;
+  return h + '</table>';
+}
+
+function cost() {
+  let h = `<p class="note">Effective cost: USD ÷ visible output, which is list price × (1 + effort per token). What a word actually costs at as-served defaults.</p><table><tr><th>model</th><th class="num">samples</th><th class="num">in tok</th><th class="num">out tok</th><th class="num">reason tok</th><th class="num">USD</th><th class="num">$/cell</th><th class="num">$ per 1k visible tok</th><th class="num">$ per 1k words</th></tr>`;
+  const eff = t => `<td class="num">$${(t.o ? 1000 * t.c / t.o : 0).toFixed(4)}</td><td class="num">$${(t.w ? 1000 * t.c / t.w : 0).toFixed(4)}</td>`;
+  let T = { n: 0, i: 0, o: 0, r: 0, c: 0, w: 0 };
+  for (const m of M) {
+    const t = { n: 0, i: 0, o: 0, r: 0, c: 0, w: 0 };
+    for (const a of AN) for (const s of (cell(m, a.id)?.samples || [])) { t.n++; t.i += s.in; t.o += s.out; t.r += s.reason; t.c += s.cost; t.w += s.words; }
+    for (const k in t) T[k] += t[k];
+    h += `<tr><td><b>${m}</b></td><td class="num">${t.n}</td><td class="num">${t.i}</td><td class="num">${t.o}</td><td class="num">${t.r}</td><td class="num">$${t.c.toFixed(3)}</td><td class="num">$${(t.n ? t.c / t.n : 0).toFixed(4)}</td>${eff(t)}</tr>`;
+  }
+  h += `<tr><td><b>total</b></td><td class="num">${T.n}</td><td class="num">${T.i}</td><td class="num">${T.o}</td><td class="num">${T.r}</td><td class="num"><b>$${T.c.toFixed(3)}</b></td><td class="num">$${(T.n ? T.c / T.n : 0).toFixed(4)}</td>${eff(T)}</tr>`;
+  return h + '</table>';
+}
+
+function controls() {
+  if (state.view !== 'read') return '';
+  return `<select id="mode"><option value="anchor" ${state.mode === 'anchor' ? 'selected' : ''}>one anchor, all models</option><option value="model" ${state.mode === 'model' ? 'selected' : ''}>one model, all anchors</option></select>
+    ${state.mode === 'anchor' ? `<select id="anchor">${AN.map(a => `<option value="${a.id}" ${a.id === state.anchor ? 'selected' : ''}>${a.id}</option>`).join('')}</select>`
+                              : `<select id="model">${M.map(m => `<option ${m === state.model ? 'selected' : ''}>${m}</option>`).join('')}</select>`}`;
+}
+
+function render() {
+  document.getElementById('ver').textContent = A.spec_version;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === state.view));
+  document.getElementById('ctl').innerHTML = controls();
+  document.getElementById('main').innerHTML = { grid, read, effort, cost }[state.view]();
+  const on = (id, k) => { const el = document.getElementById(id); if (el) el.onchange = e => { state[k] = e.target.value; render(); }; };
+  on('mode', 'mode'); on('anchor', 'anchor'); on('model', 'model');
+  document.querySelectorAll('td.cell').forEach(td => td.onclick = () => { state.view = 'read'; state.mode = 'anchor'; state.anchor = td.dataset.a; render(); document.querySelector(`.card h3`)?.scrollIntoView(); });
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => { state.view = t.dataset.v; render(); });
+render();
+</script>

@@ -137,6 +137,11 @@ skipped). Each sample stores reply, `finish_reason`, the provider-reported model
 OpenRouter's usage block with USD cost; the run prints per-call, per-model, and total cost.
 `--dry-run` verifies slugs against OpenRouter and counts calls without spending.
 
+`views/build.py` writes `views/data.js`; open `views/index.html`. Tabs: Grid (model × anchor,
+mean words and effort per token; click a cell to read), Read (one anchor across models, or one
+model across anchors), Effort per token (per verb), Cost (USD, and effective cost = USD ÷
+visible output, i.e. list price × (1 + effort per token)).
+
 Pilot panel (0.4): one current mid-tier model per major vendor plus contrasts; flagships
 join at the full wave.
 
