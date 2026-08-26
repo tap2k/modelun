@@ -15,11 +15,11 @@
   .grid td.cell { cursor:pointer; } .grid td.cell:hover { background:var(--soft); }
   .grid td.cell b { font-weight:600; } .grid small { color:var(--mut); }
   .len { color:var(--warn); font-weight:600; }
-  .reads { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:14px; }
+  .reads { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:12px; }
   .card { border:1px solid var(--line); border-radius:6px; padding:10px 12px; background:var(--soft); }
   .card h3 { margin:0 0 6px; font-size:13px; display:flex; justify-content:space-between; gap:8px; }
   .card h3 span { color:var(--mut); font-weight:400; }
-  .card pre { white-space:pre-wrap; font:13px/1.45 inherit; margin:0; max-height:520px; overflow:auto; }
+  .card pre { white-space:pre-wrap; font:12.5px/1.4 inherit; margin:0; max-height:70vh; overflow:auto; }
   .prompt { margin:0 0 14px; padding:10px 12px; border-left:3px solid var(--acc); background:var(--soft); white-space:pre-wrap; }
   .bar { display:inline-block; height:9px; background:var(--acc); vertical-align:middle; border-radius:2px; }
   .muted { color:var(--mut); }
@@ -41,7 +41,7 @@ const esc = s => (s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'
 const cell = (m, a) => D[m]?.cells?.[a];
 const mean = xs => xs.length ? xs.reduce((p, q) => p + q, 0) / xs.length : 0;
 const f1 = x => x.toFixed(x < 10 ? 2 : 1);
-const state = { view: 'grid', model: M[0], anchor: AN[0].id, mode: 'anchor' };
+const state = { view: 'grid', model: M[0], anchor: AN[0].id, mode: 'anchor', sample: '0' };
 
 function stats(m, a) {
   const c = cell(m, a); if (!c) return null;
@@ -83,7 +83,7 @@ function read() {
 }
 function cards(m, aid, title, sub) {
   const c = cell(m, aid); if (!c) return '';
-  return c.samples.map((s, i) => `<div class="card"><h3>${title} #${i}<span>${s.words}w · ${f1(s.out ? s.reason / s.out : 0)} · ${s.finish !== 'stop' ? `<span class="len">${s.finish}</span>` : ''}</span></h3>${sub ? `<div class="muted" style="margin-bottom:6px">${esc(sub)}</div>` : ''}<pre>${esc(s.reply || ('ERROR: ' + s.error))}</pre></div>`).join('');
+  return c.samples.map((s, i) => state.sample !== 'all' && String(i) !== state.sample ? '' : `<div class="card"><h3>${title} #${i}<span>${s.words}w · ${f1(s.out ? s.reason / s.out : 0)} · ${s.finish !== 'stop' ? `<span class="len">${s.finish}</span>` : ''}</span></h3>${sub ? `<div class="muted" style="margin-bottom:6px">${esc(sub)}</div>` : ''}<pre>${esc(s.reply || ('ERROR: ' + s.error))}</pre></div>`).join('');
 }
 
 function effort() {
@@ -117,6 +117,7 @@ function cost() {
 function controls() {
   if (state.view !== 'read') return '';
   return `<select id="mode"><option value="anchor" ${state.mode === 'anchor' ? 'selected' : ''}>one anchor, all models</option><option value="model" ${state.mode === 'model' ? 'selected' : ''}>one model, all anchors</option></select>
+    <select id="sample">${['0','1','2','all'].map(x => `<option value="${x}" ${x === state.sample ? 'selected' : ''}>sample ${x}</option>`).join('')}</select>
     ${state.mode === 'anchor' ? `<select id="anchor">${AN.map(a => `<option value="${a.id}" ${a.id === state.anchor ? 'selected' : ''}>${a.id}</option>`).join('')}</select>`
                               : `<select id="model">${M.map(m => `<option ${m === state.model ? 'selected' : ''}>${m}</option>`).join('')}</select>`}`;
 }
@@ -127,7 +128,7 @@ function render() {
   document.getElementById('ctl').innerHTML = controls();
   document.getElementById('main').innerHTML = { grid, read, effort, cost }[state.view]();
   const on = (id, k) => { const el = document.getElementById(id); if (el) el.onchange = e => { state[k] = e.target.value; render(); }; };
-  on('mode', 'mode'); on('anchor', 'anchor'); on('model', 'model');
+  on('mode', 'mode'); on('anchor', 'anchor'); on('model', 'model'); on('sample', 'sample');
   document.querySelectorAll('td.cell').forEach(td => td.onclick = () => { state.view = 'read'; state.mode = 'anchor'; state.anchor = td.dataset.a; render(); document.querySelector(`.card h3`)?.scrollIntoView(); });
 }
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => { state.view = t.dataset.v; render(); });
