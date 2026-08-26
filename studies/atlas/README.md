@@ -69,12 +69,6 @@ real (no imposed global typology; no leaderboard, ever — characters, not ranks
 - Resist anchor texts: pull and adapt from `studies/conduct/` — the scripted scenes already
   contain the pressure utterances (arithmetic hill, day-trader, self-flattering story);
   take the single-turn pressure line from each rather than authoring fresh.
-  Typology refs: the three pressure types (fact / plan / self-image) order by the
-  face-threatening act the honest reply requires (Brown & Levinson 1987, politeness theory —
-  same CA lineage as the how-you-ask citations); they span epistemic sycophancy (Sharma et
-  al. 2023) and social sycophancy (ELEPHANT — Cheng et al. 2025, arXiv:2505.13995). The
-  triad as such appears to be ours — claim with lineage cited; verify Sharma cite at
-  writing time.
 - Edit stimulus (the flawed-but-fine paragraph — must be genuinely two-sided).
 - Interpret stimulus (expert-attested ambiguity).
 - Sampling: n per cell, temperature policy.
