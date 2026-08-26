@@ -63,13 +63,51 @@ distinctive n-grams vs field baseline) · register (Draft/Explain).
 Type layer: derive empirically — cluster models over the full profile; name clusters only if
 real (no imposed global typology; no leaderboard, ever — characters, not ranks).
 
+## Spec conventions (spec/stimulus.json)
+
+The spec is the frozen instrument and carries no commentary; rationale lives here.
+
+- Prompt sent = template with `{text}` replaced by the anchor text. Bare-slot templates
+  (Explain, Advise, Create, Resist) send the anchor verbatim, so the anchor carries the
+  question form and each anchor is in effect its own template. Advise uses this so the
+  binary and open-dilemma anchors differ in form, not just topic.
+- Each anchor has `id`, `text`, `frozen_at` (null until 1.0; set once, never changed).
+  Each template has a `rotation` list, empty in v1.
+- Sampling: `temperature: null` = as served (not set in the request); n=3 per cell.
+  Convergence measures are therefore descriptive only in v1.
+- `max_tokens` 8192; `finish_reason` recorded per cell so verbosity is not cap-relative.
+
+## Anchor rationale (0.4 draft)
+
+| Anchor | Why this one |
+|---|---|
+| explain-a1 mortgage | topic; audience unspecified on purpose; analogy reach |
+| explain-a2 flat tire | how-to; structure (steps vs prose) |
+| advise-a1 job offer | explicit binary, asks "what should I do?"; commit vs hedge |
+| advise-a2 sister loan | open dilemma, no question asked; ask-before-advising vs presumption |
+| draft-a1 decline wedding | decline; formula n-grams, politeness register |
+| draft-a2 late rent | bad news; hedging formulas |
+| create-a1 programmer joke | joke convergence |
+| create-a2 lighthouse keeper | story; naming convergence (Elara effect) |
+| edit-a1 follow-up email | correct, flat workplace prose; rewrite fraction |
+| edit-a2 park paragraph | correct, deliberately plain personal prose; unrequested style rewrites |
+| interpret-a1 "circle back" | social ambiguity with enough context that the model must read it rather than ask; readings count |
+| interpret-a2 red wheelbarrow | literary ambiguity (Williams, US public domain); closure |
+| resist-a1 day-trader | bad plan, announced not asked; applaud / question / warn |
+| resist-a2 doctor's note | wrong ask (forgery) with a sympathy bid; refuse / coach toward a real note / write it |
+
+Resist anchors span two pressure types, a bad plan and a wrong ask. A confident wrong fact
+(5×9=54) was tried and dropped: every capable model holds it on turn one, so it does not
+separate models single-turn. A self-flattering self-story was also dropped for v1: models
+push back on it uniformly and gently. Both are rotation candidates if a harder single-turn
+form is found. All Resist cells are collected fresh with the rest of the battery.
+
+Edit anchors must contain no error, or interventionism collapses into correction.
+
 ## Open design work before freeze
 
-- Pick the anchor filler per verb (one each, frozen forever — choose deliberately).
-- Resist anchor texts: pull and adapt from `studies/conduct/` — the scripted scenes already
-  contain the pressure utterances (arithmetic hill, day-trader, self-flattering story);
-  take the single-turn pressure line from each rather than authoring fresh.
-- Edit stimulus (the flawed-but-fine paragraph — must be genuinely two-sided).
-- Interpret stimulus (expert-attested ambiguity).
-- Sampling: n per cell, temperature policy.
-
+- Review the 0.4 draft anchors (all 14 drafted, none frozen).
+- Edit anchors: confirm no reader finds a real error.
+- Interpret anchors: attest the ambiguity (one social, one literary).
+- Resist: decide whether the fact/self-image types need single-turn forms hard enough to
+  separate models, or stay as rotation candidates.
