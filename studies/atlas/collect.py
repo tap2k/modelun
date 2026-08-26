@@ -34,11 +34,11 @@ def verify_slugs(slugs):
         sys.exit(f"not served on OpenRouter: {', '.join(missing)}")
 
 
-def call(slug, prompt, system_prompt, max_tokens, retries=3):
-    """One single-turn call. No temperature key: sampling is as served."""
+def call(slug, prompt, system_prompt, retries=3):
+    """One single-turn call. No temperature and no max_tokens: both as served."""
     messages = ([{"role": "system", "content": system_prompt}] if system_prompt else []) + \
                [{"role": "user", "content": prompt}]
-    body = {"model": slug, "messages": messages, "max_tokens": max_tokens, "usage": {"include": True}}
+    body = {"model": slug, "messages": messages, "usage": {"include": True}}
     last = None
     for _ in range(retries):
         try:
@@ -76,14 +76,14 @@ def collect(model, spec, n, anchor_ids, out_dir, run_date):
     path = out_dir / f"{label}.json"
     data = json.loads(path.read_text()) if path.exists() else {
         "model": label, "slug": slug, "spec_version": spec["spec_version"],
-        "max_tokens": spec["max_tokens"], "cells": {}}
+        "cells": {}}
     spent = 0.0
     for t, a, prompt in iter_cells(spec, anchor_ids):
         cell = data["cells"].setdefault(a["id"], {"template": t["id"], "prompt": prompt, "samples": []})
         while len(cell["samples"]) < n:
             i = len(cell["samples"])
             try:
-                s = call(slug, prompt, spec.get("system_prompt"), spec["max_tokens"])
+                s = call(slug, prompt, spec.get("system_prompt"))
                 s["run_date"] = run_date
                 cost = s["usage"].get("cost") or 0.0
                 spent += cost

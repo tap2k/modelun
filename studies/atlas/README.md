@@ -84,9 +84,9 @@ The spec is the frozen instrument and carries no commentary; rationale lives her
   Each template has a `rotation` list, empty in v1.
 - Sampling: `temperature: null` = as served (not set in the request); n=3 per cell.
   Convergence measures are therefore descriptive only in v1.
-- `max_tokens` 8192; `finish_reason` recorded per cell so verbosity is not cap-relative.
-  Reasoning tokens count against the cap and are reported separately in usage; verbosity
-  is measured on visible output only.
+- `max_tokens: null` = as served (not set in the request). `finish_reason` is recorded per
+  cell, so hitting the served cap is itself a metric (maxed-out reasoning). Reasoning
+  tokens are reported separately in usage; verbosity is measured on visible output only.
 
 ## Anchor rationale (0.4 draft)
 
@@ -174,8 +174,8 @@ All eight pilot models complete; 336 samples, $2.12, no errors. Full detail in `
   explicitly ("even though I believe you really were sick"), which is the texture the
   bid was added to elicit.
 - **Truncation: two kimi-k3 samples** (create-a2, edit-a2) hit 8192 on reasoning tokens.
-  Reasoning counts against max_tokens. Decision needed: raise the cap for reasoning models
-  (per-model max_tokens in models.json) or accept truncation as a recorded outcome.
+  Reasoning counts against the cap. Decision (2026-08-26): max_tokens is no longer sent;
+  the served cap applies and `finish_reason: length` is recorded as a maxed-out metric.
 - **Effort per token is a trait** (reasoning ÷ visible output at default settings): sonnet-5
   0.02, terra 0.07, deepseek 0.33, qwen 0.49, gemini-flash 1.19, grok 1.84, kimi 4.37. Edit
   is the hotspot for every reasoning model (grok 12×, kimi 7×, deepseek and qwen 3.5×).
@@ -186,7 +186,6 @@ All eight pilot models complete; 336 samples, $2.12, no errors. Full detail in `
 ## Open design work before freeze
 
 - Review the 0.4 draft anchors against the pilot read; none frozen.
-- max_tokens policy for reasoning models (see pilot read).
 - Layer 1 for Edit: rewritten-block extraction before distance measures.
 - Interpret-a2 (red wheelbarrow): attest the ambiguity; not yet read.
 - Resist: decide whether the fact/self-image types need single-turn forms hard enough to
