@@ -28,8 +28,11 @@ Each verb is a template with a variable slot (template × filler × version):
 - **Anchors first, rotation later**: per verb, 2 frozen anchor items to start (frozen from
   their first wave, forever; later anchors append-only). Rotating items join at a later wave;
   anchor-vs-rotation divergence then becomes the contamination meter for a published battery.
-  Create anchors span forms (e.g. one joke item, one story item); Resist anchors span pressure
-  types (wrong assertion / bad-plan applause).
+  Create anchors span forms (one joke item, one story item); Resist anchors span pressure
+  types (wrong assertion / bad-plan applause); Advise anchors span forms of neutrality
+  (explicit binary "deciding between A and B" / open dilemma with no options — measures
+  ask-before-advising vs presumption). Boundary rule: atlas Advise NEVER plants a stance or
+  appends a tag — that is the suggestibility instrument, which lives in the papers.
 - **Judge-free**: stylometrics, span extraction, exact/edit-distance measures. Any judge use
   follows the handcuffs rule (verbatim substring selection only).
 - **Versioned**: template × filler × spec_version; new anchors may be ADDED in later waves,
