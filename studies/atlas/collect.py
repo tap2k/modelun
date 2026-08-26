@@ -42,7 +42,9 @@ def call(slug, prompt, system_prompt, max_tokens, retries=3):
     last = None
     for _ in range(retries):
         try:
+            t0 = time.monotonic()
             r = requests.post(f"{API}/chat/completions", headers=headers(), json=body, timeout=180)
+            latency = time.monotonic() - t0
             r.raise_for_status()
             j = r.json()
             choice = j["choices"][0]
@@ -52,6 +54,8 @@ def call(slug, prompt, system_prompt, max_tokens, retries=3):
             return {"reply": reply,
                     "finish_reason": choice.get("finish_reason"),
                     "model_version": j.get("model"),
+                    "generation_id": j.get("id"),
+                    "latency_s": round(latency, 3),
                     "usage": j.get("usage", {})}
         except Exception as e:
             last = e
@@ -85,7 +89,7 @@ def collect(model, spec, n, anchor_ids, out_dir, run_date):
                 spent += cost
                 words = len(s["reply"].split())
                 flag = "" if s["finish_reason"] == "stop" else f" [{s['finish_reason']}]"
-                print(f"  {label:20} {a['id']:14} #{i}  {words:4}w  ${cost:.4f}{flag}")
+                print(f"  {label:20} {a['id']:14} #{i}  {words:4}w  {s['latency_s']:6.1f}s  ${cost:.4f}{flag}")
             except Exception as e:
                 s = {"reply": None, "error": str(e), "run_date": run_date}
                 print(f"  {label:20} {a['id']:14} #{i}  FAILED: {e}")

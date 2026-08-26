@@ -133,8 +133,9 @@ Edit anchors must contain no error, or interventionism collapses into correction
 `collect.py` runs every model in `spec/models.json` against every anchor, single-turn via
 OpenRouter, n samples per cell, no temperature sent (as served). Output is
 `transcripts/<label>.json`, one file per model, merged on rerun (cells already at n are
-skipped). Each sample stores reply, `finish_reason`, the provider-reported model id, and
-OpenRouter's usage block with USD cost; the run prints per-call, per-model, and total cost.
+skipped). Each sample stores reply, `finish_reason`, the provider-reported model id, OpenRouter's
+usage block with USD cost, wall-clock latency as served (reasoning included), and the
+generation id (time-to-first-token is fetchable from OpenRouter by id); the run prints per-call, per-model, and total cost.
 `--dry-run` verifies slugs against OpenRouter and counts calls without spending.
 
 `views/build.py` writes `views/data.js`; open `views/index.html`. Tabs: Grid (model × anchor,
