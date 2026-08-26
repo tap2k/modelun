@@ -124,6 +124,18 @@ form is found. All Resist cells are collected fresh with the rest of the battery
 
 Edit anchors must contain no error, or interventionism collapses into correction.
 
+## Collection
+
+`collect.py` runs every model in `spec/models.json` against every anchor, single-turn via
+OpenRouter, n samples per cell, no temperature sent (as served). Output is
+`transcripts/<label>.json`, one file per model, merged on rerun (cells already at n are
+skipped). Each sample stores reply, `finish_reason`, the provider-reported model id, and
+OpenRouter's usage block with USD cost; the run prints per-call, per-model, and total cost.
+`--dry-run` verifies slugs against OpenRouter and counts calls without spending.
+
+Pilot panel (0.4): one current mid-tier model per major vendor plus contrasts; flagships
+join at the full wave.
+
 ## Open design work before freeze
 
 - Review the 0.4 draft anchors (all 14 drafted, none frozen).
