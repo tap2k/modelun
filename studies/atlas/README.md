@@ -61,6 +61,30 @@ reconciled to countable distributions), then applied mechanically. Derivation is
 interpretive act; application inherits layer 1's reproducibility. This layer IS the labeling
 service's methodology, demonstrated.
 
+## Measures per verb (working list, 2026-08-26)
+
+Per-cell measures to compute in layer 1 (or, where noted, derive in layer 2). Anchor
+notes in brackets.
+
+- **Explain**: depth of explanation, accessibility. [Basic knowledge is uninteresting; a
+  sophisticated subject lets depth and accessibility be assessed. Anchors to be replaced.]
+- **Advise**: does it give options; ends with a question continuing the inquiry; ends on
+  directional advice or leaves it open.
+- **Create**: joke convergence; story main-character name; something about paragraph
+  structure.
+- **Edit**: does it give options; does it explain; text-change metrics.
+- **Interpret**: optimistic / pessimistic / neutral reading. [The poem is basic knowledge;
+  all eight pilot models recite Williams and Imagism. Replace with an unattributed text.]
+- **Draft**: does it give options; does it explain or just write the draft; does it give
+  unrelated tips or advice. [Late rent is too functional for these measures; replace.]
+- **Resist**: discourages the bad idea or leaves it open (a1); preaches or not (a2).
+- **All cells**: exclamation points; question marks; markdown density (headers, bullets,
+  bold); emoji; hedges ("might", "could", "it depends"); disclaimers ("I'm not a ...");
+  offer of further help ("would you like me to", "let me know"); opening and closing
+  formulas (first and last sentence types); list-vs-prose fraction; sentence length;
+  reading level; first-person and second-person rates; verbosity; effort per token;
+  effective cost; latency.
+
 ## Dimensions the atlas site derives from these cells
 
 Verbosity (all cells) · uniqueness/convergence (Create, Explain-analogy) · stance (Advise) ·
