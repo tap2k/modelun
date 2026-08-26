@@ -40,6 +40,20 @@ Each verb is a template with a variable slot (template × filler × version):
 - **Cheap by construction**: ~7 verbs × ~2–3 fillers × panel × few samples ≈ thousands of
   short calls — tens of dollars a wave.
 
+## Measurement architecture: two layers
+
+**Layer 1 — deterministic calculations** (always-on, judge-free, wave-comparable by
+construction): verbosity (all cells); Edit = edit/word distance + rewrite fraction;
+convergence counts (Create, Explain-analogy) by normalized match; Draft formula n-grams;
+tics = distinctive n-grams vs field baseline.
+
+**Layer 2 — derived codebooks** (per verb, per battery version): typologies that can't be
+pre-specified — advising styles, interpretation postures, resistance manners — derived by
+the BQC pass (open coding → embed-cluster-curate → categories bound to verbatim evidence,
+reconciled to countable distributions), then applied mechanically. Derivation is the one
+interpretive act; application inherits layer 1's reproducibility. This layer IS the labeling
+service's methodology, demonstrated.
+
 ## Dimensions the atlas site derives from these cells
 
 Verbosity (all cells) · uniqueness/convergence (Create, Explain-analogy) · stance (Advise) ·
