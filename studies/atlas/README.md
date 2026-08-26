@@ -22,6 +22,13 @@ Each verb is a template with a variable slot (template × filler × version):
 
 (Name folded into Create as a filler. Summarize dropped — benchmark-covered.)
 
+Ecological grounding: the six usage verbs cover ~72–74% of consumer ChatGPT usage
+(Chatterji et al. 2025, NBER 34255) and the majority of non-coding usage in every major
+usage study (Clio; Anthropic Economic Index; WildChat; Microsoft's Working with AI). Full
+crosswalk, per-source coverage estimates, and deliberate exclusions (coding, image
+generation, translation, roleplay): `docs/usage-crosswalk.md`. Resist is the deliberate
+exception — a character probe, not a usage category.
+
 ## Design rules
 
 - **Single-turn only** (v1). Multi-turn = the papers' territory, or a labeled v2 module.
