@@ -52,4 +52,4 @@ real (no imposed global typology; no leaderboard, ever — characters, not ranks
 - Interpret stimulus (expert-attested ambiguity).
 - Sampling: n per cell, temperature policy.
 
-Design notes and public/commercial framing: `~/Desktop/projects/modelun/atlas-site-notes.md`.
+Design notes and public/commercial framing: `convovo-notes/atlas.md` (canonical).
