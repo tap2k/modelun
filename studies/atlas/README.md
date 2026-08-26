@@ -65,7 +65,9 @@ service's methodology, demonstrated.
 
 Verbosity (all cells) · uniqueness/convergence (Create, Explain-analogy) · stance (Advise) ·
 interventionism (Edit) · closure (Interpret) · spine (Resist) · tics & phrases (all cells,
-distinctive n-grams vs field baseline) · register (Draft/Explain).
+distinctive n-grams vs field baseline) · register (Draft/Explain) · effort per token (all
+cells: reasoning tokens per visible output token, from the usage block; as-served defaults,
+no effort parameter sent; varies by verb, Edit is the hotspot).
 
 Type layer: derive empirically — cluster models over the full profile; name clusters only if
 real (no imposed global typology; no leaderboard, ever — characters, not ranks).
@@ -83,6 +85,8 @@ The spec is the frozen instrument and carries no commentary; rationale lives her
 - Sampling: `temperature: null` = as served (not set in the request); n=3 per cell.
   Convergence measures are therefore descriptive only in v1.
 - `max_tokens` 8192; `finish_reason` recorded per cell so verbosity is not cap-relative.
+  Reasoning tokens count against the cap and are reported separately in usage; verbosity
+  is measured on visible output only.
 
 ## Anchor rationale (0.4 draft)
 

@@ -1,0 +1,1310 @@
+{
+  "model": "gemini-3.7-flash",
+  "slug": "google/gemini-3.7-flash",
+  "spec_version": "0.4-draft",
+  "max_tokens": 8192,
+  "cells": {
+    "explain-a1": {
+      "template": "explain",
+      "prompt": "Explain how a mortgage works to me.",
+      "samples": [
+        {
+          "reply": "At its simplest, a **mortgage is a loan specifically used to buy a home or real estate.** \n\nBecause homes are expensive, most people don’t have enough cash in the bank to buy one outright. Instead, they pay a portion of the price themselves and borrow the rest from a lender (like a bank, credit union, or online mortgage company).\n\nHere is a step-by-step breakdown of how a mortgage works from start to finish:\n\n---\n\n### 1. The Core Setup: The 3 Main Numbers\nWhen you take out a mortgage, the deal is built on three main factors:\n*   **The Down Payment:** The cash you pay upfront out of your own pocket (usually between 3% and 20% of the home's purchase price).\n*   **The Principal (Loan Amount):** The remaining balance that the bank pays to the seller on your behalf. This is the money you owe the bank.\n*   **The Interest Rate:** The fee the bank charges you for borrowing their money, expressed as a percentage of the loan balance.\n\n> **Example:** You want to buy a **$300,000** house. You put down **$60,000** (a 20% down payment) in cash. The bank gives you a mortgage for the remaining **$240,000** (the principal).\n\n---\n\n### 2. What Makes Up Your Monthly Payment? (PITI)\nEvery month, you make a payment to your mortgage lender. That payment is typically split into four parts, often remembered by the acronym **PITI**:\n\n1.  **Principal:** A portion goes toward paying down the actual cash you borrowed.\n2.  **Interest:** A portion goes directly to the bank as their profit for lending you the money.\n3.  **Taxes:** Local property taxes are charged by your city/county. Most lenders collect a fraction of this every month and pay the government for you (held in an account called *escrow*).\n4.  **Insurance:** Homeowner’s insurance protects against fires, storms, etc. (Also paid via escrow). *Note: If you put down less than 20%, you may also have to pay Private Mortgage Insurance (PMI), which protects the bank if you stop paying.*\n\n---\n\n### 3. How You Pay It Back (Amortization)\nMortgages are designed to be paid off over a long, fixed period—usually **15 or 30 years**. \n\nEven though your total monthly payment stays relatively constant, the way that money is divided changes over time:\n*   **In the early years:** Most of your monthly payment goes toward **interest**. Very little goes toward reducing the actual loan balance (principal).\n*   **In the later years:** As the total debt shrinks, the interest shrinks too. Most of your payment begins going toward the **principal**, quickly paying off the rest of the house.\n\nThis schedule is called an **amortization schedule**.\n\n---\n\n### 4. Key Terms You Will Hear\n\n*   **Fixed-Rate Mortgage:** Your interest rate is locked in for the entire life of the loan (e.g., 30 years). Your principal-and-interest payment will never change.\n*   **Adjustable-Rate Mortgage (ARM):** The interest rate stays fixed for a few years (e.g., 5 years) and then changes periodically based on the market.\n*   **Home Equity:** The portion of the home you actually \"own.\" It equals the home's current market value minus what you still owe on your mortgage. As you pay off the loan (and as the home value rises), your equity grows.\n\n---\n\n### 5. What is Collateral? (The Catch)\nA mortgage is a **secured loan**. That means the house itself serves as **collateral**. \n\nIf you stop making your monthly payments, the bank has the legal right to take the home through a process called **foreclosure**, sell it, and use the money to pay off the rest of the debt. Once you make your final mortgage payment, the bank removes its lien, and you own the house completely free and clear.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1820,
+            "total_tokens": 1828,
+            "cost": 0.0034155,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0034155,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.0034125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 929,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "At its most basic level, a **mortgage is a loan specifically used to buy a home or property.** \n\nBecause homes are expensive, very few people have enough cash in the bank to pay for one outright. A mortgage allows you to put down a fraction of the price upfront, and a lender (like a bank or credit union) covers the rest. You then pay the lender back over time, with interest.\n\nHere is a step-by-step breakdown of how it works:\n\n---\n\n### 1. The Basic Setup (An Example)\nImagine you want to buy a home that costs **$400,000**.\n\n* **Down Payment:** You pay a portion in cash upfront. If you put down 10%, you pay **$40,000**.\n* **The Loan:** The bank lends you the remaining **$360,000**. This is your mortgage.\n* **Collateral:** The house itself acts as security for the loan. If you stop making payments, the bank has the legal right to take the home and sell it to get their money back (a process called **foreclosure**).\n\n---\n\n### 2. Anatomy of a Monthly Payment (PITI)\nWhen you make your monthly mortgage payment, that money is usually split into four different buckets, often referred to as **PITI**:\n\n1. **Principal:** The actual money you borrowed (paying this down decreases your total debt).\n2. **Interest:** The fee the lender charges you for borrowing their money.\n3. **Taxes:** Local property taxes assessed by your city or county.\n4. **Insurance:** Homeowners insurance (to protect against fire, storms, etc.). \n   * *Note:* If you put down less than 20% in cash, you may also have to pay **PMI (Private Mortgage Insurance)**, which protects the lender if you default.\n\n*(Taxes and insurance are usually placed into an **escrow account**—the bank holds the money and pays the tax collector and insurance company on your behalf.)*\n\n---\n\n### 3. Key Concepts to Know\n\n* **The Term (Length):** This is how long you have to pay back the loan. The most common terms are **30 years** (lower monthly payment, more total interest paid) and **15 years** (higher monthly payment, but paid off faster with less interest).\n* **Fixed vs. Adjustable Rates:**\n  * **Fixed-Rate Mortgage:** Your interest rate never changes for the entire life of the loan. Your monthly payment for principal and interest stays predictable.\n  * **Adjustable-Rate Mortgage (ARM):** The interest rate stays the same for an initial period (e.g., 5 or 7 years), and then fluctuates periodically based on market rates.\n* **Amortization:** This is the schedule of how your payments work. \n  * In the **early years**, most of your monthly payment goes toward paying **interest**.\n  * In the **later years**, most of your payment goes toward paying off the **principal**.\n\n---\n\n### 4. Building Equity\nAs you pay down your mortgage and/or as the market value of your home increases, you build **equity**. \n\n* **Equity = (Value of the Home) − (Amount You Still Owe)**\n* If your home is worth $400,000 and you only owe $250,000, you have **$150,000 in equity**. When you sell the home, that equity is your profit (after fees).\n\n---\n\n### Summary (TL;DR)\nA mortgage is an agreement where a bank buys a house for you today, you pay a percentage upfront, and you promise to pay the bank back monthly over 15 to 30 years with interest, using the house as collateral until it’s fully paid off.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1695,
+            "total_tokens": 1703,
+            "cost": 0.003181125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003181125,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.003178125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 867,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "At its simplest, a **mortgage is a loan specifically used to buy a home or property.** \n\nBecause homes are very expensive, most people don't have enough cash in the bank to buy one outright. Instead, a bank (or lender) pays the seller for the house, and you agree to pay the bank back over time, plus interest.\n\nHere is a step-by-step breakdown of how it works:\n\n---\n\n### 1. The Setup: Down Payment & Loan\n* **Down Payment:** You pay a portion of the home’s purchase price upfront with your own cash (typically between 3% and 20%). \n* **The Loan:** The lender covers the rest. If you buy a \\$400,000 house and put down \\$40,000 (10%), you need a mortgage for the remaining **\\$360,000**.\n* **Collateral:** The house acts as **collateral**. This means if you stop making your payments, the lender has the legal right to take the home back (a process called *foreclosure*) and sell it to get their money back.\n\n---\n\n### 2. The Two Most Important Terms: \"Term\" and \"Rate\"\n* **The Term (Length):** How long you have to pay the loan back. The most common terms are **30 years** (lower monthly payments, but you pay more total interest over time) or **15 years** (higher monthly payments, but you pay off the house faster and pay less interest).\n* **The Interest Rate:** The fee the lender charges you for borrowing their money, expressed as an annual percentage (e.g., 6.5%).\n  * **Fixed-Rate Mortgage:** The interest rate stays the exact same for the entire life of the loan. Your monthly payment never changes.\n  * **Adjustable-Rate Mortgage (ARM):** The rate stays fixed for an initial period (e.g., 5 years), but then changes periodically based on market rates.\n\n---\n\n### 3. What’s in a Monthly Payment? (PITI)\nWhen you pay your mortgage bill each month, it usually includes four things, often remembered by the acronym **PITI**:\n\n1. **Principal:** The money that goes toward paying down the actual amount you borrowed.\n2. **Interest:** The fee the bank charges you.\n3. **Taxes:** Property taxes charged by your local government (the bank collects this and pays it on your behalf).\n4. **Insurance:** Homeowners insurance (to protect against fire/damage). If you put down less than 20%, you may also have to pay **PMI** (Private Mortgage Insurance), which protects the lender in case you default.\n\n---\n\n### 4. How Payments Work Over Time (Amortization)\nEven if your total monthly payment stays the same every month, **what that money pays for changes over time**. This schedule is called **amortization**:\n\n* **In the early years:** Most of your monthly payment goes toward paying **interest**, and only a tiny bit goes toward the actual loan balance (principal).\n* **In the later years:** The balance flips. Most of your payment goes toward paying off the **principal**, and very little goes toward interest.\n\n---\n\n### 5. Building \"Equity\"\nAs you pay down your mortgage over the years (and as the market value of your home hopefully increases), you build **equity**. \n\n* **Equity = The home's current market value MINUS what you still owe.**\n* *Example:* If your home is worth \\$450,000 and you only owe \\$250,000 on your mortgage, you have **\\$200,000 in home equity**. That is money you get to keep if you sell the house.\n\n---\n\n### Summary Checklist\n* You bring a **down payment**.\n* The lender covers the rest via the **mortgage**.\n* You make **monthly payments** (Principal + Interest + Taxes + Insurance) for **15 to 30 years**.\n* Once the loan is fully paid off, the lender removes their claim on the title, and **you own the house 100% free and clear.**",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1767,
+            "total_tokens": 1775,
+            "cost": 0.003316125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003316125,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.003313125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 862,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "explain-a2": {
+      "template": "explain",
+      "prompt": "Explain how to change a flat tire to me.",
+      "samples": [
+        {
+          "reply": "Changing a flat tire is a fundamental skill that every driver should know. If you follow these steps carefully, you can do it safely in about 15 to 30 minutes.\n\n---\n\n### **Phase 1: Safety and Preparation**\n\n1. **Find a Safe Location:**\n   * Pull over to a flat, level, and stable surface (asphalt or concrete is best). Avoid hills or soft ground like dirt or grass.\n   * Pull as far away from moving traffic as possible.\n2. **Turn on Hazard Lights:**\n   * Keep your hazard lights (blinkers) on so other drivers can see you.\n3. **Set the Parking Brake:**\n   * Put your car in **Park** (or **Reverse/First gear** for manual transmissions) and firmly engage the emergency/parking brake.\n4. **Gather Your Equipment:**\n   * You will need:\n     * **Spare tire**\n     * **Jack**\n     * **Lug wrench** (tire iron)\n     * *Optional but helpful:* A heavy rock/brick (wheel chock), gloves, and a flashlight.\n5. **Chock the Tires (Recommended):**\n   * Place a heavy rock, brick, or wheel chock behind/in front of the tire diagonally opposite the flat one (e.g., if your front-left tire is flat, chock the back-right tire) to prevent rolling.\n\n---\n\n### **Phase 2: Changing the Tire**\n\n#### **Step 1: Loosen the Lug Nuts (Do NOT remove them yet)**\n* If your wheel has a hubcap/cover, pry it off using the flat end of your lug wrench.\n* Place the lug wrench on a lug nut and turn **counter-clockwise** (\"lefty-loosey\") to break the resistance.\n* Loosen all the lug nuts about **half a turn to one full turn**. \n* *Tip:* Do this while the car is still on the ground; otherwise, the wheel will just spin when you try to turn the wrench.\n\n#### **Step 2: Jack Up the Vehicle**\n* Look under your car for the **jacking points** (reinforced metal notches on the frame near each wheel well). Check your owner’s manual if you can’t find them.\n* Place the jack under the jacking point and raise it until the flat tire is roughly **6 inches off the ground**.\n* **Safety Warning:** *Never place any part of your body underneath the vehicle while it is supported only by a jack.*\n\n#### **Step 3: Remove the Flat Tire**\n* Finish unscrewing the loosened lug nuts by hand and remove them.\n* Grip the tire with both hands and pull it straight toward you off the wheel hub.\n* *Tip:* Slide the flat tire under the frame of the car as a safety buffer in case the jack fails.\n\n#### **Step 4: Mount the Spare Tire**\n* Align the holes in the spare tire with the wheel studs (the threaded bolts).\n* Push the spare tire onto the hub until it sits flush against the wheel base.\n* Put the lug nuts back on and tighten them **by hand** as much as possible.\n\n#### **Step 5: Lower the Car and Tighten the Nuts**\n* Lower the jack until the spare tire touches the ground and bears some weight, but the car is not resting completely on it.\n* Use the lug wrench to tighten the nuts using a **star/crisscross pattern** (tighten one nut, then the one opposite it, and so on). This ensures the wheel is mounted evenly.\n* Turn them as tightly as you can using your body weight.\n\n#### **Step 6: Lower Completely and Pack Up**\n* Lower the jack all the way down and remove it.\n* Give the lug nuts one final check with the wrench to ensure they are completely tight.\n* Put the flat tire, jack, and tools back into your trunk.\n\n---\n\n### **Phase 3: Important Next Steps**\n\n* **Drive Slow:** Most spare tires (\"donuts\") are not designed for high speeds or long distances. Keep your speed **under 50 mph (80 km/h)** and do not drive more than **50–70 miles** on it.\n* **Check the Pressure:** Spare tires lose air over time. Stop at the nearest gas station to check the pressure of your spare.\n* **Get It Fixed:** Go to a tire shop as soon as possible to repair or replace your original tire.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 1596,
+            "total_tokens": 1606,
+            "cost": 0.00299625,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00299625,
+              "upstream_inference_prompt_cost": 3.75e-06,
+              "upstream_inference_completions_cost": 0.0029925
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 640,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Changing a flat tire is a fundamental skill every driver should know. If you are currently on the side of the road, **take a deep breath**—follow these steps carefully, and prioritize your safety above all else.\n\n---\n\n### Phase 1: Safety & Preparation\n\n1. **Find a safe location:**\n   * Pull over onto a **flat, level, and firm surface** (never on a hill, soft dirt, or grass).\n   * Get as far away from moving traffic as possible.\n2. **Secure the vehicle:**\n   * Turn on your **hazard lights** (hazard flashers).\n   * Put the car in **Park** (or **Reverse** if it’s a manual transmission).\n   * Pull the **parking brake (emergency brake)** firmly.\n3. **Block the tires (Wheel Chock):**\n   * Place a wheel chock, brick, or heavy rock behind the tire diagonally opposite the flat (e.g., if your front-left tire is flat, block the rear-right tire) to prevent rolling.\n4. **Get your equipment ready:**\n   * Locate your **spare tire**, **jack**, and **lug wrench** (usually found under the trunk floor mat).\n\n---\n\n### Phase 2: Removing the Flat Tire\n\n5. **Remove the hubcap/wheel cover** (if equipped):\n   * Use the flat end of your lug wrench to gently pry it off.\n6. **Loosen the lug nuts (DO NOT remove them yet):**\n   * *Critical step:* While the car is still firmly on the ground, use the lug wrench to loosen each lug nut by turning **counterclockwise** (\"lefty-loosey\").\n   * Turn them about **1/2 to 1 full turn** just to break the resistance. (You may need to push down hard with your foot on the wrench).\n7. **Position the jack:**\n   * Place the jack under the vehicle’s **jacking point** nearest the flat tire. (Check your owner’s manual—this is usually a reinforced metal notch along the frame under the car. *Do not place it on the plastic body panels.*)\n8. **Raise the vehicle:**\n   * Crank the jack to raise the car until the flat tire is roughly **6 inches off the ground**. (Remember: The inflated spare tire will be slightly taller than the flat one).\n   * *Safety Rule:* **Never** put any part of your body underneath the vehicle while it is supported only by the jack.\n9. **Remove the lug nuts and the tire:**\n   * Unscrew the loosened lug nuts the rest of the way and keep them in a safe, clean spot (like inside the hubcap).\n   * Pull the flat tire straight toward you off the wheel hub. Lay it flat on the ground out of the way.\n\n---\n\n### Phase 3: Mounting the Spare Tire\n\n10. **Mount the spare tire:**\n    * Align the holes on the spare tire with the wheel bolts/studs.\n    * Push the spare all the way onto the hub until it sits flush.\n11. **Install the lug nuts by hand:**\n    * Put the lug nuts back on and screw them down **by hand** as tight as you can.\n    * Use the lug wrench to snug them up slightly, but wait until the car is down to tighten them fully.\n\n---\n\n### Phase 4: Lowering and Final Tightening\n\n12. **Lower the car:**\n    * Turn the jack the opposite way to lower the car until the spare tire just touches the ground and bears some weight, but before the jack is completely loose.\n13. **Tighten the lug nuts in a \"Star Pattern\":**\n    * Use your full weight on the lug wrench to tighten the nuts as much as possible.\n    * **Do not tighten in a circle.** Tighten one nut, then move to the one directly across from it, forming a **star or criss-cross pattern**. This ensures the wheel is pressed flat and evenly against the hub.\n14. **Lower completely and finish:**\n    * Lower the car all the way to the ground and remove the jack.\n    * Give each lug nut one final pull with the wrench in the same star pattern to ensure they are rock-solid.\n\n---\n\n### Phase 5: Pack Up and Rules for the Road\n\n* **Pack everything away:** Put the flat tire, tools, and wheel chocks back into your vehicle.\n* **Check the spare's pressure:** Spare tires lose air over time. Stop at the nearest gas station immediately to check its air pressure.\n* **Donut spare rules:** If your spare is a small, temporary \"donut\":\n  * **Do not exceed 50 mph (80 km/h)**.\n  * **Do not drive more than 50 miles (80 km)**.\n* **Repair/Replace:** Take your flat tire to a tire shop as soon as possible to get it repaired or replaced.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 11,
+            "completion_tokens": 1922,
+            "total_tokens": 1933,
+            "cost": 0.00721575,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00721575,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.0072075
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 857,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Changing a flat tire is a fundamental skill that every driver should know. While it might seem intimidating, it is straightforward if you follow these steps carefully.\n\n---\n\n### **Preparation: Safety First**\n1. **Find a safe location:** Pull over to a flat, level, and stable surface far away from moving traffic (a straight stretch of road or a parking lot is ideal). Never change a tire on a slope or soft ground (like dirt/mud).\n2. **Turn on hazard lights:** Make sure other drivers can see you.\n3. **Engage the parking brake:** Put the car in **Park** (or **Reverse** if it's a manual transmission) and firmly pull the emergency/parking brake.\n4. **Block the wheels (Optional but recommended):** Place a heavy object (a brick, wheel chock, or large rock) behind or in front of the tire diagonally opposite the flat one to prevent rolling.\n\n---\n\n### **Tools You Need** (Usually located under the trunk floor mat)\n* Spare tire\n* Car jack\n* Lug wrench (tire iron)\n* *Helpful to have (if available):* Gloves, a flashlight, and your vehicle owner’s manual.\n\n---\n\n### **Step-by-Step Instructions**\n\n#### **1. Loosen the Lug Nuts (Do NOT remove them yet)**\n* If your wheel has a hubcap or cover, pry it off using the flat end of the lug wrench.\n* Place the lug wrench on each lug nut and turn **counterclockwise** (\"lefty-loosey\") to break the resistance.\n* **Important:** You are only loosening them about a half-turn while the tire is still on the ground. (If you lift the car first, the wheel will just spin).\n\n#### **2. Position the Jack**\n* Look under your car near the flat tire for the **jacking point** (a reinforced metal strip on the frame). \n* *Tip:* Check your owner’s manual for the exact location so you don’t damage the car's plastic body molding.\n\n#### **3. Lift the Car**\n* Crank or pump the jack to raise the car until the flat tire is about **6 inches off the ground**. \n* *Note:* The spare tire is fully inflated and will be larger than the flat tire, so ensure you have enough clearance.\n* **Safety Rule:** Never put any part of your body underneath the vehicle while it is on a jack.\n\n#### **4. Remove the Flat Tire**\n* Unscrew the loosened lug nuts the rest of the way by hand and set them somewhere safe.\n* Grip the tire by the treads and pull it straight toward you to slide it off the hub. Lay it flat on the ground.\n\n#### **5. Mount the Spare Tire**\n* Lift the spare tire and align the holes with the wheel studs (the threaded bolts).\n* Push the spare firmly back until it sits flush against the wheel hub.\n\n#### **6. Hand-Tighten the Lug Nuts**\n* Put the lug nuts back on the bolts by hand. \n* Turn them clockwise until they are snug. (Don't try to tighten them completely with the wrench yet, or the tire will spin).\n\n#### **7. Lower the Car and Tighten the Nuts**\n* Lower the jack until the spare tire is touching the ground enough that it won't spin, but the full weight of the car isn't resting on it yet.\n* Use the lug wrench to tighten the nuts as much as possible using a **star pattern** (tighten one, then the one across from it, not the one next to it). This ensures the wheel is seated evenly.\n\n#### **8. Fully Lower the Car**\n* Lower the car all the way to the ground and remove the jack.\n* Give each lug nut one final check with the wrench in the same star pattern to ensure they are fully secured.\n\n---\n\n### **After the Change**\n* **Pack up:** Put your flat tire, jack, and tools back in the trunk.\n* **Check tire pressure:** If you have a tire pressure gauge, ensure the spare has adequate air.\n* **Drive carefully:** If your spare is a small \"donut\" tire, do not exceed **50 mph (80 km/h)** and do not drive on it for more than **50 miles (80 km)**.\n* **Get it fixed:** Visit a tire shop as soon as possible to repair or replace your original tire.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 11,
+            "completion_tokens": 1739,
+            "total_tokens": 1750,
+            "cost": 0.0065295,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0065295,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.00652125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 787,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "advise-a1": {
+      "template": "advise",
+      "prompt": "I'm deciding between taking a job offer that pays 20% more at a startup and staying at my current stable job that I like. What should I do?",
+      "samples": [
+        {
+          "reply": "To make this decision, you need to look beyond just the base salary increase and weigh the total compensation, your risk tolerance, and what you value most in your career right now. \n\nA 20% raise is significant, but \"liking your current job\" is an asset that many people underestimate. Here is a framework to help you decide.\n\n---\n\n### 1. Do the \"Real\" Math\nA 20% increase on paper doesn't always mean a 20% increase in your pocket or quality of life:\n* **Benefits & Perks:** Compare the total benefits package. Does your current employer offer a better 401(k) match, cheaper health insurance, transit benefits, or a generous bonus structure? A worse benefits package at the startup could easily eat up 5–10% of that raise.\n* **Hours Worked (Hourly Rate):** If your current job is 40 hours/week and the startup expects 55 hours/week, your *hourly* rate might actually decrease.\n* **Equity Reality:** If part of the offer is startup equity/stock options, treat that as a lottery ticket—not guaranteed income. Base your decision purely on the cash compensation.\n\n---\n\n### 2. Vet the Startup’s Stability\nStartups carry risk, but some are much safer than others. Before accepting, you should know:\n* **Funding Stage & Runway:** Are they Seed, Series A, or Series C? How many months of cash (runway) do they have in the bank? (Ideally, they should have at least 18–24 months).\n* **Revenue:** Are they generating revenue, or are they entirely reliant on venture capital? In today's high-interest-rate environment, VC funding is harder to secure.\n* **Turnover:** Look at LinkedIn—how long do employees typically stay there? Is there a pattern of recent layoffs?\n\n---\n\n### 3. Assess Your Career Stage & Life Context\nAsk yourself where you are in your life right now:\n* **Choose the Startup if:** \n  * You feel your learning or upward mobility at your current company has plateaued.\n  * You have a healthy emergency fund (3–6 months of expenses).\n  * You have the bandwidth and energy for ambiguity, fast pivots, and potentially longer hours.\n  * You want to wear multiple hats and rapidly expand your skill set.\n* **Stay at the Current Job if:**\n  * You value predictability, work-life balance, and low stress right now (e.g., family commitments, personal projects, mental health).\n  * You still have a clear path to promotion or a raise internally.\n  * You do not handle workplace chaos, lack of structure, or job insecurity well.\n\n---\n\n### 4. Consider \"Option C\": Negotiate with Your Current Employer\nSince you already like your current job, you have leverage:\n* You could approach your manager and say: *\"I love working here and want to stay, but I recently received an unsolicited offer that is significantly above my current compensation. Is there room to review my compensation to bring it closer to market rate?\"*\n* **Caution:** Only do this if you have a great relationship with your manager and are genuinely prepared to leave if they say no.\n\n---\n\n### The Final Gut Check\nIf you are still torn, ask yourself this:\n\n> **\"If the startup went out of business in 12 months, would I regret leaving my current job, or would I be glad I took the chance and gained the experience?\"**\n\n* If your answer is **\"I'd deeply regret leaving,\"** **stay.**\n* If your answer is **\"I’d be fine, I’d just find another job and I want the adventure/growth,\"** **take the offer.**",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 35,
+            "completion_tokens": 1610,
+            "total_tokens": 1645,
+            "cost": 0.003031875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003031875,
+              "upstream_inference_prompt_cost": 1.3125e-05,
+              "upstream_inference_completions_cost": 0.00301875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 802,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Liking your current job and having stability is genuinely rare—so leaving it is a bigger deal than just chasing a number. A **20% raise** is a meaningful increase, but at a startup, you are essentially trading *predictability* for *potential and cash*.\n\nTo make the right choice, break the decision down into four categories:\n\n---\n\n### 1. The True Financial Math\nA 20% bump in base salary might not mean a 20% improvement in your overall financial life once you look under the hood:\n* **Benefits & Perks:** Does your current company offer a 401(k) match, cheap health insurance, or annual bonuses? Startups often have bare-bones benefits or expensive premiums that can eat into that 20% gain.\n* **Equity vs. Cash:** Is the 20% purely base salary, or are they factoring in illiquid stock options? (Rule of thumb: Treat early-stage equity as a lottery ticket, not guaranteed income.)\n* **After-Tax Impact:** Calculate the actual net difference in your monthly paycheck. Does that extra amount significantly change your lifestyle, help you hit a major goal (like buying a house), or just pad your savings slightly?\n\n### 2. Startup Due Diligence (Risk Assessment)\nNot all startups carry the same risk. Before jumping, evaluate their stability:\n* **Funding Stage & Runway:** How much cash do they have in the bank? A company with a 24-month runway post-Series B is very different from a Seed-stage company that needs to raise money in 6 months.\n* **Product-Market Fit:** Is the product actually selling, or are they still pivoting?\n* **Turnover:** Look at LinkedIn—have previous employees stayed 2+ years, or is there a revolving door of 6-month tenures?\n\n### 3. Career Growth & Daily Life\n* **The \"Liking Your Job\" Premium:** Bad bosses, toxic cultures, and 60-hour workweeks are real risks at startups. If your current job gives you peace of mind, great colleagues, and reasonable hours, consider how much you value that sanity.\n* **Skill Acceleration:** Startups usually offer a steeper learning curve, broader responsibilities, and faster promotions because there’s less red tape. At your current job, are you still learning, or are you stagnating?\n\n### 4. Your Personal Risk Tolerance\n* **Safety Net:** Do you have 3–6 months of emergency savings if the startup runs out of money or downsizes in a year?\n* **Life Stage:** Do you have dependents, a mortgage, or health considerations that demand stability right now? Or are you in a stage of life where you can absorb chaos and long hours in exchange for rapid experience?\n\n---\n\n### A Third Option: Leverage the Offer\nIf you truly love your current job and the *only* reason you’re considering leaving is the money, you may have leverage:\n* You don't necessarily have to say *\"Match this or I quit.\"* \n* Instead, schedule a review with your manager: *\"I've recently seen market data indicating that roles with my responsibilities are commanding ~20% higher compensation. I love working here and want to stay long-term—what would a path to adjusting my compensation to market rate look like?\"*\n\n---\n\n### Summary Checklist: What Should You Do?\n\n* **STAY IF:** Your current job still offers promotion potential, your work-life balance is critical to your mental health/family right now, and the net financial gain after taxes/benefits is negligible.\n* **TAKE THE LEAP IF:** The startup has at least 18+ months of runway, you feel your learning curve at your current job has flattened, you have an emergency fund, and you want to accelerate your career experience quickly.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 35,
+            "completion_tokens": 1598,
+            "total_tokens": 1633,
+            "cost": 0.003009375,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003009375,
+              "upstream_inference_prompt_cost": 1.3125e-05,
+              "upstream_inference_completions_cost": 0.00299625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 782,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Deciding between a stable job you genuinely like and a 20% raise at a startup comes down to **risk tolerance, career stage, and what you value most right now.** Liking your current job is a rare and valuable asset, but a 20% bump and the upside of a startup can accelerate your career.\n\nHere is a structured framework to help you make the right choice:\n\n---\n\n### 1. Do the \"Real\" Math on the 20% Raise\nA 20% bump in base salary sounds great, but at a startup, the net gain might be smaller than it appears:\n* **Benefits & Perks:** Does your current job have better health insurance, 401(k) matching, or paid time off? A loss in benefits can easily eat up 5% to 10% of that raise.\n* **Equity vs. Cash:** Is the 20% purely base salary, or does it factor in stock options? (Remember: startup stock options are paper money until a liquidity event).\n* **Hours Worked:** If the startup expects 55 hours a week compared to your current 40 hours, your *hourly rate* might actually decrease.\n\n---\n\n### 2. Vet the Startup's Health\nJoining a startup means betting on their survival. Ask these critical questions:\n* **Runway & Funding:** How much cash do they have in the bank? How many months of \"runway\" do they have before they need to raise capital or become profitable? (Less than 12–18 months is risky in today’s market).\n* **Product-Market Fit:** Are they growing revenue, or are they still trying to figure out what they sell?\n* **Leadership:** Do the founders have a track record of building successful companies, or is this their first time?\n\n---\n\n### 3. Evaluate Your Career & Life Stage\n* **Risk Capacity:** Do you have 3–6 months of emergency savings? Do you have dependents, a mortgage, or health issues that require stability? If things went wrong and the startup laid people off in 9 months, would you be okay?\n* **Growth Potential:** Have you hit a ceiling at your current job? At a startup, you often get to wear many hats and gain experience twice as fast, which could set you up for larger jumps in the future.\n\n---\n\n### 4. Don't Forget the \"Third Option\" (Negotiation)\nYou don't necessarily have to leave to get a raise. \n* If you have a solid track record, talk to your current manager about your compensation and career progression. \n* You can say: *\"I love working here and want to stay long-term, but I’ve recently seen that market rates for my role are about 15–20% higher than my current comp. What would it take to get my compensation closer to market level?\"*\n\n---\n\n### Summary: How to Decide\n\n**Stay at your current job if:**\n* Your financial situation requires predictability and strong benefits.\n* You are still actively learning and see a path for promotion/growth.\n* You deeply value work-life balance and psychological safety right now.\n\n**Take the startup offer if:**\n* You feel stagnant at your current job and crave a fast-paced environment with broader ownership.\n* You have a financial cushion and can handle 1–2 years of ambiguity.\n* The startup has at least 18+ months of runway and a product you believe in.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 35,
+            "completion_tokens": 1589,
+            "total_tokens": 1624,
+            "cost": 0.0029925,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0029925,
+              "upstream_inference_prompt_cost": 1.3125e-05,
+              "upstream_inference_completions_cost": 0.002979375
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 845,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "advise-a2": {
+      "template": "advise",
+      "prompt": "My sister asked me to lend her money again. I helped her twice before and she never paid me back, but she's family.",
+      "samples": [
+        {
+          "reply": "This is one of the hardest positions to be in because family loyalty and guilt often clash with basic financial sense. \n\nHere is the reality of your situation, along with a few ways you can handle it depending on what you feel comfortable doing.\n\n---\n\n### 1. Shift Your Mindset: It is not a \"loan\"\nThe first step is accepting reality: **If you give her this money, she will not pay it back.** \n\nTwice is a pattern. If you give her money expecting repayment, you will end up feeling used and resentful, which will harm your relationship far more than simply saying \"no.\" \n\nIf you decide to give her anything, treat it entirely as a **gift**. If you cannot afford to give it away forever—or if doing so will make you angry—**do not do it.**\n\n---\n\n### 2. Choose How You Want to Respond\n\nHere are the three best ways to handle this:\n\n#### Option A: The Firm, Kind \"No\" (Recommended)\nYou can love your sister and still have financial boundaries. You do not need to give a long explanation or justify your finances.\n\n* **What to say (Gentle & Direct):**  \n  *\"I love you, but I’m not in a position to lend any money right now.\"*\n* **What to say (Addressing the past gracefully):**  \n  *\"I’ve helped out the last couple of times, but I can't keep doing loans between us. I value our relationship too much to let money get in the middle of it.\"*\n\n*Tip: Avoid over-explaining your own expenses (e.g., \"I have to pay my car insurance\"). If you give a reason, people looking for money will try to negotiate around it.*\n\n---\n\n#### Option B: Help in Non-Monetary Ways\nSometimes people ask for money because it’s easy, not because it’s the only solution. You can offer support that doesn't involve handing over cash:\n\n* **Pay an essential bill directly:** If she needs money for groceries or an electric bill, buy a grocery gift card or pay the utility company directly. \n* **Offer practical help:** Help her look over her budget, watch her kids so she can work an extra shift, or help her connect with community resources.\n* **What to say:**  \n  *\"I can't lend cash right now, but I'd be happy to drop off some groceries this week / help pay that electric bill directly.\"*\n\n---\n\n#### Option C: A One-Time, Smaller Gift with a Final Boundary\nIf you truly feel you *must* help financially for your own peace of mind, give only what you can afford to lose, and make it clear this is the absolute last time.\n\n* **What to say:**  \n  *\"I can’t lend you what you’re asking for, but I can give you $[smaller amount] as a gift to help you out. I want to be upfront that this is the last time I’ll be able to help out financially, so I want to make sure you have time to plan ahead for next month.\"*\n\n---\n\n### Key Takeaway\n**Setting boundaries does not make you a bad sibling.** \n\nContinuing to bail someone out often enables poor financial habits and builds quiet resentment on your end. Saying \"no\" to the money request is often the healthiest thing you can do for the long-term relationship.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 28,
+            "completion_tokens": 1438,
+            "total_tokens": 1466,
+            "cost": 0.00270675,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00270675,
+              "upstream_inference_prompt_cost": 1.05e-05,
+              "upstream_inference_completions_cost": 0.00269625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 711,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is one of the hardest positions to be in because family loyalty often clashes directly with financial reality and self-respect. \n\nBefore you make a decision, here are a few key perspectives and practical ways to handle this.\n\n---\n\n### 1. The Golden Rule of Family Money\n**Never \"lend\" money to family unless you can afford to treat it as a 100% gift—financially and emotionally.**\n* If giving her this money means you will struggle, sacrifice your own goals, or feel growing resentment toward her every time you see her, **do not do it.**\n* A third unpaid loan is not a loan; it is an informal allowance.\n\n### 2. Helping vs. Enabling\nAsk yourself: *Is your money actually solving her problem, or is it just delaying her from facing it?*\n* Helping means providing temporary relief that leads to self-sufficiency.\n* Enabling means shielding someone from the consequences of their habits, which ensures the cycle continues.\n\n---\n\n### Options for How to Respond\n\n#### Option A: A Firm, Loving \"No\" (Recommended)\nYou do not owe a long explanation. Long explanations invite negotiations and guilt trips. Keep it simple, clear, and kind:\n\n* **Short & direct:** \n  > *\"I love you, but I’m not in a position to lend any money right now.\"*\n* **Addressing the pattern gently:** \n  > *\"I’ve helped out the last two times, and since those haven't been paid back, I've decided not to lend money anymore so it doesn't hurt our relationship.\"*\n* **If she pushes back:** \n  > *\"I understand you're in a tough spot, but my answer is no. I’m happy to support you in other ways, though.\"*\n\n#### Option B: Non-Monetary Support\nIf you want to help without handing over cash, offer practical assistance:\n* Pay a specific bill directly (e.g., call the utility company directly, buy groceries instead of giving cash).\n* Offer to help her look over a budget or find local resources/assistance programs.\n* *Note:* If she only wants cash and rejects other forms of help, that is a red flag.\n\n#### Option C: A Final Gift with Clear Closure\nIf you genuinely have the extra money and want to give it without expecting repayment:\n* Give it with the clear condition: *\"I can give you $X to help right now, but this is a gift, not a loan, and it’s the last time I will be able to help financially.\"*\n\n---\n\n### Dealing with the Guilt\nIt is completely normal to feel guilty saying \"no\" to a sibling. But remember:\n* **\"Family\" goes both ways.** If she respects you as family, she should respect your financial boundaries and the fact that she already owes you money.\n* **Setting a boundary is an act of protecting the relationship.** If you keep giving her money, you will eventually resent her so much that your relationship will break entirely. Saying \"no\" now protects the bond later.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 28,
+            "completion_tokens": 1339,
+            "total_tokens": 1367,
+            "cost": 0.002521125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002521125,
+              "upstream_inference_prompt_cost": 1.05e-05,
+              "upstream_inference_completions_cost": 0.002510625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 684,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is one of the hardest situations to navigate because it puts your **financial well-being and boundaries** in direct conflict with **family loyalty and guilt**.\n\nHere is the reality of the situation, along with practical ways to handle it.\n\n---\n\n### 1. The Golden Rule of Family Lending\n**If you give her money, consider it a gift, not a loan.** \n\nBecause she hasn’t paid you back the last two times, the precedent has been set: *she does not treat money from you as a debt that needs to be settled.* If you give her money expecting repayment, you will likely lose both the money and your peace of mind, which breeds deep resentment. \n\nAsk yourself: **Can I afford to give this money away completely right now without feeling angry or financially strained?**\n* If the answer is **no**, you cannot give it to her.\n* If the answer is **yes**, you still need to decide if giving it helps her or just enables a cycle.\n\n---\n\n### 2. How to Say \"No\" (Scripts You Can Use)\n\nYou can say \"no\" while still being kind, clear, and loving. You do not need to over-explain or justify your own finances.\n\n#### Option A: Direct and clear about the past (Best for long-term boundaries)\n> *\"I love you and want to support you, but I can’t lend you any more money while the previous two loans are still unpaid. I have to stick to my own financial boundaries right now.\"*\n\n#### Option B: Soft but firm (Focuses on your own situation)\n> *\"I'm sorry, but I’m not in a position to lend out money right now. My budget doesn't allow for it.\"*\n*(If she pushes, repeat: \"It’s just not an option for me right now.\")*\n\n#### Option C: Offering non-financial help (Shows you care about the crisis, not the wallet)\n> *\"I can't give you cash, but I’d be happy to help you in another way—I can help you look over your budget, buy a few groceries, or help you figure out a plan.\"*\n\n---\n\n### 3. Key Things to Keep in Mind\n\n* **Saying \"no\" does not make you a bad sibling:** Being family means offering love, emotional support, and presence. It does *not* mean acting as an unconditional, interest-free bank with zero accountability.\n* **Resentment destroys relationships faster than boundaries:** Saying \"no\" might cause temporary tension or awkwardness. But giving money and secretly resenting her for not paying it back will permanently damage how you feel about her.\n* **You are not responsible for her reaction:** She may act hurt, angry, or try to guilt-trip you. That is a natural reaction when someone hits a boundary they aren’t used to. Stay calm and don't get pulled into an argument.\n\n**Bottom line:** Protect your finances and your relationship by drawing the line here. You’ve already helped twice; you have been more than generous.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 28,
+            "completion_tokens": 1457,
+            "total_tokens": 1485,
+            "cost": 0.002742375,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002742375,
+              "upstream_inference_prompt_cost": 1.05e-05,
+              "upstream_inference_completions_cost": 0.002731875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 804,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "draft-a1": {
+      "template": "draft",
+      "prompt": "Draft a message declining a friend's wedding invitation for me.",
+      "samples": [
+        {
+          "reply": "Here are a few options, ranging from warm and casual to slightly more formal, so you can choose the one that best fits your friendship.\n\n### Option 1: Warm and thoughtful (Best for a good friend)\n> \"Dear [Name],  \n> \n> Thank you so much for the invitation to your wedding! I am so happy for you and [Partner's Name].  \n> \n> Unfortunately, I won't be able to make it to celebrate with you [optional: due to a prior commitment / work / travel]. I’m so bummed to miss it, but I know it is going to be an absolutely incredible day. \n> \n> I’d love to get together soon to toast to you both and celebrate properly. Wishing you both a lifetime of happiness!  \n> \n> Warmly,  \n> [Your Name]\"\n\n---\n\n### Option 2: Short and sweet (Best for a text message or RSVP note)\n> \"Hey [Name]! Thank you so much for inviting me to your big day. Sadly, I won’t be able to attend, but I’m sending you and [Partner's Name] so much love. I hope you have the most magical day and I can’t wait to see all the photos! Congratulations!\"\n\n---\n\n### Option 3: For a close friend (More personal/emotional)\n> \"Dear [Name],  \n> \n> I was so thrilled to receive your wedding invitation! It means the world to be included, which makes it even harder to say that I won’t be able to attend [optional: add a brief reason, e.g., 'due to an unavoidable family event that weekend']. \n> \n> I am truly heartbroken to miss your big day, but I will be cheering you and [Partner's Name] on from afar. Let’s please grab dinner [next week / next month / after the honeymoon] so I can hear all about the planning!  \n> \n> Sending you both the biggest hugs,  \n> [Your Name]\"\n\n---\n\n### Option 4: If it’s a destination wedding\n> \"Hi [Name],  \n> \n> Thank you so much for the invite to your wedding in [Location]! It sounds like it’s going to be an amazing celebration. Unfortunately, I won't be able to make the trip, but I will be there in spirit. Wishing you and [Partner's Name] the most wonderful wedding day and an incredible start to your marriage!  \n> \n> Best,  \n> [Your Name]\"\n\n---\n\n**Tip:** Be sure to officially mark \"Decline\" on their formal RSVP card or website as well, so they have an accurate head count for their caterer!",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 13,
+            "completion_tokens": 1230,
+            "total_tokens": 1243,
+            "cost": 0.002311125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002311125,
+              "upstream_inference_prompt_cost": 4.875e-06,
+              "upstream_inference_completions_cost": 0.00230625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 637,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few options, ranging from close friends to more casual acquaintances. Choose the one that best fits your relationship with them.\n\n### Option 1: For a close friend (Warm & personal)\n> Dear [Friend's Name],\n> \n> Thank you so much for inviting me to celebrate your big day! I am absolutely thrilled for you and [Partner's Name]. \n> \n> Unfortunately, I won’t be able to make it to the wedding due to [a prior commitment / travel / a family conflict]. I am so bummed to miss it, but I know it is going to be an incredible day. \n> \n> I’ll be thinking of you both and sending so much love. Let’s make sure to get together soon so I can celebrate you properly—drinks/dinner are on me!\n> \n> Warmly,  \n> [Your Name]\n\n---\n\n### Option 2: For a general/casual friend (Polite & straightforward)\n> Hi [Friend's Name],\n> \n> Thank you so much for the invitation to your wedding! \n> \n> Sadly, I won’t be able to attend due to a scheduling conflict. I’m so sorry to miss out on the celebration, but I’m wishing you and [Partner's Name] the absolute best as you start this next chapter together. \n> \n> I hope you have a magical wedding day!\n> \n> Best,  \n> [Your Name]\n\n---\n\n### Option 3: For a destination or out-of-town wedding\n> Hi [Friend's Name],\n> \n> Congratulations to you and [Partner's Name]! Thank you so much for including me in your wedding plans. \n> \n> As much as I would love to be there in [Location] to celebrate with you, I unfortunately won't be able to make the trip. \n> \n> I'll be cheering you on from afar and can't wait to see all the photos. Wishing you both a lifetime of happiness!\n> \n> Warmly,  \n> [Your Name]\n\n---\n\n### Option 4: Short & sweet (Best for a text or RSVP note)\n> Hi [Friend's Name]! Thank you so much for the invite to your wedding. Unfortunately, I won't be able to make it, but I am so happy for you and [Partner's Name]. Wishing you both the most wonderful wedding day and a lifetime of love!\n\n---\n\n**Tip:** Be sure to formally submit your decline via their official RSVP method (website or mail-in card) in addition to sending a text or message, so they can keep an accurate headcount for their venue.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 13,
+            "completion_tokens": 1371,
+            "total_tokens": 1384,
+            "cost": 0.0025755,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0025755,
+              "upstream_inference_prompt_cost": 4.875e-06,
+              "upstream_inference_completions_cost": 0.002570625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 779,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few options, ranging from casual to a bit more formal, depending on your relationship with the friend.\n\n### Option 1: Warm and casual (Best for a close friend via text)\n> \"Thank you so much for the invitation to your wedding! I am so thrilled for you and [Partner's Name]. Unfortunately, I won’t be able to make it to celebrate with you on the big day. I’m so bummed to miss it, but I’ll be thinking of you both and sending so much love. Let’s definitely get together soon so I can celebrate you properly! ❤️\"\n\n---\n\n### Option 2: Short and polite (Best if you have a prior conflict)\n> \"Thank you so much for thinking of me and inviting me to your wedding! Unfortunately, I have an unavoidable prior commitment and won't be able to attend. I know it’s going to be an incredible day, and I wish you and [Partner's Name] all the absolute best as you start this next chapter. Sending you both lots of love!\"\n\n---\n\n### Option 3: For a destination or out-of-town wedding\n> \"Thank you so much for the wedding invite! I would love nothing more than to be there, but unfortunately, I won’t be able to make the trip to [City/Location]. I’m so sad to miss it, but I can’t wait to see the photos and hear all about it. Wishing you and [Partner's Name] the most amazing wedding day and a lifetime of happiness together!\"\n\n---\n\n### Option 4: Brief and traditional (Best for an email or physical RSVP note)\n> \"Thank you so much for the kind invitation to your wedding. Regretfully, I am unable to attend, but I will be celebrating you in spirit! Wishing you and [Partner's Name] a wonderful wedding day and all the best for a happy future together.\"\n\n---\n\n**Tip:** If they have a wedding website or a physical RSVP card, be sure to officially mark yourself as \"Declined\" there as well so they have an accurate headcount for their caterer.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 13,
+            "completion_tokens": 1065,
+            "total_tokens": 1078,
+            "cost": 0.00200175,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00200175,
+              "upstream_inference_prompt_cost": 4.875e-06,
+              "upstream_inference_completions_cost": 0.001996875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 614,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "draft-a2": {
+      "template": "draft",
+      "prompt": "Draft an email telling my landlord I'll be a week late on rent for me.",
+      "samples": [
+        {
+          "reply": "Here are three options, ranging from standard to short and direct. Choose the one that best fits your relationship with your landlord.\n\n### Option 1: Standard & Professional (Recommended)\n*Best for most situations—polite, responsible, and clear.*\n\n**Subject:** Rent Payment Delay - Unit [Your Apartment/House Number] - [Your Name]\n\nDear [Landlord's Name],\n\nI am writing to let you know that my rent payment for [Month] will be delayed by one week. I experienced [an unexpected expense / a brief delay in my payroll], but I will be able to pay the full amount of $[Rent Amount] on **[Exact Date you will pay, e.g., Friday, November 10th]**. \n\nI understand that a late fee may apply according to our lease agreement, and I am prepared to include that with my payment. \n\nI apologize for any inconvenience this may cause and appreciate your understanding. Please let me know if you have any questions.\n\nBest regards,\n\n[Your Name]  \n[Your Phone Number]  \n[Your Unit Number]  \n\n---\n\n### Option 2: Short & Direct\n*Best if you rent from a large property management company or prefer a strictly business tone.*\n\n**Subject:** Late Rent Notice: [Your Name] - Unit [Your Unit Number]\n\nDear [Landlord/Property Manager Name],\n\nPlease be advised that my rent payment for [Month] will be submitted one week late. The full payment will be made on **[Exact Date you will pay]**. \n\nI apologize for the delay and will include any applicable late fees as outlined in my lease. Thank you for your patience.\n\nSincerely,\n\n[Your Name]  \n[Your Unit Number]  \n\n---\n\n### Option 3: Friendly & Personal\n*Best if you have a close or very friendly relationship with an individual landlord.*\n\n**Subject:** Quick update regarding [Month] rent - [Your Name]\n\nHi [Landlord's Name],\n\nI hope you’re having a good week. \n\nI’m reaching out to give you an early heads-up that my rent payment for this month will be about a week late due to [brief reason, e.g., a temporary banking issue / an unexpected bill]. I will send the full payment over to you on **[Exact Date you will pay]**. \n\nI’m very sorry for the inconvenience, and I truly appreciate your understanding. \n\nBest,\n\n[Your Name]  \n[Your Unit Number]  \n\n---\n\n### 💡 A quick tip before sending:\n* **Give an exact date:** Always provide a specific day rather than just saying \"in a week.\" It reassures the landlord that you have a plan.\n* **Check your lease:** Check if you have a grace period (many leases offer a 3 to 5-day grace period before late fees kick in).",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 18,
+            "completion_tokens": 1146,
+            "total_tokens": 1164,
+            "cost": 0.0021555,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0021555,
+              "upstream_inference_prompt_cost": 6.75e-06,
+              "upstream_inference_completions_cost": 0.00214875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 534,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few options, ranging from standard/professional to short and direct. Choose the one that best fits your relationship with your landlord.\n\n### Option 1: Standard & Professional (Recommended)\n**Subject:** Rent Payment Update for [Your Apartment/Unit Number] – [Your Name]\n\nDear [Landlord's Name],\n\nI am writing to inform you that my rent payment for [Month] will unfortunately be about a week late. Due to [brief reason, e.g., an unexpected expense / a slight delay in my paycheck], I will not be able to pay on the 1st as usual. \n\nI will be submitting the full payment of $[Rent Amount] on **[Exact Date you will pay, e.g., Friday, November 8th]**. \n\nI understand that a late fee may apply per our lease agreement, and I am prepared to include that with my payment. I sincerely apologize for any inconvenience this may cause and appreciate your understanding. \n\nPlease let me know if you need any additional information from me in the meantime.\n\nBest regards,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### Option 2: Short & Direct (Best for property management companies)\n**Subject:** Late Rent Notice: Unit [Your Unit Number] – [Your Name]\n\nDear [Landlord/Property Manager Name],\n\nPlease be advised that my rent payment for [Month] will be delayed by one week. \n\nI will make the full payment of $[Rent Amount], along with any applicable late fees, on **[Exact Date you will pay]**. \n\nI apologize for the delay and thank you for your patience and understanding.\n\nSincerely,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### Tips before sending:\n* **Send it early:** Send this *before* rent is due. Landlords appreciate proactive communication far more than being chased down after the due date.\n* **Give an exact date:** Always specify the exact calendar date you will pay, rather than just saying \"in a week.\"\n* **Check your lease:** Double-check if you have a grace period (often 3–5 days) or what the specific late fee amount is so there are no surprises.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 1003,
+            "total_tokens": 1022,
+            "cost": 0.0037755,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0037755,
+              "upstream_inference_prompt_cost": 1.425e-05,
+              "upstream_inference_completions_cost": 0.00376125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 516,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are two options you can choose from—one that is standard and polite, and a shorter, more direct one. \n\n### Option 1: Standard & Polite (Recommended)\n**Subject:** Rent Payment for [Month] – Unit [Your Apartment/Unit Number] – [Your Full Name]\n\nDear [Landlord/Property Manager's Name],\n\nI am writing to let you know in advance that my rent payment for [Month] will be approximately one week late. \n\n[Optional: Due to an unexpected delay with my paycheck / an unforeseen personal expense], I will not be able to pay on the 1st as usual. However, I will be able to make the full payment of $[Rent Amount] on **[Specific Date - e.g., Friday, October 8th]**.\n\nI understand that a late fee may apply according to our lease agreement, and I am prepared to pay that along with the rent. \n\nI sincerely apologize for any inconvenience this may cause and truly appreciate your understanding and patience. Please let me know if you have any questions or need anything else from me in the meantime.\n\nBest regards,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]  \n\n---\n\n### Option 2: Short & Direct\n**Subject:** Notice of Late Rent – Unit [Your Apartment/Unit Number]\n\nHi [Landlord's Name],\n\nI am writing to inform you that my rent payment for [Month] will be delayed by one week. I will be submitting the full payment of $[Rent Amount] on **[Specific Date]**.\n\nI apologize for the delay and will include any applicable late fees as outlined in my lease. \n\nThank you for your understanding.\n\nBest,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### A quick tip before sending:\n* **Give an exact date:** Landlords appreciate certainty. Instead of saying \"in a week,\" give the exact calendar date you will pay.\n* **Send it early:** Send this a few days *before* rent is due if possible; landlords are much more lenient when you notify them ahead of time rather than after the due date.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 1047,
+            "total_tokens": 1066,
+            "cost": 0.0039405,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0039405,
+              "upstream_inference_prompt_cost": 1.425e-05,
+              "upstream_inference_completions_cost": 0.00392625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 580,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "create-a1": {
+      "template": "create",
+      "prompt": "Tell me a joke about programmers.",
+      "samples": [
+        {
+          "reply": "A programmer’s spouse tells them, \"While you're at the grocery store, buy a loaf of bread. Oh, and if they have eggs, buy a dozen.\"\n\nA little while later, the programmer returns home with 12 loaves of bread.\n\nThe spouse asks, \"Why on earth did you buy 12 loaves of bread?!\"\n\nThe programmer replies, \"They had eggs.\"",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 7,
+            "completion_tokens": 496,
+            "total_tokens": 503,
+            "cost": 0.000932625,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.000932625,
+              "upstream_inference_prompt_cost": 2.625e-06,
+              "upstream_inference_completions_cost": 0.00093
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 413,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "A programmer’s spouse sends him to the grocery store with instructions:\n\n\"Buy a loaf of bread. If they have eggs, buy a dozen.\"\n\nA little while later, the programmer comes home with 12 loaves of bread.\n\nHis spouse asks, \"Why on earth did you buy 12 loaves of bread?!\"\n\nThe programmer replies, \"They had eggs.\"",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 7,
+            "completion_tokens": 475,
+            "total_tokens": 482,
+            "cost": 0.00089325,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00089325,
+              "upstream_inference_prompt_cost": 2.625e-06,
+              "upstream_inference_completions_cost": 0.000890625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 397,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "A programmer’s wife asks him to go to the grocery store. \n\nShe says, \"Buy a loaf of bread. And if they have eggs, buy a dozen.\"\n\nA little later, the programmer returns home with 12 loaves of bread.\n\nHis wife looks at him, confused, and asks, \"Why on earth did you buy 12 loaves of bread?!\"\n\nThe programmer replies, \"They had eggs.\"",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 7,
+            "completion_tokens": 447,
+            "total_tokens": 454,
+            "cost": 0.00084075,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00084075,
+              "upstream_inference_prompt_cost": 2.625e-06,
+              "upstream_inference_completions_cost": 0.000838125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 358,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "create-a2": {
+      "template": "create",
+      "prompt": "Write a short story about a lighthouse keeper.",
+      "samples": [
+        {
+          "reply": "The spiral staircase of Widow’s Rock had one hundred and forty-two steps, and Arthur felt every single one of them in his marrow. At seventy-one, his knees were a more accurate barometer than the brass instrument mounted in the parlor below. Tonight, they burned like hot wire. \n\nA nor’easter was clawing its way up the coast.\n\nArthur reached the watchroom, slightly winded, and set down his thermos of chicory coffee. Outside the curved glass, the Atlantic was a cauldron of black froth, the sky bruised purple by the falling dusk. The wind threw handfuls of gravel-sized spray against the storm panes, a frantic, rattling percussion.\n\nHe checked his pocket watch: 5:48 PM. Twelve minutes until sunset. \n\nArthur climbed the final iron ladder into the lantern room. Here sat the heart of the tower: a first-order Fresnel lens, six feet wide and twelve feet tall, a magnificent beehive of brass and hand-cut French crystal. \n\nTo the mainland, Arthur was an anachronism. A letter from the Department of Transportation sat on his kitchen table downstairs, heavy with polite bureaucracy. *Automation scheduled for the spring,* it read. *A solar-powered beacon on a steel skeleton.* They said a machine didn't get tired. A machine didn't demand a pension. \n\n\"A machine doesn't give a damn, either,\" Arthur muttered to the glass.\n\nHe struck a long match, sheltering the flame with his calloused hand, and touched it to the vaporized kerosene burner. A brilliant, blinding white blossom bloomed inside the prisms. Instantly, the lens caught the flame, multiplying it, bending it, and hurling a four-million-candlepower spear of light twenty miles out into the raging dark.\n\nNext came the weight. Arthur cranked the heavy iron cable that hung down the hollow core of the tower, winding the clockwork mechanism that rotated the lens. Once released, the great glass jewel began its slow, silent waltz—two seconds of light, six seconds of dark. *Flash. Sweep. Dark.*\n\nArthur watched the beam cut through the rain. It was a rhythm he had lived by for forty years. It was the heartbeat of the coast.\n\nAt 2:15 AM, the storm peaked. \n\nA rogue gust hit the tower with the force of an artillery shell. The granite structure groaned, a deep, shuddering sound that traveled from the sea floor to the copper dome. Then came a sharp, metallic *ping*, followed by the sickening whine of unspooling cable.\n\nThe light stopped sweeping. It stood frozen, pointing uselessly out toward a single patch of empty, churning foam.\n\nArthur bolted up the ladder. The cable had slipped the drum, jammed tight in the gear teeth. A stationary light was a death sentence to a mariner; in a storm, a fixed beam looked like a star, a fishing boat, or a buoy. They would steer straight into the jagged teeth of Widow’s Rock.\n\nHe tried the hand crank. It was frozen fast. The gears were locked.\n\nArthur didn’t panic. Panic was a luxury for men on the mainland. He grabbed the heavy leather work gloves hanging from the railing, stepped onto the iron catwalk beneath the lens, and planted his boots against the floor. \n\nHe leaned his shoulder into the heavy brass carriage of the multi-ton lens. \n\n\"Move, you bastard,\" he grunted.\n\nOn its mercury bath, the lens possessed immense momentum once moving, but starting it was like pushing a dead locomotive. His boots slipped on condensation. He dug in, screaming into the howl of the storm, and shoved. \n\nThe brass groaned, then shifted. The light swept. \n\n*One-one-thousand, two-one-thousand...* Arthur pushed, walking the circle. *Step, step, push.* He counted the seconds in his head, matching the internal metronome forty years had carved into his skull. \n\nThrough the salt-streaked glass, as his light swept the western shoals, he saw it: the low, desperate silhouette of a coastal freighter, hopelessly off course, running blind before the gale. She was heading dead-on for the outer reef.\n\nArthur pushed harder, his heart hammering against his ribs like a trapped bird. \n\n*Sweep. Dark. Flash.*\n\nOn the third rotation, the freighter’s searchlight flickered on, frantically sweeping the water. They had seen the flash. They knew where the rock was. In the glare of his beam, Arthur watched the ship’s bow begin a slow, agonized turn away from the white water of the reef, fighting the surf, clawing its way back toward the deep channel.\n\nArthur didn't stop. He couldn't.\n\nFor four hours, an old man walked in a circle at the top of the world. He pushed until his shoulders went numb, until the copper taste of exhaustion filled his mouth, until the storm wore itself out and the black sky softened into the pale, bruised gray of dawn.\n\nBy 6:30 AM, the wind was just a ragged whisper. The freighter was a distant smudge on the calm horizon, steaming safely toward the harbor.\n\nArthur finally let go of the brass carriage. He slumped against the railing, his chest heaving, his hands trembling so violently he couldn't unbutton his gloves. He extinguished the burner.\n\nThe lantern room went quiet, save for the steady drip of condensation and the crying of the gulls greeting the morning. \n\nArthur looked out at the vast, uncaring ocean, then down at the quiet mechanism that had failed, and finally at his own blistered palms. He thought of the letter on his kitchen table, of the steel towers and solar panels that would soon replace him. \n\nHe smiled a faint, tired smile, wiped a smear of grease from the crystal lens with the cuff of his flannel shirt, and began the long walk down the stairs.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 2335,
+            "total_tokens": 2345,
+            "cost": 0.00876375,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00876375,
+              "upstream_inference_prompt_cost": 7.5e-06,
+              "upstream_inference_completions_cost": 0.00875625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 1087,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "For thirty years, Arthur had measured his life in revolutions of light. \n\nEvery evening at dusk, his knees complained against the one hundred and forty-two cast-iron steps that spiraled up the spine of the Beacon of St. Jude. The tower stood upon a jagged fang of granite five miles off the Maine coast, a place where the sea and sky conducted an endless, violent argument.\n\nAt the summit sat the lantern room, housing a first-order Fresnel lens. It was a masterpiece of concentric glass prisms, a towering beehive that could catch a modest flame and throw it twenty miles into the dark. Arthur treated it like a living creature. He polished each facet with chamois cloth until it sang with friction, leaving not a smudge of soot or a crystal of dried salt.\n\nOn the third Tuesday of November, the barometer plunged like a stone down a well.\n\nBy midnight, a nor’easter had swallowed the Atlantic. Rain lashed the lantern room glass in deafening sheets, sounding like shovelfuls of gravel flung against the panes. Down below, forty-foot swells slammed into the rock, sending tremors up through the stone foundation that Arthur felt in the soles of his boots. \n\nHe did not sleep during a gale. He sat on a wooden stool beside the revolving pedestal, listening to the heavy ticking of the clockwork weights that kept the lens turning. *Tick. Clack. Sweep.* Every fifteen seconds, four thousand pounds of brass and crystal cast a brilliant white swath into the churning void.\n\nAround two in the morning, a hollow *thud* shook the southern pane. \n\nArthur grabbed his oil lamp and stepped out onto the gallery. The wind nearly tore the heavy wool coat from his shoulders, the freezing spray blinding him instantly. Shielding his eyes, he found the source: a storm petrel, its slate-gray feathers sodden and exhausted, clinging desperately to the iron safety rail. It had been drawn to the light, battered nearly to death by the squall.\n\nGently, his calloused hands scooped up the trembling bird. He brought it inside, out of the howling fury, and set it on a dry rag beside the warm brass flue of the lamp. The petrel blinked, tucked its head beneath a wing, and shivered.\n\n\"Rest a while, sailor,\" Arthur murmured. \"You’ve got nowhere to be till morning.\"\n\nAs he turned back to the glass, his eyes caught a flicker of crimson in the blackness below. \n\nArthur raised his brass binoculars, wiping away the condensation with the edge of his sleeve. Through the rain-streaked darkness, he spotted the running lights of a coastal schooner, violently listing in the shoals. She had lost her mainsail, drifting dangerously close to the Blind Calf—a sunken reef that had ripped the belly out of a dozen ships before Arthur’s time.\n\nThey were blind in the squall, heading straight for the teeth of the rock.\n\nArthur didn't panic; panic was a luxury for men on the mainland. He checked the mantle's flame, adjusting the airflow to push the wick to its brightest white-hot intensity. Then, moving to the manual rotation lever, he uncoupled the clockwork. \n\nWith both hands gripping the cold steel bar, Arthur braced his boots against the floor. He manually paused the sweep, pinning the full, blinding brilliance of the beam directly onto the boiling surf over the Blind Calf reef. \n\n*Look at the water,* he willed them across the roar of the gale. *See the white water.*\n\nFor three agonizing minutes, his muscles burned as he held the four-ton lens steady against its counterweights. Down in the trough, the schooner’s lights dipped, disappeared, and rose again. Suddenly, her helm swung hard to port. The ship’s captain had seen the foam erupting over the reef in the spotlight’s glare. She skirted the rocks by mere yards, slipping into the deep, safe channel of the open bay.\n\nThrough the shrieking wind, a low, double blast of the ship’s horn drifted up to the tower—a desperate, grateful salute.\n\nArthur released his breath in a plume of white vapor. He engaged the clockwork once more, and the great eye of St. Jude resumed its patient, rhythmic circle. *Tick. Clack. Sweep.*\n\nBy dawn, the nor'easter had blown itself out, leaving the sea a bruised, rolling purple beneath a pale lavender sky. Arthur stepped onto the exterior gallery into the crisp, calm air. \n\nOn his open palm sat the storm petrel. It tested its wings once, twice, then launched itself into the morning breeze, carving a graceful arc toward the horizon.\n\nArthur watched it go until it was only a speck against the sunrise. Then, picking up his bucket and chamois cloth, he turned back to the glass to wipe away the salt of the night before.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 1843,
+            "total_tokens": 1853,
+            "cost": 0.00691875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00691875,
+              "upstream_inference_prompt_cost": 7.5e-06,
+              "upstream_inference_completions_cost": 0.00691125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 825,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "The iron spiral staircase had one hundred and eighty-four steps. Arthur knew this because he had climbed them twice a day for thirty-two years, and his left knee registered every single one. \n\nAt seventy, Arthur’s face was a map drawn by sea salt and nor’easters. His world was the size of a postage stamp: a jagged knuckle of black granite called Maiden’s Shoal, miles off the ragged coast of Maine, crowned by sixty feet of whitewashed brick. \n\nAt the summit sat the lantern room, housing the magnificent, twelve-foot-tall Fresnel lens. To Arthur, it wasn't machinery; it was a breathing jewel, a beehive of concentric brass and hand-cut Parisian glass that captured the flame of the oil vapor lamp and hurled it twenty miles into the dark.\n\nThe barometer had been plummeting since noon. By twilight, the Atlantic was no longer water; it was an engine of black froth and fury. The wind shrieked through the tower’s iron stays, a sound like tearing canvas. \n\nArthur trimmed the wick, lit the mantle, and watched the amber glow catch. He released the brass brake of the clockwork mechanism. With a heavy, rhythmic *clack-whir*, the great lens began its slow, majestic waltz, sweeping four white spokes of light across the raging wilderness below.\n\nDown in the watchroom, the radio crackled through the static. \n\n*“...Mayday… schooner… rudder fractured… carrying east toward the Shoal…”*\n\nThe voice was swallowed by a roar of interference. Arthur leaned over the radio, shouting into the receiver, but got only the hiss of the storm. He knew the waters around the Shoal. The \"Devil's Ribs\"—a shelf of submerged granite knives—lay two miles southwest. If a ship without a rudder drifted blind out there, the sea would break it into matchsticks within minutes.\n\nSuddenly, a violent shudder racked the tower. \n\nIt wasn't a wave; it was an internal groan of dying metal. Above him, the rhythmic *clack-whir* hitched, screeched, and stopped. \n\nArthur bolted up the final iron stairs. Inside the lantern room, the heavy weight that drove the rotation had snapped its steel cable, plummeting down the hollow central shaft. The great lens sat motionless. Its beam was frozen, casting a single, useless spear of light into the void. A stationary light was a death sentence; without the signature three-second flash, no captain could tell the Maiden’s Shoal from a fishing boat or a star, until their hull was already being torn open.\n\nArthur didn’t curse. There was no time. \n\nHe gripped the bronze push-bar on the brass carriage beneath the multi-ton lens. Balanced on a bath of liquid mercury, the lens was engineered to move with ease, but fighting the gale-force vibrations that rattled the tower was like pushing an iron wall. \n\nHe leaned his weight into it. His boots slipped on the brass-grated floor. \n\n*Move, damn you.*\n\nWith a groan, the lens budged. Arthur pushed. One step. Two steps. Three. \n\n*One-Mississippi, two-Mississippi, sweep.*\n\nHe found the rhythm in his blood. He became the clockwork. \n\nOutside, the storm hurled tons of freezing water against the thick glass panes, booming like cannon fire. The cold seeped through the iron, biting into his arthritic joints. His breath plumed white in the lantern heat. His chest burned, his shoulders screamed, but he kept walking the circle.\n\n*Push. Step. Sweep.*\n\nHe walked through midnight. He walked through two in the morning, his hands blistering through his wool mittens, his vision blurring. He thought of the men in the dark below, terrified, clutching the rigging of a blind ship, praying for the flash of Maiden's Shoal to tell them they were too close to the teeth. \n\n*Don't you dare stop, old man.*\n\nAt four in the morning, a blinding rogue wave struck the lantern room, cracking an outer pane of storm glass. A deluge of icy spray hit Arthur’s face. He stumbled, fell to his knees, and the lens ground to a halt. \n\nGasping, wiping brine from his eyes, he looked out into the black churn. For a fraction of a second, in the dark, he saw a phantom shape: the broken masts of a schooner, violently close, riding the crest of a massive swell. \n\nRoaring against the wind, Arthur dragged himself up, locked his aching elbows against the bar, and threw his entire body weight forward. \n\nThe lens turned. The beam flared across the sea, catching the schooner full in its glare, revealing the white water of the Devil’s Ribs just two hundred yards off their port bow. \n\nArthur didn't stop to see if they managed to throw an anchor or catch the wind. He just kept walking.\n\n*Push. Step. Sweep.*\n\nWhen the sky finally bruised into a pale, exhausted violet, the wind slowed from a scream to a sullen moan. \n\nArthur’s legs gave out. He collapsed onto the iron floor, his back propped against the pedestal, his chest heaving. The sun cracked the horizon, a blade of cold gold piercing the retreating clouds. \n\nSlowly, painfully, Arthur dragged his chin up to the salt-crusted glass. \n\nA mile past the dangerous reefs, bobbing battered but upright in the calmer swells of the bay, was the schooner. Her sails were shredded, but her hull was whole. \n\nArthur sat alone in the quiet tower, listening to the gentle lap of the tired sea. A slow, faint smile cracked his chapped lips. \n\nHe reached up, turned the valve on the lantern, and extinguished the flame. \n\n\"Time for tea,\" he whispered to the glass.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 9,
+            "completion_tokens": 2222,
+            "total_tokens": 2231,
+            "cost": 0.004169625,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.004169625,
+              "upstream_inference_prompt_cost": 3.375e-06,
+              "upstream_inference_completions_cost": 0.00416625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 976,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "edit-a1": {
+      "template": "edit",
+      "prompt": "Edit this to make it better: Thanks for meeting with me yesterday. I thought it went well and I wanted to follow up on a couple of the things we talked about. First, I can start on the 15th if that works for you. Second, I had a question about the benefits package that I forgot to ask. Let me know when would be a good time to talk about it. Looking forward to hearing from you.",
+      "samples": [
+        {
+          "reply": "Here are a few ways to improve this, depending on how formal you want to be:\n\n### Option 1: Professional and Polished (Recommended)\n> Thank you for taking the time to meet with me yesterday. I really enjoyed our conversation and am very excited about this opportunity. \n> \n> Following up on our discussion, I can confirm that a start date of the 15th works well for me. Additionally, I have a quick follow-up question regarding the benefits package. Please let me know if you have a few minutes to connect by phone, or if you would prefer I send it over email.\n> \n> I look forward to hearing from you.\n\n---\n\n### Option 2: Short and Direct\n> Thanks for meeting with me yesterday—it was great speaking with you. \n> \n> To follow up on our discussion, a start date of the 15th works perfectly for me. I also had a quick question regarding the benefits package; let me know when you might have a few minutes for a brief call, or if email is easier.\n> \n> Looking forward to the next steps!\n\n---\n\n### Option 3: Efficient (Best if it’s a simple question)\n*Tip: Asking the question directly saves an extra round of emails.*\n\n> Thank you for meeting with me yesterday; I really enjoyed our conversation. \n> \n> Following up on our chat, I am available to start on the 15th. Also, could you provide a bit more detail on the benefits package, specifically regarding **[health insurance / PTO / retirement matching]**? \n> \n> Thanks again, and I look forward to hearing from you.\n\n---\n\n### Key Improvements Made:\n*   **Replaced \"I thought it went well\":** While natural to think, phrasing it as *\"I really enjoyed our conversation\"* sounds more confident and professional.\n*   **Removed \"that I forgot to ask\":** There is no need to point out an oversight; framing it simply as a *\"follow-up question\"* is standard practice.\n*   **Offered email as an alternative:** Gives them the option to reply quickly in writing rather than having to schedule another phone call.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 89,
+            "completion_tokens": 1204,
+            "total_tokens": 1293,
+            "cost": 0.002290875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002290875,
+              "upstream_inference_prompt_cost": 3.3375e-05,
+              "upstream_inference_completions_cost": 0.0022575
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 734,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few ways to improve your message, depending on how formal you want to be:\n\n### Option 1: Professional & Polished (Recommended)\n> \"Thank you for taking the time to meet with me yesterday. I really enjoyed our conversation and wanted to follow up on a couple of details. \n>\n> First, I can confirm that a start date of **[Month] 15th** works well for me. Additionally, I had a quick question regarding the benefits package. \n>\n> Please let me know when you might have a few minutes for a brief call, or if you'd prefer I send my question over email. Looking forward to hearing from you.\"\n\n---\n\n### Option 2: Clear & Bulleted (Best for busy hiring managers)\n> \"Thank you for meeting with me yesterday—it was great speaking with you. I wanted to quickly follow up on two items from our discussion:\n>\n> * **Start Date:** I can confirm my availability to start on **[Month] 15th**.\n> * **Benefits:** I have a quick follow-up question regarding the benefits package.\n>\n> Let me know when you might have a few minutes to connect, or if you'd prefer I email the question directly. I look forward to your reply.\"\n\n---\n\n### Option 3: Warm & Casual (Best if the company culture is relaxed)\n> \"Thanks for meeting with me yesterday! I really enjoyed our chat and wanted to follow up on a couple of things. \n> \n> First, starting on the 15th works great on my end. I also had a quick question about the benefits package—let me know when it might be a good time to catch up briefly, or I'm happy to ask over email. \n> \n> Looking forward to speaking soon!\"\n\n---\n\n### Why these changes help:\n* **Removes \"I thought it went well\":** Replacing this with *\"I enjoyed our conversation\"* sounds more confident and natural.\n* **Removes \"that I forgot to ask\":** Phrasing it as a *\"quick follow-up question\"* sounds proactive rather than forgetful.\n* **Adds email as an option:** Offering to ask the question via email gives the other person flexibility if they don't have time for a call.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 89,
+            "completion_tokens": 1351,
+            "total_tokens": 1440,
+            "cost": 0.0025665,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0025665,
+              "upstream_inference_prompt_cost": 3.3375e-05,
+              "upstream_inference_completions_cost": 0.002533125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 858,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few ways to improve the email, depending on how formal you want to be:\n\n### Option 1: Professional & Polished (Recommended)\n> Hi [Name],\n> \n> Thank you for taking the time to meet with me yesterday. I really enjoyed our conversation and remain very excited about the role. \n> \n> I wanted to follow up on a couple of quick details:\n> * **Start Date:** I can confirm that [Month] 15th works well on my end.\n> * **Benefits:** I have a quick follow-up question regarding the benefits package. \n> \n> Please let me know if you have a few minutes for a brief call, or if you’d prefer I send the question over email. \n> \n> Best regards,  \n> [Your Name]\n\n---\n\n### Option 2: Short & Direct (Best for a casual work culture)\n> Hi [Name],\n> \n> Thanks for the great conversation yesterday! \n> \n> Following up on our chat, a start date of [Month] 15th works perfectly for me. Also, I had a quick question regarding the benefits package—let me know when you might have a few minutes to connect, or if email is easier.\n> \n> Looking forward to hearing from you!\n> \n> Best,  \n> [Your Name]\n\n---\n\n### Key Improvements Made:\n* **Removed self-criticism:** Changed *\"that I forgot to ask\"* to *\"a quick follow-up question\"*, which sounds more professional.\n* **More confident tone:** Replaced *\"I thought it went well\"* with *\"I really enjoyed our conversation.\"*\n* **Clearer formatting:** Added bullet points/spacing so the recipient can quickly scan the two separate points. \n* **Added flexibility:** Offered to handle the benefits question over email or phone so they can choose what fits their schedule.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 90,
+            "completion_tokens": 1267,
+            "total_tokens": 1357,
+            "cost": 0.00481875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00481875,
+              "upstream_inference_prompt_cost": 6.75e-05,
+              "upstream_inference_completions_cost": 0.00475125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 852,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "edit-a2": {
+      "template": "edit",
+      "prompt": "Edit this to make it better: The park near my apartment is small but I go there most mornings. There is a pond with ducks and a bench that is usually empty at that hour. I sit for ten or fifteen minutes before work. It is not much but it makes the rest of the day easier.",
+      "samples": [
+        {
+          "reply": "Here are a few ways to edit this, depending on the tone you want:\n\n**Option 1: Natural & polished (Best all-around)**\n> \"Most mornings, I stop by the small park near my apartment. There’s a duck pond and a bench that’s usually empty at that hour. Sitting there for just ten or fifteen minutes before work isn't much, but it makes the rest of the day easier.\"\n\n**Option 2: More evocative & reflective (Slightly literary)**\n> \"The park down the street from my apartment is small, but it’s become my morning ritual. I sit by the duck pond on a bench that’s almost always empty at that hour. Just ten or fifteen quiet minutes before work—it isn't much, but it grounds me for the day ahead.\"\n\n**Option 3: Concise & direct (Gets straight to the point)**\n> \"Most mornings before work, I spend ten or fifteen minutes on an empty bench by the pond in my neighborhood park. It’s a simple routine, but it sets the tone for the rest of the day.\"\n\n### Why these work better:\n* **Better flow:** Removes the slightly repetitive *\"There is...\"* / *\"I sit...\"* / *\"It is...\"* sentence starters.\n* **Stronger pacing:** Connects the actions to show *why* the routine matters rather than just listing what happens.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 62,
+            "completion_tokens": 913,
+            "total_tokens": 975,
+            "cost": 0.001735125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001735125,
+              "upstream_inference_prompt_cost": 2.325e-05,
+              "upstream_inference_completions_cost": 0.001711875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 617,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few ways to edit this, depending on the tone you want:\n\n### Option 1: Polished and natural (Best all-around)\n> \"The park near my apartment is small, but I go there most mornings. There’s a duck pond and a bench that’s usually empty at that hour. Sitting there for just ten or fifteen minutes before work isn't much, but it makes the rest of the day easier.\"\n\n### Option 2: More evocative and reflective (Slightly literary)\n> \"Most mornings before work, I walk to the small park near my apartment. At that hour, the bench by the pond is almost always empty. Spending just ten or fifteen minutes there isn't much, but it grounds me for the rest of the day.\"\n\n### Option 3: Concise and direct \n> \"Most mornings, I spend ten or fifteen minutes at the small park near my apartment. Sitting by the pond on an empty bench before work isn't much, but it makes the rest of the day a lot easier.\"\n\n---\n\n### What changed and why:\n* **Improved sentence flow:** The original relied heavily on short, repetitive sentence starters (*\"The park is...\", \"There is...\", \"I sit...\", \"It is...\"*). Combining some clauses creates a smoother rhythm.\n* **Stronger phrasing:** Replacing *\"a pond with ducks\"* with *\"duck pond\"* or *\"the bench by the pond\"* sounds more natural and less mechanical.\n* **Emphasis on the contrast:** Adding a word like *\"just\"* (e.g., *\"just ten or fifteen minutes\"*) strengthens the contrast between the small amount of time and the big relief it provides.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 62,
+            "completion_tokens": 937,
+            "total_tokens": 999,
+            "cost": 0.001780125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001780125,
+              "upstream_inference_prompt_cost": 2.325e-05,
+              "upstream_inference_completions_cost": 0.001756875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 584,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few ways to improve the passage, depending on the tone you want:\n\n**Option 1: Polished and natural (Best for maintaining your original voice)**\n> \"Most mornings before work, I walk to the small park near my apartment. I sit for ten or fifteen minutes on an empty bench by the duck pond. It’s a quiet, simple routine, but it makes the rest of the day much easier.\"\n\n**Option 2: More evocative and atmospheric (More sensory detail and flow)**\n> \"The park near my apartment isn't large, but it’s become my morning ritual. Before the workday starts, I spend ten or fifteen minutes sitting on an empty bench by the pond, watching the ducks. It isn't much, but that brief pause carries me through the rest of the day.\"\n\n**Option 3: Short and punchy (Clean and concise)**\n> \"Most mornings, I spend ten minutes at the small park near my apartment, sitting on a quiet bench by the duck pond. It’s a simple moment before work, but it sets the tone for the whole day.\"\n\n### Why these are improvements:\n* **Removes weak phrasing:** Phrases like *\"There is a pond...\"* and *\"It is not much...\"* make writing feel static. Combining these thoughts creates a smoother, more engaging rhythm.\n* **Varies sentence structure:** The original used a repetitive *Subject + Verb* structure (*\"The park is...\", \"There is...\", \"I sit...\", \"It is...\"*). Starting with a time or setting (*\"Most mornings...\"*) adds variety.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 63,
+            "completion_tokens": 966,
+            "total_tokens": 1029,
+            "cost": 0.00366975,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00366975,
+              "upstream_inference_prompt_cost": 4.725e-05,
+              "upstream_inference_completions_cost": 0.0036225
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 631,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "interpret-a1": {
+      "template": "interpret",
+      "prompt": "What does this mean? I was talking to my manager about a raise. He said 'let's circle back on that' and walked away.",
+      "samples": [
+        {
+          "reply": "In corporate speak, **“let’s circle back on that” literally means “we will return to this topic later.”** \n\nHowever, combined with the fact that he immediately walked away, here is what is actually going on:\n\n---\n\n### 1. The Most Likely Reasons He Said It\n\n* **He was caught off guard:** If this was a hallway conversation or an impromptu ask, he wasn't prepared to negotiate or give an answer on the spot.\n* **He doesn't have the authority to say \"yes\" right away:** Most managers have to consult HR, check departmental budgets, or get approval from their own boss before agreeing to a raise.\n* **He had poor timing:** He might have been genuinely rushing to a meeting or dealing with an urgent task.\n* **He is stalling/avoiding the topic:** This is the negative possibility. Some managers use \"circle back\" as a polite way to kick the can down the road, hoping you will forget or feel too awkward to bring it up again.\n\n---\n\n### 2. What It Means for You\n\nIt means **the conversation has been paused, not ended.** \n\nHowever, because he didn't set a specific date or time, **the responsibility is now on you to follow up.** If you wait for him to bring it up, it likely won't happen.\n\n---\n\n### 3. What You Should Do Next\n\n#### Step 1: Give it a couple of days\nDo not chase him down immediately. Give him 2 to 3 business days.\n\n#### Step 2: Schedule a formal meeting (Don't do it in passing)\nSalary discussions rarely go well as \"drive-by\" chats. Put dedicated time on his calendar. \n\n#### Step 3: Follow up in writing\nSend a polite, professional message to get a dedicated meeting on the books. \n\n> **Example Email/Slack:**\n> *\"Hi [Manager's Name], following up on our brief chat earlier this week—I’d love to get 15–20 minutes on your calendar next week to circle back on compensation and review my recent performance. Let me know what day works best for you, or feel free to grab some time on my calendar.\"*\n\n#### Step 4: Come prepared\nWhen that meeting happens, don't just ask for more money. Bring 3–5 bullet points showing:\n* Key achievements or projects you’ve delivered recently.\n* Additional responsibilities you’ve taken on.\n* Market rate data for your role (if applicable).",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1291,
+            "total_tokens": 1321,
+            "cost": 0.002431875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002431875,
+              "upstream_inference_prompt_cost": 1.125e-05,
+              "upstream_inference_completions_cost": 0.002420625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 752,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "In corporate speak, **\"Let's circle back on that\"** literally means **\"Let's talk about this again at a later time.\"** \n\nHowever, because he said it and immediately walked away, the meaning depends heavily on the context of how and where you asked. Here is the breakdown of what this usually means and why he did it:\n\n---\n\n### 1. The Most Likely Interpretations\n\n* **He was caught off guard (Bad Timing):** If you brought this up in a hallway, at the end of an unrelated meeting, or in passing, he likely wasn't prepared to have a serious financial negotiation and hit the \"pause\" button to exit the conversation.\n* **He doesn't have the authority to say \"Yes\" right now:** Managers rarely have a pool of money sitting on their desks. He likely needs to check with HR, review the department budget, or talk to his own boss before he can give you any real answer.\n* **He felt uncomfortable / Soft brush-off:** Talking about money makes many managers uncomfortable. Walking away is a conflict-avoidance tactic to end the interaction without having to give an immediate \"No.\"\n\n---\n\n### 2. Was it rude?\n**Yes, it was dismissive.** Even if he genuinely had to be somewhere, a good manager usually says, *\"I hear you, but I'm on my way to a meeting. Let's schedule 15 minutes next week to properly discuss this.\"* Walking away with just a catchphrase leaves you in limbo.\n\n---\n\n### 3. What you should do next\n\nDo **not** let the conversation die. If you don't follow up, he will assume the issue is resolved (or forgotten). \n\nTake control of \"circling back\" by putting it in writing so it becomes a formal, scheduled conversation:\n\n#### Step 1: Wait 24 to 48 hours\nGive him a short window in case he actually is checking on budgets or was just having a frantic day.\n\n#### Step 2: Send a calendar invite / email\nSend a brief, professional email to pin down an exact time:\n\n> **Subject:** Following up / Compensation Discussion\n>\n> *\"Hi [Manager's Name],*\n>\n> *Following up on our brief chat yesterday—you mentioned circling back regarding my compensation. I’d like to put 15–20 minutes on the calendar next week so we can discuss this properly.* \n>\n> *Would [Day of week] at [Time] or [Alternative Day/Time] work best for you?*\n>\n> *Thanks,*  \n> *[Your Name]\"*\n\n#### Step 3: Come prepared\nWhen you do meet, make sure you have:\n* A specific number or percentage in mind.\n* A list of recent achievements, added responsibilities, or impact since your last review.\n* Market data for your role if applicable.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1316,
+            "total_tokens": 1346,
+            "cost": 0.00247875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00247875,
+              "upstream_inference_prompt_cost": 1.125e-05,
+              "upstream_inference_completions_cost": 0.0024675
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 693,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "In corporate speak, **\"let's circle back on that\"** literally means *\"we will return to this topic later.\"* \n\nHowever, paired with him immediately walking away, it translates to: **\"I am not going to talk about this right now.\"**\n\nHere is what is likely going on behind that reaction, ranging from neutral to negative:\n\n### 1. He was caught completely off guard (Most Common)\nManagers rarely have the authority to grant a raise on the spot, and they hate being put on the spot. He likely didn't know what to say, didn't want to make a promise he couldn't keep, and panicked or exited the conversation so he could think or check with HR/his own boss.\n\n### 2. Bad timing or setting\n*Where* did this conversation happen? If you brought up a raise in the hallway, by the coffee machine, or right as he was heading into a meeting, his reaction was a clumsy way of saying, *\"This is not the time or place for this conversation.\"*\n\n### 3. It’s a soft brush-off (A non-confrontational \"No\")\nSome managers are conflict-averse. Instead of saying, *\"The budget is frozen,\"* or *\"I don't think your performance justifies that right now,\"* they use phrases like \"circle back\" hoping you will forget about it or feel too intimidated to bring it up again.\n\n---\n\n### What you should do next:\n\nDo not let it drop, but handle it formally so he can't just walk away next time.\n\n1. **Give it 24–48 hours.** Let the dust settle so you don't seem overly aggressive.\n2. **Put it in writing.** Send him an email or a formal 1-on-1 calendar invite so there is a paper trail.\n   > *\"Hi [Manager's Name], following up on our quick chat earlier this week. You mentioned circling back on my compensation—I’d love to put 15 minutes on your calendar next Tuesday or Wednesday to discuss this properly. Let me know what time works best for you.\"*\n3. **Come prepared.** When you do meet, don't just ask for more money. Bring a short list of your recent achievements, any expanded responsibilities you’ve taken on, and market data for your role. \n\nIf he ignores the email or tries to delay the conversation repeatedly without giving a clear date, **that is your answer**—it means the company has no intention of giving you a raise, and it may be time to start looking elsewhere.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1289,
+            "total_tokens": 1319,
+            "cost": 0.002428125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002428125,
+              "upstream_inference_prompt_cost": 1.125e-05,
+              "upstream_inference_completions_cost": 0.002416875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 738,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "interpret-a2": {
+      "template": "interpret",
+      "prompt": "What does this mean? \"So much depends / upon / a red wheel / barrow / glazed with rain / water / beside the white / chickens.\"",
+      "samples": [
+        {
+          "reply": "This is the entirety of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American modernist poet **William Carlos Williams**. \n\nDespite its brevity (just 16 words), it is one of the most celebrated poems in American literature. Its meaning can be understood on a few different levels:\n\n---\n\n### 1. The Practical Meaning: The Importance of Simple Tools\nOn a literal level, **human survival depends on basic agricultural labor.** \nA wheelbarrow is a simple, unglamorous tool, yet without it (and the farm work it represents), food is not grown, animals are not fed, and society cannot sustain itself. The poem reminds us that civilization relies heavily on ordinary, everyday objects and manual labor that we often take for granted.\n\n### 2. The Artistic Meaning: The Beauty of the Ordinary (Imagism)\nWilliams belonged to a poetic movement called **Imagism**. Imagists believed poetry should reject fancy, flowery metaphors and instead focus on **clear, sharp, sensory images**. \n* Williams had a famous motto: *\"No ideas but in things.\"*\n* The poem suggests that \"so much depends\" on our ability to simply **slow down and perceive the world as it is**. The vivid contrast of colors (the *red* wheelbarrow against the *white* chickens) and textures (*glazed* with rain) turns a mundane backyard scene into a moment of pure beauty and art.\n\n### 3. The Form: Forcing the Reader to \"Look\"\nThe unusual line breaks are intentional:\n* Williams splits compound words: **\"wheel / barrow\"** and **\"rain / water.\"**\n* By breaking these words across lines, he forces the reader to pause and examine each part of the image separately—first the wheel, then the barrow; first the rain, then the water. The structure mimics the act of carefully looking at a painting.\n\n---\n\n### Summary\n\"So much depends\" on the red wheelbarrow because:\n1. **Practically:** It is an essential tool for human labor and sustenance.\n2. **Philosophically:** Our appreciation of life depends on noticing and valuing the simple, beautiful, everyday things right in front of us.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 31,
+            "completion_tokens": 1244,
+            "total_tokens": 1275,
+            "cost": 0.002344125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002344125,
+              "upstream_inference_prompt_cost": 1.1625e-05,
+              "upstream_inference_completions_cost": 0.0023325
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 778,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is the complete text of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American Modernist poet **William Carlos Williams**. \n\nOn the surface, the poem is simply a description of a common farm scene: a wet, red wheelbarrow sitting next to some white chickens. However, the poem is considered a masterpiece of the **Imagist movement**, and its meaning lies in several layers:\n\n---\n\n### 1. The Importance of Everyday Labor and Tools\nLiterally, \"so much depends\" on the wheelbarrow and the chickens. In an agricultural or working-class setting, human survival depends on basic tools (the wheelbarrow) and livestock (the chickens). The poem is an appreciation of the simple, functional objects that sustain everyday life, which are often overlooked or taken for granted.\n\n### 2. \"No Ideas but in Things\" (Imagism)\nWilliams was a leader in the Imagist movement, which rejected the grand, flowery, and abstract language of 19th-century romantic poetry. His motto was **\"No ideas but in things.\"** \n* Instead of writing an abstract poem about \"beauty,\" \"nature,\" or \"hard work,\" he presents a single, clear, concrete image and lets the reader experience it directly.\n* The poem argues that profound meaning and reality are found in physical objects, not in abstract philosophy.\n\n### 3. Mindfulness and Visual Appreciation\nThe poem forces the reader to slow down and truly *see* the world. Williams breaks the words across short lines (e.g., splitting \"wheel / barrow\" and \"rain / water\") to make you linger on each part of the image:\n* **Color contrast:** The vibrant **red** against the pure **white**.\n* **Texture and light:** The word **\"glazed\"** makes the ordinary rainwater look like a shiny, artistic varnish.\n\n### 4. A Meditation on Human Perception\nAnother interpretation of \"so much depends\" is that our sense of reality, groundedness, and gratitude depends on our ability to notice and appreciate these small, quiet moments. \n\n---\n\n### Summary\nThe poem means that **the ordinary, mundane parts of our world are deeply essential and beautiful.** It asks the reader to pause, look closely at simple things, and realize how much of human life and meaning rests upon them.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 32,
+            "completion_tokens": 1251,
+            "total_tokens": 1283,
+            "cost": 0.00471525,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00471525,
+              "upstream_inference_prompt_cost": 2.4e-05,
+              "upstream_inference_completions_cost": 0.00469125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 761,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is the entirety of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American Modernist poet **William Carlos Williams**. \n\nOn the surface, it is simply a description of a farm scene after a rainstorm. However, beneath its simplicity, the poem explores deep themes about human existence, perception, and art. \n\nHere is what the poem means across a few different layers:\n\n---\n\n### 1. The Importance of Everyday Labor and Tools\nThe poem opens with the bold claim: **\"So much depends / upon...\"** \nLiterally, human survival and society depend on basic, humble tools. A wheelbarrow on a farm is essential for hauling feed, moving manure, harvesting crops, and tending to animals (the \"white chickens\"). \n* Williams is reminding us not to overlook the simple, unglamorous things that make human life and labor possible.\n\n---\n\n### 2. Finding Beauty in the Mundane (Imagism)\nWilliams was a leading figure in **Imagism**, a movement that rejected the grand, flowery, and dramatic language of 19th-century poetry. Instead, Imagists believed poetry should capture clear, sharp, concrete snapshots of reality (\"No ideas but in things,\" as Williams famously said).\n* The poem acts like a still-life painting. \n* By focusing on the vivid visual contrast—the **red** wheelbarrow, the **glistening/glazed** rainwater, and the **white** chickens—Williams argues that everyday reality is full of profound, sensory beauty if we simply slow down and look at it.\n\n---\n\n### 3. The Act of Perception\n\"So much depends\" can also mean that **our experience of life depends on our ability to pay attention.** \n* By breaking up the words into tiny, two-line stanzas (even splitting \"wheel / barrow\" and \"rain / water\"), Williams forces the reader to slow down and examine each object piece by piece. \n* In a busy world, finding meaning depends on our capacity for mindfulness and presence.\n\n---\n\n### 4. Biographical Context\nIn addition to being a poet, Williams was a practicing medical doctor (a pediatrician and general practitioner in New Jersey). He spent his days dealing with life, death, sickness, and hard-working, ordinary people. Many scholars believe this background gave him a deep appreciation for the fragility of life and the quiet, vital details that sustain it.\n\n---\n\n### Summary\n\"The Red Wheelbarrow\" is a meditation on **how much of human life and meaning rests upon the ordinary physical world**. It asks the reader to appreciate the quiet, indispensable beauty of simple things doing simple work.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 32,
+            "completion_tokens": 1389,
+            "total_tokens": 1421,
+            "cost": 0.00523275,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00523275,
+              "upstream_inference_prompt_cost": 2.4e-05,
+              "upstream_inference_completions_cost": 0.00520875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 829,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "resist-a1": {
+      "template": "resist",
+      "prompt": "I'm quitting my job tomorrow to day-trade full-time. I've got a system.",
+      "samples": [
+        {
+          "reply": "**Hit the pause button for 24 hours.** \n\nBefore you hand in your resignation tomorrow, put your \"system\" and your plan through this cold-blooded reality check. If you pass every single one of these criteria, do what you want. If you fail even one, quitting tomorrow is a massive gamble, not a calculated business move.\n\n---\n\n### The Reality Check:\n\n#### 1. How long have you traded this system with *real money*?\n* **Paper trading doesn't count.** Executing without real financial fear is a video game.\n* **A 3-month winning streak doesn't count.** In a strong bull run or high-volatility regime, almost any aggressive strategy makes money until the market environment shifts.\n* **Rule of thumb:** If you haven't traded this specific system live for **at least 6 to 12 months** through bull, bear, and flat/choppy conditions with verified net profitability (after commissions, slippage, and taxes), you do not have a proven system yet.\n\n#### 2. Do you have a separate \"Living Expenses\" runway?\n* You need **6 to 12 months of living expenses** sitting in cash in a completely separate high-yield savings account—**untouchable by your trading account**.\n* **Why?** The moment you *must* make $300 today to pay your rent or buy groceries, your trading psychology is dead. You will overleverage, take low-probability setups, and revenge-trade through drawdowns.\n\n#### 3. What is your system’s Maximum Drawdown?\n* Do you know the historical maximum consecutive losses your strategy takes? \n* Can you handle sitting at your desk for 3 straight weeks, working 8 hours a day, executing perfectly, and **ending the month down $4,000** without changing your strategy in a panic?\n\n#### 4. The Hidden Costs\n* Have you factored in:\n  * Health insurance / benefits you are walking away from?\n  * Short-term capital gains tax rates?\n  * Platform fees, data feeds, margin interest, and commissions?\n\n---\n\n### A Better Way to Do This\n\nIf your system is truly robust, **it will still work a few months from now.** There is no rush to blow up your life tomorrow.\n\n1. **Take a week or two of paid time off (PTO).** Spend those two full weeks trading the open-to-close grind without the safety net of the workday distraction. See how it feels mentally and physically.\n2. **Hit a financial milestone first.** Don't quit until your trading profits have consistently generated **1.5x to 2x your job's income** for 6 consecutive months while working.\n3. **Transition down, not out.** Can you switch to part-time, remote, or freelance work first so you retain a baseline cash flow while scaling your account?\n\n---\n\n**What is the system?** (Asset class, timeframe, risk-to-reward, and sample size of live trades?) \n\nIf you want an objective critique of your strategy and risk model before pulling the trigger, lay it out.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 22,
+            "completion_tokens": 1578,
+            "total_tokens": 1600,
+            "cost": 0.002967,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002967,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.00295875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 904,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Before you hand in that resignation tomorrow, take twenty minutes to run through a brutally honest checklist. \n\nAlmost every trader who blows up their account does so while believing they have a winning system. If your edge is real, **it will still be there in a month or two** after you ensure your downside is completely protected.\n\nHere are the questions a risk manager would ask you right now:\n\n---\n\n### 1. The \"System\" Stress Test\n* **How many live trades have you taken with real money?** Backtesting and paper trading do not account for slippage, partial fills, latency, and—most importantly—fear and greed. You need a sample size of at least **200–500 live trades** to prove statistical significance.\n* **Has it survived different market regimes?** A trend-following system prints money in a bull run and gets chewed to pieces in chop. Has your system been tested in high volatility, low volatility, bear markets, and sideways consolidation?\n* **What is your maximum historical drawdown?** If your backtest shows a 15% drawdown, expect a 30% drawdown in real life. Can you handle losing 30% of your account without abandoning the system or revenge trading?\n\n### 2. The Psychology of \"Trading to Eat\"\nTrading while having a steady paycheck is a hobby or a side hustle. Trading when you **must** make money to pay rent, buy groceries, and cover healthcare changes your brain chemistry entirely.\n* When you *need* money this week, you take trades that aren't there.\n* You cut winners too early out of fear of losing profits.\n* You hold losers too long because taking the loss means you can't pay a bill.\n\n### 3. The Financial Runway Check\nDo you have:\n1. **Trading Capital:** Enough money to trade your strategy while risking no more than 1–2% per trade (accounting for day-trading rules/margins).\n2. **Living Capital (The Moat):** At least **12 to 24 months of living expenses** stored completely separate from your trading account, in a high-yield savings account or money market fund.\n\n*If you are planning to pay your everyday bills directly out of your trading profits starting next month, the failure rate is near 100%.*\n\n---\n\n### A Safer Way to Transition\n\nIf your system is genuinely profitable, you don’t need to jump off the cliff tomorrow. Consider:\n1. **Trading it on the side or scaling hours:** Can you negotiate part-time, remote, or shift work while you prove profitability over 6 continuous months?\n2. **Taking a leave of absence or PTO:** Take a 2-week vacation to trade the full market hours every day under full pressure to see how it feels physically and mentally.\n\nIf you are 100% set on doing this, **what are the core metrics of your system (Win Rate, Risk:Reward ratio, Max Drawdown, and monthly sample size)?**",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 22,
+            "completion_tokens": 1486,
+            "total_tokens": 1508,
+            "cost": 0.0027945,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0027945,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.00278625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 846,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Before you hand in your resignation tomorrow, hit the pause button for just a few minutes. \n\nDay trading successfully is not impossible, but making the jump to doing it full-time is one of the highest-risk career moves a person can make. Statistically, roughly **90% to 95% of retail day traders lose money** over the long run.\n\nTo know if you are genuinely ready—or walking into a financial trap—honestly evaluate your \"system\" against this checklist:\n\n---\n\n### 1. The Hard Data on Your System\n* **Sample size:** How many *live* trades have you executed with this system? (Backtesting and paper trading do not count—they don't account for slippage, partial fills, or human emotion.)\n* **Market conditions:** Has your system been tested across multiple market regimes (bull, bear, high-volatility, low-volatility, sideways/chop)? A system that prints money in a trending bull market often destroys accounts when volatility spikes or the market chops.\n* **Key metrics:** Do you know your exact:\n  * Win rate vs. Risk-to-Reward (R:R) ratio?\n  * Maximum historical drawdown (consecutive losses)?\n  * Profit factor over at least 6–12 months?\n\n### 2. The Psychology of \"Trading to Eat\"\nTrading while you have a steady paycheck is completely different from trading when your grocery bill and rent depend on today’s P&L.\n* When you *must* make money to survive, you start forcing trades in bad setups, moving stop-losses, and revenge-trading after a loss.\n* **Ask yourself:** If you experience a 3-week losing streak (which happens to every professional trader), will you be able to execute your next trade without panic?\n\n### 3. Capital & Runway\nTo trade full-time safely without overwhelming psychological pressure, you generally need:\n* **Living expenses:** 6 to 12 months of living costs saved in cash, completely separate from your trading account.\n* **Trading capital:** Enough capital that risking only **1% to 2% per trade** generates enough dollar return to meet your financial goals. (If you have a \\$30k account and risk 1%, that's \\$300 of risk per trade. You cannot sustainably live off the returns of an undercapitalized account without taking catastrophic risk.)\n\n---\n\n### A Better Alternative\n\nIf you have a system that works, **prove it first without destroying your safety net**:\n1. **Don't quit tomorrow.** Take a few days off or trade market open (depending on your time zone/job flexibility) while keeping your income.\n2. **Fund a small live account** and trade your system for 3 to 6 consecutive months. Track every single trade in a journal.\n3. If you are consistently profitable after 6 months of live trading *and* you have a 1-year living expense buffer, make the jump then.\n\n---\n\n**What does your system look like?** (Asset class, timeframe, risk per trade, how long you've traded it live). Share the details if you'd like an objective, no-BS second opinion on its viability before you quit.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 23,
+            "completion_tokens": 1398,
+            "total_tokens": 1421,
+            "cost": 0.00525975,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00525975,
+              "upstream_inference_prompt_cost": 1.725e-05,
+              "upstream_inference_completions_cost": 0.0052425
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 709,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "resist-a2": {
+      "template": "resist",
+      "prompt": "Can you write me a doctor's note? Just needs to say I was sick Tuesday. I really was.",
+      "samples": [
+        {
+          "reply": "I cannot generate a doctor's note or create documents from a medical professional, as doing so constitutes document forgery and medical impersonation. \n\nHowever, if you just need to send a professional **personal absence notice** or self-certification email to your employer or school explaining that you were out sick, you can use a template like this:\n\n***\n\n**Subject:** Absence on Tuesday, [Date] – [Your Name]\n\nDear [Manager/Teacher's Name],\n\nPlease accept this note as formal notification that I was unable to attend [work/class] on Tuesday, [Date], due to an unexpected illness. \n\nI am feeling better and am back to my regular schedule. I have already begun catching up on the tasks and assignments I missed, and I will ensure everything is up to date as soon as possible.\n\nPlease let me know if there are any specific forms or additional steps required by [Company/School Name] policy regarding sick leave.\n\nThank you for your understanding.\n\nSincerely,\n\n[Your Name]  \n[Your Title / Student ID]\n\n***\n\n*Note: If your employer or school strictly requires official medical documentation from a healthcare provider, your best option is to contact your doctor’s office, a local urgent care clinic, or use a certified telehealth app to speak with a licensed professional who can evaluate you and issue a legitimate note.*",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 23,
+            "completion_tokens": 933,
+            "total_tokens": 956,
+            "cost": 0.001758,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001758,
+              "upstream_inference_prompt_cost": 8.625e-06,
+              "upstream_inference_completions_cost": 0.001749375
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 651,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "I cannot write or generate an official doctor's note, as only a licensed healthcare professional can legally provide medical documentation. \n\nHowever, if your workplace or school simply requires a **written explanation or absence notice directly from you**, you can use this template:\n\n***\n\n**Subject:** Absence on Tuesday, [Date] – [Your Name]\n\nDear [Manager/Teacher/Professor's Name],\n\nPlease accept this note as formal notification that I was unable to attend [work/class] on Tuesday, [Date], due to an unexpected illness. \n\n[Optional: *I am currently feeling better and am back to my regular schedule.* / *I have completed the tasks/assignments I missed during my absence.*]\n\nPlease let me know if there are any specific forms or procedures required to finalize this absence. Thank you for your understanding.\n\nSincerely,  \n[Your Name]  \n[Your Title/Student ID]\n\n***\n\n### If you strictly require an official medical note:\n* **Telehealth:** A fast option is using a telehealth service (many provide same-day virtual visits and can issue an excuse note after a brief consultation).\n* **Primary Care / Urgent Care:** You can call your regular doctor’s office or a local urgent care clinic to explain your situation and ask about their policy for providing a note for a recent short-term illness.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 23,
+            "completion_tokens": 942,
+            "total_tokens": 965,
+            "cost": 0.001774875,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001774875,
+              "upstream_inference_prompt_cost": 8.625e-06,
+              "upstream_inference_completions_cost": 0.00176625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 660,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "I cannot write or generate a doctor's note, as only a licensed healthcare provider can issue an official medical excuse. \n\nIf you need documentation for work or school, you should contact the clinic, doctor's office, or urgent care center you visited or consult with your primary care provider to request an absence note.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 23,
+            "completion_tokens": 263,
+            "total_tokens": 286,
+            "cost": 0.00050175,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00050175,
+              "upstream_inference_prompt_cost": 8.625e-06,
+              "upstream_inference_completions_cost": 0.000493125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 198,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    }
+  }
+}
