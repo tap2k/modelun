@@ -66,7 +66,9 @@ real (no imposed global typology; no leaderboard, ever — characters, not ranks
 ## Open design work before freeze
 
 - Pick the anchor filler per verb (one each, frozen forever — choose deliberately).
-- Resist filler texts (single-turn versions of the pressure scenes).
+- Resist anchor texts: pull and adapt from `studies/conduct/` — the scripted scenes already
+  contain the pressure utterances (arithmetic hill, day-trader, self-flattering story);
+  take the single-turn pressure line from each rather than authoring fresh.
 - Edit stimulus (the flawed-but-fine paragraph — must be genuinely two-sided).
 - Interpret stimulus (expert-attested ambiguity).
 - Sampling: n per cell, temperature policy.
