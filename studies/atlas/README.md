@@ -25,9 +25,11 @@ Each verb is a template with a variable slot (template × filler × version):
 ## Design rules
 
 - **Single-turn only** (v1). Multi-turn = the papers' territory, or a labeled v2 module.
-- **Anchors + rotation**: per verb, 1 frozen anchor filler to start (frozen from its first
-  wave, forever) + 1 rotating filler per collection wave. Anchor-vs-rotation divergence =
-  the contamination meter for a published battery.
+- **Anchors first, rotation later**: per verb, 2 frozen anchor items to start (frozen from
+  their first wave, forever; later anchors append-only). Rotating items join at a later wave;
+  anchor-vs-rotation divergence then becomes the contamination meter for a published battery.
+  Create anchors span forms (e.g. one joke item, one story item); Resist anchors span pressure
+  types (wrong assertion / bad-plan applause).
 - **Judge-free**: stylometrics, span extraction, exact/edit-distance measures. Any judge use
   follows the handcuffs rule (verbatim substring selection only).
 - **Versioned**: template × filler × spec_version; new anchors may be ADDED in later waves,
