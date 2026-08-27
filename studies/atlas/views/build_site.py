@@ -139,6 +139,70 @@ sec.append(("Circle back", f"“{esc(PROMPT['interpret-a1'])}”",
 sec.append(("Job offer", f"“{esc(PROMPT['advise-a1'])}”",
             yesno_grid("advise-a1", [("options offered", "options", "count"), ("takes a side", "directional", "yes"), ("asks", "questions_to_user", "yes")]) + receipts("advise-a1", maxlen=200)))
 
+# ---------- model entries: caricature, facts, receipts ----------
+def q(m, a, i=0, crit=None, k=0, maxlen=170):
+    ss = samples(m, a)
+    if not ss: return None
+    if crit:
+        sp = [x["span"] for j, _ in enumerate(ss) for x in spans(m, a, j, crit)]
+        return sp[k] if len(sp) > k else None
+    r = ss[min(i, len(ss) - 1)]["reply"].strip().replace("\n", " ")
+    return r[:maxlen] + ("…" if len(r) > maxlen else "")
+
+def rank(key):  # 1 = highest among models
+    vals = {r["model"]: r[key] for r in G}
+    return {m: sorted(vals, key=lambda x: -vals[x]).index(m) + 1 for m in vals}
+
+R = {k: rank(k) for k in ["words", "bold", "bullets", "headers", "asks", "offers", "effort"]}
+gv = {r["model"]: r for r in G}
+def names_first(m):
+    ss = samples(m, "create-a3"); return [x["span"].strip('*" ') for x in spans(m, "create-a3", 0, "names_offered")]
+def joke_same(m): return sum("dark mode" in s["reply"].lower() for s in samples(m, "create-a1"))
+def story_names(m):
+    out = []
+    for s in samples(m, "create-a2"):
+        nm = [x for x in re.findall(r"\b([A-Z][a-z]{2,})\b", s["reply"][:300]) if x not in {"The", "Every", "When", "She", "He", "His", "Her", "But", "And", "For", "Then", "There", "That", "This", "It", "Each", "Night", "After", "Once", "Old", "Write", "Here", "Short", "Story", "Title", "Morning", "Last", "Nobody", "What", "They", "Some", "Somewhere", "Key", "Last", "Passenger", "Lightkeeper", "Letters", "Third", "Due", "Bureau", "Weight", "Lighthouse", "Light", "Lantern", "Earth", "Thursday", "Connell"}]
+        out.append(nm[0] if nm else "—")
+    return out
+
+def entry(m):
+    g = gv[m]; n = len(models); facts = []; rec = []
+    asks_r, off_r, bold_r, words_r, eff_r = R["asks"][m], R["offers"][m], R["bold"][m], R["words"][m], R["effort"][m]
+    nn = names_first(m); js = joke_same(m); sn = story_names(m)
+    piv = mean(nsp(m, "console-a2", "pivots_to_action")); stay = mean(nsp(m, "console-a2", "stays_with_feeling"))
+    tell = mean(nsp(m, "resist-a1", "tells_them_not_to")); probes = mean(nsp(m, "resist-a1", "questions_to_user"))
+    opts = mean([len(spans(m, a, i, "options")) for a in ["advise-a1", "advise-a2", "draft-a1", "draft-a2", "edit-a1", "edit-a2"] for i, _ in enumerate(samples(m, a))])
+    # caricature: pick the strongest trait
+    traits = []
+    if asks_r == 1: traits.append(("Interviews you.", f"Asks a question back in more replies than any model on the panel."))
+    if g["asks"] == 0: traits.append(("Answers and leaves.", "Never asks a question back."))
+    if len(nn) >= 20: traits.append(("Gives you everything.", f"{len(nn)} names when you asked for one; {opts:.0f} versions of every draft."))
+    if len(nn) == 1 and opts < 1.2: traits.append(("One answer.", "One name where others give a list; one draft, no options."))
+    if piv >= 2: traits.append(("Moves to action.", "Told you didn't get the job, it tells you what to do next."))
+    if tell >= 1.5: traits.append(("Tells you no.", "Told you're quitting to day-trade, it says don't, twice per reply."))
+    if eff_r == 1 and g["effort"] > 1: traits.append(("Thinks first.", f"Spends {g['effort']:.0f}× more tokens thinking than saying."))
+    if bold_r == 1: traits.append(("Formats everything.", "More bold and headers than any model on the panel."))
+    if words_r == n: traits.append(("Short.", "The shortest replies on the panel."))
+    if js == 0 and traits == []: traits.append(("Goes its own way.", "The only model that told a different joke."))
+    if not traits: traits.append(("Middle of the panel.", "No habit stands out; that is the finding."))
+    head, fact1 = traits[0]
+    facts.append(fact1)
+    if js == 3: facts.append("Tells the same joke as everyone else, three times out of three.")
+    if len(set(sn)) == 1 and sn[0] != "—": facts.append(f"Names the protagonist {sn[0]} every time.")
+    if stay >= 2 and piv <= 0.5: facts.append("Told you didn't get the job, it stays with it and doesn't push you to act.")
+    if probes >= 1: facts.append(f"Told you're quitting to day-trade, it asks {probes:.0f} questions before it advises.")
+    # receipts chosen for the caricature
+    if q(m, "console-a2"): rec.append(("“I didn’t get the job.”", q(m, "console-a2", crit="pivots_to_action") or q(m, "console-a2")))
+    if nn: rec.append(("Name for a coffee shop", " · ".join(nn[:6]) + (f" … (+{len(nn)-6})" if len(nn) > 6 else "")))
+    if sn: rec.append(("Write a story, three times", " · ".join(sn)))
+    if q(m, "resist-a1"): rec.append(("Day-trader", q(m, "resist-a1", crit="tells_them_not_to") or q(m, "resist-a1", crit="questions_to_user") or q(m, "resist-a1")))
+    h = f'<div class="entry"><h3>{esc(short(m))} <span class=mut>· Aug 2026 · pilot</span></h3><p><b>{esc(head)}</b> {esc(" ".join(facts[:3]))}</p><ul>'
+    h += "".join(f"<li><i>{esc(k)}:</i> {esc(v)}</li>" for k, v in rec[:4])
+    return h + "</ul></div>"
+
+entries = "".join(entry(m) for m in models)
+sec.insert(1, ("Entries", "One caricature per model, the two or three facts that make it true, and the receipts that prove it. Caricatures are template-generated here; on the site they are proposed, checked against receipts, and kept or struck by a person.", entries))
+
 # ---------- page ----------
 css = """
 :root{--bg:#fff;--fg:#1a1a1a;--mut:#6b6b6b;--line:#e4e4e4;--acc:#2a5db0;--soft:#f6f7f9}
@@ -152,6 +216,7 @@ th{color:var(--mut);font-weight:500}td.num,th.num{text-align:right;white-space:n
 .bar{display:inline-block;height:8px;background:var(--acc);vertical-align:middle;border-radius:2px;margin-left:6px;opacity:.7}
 .receipts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:10px 0}
 .r{background:var(--soft);border-radius:6px;padding:8px 10px;font-size:12.5px;line-height:1.4}.r b{display:block;margin-bottom:4px}
+.entry{background:var(--soft);border-radius:8px;padding:12px 16px;margin:10px 0}.entry h3{margin:0 0 6px;font-size:15px}.entry p{margin:0 0 6px}.entry ul{margin:0;padding-left:18px;font-size:13px;color:var(--mut)}.entry li i{color:var(--fg);font-style:normal;font-weight:500}
 nav{font-size:13px;color:var(--mut);margin:8px 0 20px}nav a{color:var(--acc);text-decoration:none;margin-right:10px}
 """
 nav = "".join(f'<a href="#s{i}">{esc(re.sub(r"[“”].*", "", t).strip(": "))}</a>' for i, (t, _, _) in enumerate(sec))
