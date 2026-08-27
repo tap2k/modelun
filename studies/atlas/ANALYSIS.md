@@ -30,6 +30,15 @@ looking at the reply. Reading level and mean sentence length are kept as seconda
 numbers because people understand "grade 9" and "18-word sentences", but they never
 headline.
 
+## The framework is generic
+
+Three inputs: a corpus (texts with metadata), a criteria set (`spec/criteria.json`: id,
+criterion text, seeds, optional labels, what it applies to, screen type), and an
+extractor model. Three outputs: labels (spans per criterion per text, string-verified),
+screens for verification, and the verdict log. Nothing in `extract.py`, `build_rate.py`,
+`rate.html`, or `rate.py` knows about verbs or anchors beyond the `applies_to` selector.
+A customer engagement is a new corpus and a new criteria file. The atlas is one instance.
+
 ## Pipeline
 
 1. `collect.py` → `transcripts/<model>.json`: reply, finish_reason, model version, usage

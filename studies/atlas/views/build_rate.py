@@ -11,12 +11,12 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 STUDY = HERE.parent
 sys.path.insert(0, str(STUDY))
-from extract import CRITERIA, PROMPT_VERSION  # noqa: E402
-
-LINEUP = {"hedges", "intensifiers", "sycophancy_opener", "empathy", "self_as_ai", "refers_to_professional", "offers_help"}
-FIRST_PASS = ["hedges", "unrequested_advice", "offers_help", "readings", "valence",
-              "tells_them_not_to", "cheers", "questions_to_user", "writes_the_note", "offers_another_way", "preaches"]
-RESIST_ONLY = {"questions_to_user": {"resist-a1"}}
+CRIT = json.loads((STUDY / "spec/criteria.json").read_text())
+PROMPT_VERSION = CRIT["version"]
+CRITERIA = {c["id"]: c for c in CRIT["criteria"]}
+LINEUP = {c["id"] for c in CRIT["criteria"] if c["screen"] == "lineup"}
+FIRST_PASS = [c["id"] for c in CRIT["criteria"] if c.get("first_pass")]
+RESIST_ONLY = {c["id"]: set(c["first_pass_only"]) for c in CRIT["criteria"] if c.get("first_pass_only")}
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--criteria", default=",".join(FIRST_PASS))
@@ -43,7 +43,7 @@ screens = []
 for c in crits:
     cs = [it for it in items if it["criterion"] == c]
     rng.shuffle(cs)
-    text, seeds = CRITERIA[c][1], CRITERIA[c][2]
+    text, seeds = CRITERIA[c]["text"], CRITERIA[c]["seeds"]
     if c in LINEUP:
         pool = [{"model": it["model"], "anchor": it["anchor"], "i": it["i"], "span": sp["span"], "label": sp.get("label")}
                 for it in cs for sp in it["spans"]]
