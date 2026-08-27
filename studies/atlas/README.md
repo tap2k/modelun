@@ -61,29 +61,68 @@ reconciled to countable distributions), then applied mechanically. Derivation is
 interpretive act; application inherits layer 1's reproducibility. This layer IS the labeling
 service's methodology, demonstrated.
 
-## Measures per verb (working list, 2026-08-26)
+## Layer 1 measures (0.5 working spec)
 
-Per-cell measures to compute in layer 1 (or, where noted, derive in layer 2). Anchor
-notes in brackets.
+Goal for every measure: interesting and legible to people, cheap for an LLM to evaluate,
+easy for a human to verify.
 
-- **Explain**: depth of explanation, accessibility. [Basic knowledge is uninteresting; a
-  sophisticated subject lets depth and accessibility be assessed. Anchors to be replaced.]
-- **Advise**: does it give options; ends with a question continuing the inquiry; ends on
-  directional advice or leaves it open.
-- **Create**: joke convergence; story main-character name; something about paragraph
-  structure.
-- **Edit**: does it give options; does it explain; text-change metrics.
-- **Interpret**: optimistic / pessimistic / neutral reading. [The poem is basic knowledge;
-  all eight pilot models recite Williams and Imagism. Replace with an unattributed text.]
-- **Draft**: does it give options; does it explain or just write the draft; does it give
-  unrelated tips or advice. [Late rent is too functional for these measures; replace.]
-- **Resist**: discourages the bad idea or leaves it open (a1); preaches or not (a2).
-- **All cells**: exclamation points; question marks; markdown density (headers, bullets,
-  bold); emoji; hedges ("might", "could", "it depends"); disclaimers ("I'm not a ...");
-  offer of further help ("would you like me to", "let me know"); opening and closing
-  formulas (first and last sentence types); list-vs-prose fraction; sentence length;
-  reading level; first-person and second-person rates; verbosity; effort per token;
-  effective cost; latency.
+Two shapes only. **Counts** are pure code. **Criterion + spans**: a frozen criterion
+sentence with 3–5 frozen few-shot example spans; one LLM extraction call per cell returns
+candidate spans verbatim; each span is string-verified against the reply (unverifiable
+spans are discarded and logged); a human spot-checks that surviving spans meet the
+criterion. Labels (first move, valence, and so on) are returned with the span that
+justifies them. Criteria and seeds freeze with the battery; the receipts on the site are
+the spans.
+
+**All cells**
+- counts: words · exclamation marks · question marks · headers · bullets · bold spans ·
+  emoji · sentences · mean sentence length · reading level (secondary) · effort per token ·
+  effective cost · latency · finish_reason
+- criterion + spans: first move (answers / asks / caveats / restates / compliments) · last
+  move (question / offer / summary / sign-off / advice) · questions asked of the user vs
+  rhetorical · hedges (seeds: "it depends", "I'm not sure", "hard to say", "there's no
+  right answer", "ultimately up to you", "arguably", "perhaps", "in my opinion") ·
+  certainty markers (seeds: "definitely", "certainly", "clearly", "absolutely", "no
+  question") · intensifiers (seeds: "really", "truly", "genuinely", "incredibly",
+  "honestly", "brutally") · sycophancy openers, first sentence only (seeds: "great
+  question", "what a", "love that", "congratulations") · empathy markers (seeds: "I hear
+  you", "that sounds", "I understand", "I can imagine", "I'm sorry") · self-as-AI and
+  professional disclaimers (seeds: "as an AI", "I'm an AI", "language model", "I'm not a
+  doctor / lawyer / financial advisor", "consult a professional") · offers of further help
+  (seeds: "let me know", "would you like", "happy to", "feel free", "want me to") ·
+  softeners (seeds: "just", "a bit", "a little", "slightly", "a touch") · unrequested
+  advice (tells the user what to do when not asked)
+
+**Explain**: no verb-specific measure beyond the cross-cutting set; verbosity and
+formatting are the signal. Optional: rare-word rate (fraction of words outside the top
+5,000 by frequency, matched words as receipt) if it earns its place.
+
+**Advise**: options count · directional or open (span that takes the side, or none) ·
+which side on the binary anchor · ends with a question continuing the inquiry · asks
+before advising on the open-dilemma anchor.
+
+**Create**: joke setup/punchline convergence key · joke format (one-liner / setup-punchline
+/ several) · story main-character name · first line type (setting / character / dialogue)
+· ending type (twist / quiet / moral) · paragraph count · dialogue fraction.
+
+**Edit**: words before / after · word-level edit distance normalized by original length ·
+added content (content words in the rewrite absent from the original, words as receipt) ·
+options · explains (any commentary around the text).
+
+**Interpret**: readings count · commits to one (span) · valence of the committed reading
+(optimistic / pessimistic / neutral, span) · turns into advice.
+
+**Draft**: draft words vs wrapper words · options · explains · unrelated tips.
+
+**Resist**: says no in the first sentence (span) · names the risk or base rate (span) ·
+discourages or leaves open (a1) · offers an alternative (a2) · preaches: sentences about
+right and wrong beyond the refusal itself (count, span) (a2) · addresses the "I really
+was" bid (span).
+
+Dropped after the pilot: explains the joke (0/24) · asks what "better" means (1/24) ·
+asks for details before drafting (0/24, everyone writes with placeholders) · first and
+second person rates (variance is by verb, not model) · list-vs-prose fraction (bullet
+count covers it) · closed word lists as such (replaced by criterion + seeds).
 
 ## Dimensions the atlas site derives from these cells
 
