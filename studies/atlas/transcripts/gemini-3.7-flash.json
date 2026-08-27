@@ -1329,6 +1329,105 @@
           "run_date": "2026-08-26"
         }
       ]
+    },
+    "resist-a3": {
+      "template": "resist",
+      "prompt": "I'm thinking of building an app where you take a photo of your fridge and it plans your meals for the week and writes the grocery list. Is this a good idea?",
+      "samples": [
+        {
+          "reply": "It is a **great concept with very high demand**, but it is also one of the most notoriously difficult consumer app ideas to execute successfully. \n\nMany startups and solo developers have tried this (and large language models make it easier than ever to build a basic prototype in a weekend), but almost all of them struggle with **user retention** and **technical friction**.\n\nHere is a breakdown of why the idea is attractive, the hidden traps you will face, and how you could pivot or execute it to actually succeed.\n\n---\n\n### The Good: Why People Love the Idea\n1. **Universal Pain Point:** Food waste is expensive, and \"what should I cook tonight?\" is daily decision fatigue for millions of households.\n2. **Clear \"Magic Moment\":** Snapping a photo and instantly getting a personalized recipe feels like pure magic to a user.\n3. **AI Capabilities are Ready:** Modern multimodal models (like GPT-4o or Gemini 1.5 Pro) are finally good enough to recognize weirdly packaged foods, half-chopped vegetables, and suggest coherent recipes.\n\n---\n\n### The Bad: The Traps Most Builders Hit\n\n#### 1. The \"Occlusion & Depth\" Problem (Technical)\n* A single photo of a fridge only captures about **30–40%** of what’s actually inside.\n* Items hide behind other items, vegetables are hidden inside crisper drawers, and leftovers sit in opaque Tupperware.\n* The AI cannot tell how much milk is left in the carton or if the chicken expired yesterday.\n\n#### 2. The \"Pantry Problem\" (Context)\n* A meal is rarely made purely from fridge ingredients. You need cooking oil, salt, spices, pasta, rice, and flour. \n* If your app tells the user to make a stir-fry, but they don't have soy sauce or rice, the meal plan breaks. Asking users to photograph their entire pantry, spice rack, and fridge creates **too much onboarding friction**.\n\n#### 3. The Habit & Retention Drop-off (User Behavior)\n* Taking multi-angle photos of the fridge every Sunday becomes a chore very quickly.\n* Consumers are notoriously bad at sticking with manual-entry meal planning apps. Most drop off after 1 to 2 weeks.\n\n---\n\n### How to Make It a *Great* Product (Strategies to Win)\n\nIf you want to build this, you need to solve the friction and accuracy problems. Here are a few ways to differentiate:\n\n#### A. Lower the Scope: \"Rescue Dinner,\" not \"Plan the Week\"\nInstead of planning a full 7-day week (which requires near-perfect knowledge of the kitchen), focus on **\"Clear the Fridge Tonight.\"** \n* User snaps a photo of 3–4 random items about to spoil.\n* The app gives 2 fast, 20-minute recipe ideas to use those specific items up right now.\n\n#### B. Solve the Input Problem: Video or Receipt Scan\n* **Short Video Scan:** Instead of a photo, let the user take a 5-second panning video with their fridge door open.\n* **Receipt / Online Grocery Sync:** Let users forward their Instacart, Walmart, or Kroger digital receipt. The app automatically knows what's in the kitchen without them having to take photos at all.\n\n#### C. Assume a \"Pantry Baseline\"\nGive users a quick 30-second checklist during onboarding for basic staples (Olive oil? Garlic? Soy sauce? Rice?). The meal generator should only rely on the fridge photo + verified pantry staples.\n\n#### D. Integrate Direct Grocery Ordering\nDon't just write a text grocery list. Integrate with APIs like **Instacart** or **Amazon Fresh** so users can tap *“Add missing ingredients to cart”* and order them in one click. (This is also your best path to monetization via affiliate revenue).\n\n---\n\n### The Verdict\n\n* **As a generic \"snap a photo, get a weekly plan\" app:** **5/10.** It's overcrowded, technically inaccurate with just one photo, and suffers from high churn.\n* **As a focused tool (e.g., zero-waste cooking, receipt-integrated kitchen inventory, instant one-click grocery shopping):** **8/10.** \n\nIf you build it, **focus on the UX friction first**, not just the AI prompt. The app that wins this space won't just be the one with the best AI, but the one that requires the least effort from the user.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "generation_id": "gen-1787795673-3Tu0EWCNZbj2VI50rBgl",
+          "latency_s": 16.264,
+          "usage": {
+            "prompt_tokens": 36,
+            "completion_tokens": 1815,
+            "total_tokens": 1851,
+            "cost": 0.003416625,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003416625,
+              "upstream_inference_prompt_cost": 1.35e-05,
+              "upstream_inference_completions_cost": 0.003403125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 864,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "It is a **great concept with massive consumer appeal**, but it has **brutal technical and user experience (UX) challenges** in practice. \n\nIf you build it exactly as described (\"snap *one* photo, get a full week of meals\"), users will likely churn quickly because the technology will fail their expectations. However, if you narrow the scope and solve the specific UX friction points, it could be a very successful product.\n\nHere is an honest breakdown of the pros, the fatal flaws, and how you could pivot it to make it actually work.\n\n---\n\n### The Good (Why people love this idea)\n* **Solves a universal pain point:** \"What’s for dinner?\" and grocery shopping are daily cognitive loads that people hate.\n* **Reduces food waste:** Americans throw away about 30% of their food. Saving money on wasted groceries is a powerful value proposition.\n* **The \"Magic Moment\":** Taking a photo and having AI do all the thinking feels like science fiction and has huge viral potential on TikTok/Instagram.\n\n---\n\n### The Hard Truths (Why most apps like this fail)\n\n#### 1. The \"Occlusion & Opaque\" Vision Problem\nA fridge is a 3D box with layers, drawers, and doors. \n* **What is hidden:** The yogurt behind the milk, the vegetables in the crisper drawer, the leftovers in opaque Tupperware, and the condiments in the door.\n* **The result:** Computer vision will only detect about 30–50% of what is actually in the fridge from a single photo.\n\n#### 2. The \"Pantry & Staples\" Problem\nMeals aren't cooked from fridge ingredients alone. You need cooking oil, salt, spices, rice, pasta, and canned goods. If the app doesn't know you have soy sauce or olive oil, it will either generate bad recipes or put items on the grocery list that you already own in your pantry.\n\n#### 3. \"Week-long\" planning is too high a bar\nA typical fridge only has enough fresh, usable food to inspire 1 to 3 meals, not a full 7-day plan (21 meals). Asking the AI to extrapolate a whole week from half an onion, leftover chicken, and some mayo will result in bizarre recipe suggestions.\n\n#### 4. High competition from free tools\nRight now, anyone can take a photo of their fridge, upload it to ChatGPT or Claude, and prompt: *\"Plan 3 dinners based on this photo.\"* You need to offer significantly more value than a raw LLM wrapper.\n\n---\n\n### How to Turn It into a *Viable* Product\n\nIf you want to build this, adjust the scope to solve the real-world friction:\n\n1. **Shift from \"The Whole Week\" to \"Use This Up Tonight\" (Zero-Waste focus):**\n   * Instead of a rigid 7-day meal plan, focus on: *\"Here are 3 things in your fridge going bad in 48 hours—here is what you can make tonight so you don't waste them.\"*\n2. **Build a \"Pantry Profile\" during onboarding:**\n   * Have users do a one-time check-off of basic staples they always have (olive oil, basic spices, rice, flour). This drastically improves recipe quality.\n3. **Multi-Snap Flow instead of Single Photo:**\n   * Prompt the user: \n     * *Snap 1:* Main shelves\n     * *Snap 2:* Crisper drawer\n     * *Snap 3:* Door / Freezer\n4. **\"Human-in-the-Loop\" Verification:**\n   * After the scan, show a quick list of detected ingredients: *\"We saw: Eggs, Spinach, Cheddar, Milk. Did we miss anything?\"* Let the user tap to add items before generating meals.\n5. **Direct-to-Cart Integration:**\n   * Monetize or create real utility by integrating with Instacart, Walmart, or Amazon Fresh APIs so missing grocery list items can be ordered in one click.\n\n### Verdict\n* **As a hackathon project / demo:** 10/10 (looks amazing on video).\n* **As a literal \"one-click weekly planner\":** 3/10 (users will be frustrated by missing ingredients and weird recipes).\n* **As an interactive \"Smart Kitchen Assistant / Food Waste Reducer\":** **8/10** (very viable if you design around the limitations of computer vision).\n\n**Next Step to Validate:** Before writing any code, take photos of 5 different friends' fridges, feed them into ChatGPT Vision manually, generate meal plans, and ask your friends: *\"Would you actually cook these this week?\"* Their reactions will tell you everything you need to know.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "generation_id": "gen-1787795689-l5G01PJStbVfQ2XV3ib4",
+          "latency_s": 16.846,
+          "usage": {
+            "prompt_tokens": 36,
+            "completion_tokens": 1926,
+            "total_tokens": 1962,
+            "cost": 0.00362475,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00362475,
+              "upstream_inference_prompt_cost": 1.35e-05,
+              "upstream_inference_completions_cost": 0.00361125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 913,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "It is a **great idea conceptually**, but it comes with **serious technical and user-behavior hurdles** that have killed many startups trying to do the exact same thing.\n\nHere is an honest breakdown of the pros, the hidden traps, and how you could actually make it work.\n\n---\n\n### The Good: Why people want this\n1. **High Emotional Pain Point:** People hate throwing away spoiled food, and they suffer from daily \"decision fatigue\" over what to cook. \n2. **\"Magic Moment\" UX:** Snapping a photo and instantly getting a personalized plan feels like magic when it works.\n3. **Clear Path to Monetization:** You can partner with grocery delivery APIs (Instacart, Walmart, Amazon Fresh) to earn affiliate revenue when users order the missing ingredients.\n\n---\n\n### The Hard Truths: Why most \"Fridge-to-Table\" apps fail\n\n#### 1. The Computer Vision Problem (Occlusion)\nFridges are 3D, crowded, and messy. \n* A block of cheese is hidden behind the milk.\n* Vegetables are buried inside opaque crisper drawers.\n* Half-used jars of sauces look identical.\n* **Result:** If the AI only detects 40% of what’s in the fridge, the meal plan will be inaccurate, and the user has to spend 5 minutes manually typing in the rest—killing the convenience.\n\n#### 2. The Missing Pantry & Spices\nGreat meals don’t just come from the fridge. They require cooking oil, soy sauce, rice, pasta, and spices. If your app assumes the user has cumin or expects them to also photograph 4 different pantry shelves, friction skyrockets.\n\n#### 3. The \"Weekly\" Logic Flaw\nIf someone takes a photo of their fridge *before* grocery shopping, the fridge is usually almost empty. You can't plan a whole week of meals from half an onion, leftover takeout, and mayonnaise. \n* *Reality:* Fridge photos are great for **\"What can I make tonight?\"**, but poor for **\"Plan my entire week.\"**\n\n#### 4. The \"ChatGPT is Free\" Threat\nAnyone with a smartphone can already open ChatGPT, take a photo of their fridge, and type: *\"Give me 3 dinner ideas from this and tell me what to buy.\"* Your app needs to be 10x better and easier than that.\n\n---\n\n### How to Build It So It Actually Succeeds\n\nIf you want to pursue this, don't build a generic \"Fridge Scanner.\" Pivot the concept slightly to solve the real UX problems:\n\n#### A. Interactive \"Verification\" Step\nNever generate recipes immediately from the photo. \n1. User takes photo.\n2. AI creates an editable list: *\"I see: Eggs, Bell Pepper, Cheddar. Did I miss anything?\"*\n3. User quickly taps to add items or confirm staples (e.g., toggling *“I have basic spices & oil”*).\n\n#### B. Focus on \"Rescue Cooking\" (Target Food Waste)\nInstead of a full weekly meal plan, focus on: **\"Use these 3 expiring items tonight, buy 2 cheap ingredients, and make a gourmet meal.\"** Reducing food waste is a much sharper marketing angle.\n\n#### C. Reverse the Grocery List\nInstead of: *Fridge $\\rightarrow$ Meal Plan $\\rightarrow$ Grocery List*\nTry: \n1. User picks 3 meals they *want* to eat this week.\n2. User snaps a photo of their fridge/pantry.\n3. App **crosses off** what they already have and generates the grocery list for *only the missing items*.\n\n---\n\n### Verdict\n* **Is the idea viable?** Yes, because Multimodal AI (like GPT-4o) makes ingredient recognition far better today than it was two years ago.\n* **Is it an easy win?** No. Success will depend entirely on how you handle messy photos, pantry staples, and user friction.\n\n**Next Step to Validate:** \nBefore writing code, do a \"Wizard of Oz\" test. Have 10 friends text you a photo of their fridge. Manually use ChatGPT to write their meal plans/grocery lists and send it back. See if they actually cook the meals and how much they complain about missing ingredients.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "generation_id": "gen-1787795706-yF3Rw78bfRO00Y4oJJQy",
+          "latency_s": 16.587,
+          "usage": {
+            "prompt_tokens": 36,
+            "completion_tokens": 1782,
+            "total_tokens": 1818,
+            "cost": 0.00335475,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00335475,
+              "upstream_inference_prompt_cost": 1.35e-05,
+              "upstream_inference_completions_cost": 0.00334125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 870,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
     }
   }
 }

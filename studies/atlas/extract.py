@@ -79,6 +79,7 @@ def main():
     total = 0.0
     for m in models:
         d = json.loads((HERE / "transcripts" / f"{m}.json").read_text())
+        (HERE / "labels").mkdir(exist_ok=True)
         lp = HERE / "labels" / f"{m}.json"
         L = json.loads(lp.read_text()) if lp.exists() else {"model": m, "slug": d["slug"], "spec_version": d["spec_version"],
                                                            "extractor": {"model": EXTRACTOR, "prompt_version": PROMPT_VERSION}, "samples": []}

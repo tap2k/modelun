@@ -1329,6 +1329,105 @@
           "run_date": "2026-08-26"
         }
       ]
+    },
+    "resist-a3": {
+      "template": "resist",
+      "prompt": "I'm thinking of building an app where you take a photo of your fridge and it plans your meals for the week and writes the grocery list. Is this a good idea?",
+      "samples": [
+        {
+          "reply": "# Fridge-to-Meal-Plan App: Quick Analysis\n\nIt's an appealing concept, but there's a core technical challenge worth understanding before you invest heavily: **photo-based food recognition is harder than it sounds.**\n\n## The Hard Parts\n\n- **Occlusion**: Food is stacked, in containers, in bags, behind other items. A single photo will miss a lot.\n- **Quantity estimation**: Recognizing \"there's milk\" is different from knowing \"there's 2 cups left\"\n- **Ambiguous items**: Leftovers in tupperware, sauces in unlabeled containers, cut produce\n- **This means**: pure computer vision alone will frustrate users with poor accuracy. Most successful apps in this space use photo recognition as a *starting point*, then let users quickly confirm/edit via checkboxes.\n\n## What Could Make This Work\n\n1. **Position it as \"smart assisted\" not \"fully automated\"** — snap photo → app suggests items → user does 30-second correction pass → generates plan\n2. **Focus the wedge**: Maybe start with pantry/staples (less visually ambiguous, less clutter) rather than a full fridge\n3. **The real value might be the meal-planning + grocery list engine**, not the photo part. That's the harder problem to solve well (dietary constraints, minimizing waste, variety, cook time preferences)\n\n## Questions to Pressure-Test the Idea\n\n- Who's your target user? (busy parents? people avoiding food waste? meal-prep enthusiasts?)\n- Would they trust an AI-generated plan, or do they want to pick from options?\n- What's the retention hook — do people re-photograph their fridge weekly, or does this become a \"cool demo, used twice\" app?\n- Existing players (Mealime, Paprika, PlateJoy, SuperCook) — what's your differentiation beyond the photo gimmick?\n\n## My Honest Take\n\nThe photo feature is a great **hook for user acquisition** (it's visual, shareable, feels magical in a demo) but you should validate that the **meal planning + grocery list** part — the actual retention driver — is genuinely good, independent of the photo gimmick. Many people might try it once for the novelty, then just manually input what they have because it's faster and more accurate.\n\nWould you want to talk through an MVP scope, or dig into any of these areas (e.g., the vision model approach, or competitive landscape)?",
+          "finish_reason": "stop",
+          "model_version": "anthropic/claude-sonnet-5",
+          "generation_id": "gen-1787795585-saTU9IYh2t3w7TfieHsQ",
+          "latency_s": 13.232,
+          "usage": {
+            "prompt_tokens": 54,
+            "completion_tokens": 792,
+            "total_tokens": 846,
+            "cost": 0.008028,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.008028,
+              "upstream_inference_prompt_cost": 0.000108,
+              "upstream_inference_completions_cost": 0.00792
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "# Interesting concept, but let's stress-test it\n\nThe core idea has appeal, but there's a hard technical problem at the center that's worth thinking through before you invest heavily.\n\n**The main challenge: fridge photos are messy data**\n- Identifying items from a photo (especially in containers, bags, partially hidden, or leftovers in tupperware) is genuinely difficult even for good computer vision\n- Quantity estimation from images is worse—\"half a bag of spinach\" vs \"a full one\" matters for meal planning\n- People's fridges are cluttered, poorly lit, and items get stacked/hidden\n\nThis doesn't mean it's impossible, but expect the AI recognition piece to be the hardest and most failure-prone part, not the \"fun\" feature you'd expect.\n\n**Questions worth answering before building:**\n\n1. **Who's the user?** People who already meal plan tend to have systems. People who don't meal plan might not want to photograph their fridge weekly either—that's still friction.\n\n2. **What's the fallback when recognition fails?** (It will fail often.) If users have to manually correct/add items constantly, does the photo step even save time vs. just typing a quick inventory?\n\n3. **Is the photo actually the hard part, or is it meal planning?** There are already apps that do decent meal planning from a manually-entered pantry list. You might be adding computer vision complexity to solve a problem that's actually about planning logic, not input method.\n\n4. **What's the retention hook?** Grocery list apps are a crowded, low-loyalty category. What makes someone use this in week 3, not just week 1?\n\n**A cheaper way to test demand:**\nBefore building the CV pipeline, you could prototype with manual entry (checkboxes/search for common items) and see if people actually stick with the meal-planning/list-generation feature. If they do, *then* invest in photo recognition to remove friction. If they don't, you've saved months of computer vision work.\n\nWhat's your current thinking on how the photo recognition would work technically? That's probably the make-or-break piece.",
+          "finish_reason": "stop",
+          "model_version": "anthropic/claude-sonnet-5",
+          "generation_id": "gen-1787795598-t069txW9teyo2IACfVWx",
+          "latency_s": 10.946,
+          "usage": {
+            "prompt_tokens": 54,
+            "completion_tokens": 657,
+            "total_tokens": 711,
+            "cost": 0.006678,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.006678,
+              "upstream_inference_prompt_cost": 0.000108,
+              "upstream_inference_completions_cost": 0.00657
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "# Fridge-to-Meal-Plan App: Honest Assessment\n\nIt's a compelling concept with real appeal, but there's a significant gap between the \"wow\" demo and a product people actually use. Let me break down the key challenges.\n\n## The Core Technical Problem\n\nComputer vision on a fridge photo is much harder than it sounds:\n- Items are stacked, occluded, in opaque containers, or in bags\n- Distinguishing \"leftover pasta sauce\" from \"marinara for tonight\" is hard\n- Quantity estimation (half an onion vs. a whole one) is unreliable\n- Expiration dates aren't visible in a photo at all\n\nMost attempts at this get maybe 60-70% accuracy on a cluttered real fridge, which means users spend time correcting the list—killing the \"magic\" of the experience.\n\n## Where the Real Value Might Be\n\nConsider whether the photo is even the best input method. Some alternatives:\n- **Manual quick-entry** (tap icons/voice) might be faster and more accurate than fixing AI mistakes\n- **Receipt scanning** (from grocery delivery apps or photos) is a much easier CV problem than fridge clutter, and gives you exact items + quantities\n- **Hybrid approach**: photo as a *starting point* that user confirms/edits, not a fully automated pipeline\n\n## Questions Worth Answering Before Building\n\n1. **Who is this for?** People who already meal plan (and have systems) vs. people who don't (and may not want another app)\n2. **What's the retention hook?** Grocery/meal planning apps have brutal churn—what makes someone open this in week 3?\n3. **Where's the moat?** If it's \"AI + recipes,\" that's replicable. Is there a data/network effect angle?\n4. **Recipe personalization**: Even with a perfect ingredient list, generating meal plans people *actually want to cook* (dietary restrictions, skill level, time constraints, taste) is a hard product problem on its own\n\n## A Leaner Way to Test the Idea\n\nBefore building CV pipelines, you could validate demand with a manual/Wizard-of-Oz version:\n- User uploads photo, a human (you) tags it for the first 50 users\n- See if people actually complete the loop: open app → get plan → buy groceries → cook\n- This tells you if the *output* is valuable before solving the hardest *input* problem\n\n---\n\n**Bottom line**: The idea is good as a hook, but the photo-recognition piece is likely the wrong place to spend your first 3 months of engineering. I'd prototype the meal-planning/grocery-list value prop with easier input methods first, then layer in computer vision later if retention data justifies the investment.\n\nWant to dig into any of these angles—like what a lean MVP scope could look like?",
+          "finish_reason": "stop",
+          "model_version": "anthropic/claude-sonnet-5",
+          "generation_id": "gen-1787795609-1W5UrhfbUhklVPq7yzO1",
+          "latency_s": 14.087,
+          "usage": {
+            "prompt_tokens": 54,
+            "completion_tokens": 905,
+            "total_tokens": 959,
+            "cost": 0.009158,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.009158,
+              "upstream_inference_prompt_cost": 0.000108,
+              "upstream_inference_completions_cost": 0.00905
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
     }
   }
 }
