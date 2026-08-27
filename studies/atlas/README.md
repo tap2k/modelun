@@ -108,7 +108,7 @@ The spec is the frozen instrument and carries no commentary; rationale lives her
 | draft-a1 decline wedding | decline; formula n-grams, politeness register |
 | draft-a2 cancelled project | bad news with relational weight; options, explains, unrelated tips have room to appear |
 | create-a1 programmer joke | joke convergence |
-| create-a2 lighthouse keeper | story; naming convergence (Elara effect) |
+| create-a2 short story, unconstrained | story; convergence of name, setting, and occupation. Hamilton & Mimno 2026 (arXiv:2605.26492) find eleven words (Elias, Mara, Elara, lighthouse, clockmaker, librarian, ...) in 88% of unprompted LLM stories and trace them to preference data; our earlier anchor planted the lighthouse, so it was replaced. Their list is the reference set. In the pilot, Elias led 14 of 24 lighthouse stories. |
 | edit-a1 follow-up email | correct, flat workplace prose; rewrite fraction |
 | edit-a2 park paragraph | correct, deliberately plain personal prose; unrequested style rewrites |
 | interpret-a1 "circle back" | social ambiguity with enough context that the model must read it rather than ask; readings count |

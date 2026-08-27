@@ -185,14 +185,15 @@ cancelled.
 | unrelated tips | spans | Advice beyond the draft (how to deliver it, what to do after). Return each sentence. |
 
 ### Create
-Anchors: a joke about programmers · a short story about a lighthouse keeper.
+Anchors: a joke about programmers · a short story, unconstrained.
 
 | measure | shape | criterion / definition |
 |---|---|---|
 | joke key | spans | The punchline, verbatim (the last line of the joke, or the line that lands it). Setup returned too but not used for matching. |
 | joke convergence | count | Punchlines are normalized (lowercase, punctuation and emoji stripped) and clustered: two punchlines are the same joke if token-set Jaccard ≥ 0.5, or, when a cluster's wording varies too much for that (the bread-and-eggs joke), embedding cosine ≥ 0.85. Clusters are named by hand ("dark mode", "eggs") and published with their member punchlines, so the grouping is checkable by reading. Convergence = share of the panel's samples in the largest cluster; distinct rate = clusters ÷ samples. |
 | joke format | label | one-liner / setup-punchline / several jokes |
-| character name | span | The story's main character's name, or none. Convergence across the panel (the Elara effect). |
+| character name | span | The story's main character's name, or none. Convergence across the panel (the Elara effect; Hamilton & Mimno 2026, arXiv:2605.26492, give the reference set: Elias, Mara, Elara). |
+| setting, occupation | spans | Where the story is set and what the protagonist does; matched against the same reference set (lighthouse, clockmaker, librarian). |
 | first line type | label | setting / character / dialogue / other, with the first sentence |
 | ending type | label | twist / quiet / moral, with the last sentence |
 | paragraph count, dialogue fraction | count | paragraphs; fraction of sentences in quotation marks |
