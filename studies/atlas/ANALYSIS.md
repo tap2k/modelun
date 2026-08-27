@@ -78,6 +78,13 @@ A customer engagement is a new corpus and a new criteria file. The atlas is one 
    planted span known not to fit; a rater who misses most golds is excluded. Three
    raters per screen; a span is rejected on majority strike.
 
+   **Granularity.** Each criterion has a unit. `item`: one span per distinct point, even
+   several inside one sentence; one point elaborated across sentences is one span. `phrase`:
+   the expression itself; a list of them in one clause is one instance. After verification,
+   adjacent spans of one criterion (separated only by whitespace or punctuation) are merged
+   in code into one instance. Raters never merge or split; over-segmentation the merge
+   misses appears as adjacent rejects and is fixed in the criterion.
+
    **Seeds tune in the loop.** A rejected span is a reason to sharpen the criterion:
    add it as a negative example, add a clearer positive, re-extract, rate again. The
    rejection log is the record of that convergence. For the atlas, seeds are tuned during

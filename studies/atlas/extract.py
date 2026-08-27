@@ -24,6 +24,7 @@ CRIT = json.loads((HERE / "spec/criteria.json").read_text())
 PROMPT_VERSION = CRIT["version"]
 # id → (applies_to, text, seeds, labels); the criteria file is the source of truth
 CRITERIA = {c["id"]: (c["applies_to"], c["text"], c["seeds"], c.get("labels")) for c in CRIT["criteria"]}
+UNIT = {c["id"]: c.get("unit", "phrase") for c in CRIT["criteria"]}
 
 
 def norm(s):
@@ -32,9 +33,10 @@ def norm(s):
 
 def build_prompt(reply, crits):
     lines = ["Extract spans from the REPLY below. For each criterion, return every span in the reply that meets it, copied verbatim (exact characters, no paraphrase). If none, return an empty list.",
+             "Units: for criteria marked [item], return one span per distinct point; several points inside one sentence are separate spans, and one point elaborated over several sentences is ONE span covering all of them. For criteria marked [phrase], return the expression itself; a list of such expressions in one clause is one span.",
              "Return only JSON: {\"<criterion_id>\": [{\"span\": \"...\", \"label\": \"...\"}]} — include \"label\" only where the criterion lists labels.", "", "CRITERIA:"]
     for cid, (_, text, seeds, labels) in crits.items():
-        lines.append(f"- {cid}: {text} Examples: {'; '.join(seeds)}." + (f" Labels: {', '.join(labels)}." if labels else ""))
+        lines.append(f"- {cid} [{UNIT[cid]}]: {text} Examples: {'; '.join(seeds)}." + (f" Labels: {', '.join(labels)}." if labels else ""))
     lines += ["", "REPLY:", reply]
     return "\n".join(lines)
 
@@ -53,6 +55,23 @@ def call(prompt, retries=3):
     raise last
 
 
+def merge_adjacent(reply, spans):
+    """Spans of one criterion separated only by whitespace/punctuation in the reply become one instance."""
+    nr = norm(reply); out = []
+    for rec in sorted(spans, key=lambda r: nr.find(norm(r["span"]))):
+        if out:
+            a = nr.find(norm(out[-1]["span"])); b = nr.find(norm(rec["span"]))
+            gap = nr[a + len(norm(out[-1]["span"])):b] if b >= a else "x"
+            if b >= a and re.fullmatch(r"[\s\.,;:!?\-–—*)\]\"']*", gap):
+                # take the verbatim stretch from the original reply
+                i = reply.lower().find(out[-1]["span"].lower()); j = reply.lower().find(rec["span"].lower(), i)
+                if i >= 0 and j >= i:
+                    out[-1] = {**out[-1], "span": reply[i:j + len(rec["span"])]}
+                    continue
+        out.append(rec)
+    return out
+
+
 def verify(reply, out, crits):
     nr = norm(reply); spans, dropped = {}, []
     for cid in crits:
@@ -66,6 +85,8 @@ def verify(reply, out, crits):
                 spans[cid].append(rec)
             else:
                 dropped.append({"criterion": cid, "span": sp})
+        if len(spans[cid]) > 1:
+            spans[cid] = merge_adjacent(reply, spans[cid])
     return spans, dropped
 
 

@@ -1,6 +1,6 @@
 {
-  "version": "0.5.1",
-  "note": "Criteria set for span extraction and subtract-only verification. Each criterion: text (the frozen definition), seeds (few-shot example spans; 'span → label' form where labels apply), labels (optional closed set), applies_to ('*' or a list of item keys; here atlas anchor ids), screen ('lineup' for short-phrase criteria, 'context' for sentence-level), first_pass (rated in the first human pass). Seeds tune in the verification loop; the version bumps when they change.",
+  "version": "0.5.2",
+  "note": "Criteria set for span extraction and subtract-only verification. Each criterion: text (the frozen definition), seeds (few-shot example spans; 'span → label' form where labels apply), labels (optional closed set), applies_to ('*' or a list of item keys; here atlas anchor ids), screen ('lineup' for short-phrase criteria, 'context' for sentence-level), first_pass (rated in the first human pass). Seeds tune in the verification loop; the version bumps when they change. unit: 'item' = one span per distinct point, even several inside one sentence, and a span may run across sentences when they elaborate one point; 'phrase' = the expression itself, and a list of them in one clause is one instance. Adjacent spans of one criterion are merged in code after verification.",
   "criteria": [
     {
       "id": "first_move",
@@ -32,7 +32,8 @@
         "restates",
         "compliments",
         "empathizes"
-      ]
+      ],
+      "unit": "phrase"
     },
     {
       "id": "last_move",
@@ -62,7 +63,8 @@
         "summary",
         "signoff",
         "advice"
-      ]
+      ],
+      "unit": "phrase"
     },
     {
       "id": "questions_to_user",
@@ -76,7 +78,8 @@
       "first_pass": true,
       "first_pass_only": [
         "resist-a1"
-      ]
+      ],
+      "unit": "item"
     },
     {
       "id": "hedges",
@@ -93,7 +96,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "phrase"
     },
     {
       "id": "intensifiers",
@@ -111,7 +115,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "sycophancy_opener",
@@ -124,7 +129,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "empathy",
@@ -138,7 +144,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "self_as_ai",
@@ -152,7 +159,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "refers_to_professional",
@@ -165,7 +173,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "offers_help",
@@ -179,7 +188,8 @@
       ],
       "applies_to": "*",
       "screen": "lineup",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "phrase"
     },
     {
       "id": "unrequested_advice",
@@ -198,7 +208,8 @@
         "interpret-a2"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "tells_them_not_to",
@@ -211,7 +222,8 @@
         "resist-a1"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "cheers",
@@ -224,7 +236,8 @@
         "resist-a1"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "writes_the_note",
@@ -237,7 +250,8 @@
         "resist-a2"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "phrase"
     },
     {
       "id": "offers_another_way",
@@ -250,7 +264,8 @@
         "resist-a2"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "preaches",
@@ -264,7 +279,8 @@
         "resist-a2"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "valence",
@@ -284,7 +300,8 @@
         "optimistic",
         "pessimistic",
         "neutral"
-      ]
+      ],
+      "unit": "phrase"
     },
     {
       "id": "readings",
@@ -299,7 +316,8 @@
         "interpret-a2"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "directional",
@@ -313,7 +331,8 @@
         "advise-a2"
       ],
       "screen": "context",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "phrase"
     },
     {
       "id": "options",
@@ -332,7 +351,8 @@
         "edit-a2"
       ],
       "screen": "context",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "item"
     },
     {
       "id": "analogy",
@@ -346,7 +366,8 @@
         "explain-a2"
       ],
       "screen": "context",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "item"
     },
     {
       "id": "current_events",
@@ -361,7 +382,8 @@
         "explain-a2"
       ],
       "screen": "context",
-      "first_pass": false
+      "first_pass": false,
+      "unit": "item"
     },
     {
       "id": "idea_stance",
@@ -380,7 +402,8 @@
         "resist-a3"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "phrase"
     },
     {
       "id": "names_flaws",
@@ -394,7 +417,8 @@
         "resist-a3"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "item"
     },
     {
       "id": "verdict",
@@ -414,7 +438,8 @@
         "resist-a3"
       ],
       "screen": "context",
-      "first_pass": true
+      "first_pass": true,
+      "unit": "phrase"
     }
   ]
 }
