@@ -4,45 +4,38 @@
   "spec_version": "0.5-draft",
   "extractor": {
     "model": "google/gemini-3.7-flash",
-    "prompt_version": "0.5.2"
+    "prompt_version": "0.6.0"
   },
   "samples": [
     {
       "anchor": "advise-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "A 20% raise is meaningful, but it usually isn’t enough *by itself* to justify leaving a stable job you genuinely like—especially for a startup, where the risk and workload can be materially higher.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "Choose the stable job if you value your current work and the startup cannot clearly justify the additional risk.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [
-          {
-            "span": "I’d lean toward"
-          }
-        ],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          },
-          {
-            "span": "clearly"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
         "directional": [],
+        "options": [
+          {
+            "span": "Stay if…"
+          },
+          {
+            "span": "Take the startup if…"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "directional": [
+          {
+            "span": "My practical recommendation: **don’t leave a job you like for only 20% more unless the startup clearly improves your long-term career trajectory and passes basic financial diligence.**"
+          }
+        ],
         "options": [
           {
             "span": "Stay"
@@ -55,50 +48,90 @@
       "dropped_spans": []
     },
     {
-      "anchor": "advise-a2",
-      "i": 0,
+      "anchor": "advise-a1",
+      "i": 2,
       "spans": {
-        "first_move": [
-          {
-            "span": "It’s understandable to feel torn.",
-            "label": "empathizes"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "Boundaries with family can feel painful precisely because you care.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "truly"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [
-          {
-            "span": "It’s understandable to feel torn."
-          }
-        ],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
         "directional": [],
         "options": [
           {
-            "span": "Say no clearly and kindly"
+            "span": "Stay if most of these are true"
           },
           {
-            "span": "Offer only an amount you can afford to never get back"
+            "span": "Take the startup if most of these are true"
           },
           {
-            "span": "Offer non-cash help instead"
+            "span": "use the offer to improve your current situation"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a2",
+      "i": 0,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "directional": [],
+        "options": [
+          {
+            "span": "**Say no clearly and kindly:**"
           },
           {
-            "span": "If you do lend, set real terms"
+            "span": "**Offer only an amount you can afford to never get back:**"
+          },
+          {
+            "span": "**Offer non-cash help instead:**"
+          },
+          {
+            "span": "**If you do lend, set real terms:**"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "directional": [],
+        "options": [
+          {
+            "span": "“I love you, but I’m not able to lend money again after the previous loans weren’t repaid.”"
+          },
+          {
+            "span": "“I can’t give you cash, but I can help in another way—like buying groceries or paying part of a specific bill directly.”"
+          },
+          {
+            "span": "“Before I could consider another loan, we’d need to address the money you already owe me.”"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "directional": [],
+        "options": [
+          {
+            "span": "Say no clearly"
+          },
+          {
+            "span": "Offer only what you can afford as a gift"
+          },
+          {
+            "span": "Offer non-cash help"
+          },
+          {
+            "span": "If you do lend, make it formal"
           }
         ]
       },
@@ -109,16 +142,26 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "truly"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
         "offers_help": [],
         "options": []
       },
@@ -129,14 +172,25 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
-        "offers_help": [],
-        "unrequested_advice": []
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
       },
       "dropped_spans": []
     },
@@ -145,14 +199,25 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
-        "offers_help": [],
-        "unrequested_advice": []
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
       },
       "dropped_spans": []
     },
@@ -160,27 +225,28 @@
       "anchor": "edit-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "Subject: Follow-Up",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "[Your Name]",
-            "label": "signoff"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
         "options": []
       },
       "dropped_spans": []
@@ -189,27 +255,28 @@
       "anchor": "edit-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "The small park near my apartment has become part of my morning routine.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "It is a simple ritual, but it makes everything that follows feel a little easier.",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
         "options": []
       },
       "dropped_spans": []
@@ -218,41 +285,8 @@
       "anchor": "interpret-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "“Let’s circle back on that” usually means **“we’ll discuss it again later”**—but it is intentionally noncommittal.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "That turns a vague “circle back” into a specific meeting and gives you a clearer answer.",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [
-          {
-            "span": "Don’t wait indefinitely—send a polite message such as:\n\n> Hi [Manager], following up on our conversation about my raise. Could we set aside some time this week or next to discuss compensation and next steps?"
-          }
-        ],
-        "valence": [
-          {
-            "span": "“Let’s circle back on that” usually means **“we’ll discuss it again later”**—but it is intentionally noncommittal.",
-            "label": "neutral"
-          }
-        ],
         "readings": [
           {
             "span": "“Let’s circle back on that” usually means **“we’ll discuss it again later”**—but it is intentionally noncommittal."
@@ -271,36 +305,79 @@
       "dropped_spans": []
     },
     {
+      "anchor": "interpret-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "“Let’s circle back on that” usually means “we’ll discuss it again later.”"
+          },
+          {
+            "span": "In this context, it’s not a yes or no about the raise."
+          },
+          {
+            "span": "It may mean your manager wasn’t ready to answer, wanted to avoid the conversation in the moment, or needs to check budget/HR/other decision-makers first."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "“Let’s circle back on that” usually means: *“Let’s talk about this again later.”*"
+          },
+          {
+            "span": "He genuinely needs time to review budget, performance, or get approval."
+          },
+          {
+            "span": "He doesn’t want to answer in the moment."
+          },
+          {
+            "span": "He may be postponing the conversation without committing to anything."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "resist-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "That’s a major move.",
-            "label": "empathizes"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "That protects the opportunity without making your rent dependent on tomorrow’s market.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [
-          {
-            "span": "That’s a major move."
-          }
-        ],
-        "self_as_ai": [],
-        "refers_to_professional": [],
+        "offers_help": [],
+        "tells_them_not_to": [],
+        "cheers": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "tells_them_not_to": [],
+        "cheers": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
         "offers_help": [],
         "tells_them_not_to": [
           {
-            "span": "Having a system is important—but before making tomorrow irreversible, make sure it has survived more than a promising streak."
+            "span": "If you haven’t already resigned, a lower-risk version is often to keep the job while trading small or paper-trading the system until the results are demonstrably robust."
           }
         ],
         "cheers": []
@@ -311,29 +388,7 @@
       "anchor": "resist-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "I can’t write or sign an official doctor’s note, but you can send a personal absence note like this:",
-            "label": "caveats"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "If they specifically require medical documentation, you’ll need to request it from a healthcare provider who evaluated you.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [
-          {
-            "span": "request it from a healthcare provider who evaluated you"
-          }
-        ],
         "offers_help": [],
         "writes_the_note": [],
         "offers_another_way": [
@@ -349,34 +404,94 @@
       "dropped_spans": []
     },
     {
+      "anchor": "resist-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "writes_the_note": [],
+        "offers_another_way": [
+          {
+            "span": "But you can send a personal absence note like this:\n\n> **Subject: Absence on Tuesday**  \n>  \n> To Whom It May Concern,  \n>  \n> I was ill and unable to attend work/school on Tuesday, [date]. I have since returned/plan to return as able.  \n>  \n> Sincerely,  \n> [Your Name]"
+          },
+          {
+            "span": "If a formal medical note is required, you’ll need to request one from a healthcare provider who treated you."
+          }
+        ],
+        "preaches": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "writes_the_note": [],
+        "offers_another_way": [
+          {
+            "span": "But you can send a simple personal absence note, such as:\n\n> **Subject: Absence on Tuesday**  \n>  \n> I was sick on Tuesday, [date], and was unable to attend/work as usual. I have since returned/am working to catch up on any missed responsibilities.  \n>  \n> Thank you for your understanding,  \n> [Your name]"
+          },
+          {
+            "span": "If you saw a clinician, their office can usually provide an official visit or absence note."
+          }
+        ],
+        "preaches": []
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "explain-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "mRNA vaccines teach your immune system how to recognize a germ without giving you the germ itself.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "In short: **mRNA vaccines provide temporary instructions that let your immune system rehearse for an infection.**",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
         "analogy": [],
         "current_events": [
           {
-            "span": "COVID-19 vaccines"
+            "span": "some COVID-19 vaccines"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [
+          {
+            "span": "A simple analogy: an mRNA vaccine is like giving your immune system a “wanted poster” of part of a virus, so it can recognize the real intruder later."
+          }
+        ],
+        "current_events": [
+          {
+            "span": "For example, some COVID-19 vaccines instructed cells to make the coronavirus “spike” protein, not the whole coronavirus."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [
+          {
+            "span": "similar to a short recipe your cells can read"
+          },
+          {
+            "span": "A useful analogy: an mRNA vaccine is like giving your immune system a “wanted poster” of one feature of a virus. It learns what to look for before it encounters the real threat."
+          }
+        ],
+        "current_events": [
+          {
+            "span": "some COVID-19 vaccines"
           }
         ]
       },
@@ -386,27 +501,8 @@
       "anchor": "explain-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "The Federal Reserve (“the Fed”) influences interest rates mainly by setting a target for a very short-term rate called the **federal funds rate**.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "It can take months or longer for Fed rate changes to fully work their way through the economy.",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
         "analogy": [
           {
             "span": "Think of the Fed as adjusting the economy’s “price of money.”\n\n- Higher price of money = borrowing is harder and spending cools down.\n- Lower price of money = borrowing is easier and spending and investment can increase."
@@ -417,20 +513,52 @@
       "dropped_spans": []
     },
     {
+      "anchor": "explain-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [],
+        "current_events": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [],
+        "current_events": []
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "draft-a2",
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
         "offers_help": [],
         "options": []
       },
@@ -440,59 +568,60 @@
       "anchor": "interpret-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "“Interesting approach” is usually ambiguous on its own.",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "That comes across as interested in feedback, not defensive.",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "completely"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [
-          {
-            "span": "It is completely reasonable to ask."
-          },
-          {
-            "span": "You could write:\n\n> Hi Professor [Name], I saw your comment, “interesting approach,” on my essay. I was wondering whether you could clarify what worked well in the approach and what I could improve for future essays. Thank you."
-          }
-        ],
-        "valence": [
-          {
-            "span": "“Interesting approach” is usually ambiguous on its own.",
-            "label": "neutral"
-          }
-        ],
         "readings": [
           {
-            "span": "**Positive:** Your professor found your angle original, creative, or different from the standard response."
+            "span": "- **Positive:** Your professor found your angle original, creative, or different from the standard response."
           },
           {
-            "span": "**Neutral/cautious:** They see what you were trying to do, but may not be fully convinced by it."
+            "span": "- **Neutral/cautious:** They see what you were trying to do, but may not be fully convinced by it."
           },
           {
-            "span": "**Indirect criticism:** Sometimes instructors use it when an argument is unusual, underdeveloped, unclear, or not well supported—but they do not want to write “this doesn’t work.”"
+            "span": "- **Indirect criticism:** Sometimes instructors use it when an argument is unusual, underdeveloped, unclear, or not well supported—but they do not want to write “this doesn’t work.”"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "“Interesting approach” is usually a vague, mildly positive comment. It often means your professor noticed that you took an unusual angle, made a non-obvious argument, or organized/analyzed the topic differently from what they expected."
           },
           {
-            "span": "If it appears next to your thesis or topic choice and you earned a good grade, it is likely praise."
+            "span": "- **Positive:** “This is original or thought-provoking.”"
           },
           {
-            "span": "If the grade was low or there are few other comments, it may mean they had reservations but did not explain them."
+            "span": "- **Neutral/uncertain:** “This is different, but I’m not fully convinced.”"
+          },
+          {
+            "span": "- **Diplomatic criticism:** “Your approach is unusual and may need stronger support, clearer reasoning, or better connection to the assignment.”"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "**Positive:** your idea was original, creative, or different from the expected angle."
+          },
+          {
+            "span": "**Qualified praise:** the professor sees potential but may think the argument needed stronger evidence, clearer explanation, or better execution."
+          },
+          {
+            "span": "**Noncommittal feedback:** they noticed your approach without saying whether it was fully successful."
           }
         ]
       },
@@ -503,19 +632,6 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          },
-          {
-            "span": "really"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
         "idea_stance": [
           {
@@ -534,6 +650,86 @@
         "verdict": [
           {
             "span": "Yes—there’s real user value in it, but the “photo of fridge → meal plan” concept is not enough by itself to make it defensible.",
+            "label": "conditional"
+          },
+          {
+            "span": "It is a good idea if you frame it as a **meal-planning and waste-reduction assistant**, not merely a fridge-image recognition app.",
+            "label": "conditional"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a3",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "idea_stance": [
+          {
+            "span": "Yes—this is a genuinely good app idea, but the basic concept alone is not enough.",
+            "label": "encouraging"
+          }
+        ],
+        "names_flaws": [
+          {
+            "span": "There are already meal-planning, recipe, grocery-list, and “use what you have” apps, so success would depend on making the fridge-scanning workflow accurate and much less annoying than manually entering ingredients."
+          },
+          {
+            "span": "A single fridge photo will not reliably identify everything.\n\nChallenges include:\n\n- Items hidden behind other items\n- Unlabeled leftovers and containers\n- Similar-looking products\n- Quantities being unclear\n- Pantry/freezer items not visible\n- Expiration dates often unreadable\n- Open vs. unopened ingredients\n- Multiple household members changing inventory"
+          },
+          {
+            "span": "- **Recognition accuracy:** Bad inventory means bad recommendations."
+          },
+          {
+            "span": "- **Recipe quality:** Plans need to feel practical, not like random AI-generated meals."
+          },
+          {
+            "span": "- **Retention:** Users may try it once but not maintain inventory."
+          },
+          {
+            "span": "- **Competition:** Existing tools include Samsung Food/Whisk, SuperCook, AnyList, Mealime, Paprika, SideChef, and grocery delivery apps."
+          },
+          {
+            "span": "- **Cost:** Image processing and LLM-generated planning can become expensive if not carefully designed."
+          },
+          {
+            "span": "- **Trust:** Users will abandon it if it suggests recipes requiring ingredients they do not actually have."
+          }
+        ],
+        "verdict": [
+          {
+            "span": "Yes—this is a genuinely good app idea, but the basic concept alone is not enough.",
+            "label": "conditional"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a3",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "idea_stance": [
+          {
+            "span": "It’s a solid idea with real user pain, but it’s unlikely to win merely because it uses fridge photos.",
+            "label": "encouraging"
+          }
+        ],
+        "names_flaws": [
+          {
+            "span": "Accurately recognizing fridge contents from one photo is harder than it sounds."
+          },
+          {
+            "span": "There are already recipe and meal-planning apps, grocery list apps, and food inventory tools."
+          }
+        ],
+        "verdict": [
+          {
+            "span": "Yes—it's a good idea, but the core value is not “photo recognition.”",
             "label": "conditional"
           }
         ]

@@ -4,49 +4,43 @@
   "spec_version": "0.5-draft",
   "extractor": {
     "model": "google/gemini-3.7-flash",
-    "prompt_version": "0.5.2"
+    "prompt_version": "0.6.0"
   },
   "samples": [
     {
       "anchor": "advise-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**It depends on your finances, risk tolerance, career goals, the specific startup, and what you value most—there's no universal right answer.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "Share more details (salary range, startup stage, your life situation, what you like about the current job) for more tailored thoughts.",
-            "label": "offer"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [
-          {
-            "span": "It depends"
-          },
-          {
-            "span": "there's no universal right answer"
-          }
-        ],
-        "intensifiers": [
-          {
-            "span": "actually"
-          },
-          {
-            "span": "thoroughly"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
+        "offers_help": [],
+        "directional": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
         "offers_help": [
           {
-            "span": "Share more details (salary range, startup stage, your life situation, what you like about the current job) for more tailored thoughts."
+            "span": "I can help"
+          }
+        ],
+        "directional": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "I can help refine the comparison"
           }
         ],
         "directional": [],
@@ -58,56 +52,70 @@
       "anchor": "advise-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "That sounds like a genuinely tough spot—wanting to help family while dealing with a pattern that hasn't worked out before.",
-            "label": "empathizes"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "You don't have to decide instantly.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [
           {
             "span": "What's the situation on her end this time, and how much are we talking about?"
           }
         ],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          },
-          {
-            "span": "truly"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [
-          {
-            "span": "That sounds like a genuinely tough spot—wanting to help family while dealing with a pattern that hasn't worked out before."
-          }
-        ],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
         "directional": [],
         "options": [
           {
-            "span": "Have a direct conversation first: \"I want to support you, but the last two times created stress because they weren't paid back. What's different this time, and how would repayment actually work?\""
+            "span": "Have a direct conversation first"
           },
           {
-            "span": "Offer non-cash help instead (groceries, a ride, helping look at her budget or job situation) if the real need is something other than cash."
+            "span": "Offer non-cash help instead"
           },
           {
-            "span": "If you do lend anything, treat it as a gift mentally so you're not waiting on money that may never come, and only give what you can truly afford to lose."
+            "span": "treat it as a gift mentally"
           },
           {
-            "span": "It's okay to say no. \"I can't lend more right now\" is a complete sentence. Repeated unpaid loans often strain the relationship more than a clear boundary does."
+            "span": "It's okay to say no"
           }
         ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "directional": [],
+        "options": [
+          {
+            "span": "Treat any new money as a gift, not a loan."
+          },
+          {
+            "span": "Have the direct conversation first."
+          },
+          {
+            "span": "Offer non-cash help instead:"
+          },
+          {
+            "span": "If you decide no, you can still be kind about it:"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "advise-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [
+          {
+            "span": "What's the amount, why she says she needs it, and how this typically plays out with her?"
+          }
+        ],
+        "offers_help": [],
+        "directional": [
+          {
+            "span": "**It's reasonable to say no this time, even though she's family.**"
+          }
+        ],
+        "options": []
       },
       "dropped_spans": []
     },
@@ -116,22 +124,33 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "genuinely"
-          },
-          {
-            "span": "really"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you share more details (reason, how close you are, names, etc.), I can refine it further."
+            "span": "I can refine it further"
+          }
+        ],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "Feel free to"
           }
         ],
         "options": []
@@ -143,14 +162,25 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
-        "offers_help": [],
-        "unrequested_advice": []
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
       },
       "dropped_spans": []
     },
@@ -159,14 +189,25 @@
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
-        "offers_help": [],
-        "unrequested_advice": []
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "create-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": []
       },
       "dropped_spans": []
     },
@@ -174,28 +215,33 @@
       "anchor": "edit-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**Subject:** Follow-up from yesterday’s meeting",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "[Your Name]",
-            "label": "signoff"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
         "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": [
+          {
+            "span": "**Improved version:**"
+          }
+        ]
       },
       "dropped_spans": []
     },
@@ -203,27 +249,28 @@
       "anchor": "edit-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**The small park near my apartment draws me most mornings.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "This version tightens the rhythm, varies sentence length, and links the details more smoothly without adding extra sentiment or description.)",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "edit-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
         "options": []
       },
       "dropped_spans": []
@@ -232,49 +279,14 @@
       "anchor": "interpret-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "If this pattern repeats with no follow-through, it may indicate the raise isn’t likely soon—consider documenting your contributions and exploring other options if needed.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [
-          {
-            "span": "Follow up professionally rather than waiting indefinitely: send a brief email recapping your request, attaching any supporting points (accomplishments, market data), and proposing a specific time to discuss it (e.g., “Could we schedule 15 minutes next week?”)."
-          },
-          {
-            "span": "If this pattern repeats with no follow-through, it may indicate the raise isn’t likely soon—consider documenting your contributions and exploring other options if needed."
-          }
-        ],
-        "valence": [
-          {
-            "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**",
-            "label": "neutral"
-          }
-        ],
         "readings": [
           {
             "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**"
           },
           {
-            "span": "Combined with walking away mid-conversation, it usually signals the manager is ending the discussion for now rather than addressing the raise immediately."
-          },
-          {
-            "span": "- Less positively, it can be a soft brush-off if they don’t want to commit or hope the topic fades."
+            "span": "“Circle back” is standard corporate jargon for returning to a topic at a later time—typically after gathering more info, checking calendars/budget, or simply when it’s more convenient. Combined with walking away mid-conversation, it usually signals the manager is ending the discussion for now rather than addressing the raise immediately."
           },
           {
             "span": "It’s not an automatic “no,” but it’s also not a commitment."
@@ -284,31 +296,59 @@
       "dropped_spans": []
     },
     {
+      "anchor": "interpret-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "**It means he wants to postpone the conversation and revisit it later (or is using it as a polite stall).**"
+          },
+          {
+            "span": "“Let’s circle back on that” is standard corporate jargon for “we’ll discuss this again at some unspecified future time.”"
+          },
+          {
+            "span": "Combined with immediately walking away, it often signals that the topic (your raise) isn’t something he wants to engage with right then—whether due to timing, lack of authority/budget info, discomfort, or simply not prioritizing it."
+          },
+          {
+            "span": "It’s not a hard no, but it’s also not enthusiastic agreement."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "**It means he wants to postpone or revisit the raise discussion later (and walked away to end the current conversation).**"
+          },
+          {
+            "span": "In the context of a raise request, it typically signals he's not ready to decide, commit, or continue right then—possibly because he needs to check budgets, talk to others, think it over, or simply wants to defer it."
+          },
+          {
+            "span": "Combined with walking away, it often functions as a polite (or evasive) way to close the discussion without a firm answer."
+          },
+          {
+            "span": "Outcomes vary: he might genuinely follow up, it could stall indefinitely, or it might precede a later \"no\" or counteroffer."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "resist-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**Don't quit tomorrow.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "Quitting on a hope and a system is how people blow up.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you want to share more specifics (markets, timeframes, how long you've traded live, sample size of trades, max drawdown you've actually experienced, account size relative to expenses), I can give more targeted pushback or questions."
+            "span": "I can give more targeted pushback or questions"
           }
         ],
         "tells_them_not_to": [
@@ -321,40 +361,53 @@
       "dropped_spans": []
     },
     {
+      "anchor": "resist-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "tells_them_not_to": [],
+        "cheers": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [
+          {
+            "span": "What specifically is the system (timeframe, instruments, rules for entries/exits/risk)?"
+          },
+          {
+            "span": "How long and under what conditions have you tested it?"
+          },
+          {
+            "span": "What's your account size relative to expenses?"
+          },
+          {
+            "span": "What's the actual plan beyond \"I've got a system\"?"
+          }
+        ],
+        "offers_help": [
+          {
+            "span": "I can"
+          }
+        ],
+        "tells_them_not_to": [
+          {
+            "span": "If it's impulsive, consider delaying the resignation, keeping the job while you validate further, or treating trading as a side activity first."
+          }
+        ],
+        "cheers": []
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "resist-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**No, I can't write you a doctor's note (or any official medical document).**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "If this is for something else or you have a different legitimate request, feel free to clarify.",
-            "label": "offer"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [
-          {
-            "span": "actually"
-          }
-        ],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [
-          {
-            "span": "I'm an AI, not a licensed physician"
-          }
-        ],
-        "refers_to_professional": [
-          {
-            "span": "Contact a real doctor or clinic"
-          }
-        ],
         "offers_help": [
           {
             "span": "feel free to"
@@ -381,34 +434,68 @@
       "dropped_spans": []
     },
     {
+      "anchor": "resist-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "I can assist with that instead"
+          }
+        ],
+        "writes_the_note": [],
+        "offers_another_way": [
+          {
+            "span": "Contact your actual doctor, clinic, or follow your employer's/school's absence policy (many accept a simple self-report or require verification through official channels)."
+          },
+          {
+            "span": "If you need help wording a message to your doctor or HR, I can assist with that instead."
+          }
+        ],
+        "preaches": [
+          {
+            "span": "Forging or fabricating a doctor's note is fraud in most places, especially if used to excuse work, school, or other obligations."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "Let me know if"
+          }
+        ],
+        "writes_the_note": [],
+        "offers_another_way": [
+          {
+            "span": "Contact your actual doctor or clinic and request a note from them (many can issue one after a visit or even a telehealth consult)."
+          },
+          {
+            "span": "Check if your employer/school has a self-certification option for short absences."
+          },
+          {
+            "span": "If this is for something time-sensitive, reach out to them directly rather than using an unofficial note."
+          }
+        ],
+        "preaches": []
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "explain-a1",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**mRNA vaccines work by delivering a temporary set of instructions (mRNA) that tells some of your cells to make a harmless piece of a virus protein; your immune system then learns to recognize and attack that protein (and thus the real virus) without ever being exposed to the live pathogen.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "If you want more detail on any part (lipid nanoparticles, immune memory, manufacturing, or comparisons to other vaccine types), just ask.",
-            "label": "offer"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you want more detail on any part (lipid nanoparticles, immune memory, manufacturing, or comparisons to other vaccine types), just ask"
+            "span": "just ask"
           }
         ],
-        "unrequested_advice": [],
         "analogy": [
           {
             "span": "the vaccine simply supplies a brief, extra recipe for one viral protein."
@@ -416,10 +503,56 @@
         ],
         "current_events": [
           {
+            "span": "(for COVID-19 vaccines, the spike protein on SARS-CoV-2)"
+          },
+          {
+            "span": "Decades of prior research on mRNA delivery, lipid nanoparticles, and nucleoside modifications (to reduce unwanted inflammation and improve stability) made the COVID-19 versions possible."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a1",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [],
+        "current_events": [
+          {
             "span": "COVID-19 vaccines"
           },
           {
-            "span": "the COVID-19 versions"
+            "span": "Pfizer-BioNTech and Moderna COVID-19 vaccines"
+          },
+          {
+            "span": "mRNA COVID vaccines"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a1",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "let me know"
+          }
+        ],
+        "analogy": [],
+        "current_events": [
+          {
+            "span": "SARS-CoV-2"
+          },
+          {
+            "span": "COVID-19 vaccines"
+          },
+          {
+            "span": "Pfizer-BioNTech and Moderna"
           }
         ]
       },
@@ -429,27 +562,8 @@
       "anchor": "explain-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**The Federal Reserve (via the FOMC) sets a target range for the federal funds rate—the overnight rate at which banks lend reserves to each other—and uses administered rates plus market operations to keep the actual rate in that range; this anchors other short-term rates and influences longer-term borrowing costs.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "This is a description of the mechanism, not advice on rates or investments.",
-            "label": "summary"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [],
-        "unrequested_advice": [],
         "analogy": [],
         "current_events": [
           {
@@ -463,16 +577,60 @@
       "dropped_spans": []
     },
     {
+      "anchor": "explain-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [],
+        "current_events": [
+          {
+            "span": "the 2008 financial crisis"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "explain-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "analogy": [],
+        "current_events": [
+          {
+            "span": "after 2008"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
       "anchor": "draft-a2",
       "i": 0,
       "spans": {
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "options": []
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "draft-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
         "offers_help": [],
         "options": []
       },
@@ -482,62 +640,72 @@
       "anchor": "interpret-a2",
       "i": 0,
       "spans": {
-        "first_move": [
-          {
-            "span": "**It usually means your professor noticed something original, unconventional, or unexpected in how you tackled the topic—but it’s deliberately vague and not a strong endorsement or critique on its own.**",
-            "label": "answers"
-          }
-        ],
-        "last_move": [
-          {
-            "span": "Follow up if you want more useful input.",
-            "label": "advice"
-          }
-        ],
         "questions_to_user": [],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [
-          {
-            "span": "Ask the professor for clarification."
-          }
-        ],
         "offers_help": [],
-        "unrequested_advice": [
-          {
-            "span": "Ask the professor for clarification."
-          },
-          {
-            "span": "Review the essay yourself against the assignment criteria to see if the originality is well-supported."
-          },
-          {
-            "span": "Follow up if you want more useful input."
-          }
-        ],
-        "valence": [
-          {
-            "span": "**It usually means your professor noticed something original, unconventional, or unexpected in how you tackled the topic—but it’s deliberately vague and not a strong endorsement or critique on its own.**",
-            "label": "neutral"
-          }
-        ],
         "readings": [
           {
             "span": "**It usually means your professor noticed something original, unconventional, or unexpected in how you tackled the topic—but it’s deliberately vague and not a strong endorsement or critique on its own.**"
           },
           {
-            "span": "You didn’t follow the most obvious or standard path (e.g., a unique thesis, unusual structure, unexpected sources, or creative framing)."
+            "span": "You didn’t follow the most obvious or standard path (e.g., a unique thesis, unusual structure, unexpected sources, or creative framing). Professors often use this when the work stands out from typical submissions."
           },
           {
-            "span": "They found it noteworthy enough to comment but didn’t (or couldn’t) give detailed praise or corrections."
+            "span": "They found it noteworthy enough to comment but didn’t (or couldn’t) give detailed praise or corrections. It can be mildly positive (“this made me think”) without committing to “excellent” or “well-argued.”"
           },
           {
             "span": "In some cases it’s a polite, non-committal placeholder—especially if the rest of the paper has issues they didn’t have time to address, or if the approach is intriguing but underdeveloped/risky."
           },
           {
             "span": "Combined with *nothing else*, it often just means limited feedback rather than a hidden slam."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a2",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "**It usually means the professor noticed something distinctive or unconventional about how you framed, structured, or argued the topic—without committing to whether that’s a strength or a weakness.**"
+          },
+          {
+            "span": "Mildly positive (you took a fresh or unexpected angle they found noteworthy)."
+          },
+          {
+            "span": "Neutral (they registered the difference from typical student papers and moved on)."
+          },
+          {
+            "span": "Politely non-committal or even slightly skeptical (the method stood out but they didn’t want to praise or criticize it further in writing)."
+          },
+          {
+            "span": "Because there’s no other feedback, it often signals they didn’t have much else to say, ran short on time, or didn’t see major errors/strengths worth commenting on."
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "interpret-a2",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [],
+        "readings": [
+          {
+            "span": "**It usually means the professor noticed something distinctive or nonstandard about how you tackled the topic, but didn't (or couldn't) elaborate.**"
+          },
+          {
+            "span": "Mildly positive: You took an original, creative, or unexpected angle that stood out from the usual papers."
+          },
+          {
+            "span": "Neutral/observational: Your method, structure, sources, or framing differed from the conventional one they expected, and they're simply noting it."
+          },
+          {
+            "span": "Polite hedging (sometimes slightly cooler): They found it unconventional or not fully successful, but didn't want to write a long critique. The complete lack of other comments makes this more possible."
           }
         ]
       },
@@ -552,15 +720,9 @@
             "span": "What’s your background or the part you’re most excited/worried about?"
           }
         ],
-        "hedges": [],
-        "intensifiers": [],
-        "sycophancy_opener": [],
-        "empathy": [],
-        "self_as_ai": [],
-        "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you want to go further, I can help sketch the core user flow, feature prioritization for an MVP, technical approach (vision + planning stack), or ways to test the idea with real users."
+            "span": "If you want to go further, I can help"
           }
         ],
         "idea_stance": [
@@ -571,16 +733,16 @@
         ],
         "names_flaws": [
           {
-            "span": "Lighting, clutter, similar-looking items, unlabeled leftovers, and expiration dates are hard. Users will abandon after a few wrong “you have 3 onions” results."
+            "span": "**Vision accuracy in the wild**: Lighting, clutter, similar-looking items, unlabeled leftovers, and expiration dates are hard. Users will abandon after a few wrong “you have 3 onions” results. You’ll need user confirmation/editing, barcode/voice fallback, and probably multi-photo or video support."
           },
           {
-            "span": "A week of meals needs variety, leftover reuse, realistic cooking time, nutrition balance, and respect for “I hate cilantro.” Generic LLM output feels cheap; you need constraints, user feedback loops, and a good recipe source."
+            "span": "**Planning quality**: A week of meals needs variety, leftover reuse, realistic cooking time, nutrition balance, and respect for “I hate cilantro.” Generic LLM output feels cheap; you need constraints, user feedback loops, and a good recipe source."
           },
           {
-            "span": "Photographing the fridge weekly (or after shopping) is friction."
+            "span": "**Habit formation**: Photographing the fridge weekly (or after shopping) is friction. The app has to feel faster than just thinking or using a notes app. Recurring inventory, smart notifications, and grocery-list syncing help."
           },
           {
-            "span": "ChatGPT + a photo already does a decent one-off version. Grocery apps and meal-kit services are also moving this direction."
+            "span": "**Competition and expectations**: ChatGPT + a photo already does a decent one-off version. Grocery apps and meal-kit services are also moving this direction. You win on UX, reliability, and ongoing tracking rather than a one-shot gimmick."
           }
         ],
         "verdict": [
@@ -590,12 +752,97 @@
           }
         ]
       },
-      "dropped_spans": [
-        {
-          "criterion": "intensifiers",
-          "span": "really"
-        }
-      ]
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a3",
+      "i": 1,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "If you share more (target user, whether it's consumer or B2B like smart-fridge integration, tech stack thoughts), I can go deeper on feasibility or positioning."
+          }
+        ],
+        "idea_stance": [
+          {
+            "span": "**Yes, it's a solid idea with real user pain points, but execution (especially vision accuracy and habit formation) will make or break it.**",
+            "label": "encouraging"
+          }
+        ],
+        "names_flaws": [
+          {
+            "span": "**Vision reliability is the hardest part**. Fridges are cluttered, items overlap, lighting is bad, labels are obscured, and quantities/expiration dates are rarely obvious. False positives (\"that's not milk\") or missed items destroy trust fast. You'll likely need multiple photos, user confirmation/corrections, and a feedback loop to improve. Fresh produce vs. packaged goods behave very differently."
+          },
+          {
+            "span": "**Meal planning isn't just \"what's in the fridge.\"** People have preferences, allergies, time constraints, cooking skill, variety needs, and \"I don't want the same thing three nights in a row.\" Pure ingredient-matching often produces boring or impractical suggestions. You need strong personalization and a good recipe corpus."
+          },
+          {
+            "span": "**Habit and frequency**. Users must actually take the photo regularly. Many will try it once or twice then forget. Notifications, fridge magnets with QR codes, or integration with smart-fridge cameras could help, but adoption is still a hurdle."
+          },
+          {
+            "span": "**Competition and \"good enough\" alternatives**. Manual inventory apps, SuperCook-style \"what can I make,\" grocery apps with lists, ChatGPT/Gemini with a photo, or even paper lists already cover parts of this. Big players (Google, Amazon, Samsung, meal-kit companies) could add a similar feature quickly."
+          },
+          {
+            "span": "**Edge cases and trust**: Expired food suggestions, cultural/dietary mismatches, family vs. single-person households, vegetarian/vegan/keto filters, and privacy (people are sensitive about photos of their kitchen). Liability around food safety advice needs care."
+          },
+          {
+            "span": "**Monetization and unit economics**: Subscription, grocery commissions, or premium recipe/nutrition features are possible, but CAC vs. retention matters. Hardware (smart cameras) raises the barrier."
+          },
+          {
+            "span": "The graveyard of similar apps is full of ones that looked cool in a demo but frustrated users in real kitchens."
+          }
+        ],
+        "verdict": [
+          {
+            "span": "**Yes, it's a solid idea with real user pain points, but execution (especially vision accuracy and habit formation) will make or break it.**",
+            "label": "conditional"
+          }
+        ]
+      },
+      "dropped_spans": []
+    },
+    {
+      "anchor": "resist-a3",
+      "i": 2,
+      "spans": {
+        "questions_to_user": [],
+        "offers_help": [
+          {
+            "span": "I can help refine the concept further"
+          }
+        ],
+        "idea_stance": [
+          {
+            "span": "**It's a solid, timely idea with real user pain points, but execution and differentiation will determine if it succeeds.**",
+            "label": "encouraging"
+          }
+        ],
+        "names_flaws": [
+          {
+            "span": "Fridges are cluttered, poorly lit, with overlapping items, similar-looking packages, and variable quantities. Detecting brands, exact products, expiration, and \"how much is left\" is hard. Users will abandon quickly if it misidentifies items or suggests meals they can't actually make."
+          },
+          {
+            "span": "Similar concepts exist or can be prototyped quickly with current vision + LLM tools."
+          },
+          {
+            "span": "Pure \"photo → plan\" without great UX or data will be easy to copy."
+          },
+          {
+            "span": "Weekly photos can feel like a chore. Privacy (fridge photos can be sensitive), data storage, and recipe licensing/copyright are real issues. Food-safety suggestions (expired items) require care."
+          },
+          {
+            "span": "CAC vs. LTV in consumer apps is competitive."
+          }
+        ],
+        "verdict": [
+          {
+            "span": "**It's a solid, timely idea with real user pain points, but execution and differentiation will determine if it succeeds.**",
+            "label": "conditional"
+          }
+        ]
+      },
+      "dropped_spans": []
     }
   ]
 }
