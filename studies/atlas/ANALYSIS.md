@@ -217,6 +217,27 @@ anchor rationale.
 | tics and phrases | distinctive n-grams vs field baseline (separate count pass) plus the cross-cutting span measures |
 | register | formatting counts, first move, last move, sycophancy openers, empathy markers, softeners |
 
+## Site shape: scenarios and global metrics
+
+Two layers on the site, matching the two layers of measures.
+
+**Scenarios.** Each anchor is a curated scenario page: the prompt, every model's reply
+as receipts, and the scenario's own specialized metrics with a display built for them
+(the joke census as named clusters with member punchlines; the lighthouse keeper as a
+name table; the day-trader as three yes/no columns; the park paragraph as a diff with
+added words highlighted; circle-back as a valence strip). Scenario metrics are designed
+per anchor and need not generalize.
+
+**Global metrics.** The cross-cutting set (verbosity, effort per token, effective cost,
+latency, first move, last move, hedges, certainty, offers, formatting counts, and the
+rest) is computed on every cell and shown on the model page as the character profile,
+with the per-scenario rows underneath. The compare view puts two models' global
+profiles side by side and links into each scenario.
+
+Scenario metrics are the front door (shareable, specific); global metrics are the
+profile (comparable, wave over wave). Rotation anchors arrive as new scenario pages
+without touching the global layer.
+
 ## Dropped after the pilot
 
 explains the joke (0/24) · asks what "better" means (1/24) · asks for details before
