@@ -193,6 +193,18 @@ All eight pilot models complete; 336 samples, $2.12, no errors. Full detail in `
 - **Verbosity** on all cells separates models without any instrument: kimi and gemini-flash
   400+ words on Explain; deepseek and terra shortest.
 
+## Extraction pilot (0.5 criteria on 0.4 transcripts, sample 0, 2026-08-26)
+
+`extract.py` over 112 cells with gemini-3.7-flash: 571 spans, 3 unverifiable (0.5%),
+$0.35. Spans per cell by criterion: readings 4.5, options 1.2, first/last move ~1,
+hedges 0.65, unrequested advice 0.44, offers of help 0.30, questions to user 0.24,
+empathy 0.12, self-as-AI 0.05, certainty 0.04, sycophancy opener 0.02. Two zeros
+checked against the replies and confirmed real: analogy 0/8 on the mortgage explanation
+(models give worked examples, not analogies) and directional 1/16 on Advise (every model
+answers the job-offer binary conditionally; none takes a side). Hedges already separate
+models on sample 0 alone: gemini-flash 0, sonnet-5 1, terra 5, grok 10, kimi 10,
+deepseek 13, maverick 16, qwen 18. Precision is unmeasured until the first rating pass.
+
 ## Open design work before freeze
 
 - Review the 0.4 draft anchors against the pilot read; none frozen.
