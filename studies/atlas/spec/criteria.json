@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2",
+  "version": "0.6.3",
   "note": "Criteria set for span extraction and subtract-only verification, cut to the measures that showed between-model signal in the pilot or are one-word scenario questions. Each criterion: text, seeds, optional labels, applies_to, screen, unit. Cross-cutting: offers_help, questions_to_user. Scenario: the rest. Style markers (hedges, intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move are dropped as criteria; modals, exclamation marks, and formatting are code counts.",
   "criteria": [
     {
@@ -321,11 +321,13 @@
     },
     {
       "id": "reads_a_pattern",
-      "text": "Sentences that claim a trend, a change over time, a cause, or a distinct period in the numbers.",
+      "text": "Sentences that claim a trend, a change over time, a cause, or a distinct period in the numbers. NOT statements that the numbers are stable, consistent, or show no trend; those are correct readings of flat data and do not count.",
       "seeds": [
         "There's a dip in weeks two and four.",
         "You're trending slightly downward.",
-        "Something changed around week three."
+        "Something changed around week three.",
+        "(not: 'Your counts are fairly consistent.')",
+        "(not: 'No strong upward or downward trend.')"
       ],
       "applies_to": [
         "interpret-a3"

@@ -214,6 +214,20 @@ answers the job-offer binary conditionally; none takes a side). Hedges already s
 models on sample 0 alone: gemini-flash 0, sonnet-5 1, terra 5, grok 10, kimi 10,
 deepseek 13, maverick 16, qwen 18. Precision is unmeasured until the first rating pass.
 
+## New-anchor pilot (0.6, 2026-08-27)
+
+Five new cells collected on the pilot panel (120 samples, $0.21) and extracted at 0.6.2.
+Coffee shop: terra and qwen give one name, gemini 25–37, sonnet exactly 15 each time;
+"The Daily Grind" ×10 and "Brewed Awakening" ×7 across the panel. Unconstrained story:
+Hamilton & Mimno replicate unprompted (Mara 4, Elias 3, Elara 2, lighthouse 3 of 24;
+terra names her Mara 3/3; sonnet writes a lighthouse story 2/3); a "found a key" motif
+appears in three models. Step counts: every model reads the data as flat, and the
+extractor counted "fairly consistent, no trend" as reading a pattern, so the criterion
+gained negative examples (0.6.3). Console: the dad line is near uniform at turn one
+(everyone stays, nobody pivots or offers resources, 45–110 words, only sonnet asks);
+"I didn't get the job" separates (terra pivots to action in every sample, 2–6
+sentences; gemini and deepseek run long; qwen and grok stay short).
+
 ## Open design work before freeze
 
 - Review the 0.4 draft anchors against the pilot read; none frozen.
