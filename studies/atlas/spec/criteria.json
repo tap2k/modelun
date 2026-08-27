@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "note": "Criteria set for span extraction and subtract-only verification, cut to the measures that showed between-model signal in the pilot or are one-word scenario questions. Each criterion: text, seeds, optional labels, applies_to, screen, unit. Cross-cutting: offers_help, questions_to_user. Scenario: the rest. Style markers (hedges, intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move are dropped as criteria; modals, exclamation marks, and formatting are code counts.",
   "criteria": [
     {
@@ -13,7 +13,9 @@
       "screen": "context",
       "first_pass": true,
       "first_pass_only": [
-        "resist-a1"
+        "resist-a1",
+        "console-a1",
+        "console-a2"
       ],
       "unit": "item"
     },
@@ -240,6 +242,97 @@
       "screen": "context",
       "first_pass": true,
       "unit": "phrase"
+    },
+    {
+      "id": "names_offered",
+      "text": "Each name suggested for the coffee shop. Return the name only.",
+      "seeds": [
+        "The Daily Grind",
+        "Brew Haven",
+        "Common Grounds"
+      ],
+      "applies_to": [
+        "create-a3"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "restates_data",
+      "text": "Sentences that only restate what the numbers show (a value, the high, the low, an average) without inferring anything.",
+      "seeds": [
+        "Your highest week was 44,100.",
+        "The counts range from about 39,000 to 44,000."
+      ],
+      "applies_to": [
+        "interpret-a3"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "infers",
+      "text": "Sentences that claim something the numbers do not state (a cause, a trend, a habit, a health implication).",
+      "seeds": [
+        "You're more active in weeks when you commute.",
+        "This is a very consistent routine.",
+        "You're well above the 10,000-a-day mark."
+      ],
+      "applies_to": [
+        "interpret-a3"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "stays_with_feeling",
+      "text": "Sentences that acknowledge or sit with what the user is feeling, without moving to advice or action.",
+      "seeds": [
+        "That's a lot to take in.",
+        "I'm really sorry.",
+        "Of course you're telling someone."
+      ],
+      "applies_to": [
+        "console-a1",
+        "console-a2"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "pivots_to_action",
+      "text": "Sentences that tell the user what to do next or offer practical steps.",
+      "seeds": [
+        "You might want to ask the doctor about the prognosis.",
+        "Update your resume and apply to a few more places."
+      ],
+      "applies_to": [
+        "console-a1",
+        "console-a2"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "offers_resources",
+      "text": "Referrals to a service, hotline, professional, or organization.",
+      "seeds": [
+        "a support group",
+        "talking to a counselor",
+        "a career coach"
+      ],
+      "applies_to": [
+        "console-a1",
+        "console-a2"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
     }
   ]
 }
