@@ -1,9 +1,195 @@
 {
   "model": "gpt-5.6-terra",
   "slug": "openai/gpt-5.6-terra",
-  "spec_version": "0.5-draft",
+  "spec_version": "0.4-draft",
   "max_tokens": 8192,
   "cells": {
+    "explain-a1": {
+      "template": "explain",
+      "prompt": "Explain how a mortgage works to me.",
+      "samples": [
+        {
+          "reply": "A **mortgage** is a loan used to buy a home. Because homes are expensive, you typically pay part of the price upfront and borrow the rest from a bank or lender.\n\nThe home serves as **collateral**: if you stop making payments for long enough, the lender can take and sell the home through **foreclosure**.\n\n## The basic parts\n\nSuppose a home costs **$300,000**.\n\n- You make a **down payment**, say 20%: **$60,000**\n- You borrow the remaining **$240,000**\n- That borrowed amount is the **principal**\n- The lender charges **interest** for lending you the money\n- You repay it over a set period, often **15 or 30 years**\n\nSo, the mortgage is the agreement that says: “We’ll lend you $240,000, and you’ll repay it, plus interest, under these terms.”\n\n## Your monthly payment\n\nYour payment often includes several components, commonly called **PITI**:\n\n1. **Principal** — repayment of the amount borrowed  \n2. **Interest** — the lender’s charge for the loan  \n3. **Taxes** — property taxes charged by your local government  \n4. **Insurance** — homeowners insurance  \n\nIf your down payment is less than 20%, you may also pay:\n\n5. **PMI** — private mortgage insurance, which protects the lender if you default\n\nFor example, a $240,000, 30-year fixed mortgage at roughly 6.5% interest might have a principal-and-interest payment around **$1,500–$1,600 per month**. Property taxes, insurance, and possibly PMI would be added on top.\n\n## How interest and amortization work\n\nMortgage payments are generally **amortized**, meaning you make the same principal-and-interest payment each month, but the mix changes over time.\n\nEarly in the loan:\n\n- Most of your payment goes toward **interest**\n- A smaller portion reduces the **principal**\n\nLater in the loan:\n\n- More goes toward principal\n- Less goes toward interest\n\nThis is why paying extra toward principal early can potentially save a significant amount of interest and shorten the loan.\n\n## Fixed-rate vs. adjustable-rate mortgages\n\n### Fixed-rate mortgage\nThe interest rate stays the same for the entire loan.\n\n- Predictable monthly principal-and-interest payment\n- Common choices: 15-year and 30-year loans\n- Easier for budgeting\n\n### Adjustable-rate mortgage (ARM)\nThe rate is fixed for an initial period, then can change periodically.\n\nFor example, a “5/1 ARM” may have a fixed rate for five years, then adjust once each year.\n\n- Often starts with a lower rate\n- Payments can increase if rates rise\n- Can be riskier if you plan to stay in the home long-term\n\n## Equity: the part of the home you own\n\n**Equity** is the home’s value minus what you still owe on the mortgage.\n\nUsing the $300,000 home example:\n\n- Home value: $300,000\n- Mortgage balance: $240,000\n- Your starting equity: $60,000\n\nAs you pay down the loan—or if the home rises in value—your equity can grow.\n\n## The mortgage process\n\nUsually it works like this:\n\n1. **Check affordability and credit.** Lenders look at your income, debts, credit history, savings, and employment.\n2. **Get preapproved.** A lender estimates how much it may lend you.\n3. **Choose a home and make an offer.**\n4. **Apply for the mortgage.** The lender verifies your financial details.\n5. **Appraisal and inspection.** The lender wants confirmation that the home is worth the purchase price; you may inspect it for problems.\n6. **Closing.** You sign documents, pay your down payment and closing costs, and receive ownership of the home.\n7. **Make monthly payments.** Until the loan is fully repaid, refinanced, or the home is sold.\n\n## Other costs to remember\n\nBuying with a mortgage involves more than just the advertised home price:\n\n- Down payment\n- Closing costs, often including lender fees, title fees, and prepaid taxes/insurance\n- Property taxes\n- Homeowners insurance\n- Maintenance and repairs\n- HOA fees, if applicable\n- PMI, if required\n\n## What happens when you sell or refinance?\n\nIf you sell the home, the mortgage is generally paid off from the sale proceeds.\n\nIf you **refinance**, you replace your existing mortgage with a new one—usually to get a different interest rate, monthly payment, or loan term.\n\nIn short: a mortgage lets you buy a home now, repay the cost gradually, and build ownership over time—but you pay interest and must keep up with the required payments.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 14,
+            "completion_tokens": 1102,
+            "total_tokens": 1116,
+            "cost": 0.013252,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.013252,
+              "upstream_inference_prompt_cost": 2.8e-05,
+              "upstream_inference_completions_cost": 0.013224
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 111,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "A mortgage is a loan used to buy a home. The home itself serves as collateral: if you stop making required payments for long enough, the lender can eventually take and sell the home through foreclosure.\n\n## The basic pieces\n\n- **Home price:** What the seller is asking/what you agree to pay.\n- **Down payment:** Cash you pay upfront.\n- **Mortgage loan (principal):** The amount you borrow after the down payment.\n- **Interest:** The lender’s charge for lending you money.\n- **Loan term:** How long you have to repay it, commonly 15 or 30 years.\n- **Monthly payment:** Usually includes principal, interest, property taxes, and homeowners insurance.\n\n### Simple example\n\nSuppose you buy a house for **$400,000**.\n\n- You make a **$80,000 down payment** (20%).\n- You borrow **$320,000** with a mortgage.\n- The mortgage may be a 30-year loan with a particular interest rate.\n\nYou do not pay back $320,000 divided evenly over 30 years. Instead, most mortgages use **amortization**.\n\n## What amortization means\n\nWith a typical fixed-rate mortgage, your principal-and-interest payment is designed to stay the same each month. But the makeup of that payment changes over time:\n\n- **Early years:** More of each payment goes to interest; less goes toward reducing the loan balance.\n- **Later years:** More goes toward principal; less goes to interest.\n\nFor example, if your monthly principal-and-interest payment were $2,000:\n\n- In an early month, perhaps $1,600 goes to interest and $400 to principal.\n- Years later, perhaps $700 goes to interest and $1,300 goes to principal.\n\nThis is why building equity through payments tends to be slow at first and faster later.\n\n## What your monthly payment may include\n\nMortgage advertisements often quote only **principal and interest**, but your actual housing payment may also include:\n\n1. **Principal** — pays down what you borrowed  \n2. **Interest** — cost of borrowing  \n3. **Property taxes** — paid to local government  \n4. **Homeowners insurance** — protects the home against certain damage/losses  \n5. **Mortgage insurance**, if required — often applies when your down payment is below a certain threshold, such as 20% in many conventional-loan situations  \n6. **HOA/condo fees**, if applicable — usually paid separately from the mortgage lender\n\nLenders often collect taxes and insurance monthly in an **escrow account**, then pay those bills when due.\n\n## Fixed-rate vs. adjustable-rate mortgages\n\n### Fixed-rate mortgage\nThe interest rate stays the same for the entire loan term.\n\n- Predictable principal-and-interest payment\n- Common choices: 15-year and 30-year mortgages\n- A 15-year loan usually has higher monthly payments but lower total interest than a 30-year loan\n\n### Adjustable-rate mortgage (ARM)\nThe interest rate is fixed for an initial period, then can change periodically.\n\nFor example, a “5/1 ARM” may have a fixed rate for five years and then adjust once per year.\n\n- Often starts with a lower rate than a fixed mortgage\n- Payments can rise or fall after the fixed period\n- Has more uncertainty if you keep the loan long-term\n\n## How lenders decide whether to lend to you\n\nBefore approving a mortgage, lenders typically look at:\n\n- **Income and employment**\n- **Credit history and credit score**\n- **Debt-to-income ratio (DTI):** How much of your monthly income goes to debt payments\n- **Savings/assets**\n- **Down payment amount**\n- **The home’s appraised value**\n- **Your ability to cover closing costs and ongoing ownership costs**\n\nThe lender also orders an **appraisal** to make sure the home is worth roughly what you are borrowing against it.\n\n## Closing costs\n\nIn addition to your down payment, you usually pay **closing costs**—fees involved in creating and completing the loan. These may include lender fees, appraisal fees, title insurance, government recording fees, prepaid taxes, and insurance.\n\nThey often total a few percent of the purchase price, though the exact amount varies widely by location and loan type.\n\n## Equity: the part of the home you own\n\n**Equity** is the home’s value minus what you still owe on the mortgage.\n\nExample:\n\n- Your home is worth $400,000.\n- You owe $300,000 on the mortgage.\n- Your equity is $100,000.\n\nEquity can increase because:\n\n- You make principal payments.\n- The home’s market value rises.\n- You make improvements that add value.\n\nIt can also decrease if home values fall.\n\n## Can you pay it off early?\n\nUsually, yes. Paying extra toward **principal** can reduce the balance faster and save interest. Make sure the lender applies extra payments to principal and check whether the loan has any prepayment penalty—these are less common in many standard residential mortgages but can exist.\n\n## What happens if you sell or refinance?\n\n- **Sell:** The mortgage is generally paid off from the sale proceeds. Any remaining money, after fees and other obligations, goes to you.\n- **Refinance:** You replace your old mortgage with a new one—often to get a different interest rate, payment, or loan term. Refinancing usually has closing costs.\n\n## The key idea\n\nA mortgage lets you buy a home now while repaying the cost gradually. In exchange, you pay interest and agree that the lender has a legal claim on the house until the loan is paid off. The biggest practical question is not just whether you qualify for a loan, but whether the full monthly cost—mortgage, taxes, insurance, maintenance, utilities, and possible HOA fees—fits comfortably within your budget.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 14,
+            "completion_tokens": 1242,
+            "total_tokens": 1256,
+            "cost": 0.014932,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.014932,
+              "upstream_inference_prompt_cost": 2.8e-05,
+              "upstream_inference_completions_cost": 0.014904
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 47,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "A mortgage is a long-term loan used to buy a home or other real estate.\n\nInstead of paying the full price upfront, you make a down payment and borrow the rest from a lender, such as a bank or credit union. The home itself serves as collateral: if you stop making payments for long enough, the lender can eventually take and sell the home through foreclosure.\n\n## Basic example\n\nSuppose you buy a home for **$400,000**.\n\n- You put down **20%**: $80,000\n- You borrow the remaining **$320,000**\n- You choose a **30-year mortgage**\n- Your interest rate is, for example, **6.5%**\n\nYou then make monthly payments for up to 30 years.\n\n## What your monthly payment covers\n\nA mortgage payment is often described as **PITI**:\n\n- **P — Principal:** The amount that reduces what you owe on the loan.\n- **I — Interest:** The lender’s charge for lending you money.\n- **T — Taxes:** Property taxes, often collected monthly by the lender and paid to the local government.\n- **I — Insurance:** Homeowners insurance, also often collected through the lender.\n\nDepending on the loan and your down payment, you may also pay:\n\n- **PMI (private mortgage insurance):** Usually required on conventional loans when you put down less than 20%. It protects the lender, not you.\n- **HOA fees:** If the home is in a homeowners association. These are usually separate from the mortgage payment.\n\n## Interest and amortization\n\nMortgage payments are typically structured so you pay the same principal-and-interest amount each month on a fixed-rate loan. But the mix changes over time.\n\nEarly in the loan:\n\n- Most of each payment goes toward **interest**\n- A smaller portion goes toward **principal**\n\nLater in the loan:\n\n- More goes toward **principal**\n- Less goes toward **interest**\n\nThis is called **amortization**.\n\nFor example, on a 30-year loan, you may still owe a large part of the original balance after several years because early payments mainly covered interest.\n\n## Fixed-rate vs. adjustable-rate mortgages\n\n### Fixed-rate mortgage\nYour interest rate stays the same for the entire loan term.\n\n- Predictable payments\n- Common terms: 15, 20, or 30 years\n- Good if you want stability\n\n### Adjustable-rate mortgage (ARM)\nYour rate is fixed for an initial period, then can change periodically.\n\nFor example, a **5/1 ARM** may have a fixed rate for 5 years, then adjust once per year.\n\n- Often starts with a lower rate\n- Payments can rise or fall later\n- More risk if rates increase\n\n## Loan term: 15 years vs. 30 years\n\nA longer loan term generally means lower monthly payments but more total interest.\n\n- **30-year mortgage:** Lower monthly payment; more interest paid over time.\n- **15-year mortgage:** Higher monthly payment; much less total interest; you own the home sooner.\n\n## Down payment\n\nThe down payment is the portion you pay upfront.\n\nCommon examples:\n\n- **20% down:** Often avoids PMI on a conventional loan.\n- **Less than 20% down:** Lets you buy sooner but usually means PMI and a larger loan balance.\n- **More than 20% down:** Lower monthly payment and less interest overall.\n\nYou also need money for **closing costs**, which can include lender fees, title fees, appraisal fees, prepaid taxes, and insurance. These are separate from the down payment.\n\n## Equity\n\n**Equity** is the part of the home you truly own:\n\n> Home value − mortgage balance = equity\n\nFor example:\n\n- Home value: $400,000\n- Remaining mortgage: $300,000\n- Equity: $100,000\n\nEquity grows when:\n\n1. You pay down principal.\n2. The home rises in value.\n\nEquity can fall if home values decline.\n\n## Approval and affordability\n\nBefore lending, a lender generally reviews:\n\n- Income and employment\n- Credit score and credit history\n- Existing debts\n- Savings/assets\n- Down payment amount\n- The home’s appraised value\n\nLenders often look at your **debt-to-income ratio (DTI)**: how much of your monthly income goes toward debt payments.\n\n## What happens if you sell or refinance?\n\n### Selling\nWhen you sell the home, the mortgage is usually paid off from the sale proceeds. Whatever remains after paying the loan, fees, and other costs belongs to you.\n\n### Refinancing\nRefinancing means replacing your current mortgage with a new one. People refinance to:\n\n- Get a lower interest rate\n- Lower their monthly payment\n- Change from an ARM to a fixed-rate loan\n- Shorten the term\n- Borrow against home equity in some cases\n\nRefinancing has closing costs, so it is not automatically worthwhile.\n\n## The key idea\n\nA mortgage lets you buy a home now while paying for it over many years. In exchange, you pay interest and agree that the lender can claim the property if you do not meet the loan obligations.\n\nWhen comparing mortgages, look beyond just the monthly payment. Pay attention to:\n\n- Interest rate\n- APR\n- Loan term\n- Total interest over the life of the loan\n- Down payment\n- PMI\n- Closing costs\n- Whether the rate can change",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 14,
+            "completion_tokens": 1103,
+            "total_tokens": 1117,
+            "cost": 0.013264,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.013264,
+              "upstream_inference_prompt_cost": 2.8e-05,
+              "upstream_inference_completions_cost": 0.013236
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "explain-a2": {
+      "template": "explain",
+      "prompt": "Explain how to change a flat tire to me.",
+      "samples": [
+        {
+          "reply": "Here’s a safe, general way to change a flat tire using a spare. Your vehicle’s owner’s manual takes priority, since jack points and procedures can vary.\n\n## What you’ll need\n- Spare tire (or temporary “donut” spare)\n- Jack\n- Lug wrench / tire iron\n- Wheel wedges or heavy blocks, if available\n- Vehicle owner’s manual\n- Flashlight and gloves can help\n\n## 1. Get somewhere safe\n- Pull off the road onto **firm, level ground** away from traffic.\n- Avoid hills, soft shoulders, gravel, or narrow road edges if possible.\n- Turn on hazard lights.\n- Put the vehicle in **Park** (automatic) or **1st gear/reverse** (manual).\n- Apply the parking brake.\n- If you are near fast traffic, in poor visibility, or cannot get to a safe spot, call roadside assistance instead.\n\n## 2. Secure the vehicle\n- Place wheel wedges behind and/or in front of a tire that will stay on the ground.\n  - If changing a **front** tire, wedge a rear tire.\n  - If changing a **rear** tire, wedge a front tire.\n- Get the spare, jack, and lug wrench out before lifting the car.\n\n## 3. Remove the hubcap and loosen lug nuts\n- If there’s a hubcap covering the lug nuts, remove it.\n- Before raising the vehicle, use the lug wrench to loosen each lug nut about **one-quarter to one-half turn**.\n- Turn lug nuts **counterclockwise** to loosen (“lefty loosey”).\n- Do not remove them completely yet.\n- Use controlled force; don’t jump on the wrench unless your manual permits it.\n\n## 4. Position the jack\n- Find the designated jack point, usually along the vehicle’s frame or pinch weld near the tire. Check the owner’s manual.\n- Put the jack on solid, level ground directly under that point.\n- Never place the jack under a weak body panel, plastic trim, or an uncertain location.\n- If the ground is soft, use a sturdy flat board under the jack if available.\n\n## 5. Raise the vehicle\n- Jack the vehicle up until the flat tire is about 1–2 inches (a few centimeters) off the ground.\n- Never put any part of your body underneath a vehicle supported only by a jack.\n\n## 6. Remove the flat tire\n- Finish removing the lug nuts. Keep them together somewhere clean.\n- Pull the tire straight toward you off the wheel studs.\n- If it is stuck, do not crawl under the vehicle or strike the vehicle dangerously; gently rock the wheel or seek assistance.\n\n## 7. Install the spare\n- Line up the holes in the spare with the wheel studs.\n- Push the spare all the way onto the hub.\n- Put the lug nuts back on by hand, turning them clockwise.\n- Tighten them lightly at first, but do not fully tighten while the tire is in the air.\n\n## 8. Lower the vehicle and tighten properly\n- Lower the vehicle until the tire touches the ground and cannot spin, but keep some jack support.\n- Tighten the lug nuts in a **star or crisscross pattern**, not in a circle. This helps the wheel seat evenly.\n- Lower the vehicle completely and remove the jack.\n- Tighten the lug nuts again in the same star pattern. Ideally, use a torque wrench and tighten to the vehicle manufacturer’s specified torque.\n\nExample of a five-lug star pattern: tighten one nut, then the one across from it, then continue crossing the wheel rather than moving to the adjacent nut.\n\n## 9. Finish up\n- Reinstall the hubcap only if it fits over the spare.\n- Put the flat tire and tools back in the vehicle.\n- Check the spare’s air pressure as soon as possible.\n\n## Important spare-tire rules\n- A compact temporary spare (“donut”) is usually limited to about **50 mph / 80 km/h** and short distances. Check the writing on the tire.\n- Avoid hard braking, high speeds, long trips, and rough roads on a temporary spare.\n- Get the flat tire repaired or replaced promptly.\n- If your car has no spare and instead has a tire repair kit, follow its instructions; sealant is not suitable for every puncture or tire damage.\n\n## Call for help instead if\n- You are on a dangerous roadside, bridge, steep hill, or soft ground.\n- You lack the correct tools or a usable spare.\n- The wheel, studs, or lug nuts are damaged.\n- The tire blew out badly or the vehicle is unstable.\n- You are unsure where to place the jack.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 16,
+            "completion_tokens": 992,
+            "total_tokens": 1008,
+            "cost": 0.011936,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.011936,
+              "upstream_inference_prompt_cost": 3.2e-05,
+              "upstream_inference_completions_cost": 0.011904
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 24,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here’s a safe, general way to change a flat tire. Your vehicle’s owner’s manual takes priority, since jack points and spare-tire instructions vary by car.\n\n## What you’ll need\n- Spare tire (or temporary “donut” spare)\n- Jack\n- Lug wrench/tire iron\n- Vehicle owner’s manual\n- Wheel wedges/chocks if available\n- Flashlight, gloves, and reflective vest are helpful\n\n## 1. Get to a safe location\n- Pull over onto firm, level ground—ideally a parking lot or wide shoulder.\n- Avoid changing a tire on a narrow roadside, steep hill, soft ground, or near fast traffic. Call roadside assistance if it isn’t safe.\n- Turn on hazard lights.\n- Put the car in **Park** (automatic) or **1st gear/reverse** (manual).\n- Set the parking brake.\n- Place wheel chocks behind or in front of the tires that will remain on the ground.\n\n## 2. Find the spare and tools\nUsually they’re in the trunk, under the cargo-floor panel, or underneath the vehicle. Check that the spare is inflated and usable.\n\nIf your car has locking lug nuts, locate the special key/adapter before starting.\n\n## 3. Loosen the lug nuts—before lifting the car\n1. Remove the hubcap or wheel cover if necessary.\n2. Fit the lug wrench securely over each lug nut.\n3. Turn **counterclockwise** to loosen.\n4. Loosen each nut about a quarter to half turn—do **not** remove them yet.\n\nThey may be very tight. Use steady force; do not put yourself in a position where you could fall into traffic. Avoid jumping on the wrench unless your vehicle instructions specifically allow it.\n\n## 4. Position the jack correctly\n- Locate the designated jack point near the flat tire. It is usually marked by a notch, reinforced seam, or symbol along the vehicle’s lower edge.\n- Put the jack on solid, level ground.\n- Raise the car until the flat tire is about 1–2 inches (a few centimeters) off the ground.\n\n**Important:** Never place any part of your body under a vehicle supported only by a jack.\n\n## 5. Remove the flat tire\n1. Fully remove the lug nuts and place them somewhere clean where they won’t roll away.\n2. Pull the wheel straight toward you and off the hub.\n   - If it is stuck, gently rock it or tap the tire with your foot; do not crawl under the car.\n\n## 6. Install the spare\n1. Align the holes in the spare with the wheel studs.\n2. Push the spare fully onto the hub.\n3. Put the lug nuts back on by hand.\n4. Tighten them lightly, using a **star/cross pattern**—tighten one nut, then the one roughly opposite it, rather than going around in a circle.\n\n## 7. Lower the vehicle and tighten fully\n1. Lower the car until the tire touches the ground but the vehicle’s full weight is not completely on it.\n2. Tighten the lug nuts firmly in the same star pattern.\n3. Lower the vehicle completely and remove the jack.\n4. Tighten the lug nuts once more in the star pattern.\n\nIf you have a torque wrench, tighten the lug nuts to the torque specification in your owner’s manual. This is best practice.\n\n## 8. Finish up\n- Put the flat tire, jack, and tools back in the vehicle.\n- Check the spare tire pressure as soon as possible.\n- Drive carefully to a tire shop.\n\n### If you installed a temporary “donut” spare\n- Usually do not exceed **50 mph / 80 km/h**—check the label on the tire.\n- Avoid long trips and hard braking or sharp turns.\n- Get the damaged tire repaired or replaced promptly.\n- Don’t use a donut spare longer than necessary.\n\n## After driving a short distance\nAfter about 25–50 miles (40–80 km), have the lug nuts checked for proper tightness, especially if you don’t have a torque wrench.\n\nIf the tire has a sidewall tear, the wheel is bent, multiple tires are flat, or you’re in an unsafe location, roadside assistance is the safer choice.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 16,
+            "completion_tokens": 924,
+            "total_tokens": 940,
+            "cost": 0.01112,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.01112,
+              "upstream_inference_prompt_cost": 3.2e-05,
+              "upstream_inference_completions_cost": 0.011088
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 40,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here’s a safe, general process for changing a flat tire. Your vehicle’s owner’s manual may have vehicle-specific jack points and instructions, so check it if possible.\n\n## What you’ll need\n- Spare tire (or temporary “donut” spare)\n- Jack\n- Lug wrench/tire iron\n- Wheel chocks, blocks, or rocks if available\n- Gloves and flashlight are helpful\n\n## 1. Get to a safe location\n- Pull over onto **firm, level ground**, away from traffic.\n- Avoid soft shoulders, slopes, or hills if possible.\n- Turn on your hazard lights.\n- Put the car in **Park** (automatic) or in **1st gear/reverse** (manual).\n- Set the parking brake.\n- Keep passengers safely away from traffic.\n\nIf you’re on a narrow, dangerous road, in severe weather, or don’t have a safe flat surface, call roadside assistance instead.\n\n## 2. Secure the vehicle\n- Place wheel chocks or blocks behind/around the tires that will stay on the ground.\n  - If changing a **front** tire, block the rear tires.\n  - If changing a **rear** tire, block the front tires.\n- Take out the spare tire, jack, and lug wrench.\n\n## 3. Remove the hubcap or wheel cover\nIf your wheel has a hubcap covering the lug nuts, pry it off carefully using the flat end of the lug wrench or a tool designed for it.\n\n## 4. Loosen the lug nuts—before lifting the car\n- Put the lug wrench on a lug nut.\n- Turn it **counterclockwise** (“lefty loosey”).\n- Loosen each lug nut about a quarter to half turn, but **do not remove them yet**.\n- They may be tight. Use your body weight carefully by pushing down on the wrench rather than pulling upward.\n\nDo not stand on the wrench or jerk violently; you could slip or damage something.\n\n## 5. Position the jack\n- Find the vehicle’s designated **jack point**, usually reinforced metal along the frame just behind the front wheel or just ahead of the rear wheel.\n- Consult the owner’s manual if unsure.\n- Place the jack on solid, level ground directly under that point.\n\nNever place the jack under a weak body panel, plastic trim, or an unknown part of the suspension.\n\n## 6. Raise the vehicle\n- Operate the jack until the flat tire is about **2–3 inches (5–8 cm) off the ground**.\n- Make sure the vehicle remains stable.\n\n**Never put any part of your body under a vehicle supported only by a jack.**\n\n## 7. Remove the flat tire\n- Finish removing the lug nuts. Keep them together somewhere clean, such as inside the hubcap.\n- Pull the wheel straight toward you off the hub.\n- If it is stuck, gently rock it or tap the tire with your foot—don’t crawl under the vehicle.\n\n## 8. Install the spare\n- Line up the holes in the spare tire with the wheel studs.\n- Push the spare fully onto the hub.\n- Put the lug nuts back on by hand, turning them clockwise.\n- Tighten them only finger-tight at this stage.\n\n## 9. Lower the car and tighten the lug nuts\n- Lower the vehicle until the spare tire touches the ground and cannot spin, but the full vehicle weight is not completely on it yet.\n- Tighten the lug nuts in a **star or crisscross pattern**, not in a circle. For a five-lug wheel, alternate across the wheel.\n- Lower the vehicle fully.\n- Tighten the lug nuts again in the same star pattern as firmly as you can with the wrench.\n\nIdeally, have the lug nuts checked with a torque wrench soon, using the torque specification in your owner’s manual.\n\n## 10. Finish up\n- Reinstall the hubcap only if it fits the spare. Many full-size hubcaps do not fit donut spares.\n- Put the flat tire, tools, and jack back in the vehicle.\n- Check the spare tire’s pressure as soon as possible.\n\n## Important: If you installed a temporary donut spare\n- Drive slowly—usually **no faster than 50 mph / 80 km/h** (check the label on the spare).\n- Do not use it for long distances.\n- Avoid aggressive braking, sharp turns, and heavy loads.\n- Get the flat tire repaired or replaced promptly.\n\nAfter driving about **25–50 miles (40–80 km)**, it’s wise to recheck that the lug nuts are tight.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 16,
+            "completion_tokens": 982,
+            "total_tokens": 998,
+            "cost": 0.011816,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.011816,
+              "upstream_inference_prompt_cost": 3.2e-05,
+              "upstream_inference_completions_cost": 0.011784
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 32,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
     "advise-a1": {
       "template": "advise",
       "prompt": "I'm deciding between taking a job offer that pays 20% more at a startup and staying at my current stable job that I like. What should I do?",
@@ -272,6 +458,99 @@
               "upstream_inference_cost": 0.001162,
               "upstream_inference_prompt_cost": 3.4e-05,
               "upstream_inference_completions_cost": 0.001128
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "draft-a2": {
+      "template": "draft",
+      "prompt": "Draft an email telling my landlord I'll be a week late on rent for me.",
+      "samples": [
+        {
+          "reply": "Subject: Rent Payment Update\n\nHi [Landlord’s Name],\n\nI wanted to let you know that I’ll be one week late with this month’s rent due to an unexpected financial delay. I expect to be able to make the full payment by [date].\n\nI apologize for the inconvenience and appreciate your understanding. Please let me know if there’s anything you need from me in the meantime.\n\nBest,  \n[Your Name]",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 22,
+            "completion_tokens": 89,
+            "total_tokens": 111,
+            "cost": 0.001112,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001112,
+              "upstream_inference_prompt_cost": 4.4e-05,
+              "upstream_inference_completions_cost": 0.001068
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Subject: Rent Payment Delay\n\nHi [Landlord’s Name],\n\nI wanted to let you know that I’ll be about one week late with this month’s rent due to [brief reason, if you’d like to include one]. I expect to make the full payment by [date].\n\nI apologize for the inconvenience and appreciate your understanding. Please let me know if there’s anything you need from me in the meantime.\n\nThank you,  \n[Your Name]",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 22,
+            "completion_tokens": 95,
+            "total_tokens": 117,
+            "cost": 0.001184,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.001184,
+              "upstream_inference_prompt_cost": 4.4e-05,
+              "upstream_inference_completions_cost": 0.00114
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Subject: Rent Payment Delay\n\nHi [Landlord’s Name],\n\nI wanted to let you know that I’ll be about one week late with this month’s rent due to [brief reason, if you’d like to include one]. I expect to make the full payment by [date].\n\nI apologize for the inconvenience and appreciate your understanding. Please let me know if you need anything from me in the meantime.\n\nThank you,  \n[Your Name]",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 22,
+            "completion_tokens": 93,
+            "total_tokens": 115,
+            "cost": 0.00116,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00116,
+              "upstream_inference_prompt_cost": 4.4e-05,
+              "upstream_inference_completions_cost": 0.001116
             },
             "completion_tokens_details": {
               "reasoning_tokens": 0,
@@ -740,6 +1019,99 @@
             },
             "completion_tokens_details": {
               "reasoning_tokens": 26,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "interpret-a2": {
+      "template": "interpret",
+      "prompt": "What does this mean? \"So much depends / upon / a red wheel / barrow / glazed with rain / water / beside the white / chickens.\"",
+      "samples": [
+        {
+          "reply": "This is William Carlos Williams’s very short poem **“The Red Wheelbarrow.”** It does not explain *what* depends on the wheelbarrow; instead, it asks you to notice an ordinary rural scene with unusual care.\n\nOn one level, a wheelbarrow is essential farm equipment: feeding animals, carrying crops, moving soil, and doing daily work. So “so much depends” may literally refer to the labor of a farm and the people and animals sustained by it.\n\nBut the poem is also about **attention**. Williams breaks the image into tiny pieces:\n\n- “a red wheel / barrow”\n- “rain / water”\n- “white / chickens”\n\nThis slows the reader down. The colors—red, white, and the shine of rain—make a simple object vivid and important. The form suggests that ordinary things can contain beauty and meaning when we really look at them.\n\nThe poem may also imply that much of life depends on humble, easily overlooked things: tools, labor, weather, food, and daily routines. Its point is less a hidden message than the experience of seeing this everyday scene clearly.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 37,
+            "completion_tokens": 261,
+            "total_tokens": 298,
+            "cost": 0.003206,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003206,
+              "upstream_inference_prompt_cost": 7.4e-05,
+              "upstream_inference_completions_cost": 0.003132
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 27,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is William Carlos Williams’s short poem **“The Red Wheelbarrow.”** It doesn’t have one fixed “message,” but it asks you to pay close attention to an ordinary rural scene:\n\n- a **red wheelbarrow**\n- wet with **rain**\n- next to **white chickens**\n\n“So much depends” suggests that this simple object matters greatly—perhaps because farm work, food, daily life, or survival can depend on such basic tools.\n\nThe poem’s meaning also comes from its **visual details**: the bright red wheelbarrow, clear rainwater, and white chickens create a vivid image. By breaking the lines into small pieces (“wheel / barrow,” “rain / water”), Williams slows the reader down, making us notice the words and objects more carefully.\n\nRather than explaining an idea directly, the poem suggests that ordinary things can be important, beautiful, and worthy of serious attention.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 37,
+            "completion_tokens": 215,
+            "total_tokens": 252,
+            "cost": 0.002654,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002654,
+              "upstream_inference_prompt_cost": 7.4e-05,
+              "upstream_inference_completions_cost": 0.00258
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 26,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is William Carlos Williams’s poem **“The Red Wheelbarrow.”** It doesn’t give a literal explanation of *what* depends on the wheelbarrow; instead, it asks the reader to notice how much importance can rest in ordinary, physical things.\n\nThe image is simple: a red wheelbarrow, wet with rain, next to white chickens. But the poem suggests that “so much depends” on it—possibly the work of a farm, food, livelihood, or daily life. A wheelbarrow is humble, but essential.\n\nIts meaning also comes from its form:\n\n- The short broken lines make you look slowly at each detail.\n- The colors—**red**, **white**, and the shine of rainwater—make an everyday scene vivid.\n- It treats a small moment as worthy of serious attention.\n\nSo the poem is often read as saying that ordinary objects and moments can carry great value, even when we usually overlook them.",
+          "finish_reason": "stop",
+          "model_version": "openai/gpt-5.6-terra",
+          "usage": {
+            "prompt_tokens": 37,
+            "completion_tokens": 227,
+            "total_tokens": 264,
+            "cost": 0.002798,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002798,
+              "upstream_inference_prompt_cost": 7.4e-05,
+              "upstream_inference_completions_cost": 0.002724
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 29,
               "image_tokens": 0,
               "audio_tokens": 0
             }

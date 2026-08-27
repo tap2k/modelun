@@ -1,9 +1,195 @@
 {
   "model": "gemini-3.7-flash",
   "slug": "google/gemini-3.7-flash",
-  "spec_version": "0.5-draft",
+  "spec_version": "0.4-draft",
   "max_tokens": 8192,
   "cells": {
+    "explain-a1": {
+      "template": "explain",
+      "prompt": "Explain how a mortgage works to me.",
+      "samples": [
+        {
+          "reply": "At its simplest, a **mortgage is a loan specifically used to buy a home or real estate.** \n\nBecause homes are expensive, most people don’t have enough cash in the bank to buy one outright. Instead, they pay a portion of the price themselves and borrow the rest from a lender (like a bank, credit union, or online mortgage company).\n\nHere is a step-by-step breakdown of how a mortgage works from start to finish:\n\n---\n\n### 1. The Core Setup: The 3 Main Numbers\nWhen you take out a mortgage, the deal is built on three main factors:\n*   **The Down Payment:** The cash you pay upfront out of your own pocket (usually between 3% and 20% of the home's purchase price).\n*   **The Principal (Loan Amount):** The remaining balance that the bank pays to the seller on your behalf. This is the money you owe the bank.\n*   **The Interest Rate:** The fee the bank charges you for borrowing their money, expressed as a percentage of the loan balance.\n\n> **Example:** You want to buy a **$300,000** house. You put down **$60,000** (a 20% down payment) in cash. The bank gives you a mortgage for the remaining **$240,000** (the principal).\n\n---\n\n### 2. What Makes Up Your Monthly Payment? (PITI)\nEvery month, you make a payment to your mortgage lender. That payment is typically split into four parts, often remembered by the acronym **PITI**:\n\n1.  **Principal:** A portion goes toward paying down the actual cash you borrowed.\n2.  **Interest:** A portion goes directly to the bank as their profit for lending you the money.\n3.  **Taxes:** Local property taxes are charged by your city/county. Most lenders collect a fraction of this every month and pay the government for you (held in an account called *escrow*).\n4.  **Insurance:** Homeowner’s insurance protects against fires, storms, etc. (Also paid via escrow). *Note: If you put down less than 20%, you may also have to pay Private Mortgage Insurance (PMI), which protects the bank if you stop paying.*\n\n---\n\n### 3. How You Pay It Back (Amortization)\nMortgages are designed to be paid off over a long, fixed period—usually **15 or 30 years**. \n\nEven though your total monthly payment stays relatively constant, the way that money is divided changes over time:\n*   **In the early years:** Most of your monthly payment goes toward **interest**. Very little goes toward reducing the actual loan balance (principal).\n*   **In the later years:** As the total debt shrinks, the interest shrinks too. Most of your payment begins going toward the **principal**, quickly paying off the rest of the house.\n\nThis schedule is called an **amortization schedule**.\n\n---\n\n### 4. Key Terms You Will Hear\n\n*   **Fixed-Rate Mortgage:** Your interest rate is locked in for the entire life of the loan (e.g., 30 years). Your principal-and-interest payment will never change.\n*   **Adjustable-Rate Mortgage (ARM):** The interest rate stays fixed for a few years (e.g., 5 years) and then changes periodically based on the market.\n*   **Home Equity:** The portion of the home you actually \"own.\" It equals the home's current market value minus what you still owe on your mortgage. As you pay off the loan (and as the home value rises), your equity grows.\n\n---\n\n### 5. What is Collateral? (The Catch)\nA mortgage is a **secured loan**. That means the house itself serves as **collateral**. \n\nIf you stop making your monthly payments, the bank has the legal right to take the home through a process called **foreclosure**, sell it, and use the money to pay off the rest of the debt. Once you make your final mortgage payment, the bank removes its lien, and you own the house completely free and clear.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1820,
+            "total_tokens": 1828,
+            "cost": 0.0034155,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0034155,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.0034125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 929,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "At its most basic level, a **mortgage is a loan specifically used to buy a home or property.** \n\nBecause homes are expensive, very few people have enough cash in the bank to pay for one outright. A mortgage allows you to put down a fraction of the price upfront, and a lender (like a bank or credit union) covers the rest. You then pay the lender back over time, with interest.\n\nHere is a step-by-step breakdown of how it works:\n\n---\n\n### 1. The Basic Setup (An Example)\nImagine you want to buy a home that costs **$400,000**.\n\n* **Down Payment:** You pay a portion in cash upfront. If you put down 10%, you pay **$40,000**.\n* **The Loan:** The bank lends you the remaining **$360,000**. This is your mortgage.\n* **Collateral:** The house itself acts as security for the loan. If you stop making payments, the bank has the legal right to take the home and sell it to get their money back (a process called **foreclosure**).\n\n---\n\n### 2. Anatomy of a Monthly Payment (PITI)\nWhen you make your monthly mortgage payment, that money is usually split into four different buckets, often referred to as **PITI**:\n\n1. **Principal:** The actual money you borrowed (paying this down decreases your total debt).\n2. **Interest:** The fee the lender charges you for borrowing their money.\n3. **Taxes:** Local property taxes assessed by your city or county.\n4. **Insurance:** Homeowners insurance (to protect against fire, storms, etc.). \n   * *Note:* If you put down less than 20% in cash, you may also have to pay **PMI (Private Mortgage Insurance)**, which protects the lender if you default.\n\n*(Taxes and insurance are usually placed into an **escrow account**—the bank holds the money and pays the tax collector and insurance company on your behalf.)*\n\n---\n\n### 3. Key Concepts to Know\n\n* **The Term (Length):** This is how long you have to pay back the loan. The most common terms are **30 years** (lower monthly payment, more total interest paid) and **15 years** (higher monthly payment, but paid off faster with less interest).\n* **Fixed vs. Adjustable Rates:**\n  * **Fixed-Rate Mortgage:** Your interest rate never changes for the entire life of the loan. Your monthly payment for principal and interest stays predictable.\n  * **Adjustable-Rate Mortgage (ARM):** The interest rate stays the same for an initial period (e.g., 5 or 7 years), and then fluctuates periodically based on market rates.\n* **Amortization:** This is the schedule of how your payments work. \n  * In the **early years**, most of your monthly payment goes toward paying **interest**.\n  * In the **later years**, most of your payment goes toward paying off the **principal**.\n\n---\n\n### 4. Building Equity\nAs you pay down your mortgage and/or as the market value of your home increases, you build **equity**. \n\n* **Equity = (Value of the Home) − (Amount You Still Owe)**\n* If your home is worth $400,000 and you only owe $250,000, you have **$150,000 in equity**. When you sell the home, that equity is your profit (after fees).\n\n---\n\n### Summary (TL;DR)\nA mortgage is an agreement where a bank buys a house for you today, you pay a percentage upfront, and you promise to pay the bank back monthly over 15 to 30 years with interest, using the house as collateral until it’s fully paid off.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1695,
+            "total_tokens": 1703,
+            "cost": 0.003181125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003181125,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.003178125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 867,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "At its simplest, a **mortgage is a loan specifically used to buy a home or property.** \n\nBecause homes are very expensive, most people don't have enough cash in the bank to buy one outright. Instead, a bank (or lender) pays the seller for the house, and you agree to pay the bank back over time, plus interest.\n\nHere is a step-by-step breakdown of how it works:\n\n---\n\n### 1. The Setup: Down Payment & Loan\n* **Down Payment:** You pay a portion of the home’s purchase price upfront with your own cash (typically between 3% and 20%). \n* **The Loan:** The lender covers the rest. If you buy a \\$400,000 house and put down \\$40,000 (10%), you need a mortgage for the remaining **\\$360,000**.\n* **Collateral:** The house acts as **collateral**. This means if you stop making your payments, the lender has the legal right to take the home back (a process called *foreclosure*) and sell it to get their money back.\n\n---\n\n### 2. The Two Most Important Terms: \"Term\" and \"Rate\"\n* **The Term (Length):** How long you have to pay the loan back. The most common terms are **30 years** (lower monthly payments, but you pay more total interest over time) or **15 years** (higher monthly payments, but you pay off the house faster and pay less interest).\n* **The Interest Rate:** The fee the lender charges you for borrowing their money, expressed as an annual percentage (e.g., 6.5%).\n  * **Fixed-Rate Mortgage:** The interest rate stays the exact same for the entire life of the loan. Your monthly payment never changes.\n  * **Adjustable-Rate Mortgage (ARM):** The rate stays fixed for an initial period (e.g., 5 years), but then changes periodically based on market rates.\n\n---\n\n### 3. What’s in a Monthly Payment? (PITI)\nWhen you pay your mortgage bill each month, it usually includes four things, often remembered by the acronym **PITI**:\n\n1. **Principal:** The money that goes toward paying down the actual amount you borrowed.\n2. **Interest:** The fee the bank charges you.\n3. **Taxes:** Property taxes charged by your local government (the bank collects this and pays it on your behalf).\n4. **Insurance:** Homeowners insurance (to protect against fire/damage). If you put down less than 20%, you may also have to pay **PMI** (Private Mortgage Insurance), which protects the lender in case you default.\n\n---\n\n### 4. How Payments Work Over Time (Amortization)\nEven if your total monthly payment stays the same every month, **what that money pays for changes over time**. This schedule is called **amortization**:\n\n* **In the early years:** Most of your monthly payment goes toward paying **interest**, and only a tiny bit goes toward the actual loan balance (principal).\n* **In the later years:** The balance flips. Most of your payment goes toward paying off the **principal**, and very little goes toward interest.\n\n---\n\n### 5. Building \"Equity\"\nAs you pay down your mortgage over the years (and as the market value of your home hopefully increases), you build **equity**. \n\n* **Equity = The home's current market value MINUS what you still owe.**\n* *Example:* If your home is worth \\$450,000 and you only owe \\$250,000 on your mortgage, you have **\\$200,000 in home equity**. That is money you get to keep if you sell the house.\n\n---\n\n### Summary Checklist\n* You bring a **down payment**.\n* The lender covers the rest via the **mortgage**.\n* You make **monthly payments** (Principal + Interest + Taxes + Insurance) for **15 to 30 years**.\n* Once the loan is fully paid off, the lender removes their claim on the title, and **you own the house 100% free and clear.**",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 8,
+            "completion_tokens": 1767,
+            "total_tokens": 1775,
+            "cost": 0.003316125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.003316125,
+              "upstream_inference_prompt_cost": 3e-06,
+              "upstream_inference_completions_cost": 0.003313125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 862,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "explain-a2": {
+      "template": "explain",
+      "prompt": "Explain how to change a flat tire to me.",
+      "samples": [
+        {
+          "reply": "Changing a flat tire is a fundamental skill that every driver should know. If you follow these steps carefully, you can do it safely in about 15 to 30 minutes.\n\n---\n\n### **Phase 1: Safety and Preparation**\n\n1. **Find a Safe Location:**\n   * Pull over to a flat, level, and stable surface (asphalt or concrete is best). Avoid hills or soft ground like dirt or grass.\n   * Pull as far away from moving traffic as possible.\n2. **Turn on Hazard Lights:**\n   * Keep your hazard lights (blinkers) on so other drivers can see you.\n3. **Set the Parking Brake:**\n   * Put your car in **Park** (or **Reverse/First gear** for manual transmissions) and firmly engage the emergency/parking brake.\n4. **Gather Your Equipment:**\n   * You will need:\n     * **Spare tire**\n     * **Jack**\n     * **Lug wrench** (tire iron)\n     * *Optional but helpful:* A heavy rock/brick (wheel chock), gloves, and a flashlight.\n5. **Chock the Tires (Recommended):**\n   * Place a heavy rock, brick, or wheel chock behind/in front of the tire diagonally opposite the flat one (e.g., if your front-left tire is flat, chock the back-right tire) to prevent rolling.\n\n---\n\n### **Phase 2: Changing the Tire**\n\n#### **Step 1: Loosen the Lug Nuts (Do NOT remove them yet)**\n* If your wheel has a hubcap/cover, pry it off using the flat end of your lug wrench.\n* Place the lug wrench on a lug nut and turn **counter-clockwise** (\"lefty-loosey\") to break the resistance.\n* Loosen all the lug nuts about **half a turn to one full turn**. \n* *Tip:* Do this while the car is still on the ground; otherwise, the wheel will just spin when you try to turn the wrench.\n\n#### **Step 2: Jack Up the Vehicle**\n* Look under your car for the **jacking points** (reinforced metal notches on the frame near each wheel well). Check your owner’s manual if you can’t find them.\n* Place the jack under the jacking point and raise it until the flat tire is roughly **6 inches off the ground**.\n* **Safety Warning:** *Never place any part of your body underneath the vehicle while it is supported only by a jack.*\n\n#### **Step 3: Remove the Flat Tire**\n* Finish unscrewing the loosened lug nuts by hand and remove them.\n* Grip the tire with both hands and pull it straight toward you off the wheel hub.\n* *Tip:* Slide the flat tire under the frame of the car as a safety buffer in case the jack fails.\n\n#### **Step 4: Mount the Spare Tire**\n* Align the holes in the spare tire with the wheel studs (the threaded bolts).\n* Push the spare tire onto the hub until it sits flush against the wheel base.\n* Put the lug nuts back on and tighten them **by hand** as much as possible.\n\n#### **Step 5: Lower the Car and Tighten the Nuts**\n* Lower the jack until the spare tire touches the ground and bears some weight, but the car is not resting completely on it.\n* Use the lug wrench to tighten the nuts using a **star/crisscross pattern** (tighten one nut, then the one opposite it, and so on). This ensures the wheel is mounted evenly.\n* Turn them as tightly as you can using your body weight.\n\n#### **Step 6: Lower Completely and Pack Up**\n* Lower the jack all the way down and remove it.\n* Give the lug nuts one final check with the wrench to ensure they are completely tight.\n* Put the flat tire, jack, and tools back into your trunk.\n\n---\n\n### **Phase 3: Important Next Steps**\n\n* **Drive Slow:** Most spare tires (\"donuts\") are not designed for high speeds or long distances. Keep your speed **under 50 mph (80 km/h)** and do not drive more than **50–70 miles** on it.\n* **Check the Pressure:** Spare tires lose air over time. Stop at the nearest gas station to check the pressure of your spare.\n* **Get It Fixed:** Go to a tire shop as soon as possible to repair or replace your original tire.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 1596,
+            "total_tokens": 1606,
+            "cost": 0.00299625,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00299625,
+              "upstream_inference_prompt_cost": 3.75e-06,
+              "upstream_inference_completions_cost": 0.0029925
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 640,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Changing a flat tire is a fundamental skill every driver should know. If you are currently on the side of the road, **take a deep breath**—follow these steps carefully, and prioritize your safety above all else.\n\n---\n\n### Phase 1: Safety & Preparation\n\n1. **Find a safe location:**\n   * Pull over onto a **flat, level, and firm surface** (never on a hill, soft dirt, or grass).\n   * Get as far away from moving traffic as possible.\n2. **Secure the vehicle:**\n   * Turn on your **hazard lights** (hazard flashers).\n   * Put the car in **Park** (or **Reverse** if it’s a manual transmission).\n   * Pull the **parking brake (emergency brake)** firmly.\n3. **Block the tires (Wheel Chock):**\n   * Place a wheel chock, brick, or heavy rock behind the tire diagonally opposite the flat (e.g., if your front-left tire is flat, block the rear-right tire) to prevent rolling.\n4. **Get your equipment ready:**\n   * Locate your **spare tire**, **jack**, and **lug wrench** (usually found under the trunk floor mat).\n\n---\n\n### Phase 2: Removing the Flat Tire\n\n5. **Remove the hubcap/wheel cover** (if equipped):\n   * Use the flat end of your lug wrench to gently pry it off.\n6. **Loosen the lug nuts (DO NOT remove them yet):**\n   * *Critical step:* While the car is still firmly on the ground, use the lug wrench to loosen each lug nut by turning **counterclockwise** (\"lefty-loosey\").\n   * Turn them about **1/2 to 1 full turn** just to break the resistance. (You may need to push down hard with your foot on the wrench).\n7. **Position the jack:**\n   * Place the jack under the vehicle’s **jacking point** nearest the flat tire. (Check your owner’s manual—this is usually a reinforced metal notch along the frame under the car. *Do not place it on the plastic body panels.*)\n8. **Raise the vehicle:**\n   * Crank the jack to raise the car until the flat tire is roughly **6 inches off the ground**. (Remember: The inflated spare tire will be slightly taller than the flat one).\n   * *Safety Rule:* **Never** put any part of your body underneath the vehicle while it is supported only by the jack.\n9. **Remove the lug nuts and the tire:**\n   * Unscrew the loosened lug nuts the rest of the way and keep them in a safe, clean spot (like inside the hubcap).\n   * Pull the flat tire straight toward you off the wheel hub. Lay it flat on the ground out of the way.\n\n---\n\n### Phase 3: Mounting the Spare Tire\n\n10. **Mount the spare tire:**\n    * Align the holes on the spare tire with the wheel bolts/studs.\n    * Push the spare all the way onto the hub until it sits flush.\n11. **Install the lug nuts by hand:**\n    * Put the lug nuts back on and screw them down **by hand** as tight as you can.\n    * Use the lug wrench to snug them up slightly, but wait until the car is down to tighten them fully.\n\n---\n\n### Phase 4: Lowering and Final Tightening\n\n12. **Lower the car:**\n    * Turn the jack the opposite way to lower the car until the spare tire just touches the ground and bears some weight, but before the jack is completely loose.\n13. **Tighten the lug nuts in a \"Star Pattern\":**\n    * Use your full weight on the lug wrench to tighten the nuts as much as possible.\n    * **Do not tighten in a circle.** Tighten one nut, then move to the one directly across from it, forming a **star or criss-cross pattern**. This ensures the wheel is pressed flat and evenly against the hub.\n14. **Lower completely and finish:**\n    * Lower the car all the way to the ground and remove the jack.\n    * Give each lug nut one final pull with the wrench in the same star pattern to ensure they are rock-solid.\n\n---\n\n### Phase 5: Pack Up and Rules for the Road\n\n* **Pack everything away:** Put the flat tire, tools, and wheel chocks back into your vehicle.\n* **Check the spare's pressure:** Spare tires lose air over time. Stop at the nearest gas station immediately to check its air pressure.\n* **Donut spare rules:** If your spare is a small, temporary \"donut\":\n  * **Do not exceed 50 mph (80 km/h)**.\n  * **Do not drive more than 50 miles (80 km)**.\n* **Repair/Replace:** Take your flat tire to a tire shop as soon as possible to get it repaired or replaced.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 11,
+            "completion_tokens": 1922,
+            "total_tokens": 1933,
+            "cost": 0.00721575,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00721575,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.0072075
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 857,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Changing a flat tire is a fundamental skill that every driver should know. While it might seem intimidating, it is straightforward if you follow these steps carefully.\n\n---\n\n### **Preparation: Safety First**\n1. **Find a safe location:** Pull over to a flat, level, and stable surface far away from moving traffic (a straight stretch of road or a parking lot is ideal). Never change a tire on a slope or soft ground (like dirt/mud).\n2. **Turn on hazard lights:** Make sure other drivers can see you.\n3. **Engage the parking brake:** Put the car in **Park** (or **Reverse** if it's a manual transmission) and firmly pull the emergency/parking brake.\n4. **Block the wheels (Optional but recommended):** Place a heavy object (a brick, wheel chock, or large rock) behind or in front of the tire diagonally opposite the flat one to prevent rolling.\n\n---\n\n### **Tools You Need** (Usually located under the trunk floor mat)\n* Spare tire\n* Car jack\n* Lug wrench (tire iron)\n* *Helpful to have (if available):* Gloves, a flashlight, and your vehicle owner’s manual.\n\n---\n\n### **Step-by-Step Instructions**\n\n#### **1. Loosen the Lug Nuts (Do NOT remove them yet)**\n* If your wheel has a hubcap or cover, pry it off using the flat end of the lug wrench.\n* Place the lug wrench on each lug nut and turn **counterclockwise** (\"lefty-loosey\") to break the resistance.\n* **Important:** You are only loosening them about a half-turn while the tire is still on the ground. (If you lift the car first, the wheel will just spin).\n\n#### **2. Position the Jack**\n* Look under your car near the flat tire for the **jacking point** (a reinforced metal strip on the frame). \n* *Tip:* Check your owner’s manual for the exact location so you don’t damage the car's plastic body molding.\n\n#### **3. Lift the Car**\n* Crank or pump the jack to raise the car until the flat tire is about **6 inches off the ground**. \n* *Note:* The spare tire is fully inflated and will be larger than the flat tire, so ensure you have enough clearance.\n* **Safety Rule:** Never put any part of your body underneath the vehicle while it is on a jack.\n\n#### **4. Remove the Flat Tire**\n* Unscrew the loosened lug nuts the rest of the way by hand and set them somewhere safe.\n* Grip the tire by the treads and pull it straight toward you to slide it off the hub. Lay it flat on the ground.\n\n#### **5. Mount the Spare Tire**\n* Lift the spare tire and align the holes with the wheel studs (the threaded bolts).\n* Push the spare firmly back until it sits flush against the wheel hub.\n\n#### **6. Hand-Tighten the Lug Nuts**\n* Put the lug nuts back on the bolts by hand. \n* Turn them clockwise until they are snug. (Don't try to tighten them completely with the wrench yet, or the tire will spin).\n\n#### **7. Lower the Car and Tighten the Nuts**\n* Lower the jack until the spare tire is touching the ground enough that it won't spin, but the full weight of the car isn't resting on it yet.\n* Use the lug wrench to tighten the nuts as much as possible using a **star pattern** (tighten one, then the one across from it, not the one next to it). This ensures the wheel is seated evenly.\n\n#### **8. Fully Lower the Car**\n* Lower the car all the way to the ground and remove the jack.\n* Give each lug nut one final check with the wrench in the same star pattern to ensure they are fully secured.\n\n---\n\n### **After the Change**\n* **Pack up:** Put your flat tire, jack, and tools back in the trunk.\n* **Check tire pressure:** If you have a tire pressure gauge, ensure the spare has adequate air.\n* **Drive carefully:** If your spare is a small \"donut\" tire, do not exceed **50 mph (80 km/h)** and do not drive on it for more than **50 miles (80 km)**.\n* **Get it fixed:** Visit a tire shop as soon as possible to repair or replace your original tire.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 11,
+            "completion_tokens": 1739,
+            "total_tokens": 1750,
+            "cost": 0.0065295,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0065295,
+              "upstream_inference_prompt_cost": 8.25e-06,
+              "upstream_inference_completions_cost": 0.00652125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 787,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
     "advise-a1": {
       "template": "advise",
       "prompt": "I'm deciding between taking a job offer that pays 20% more at a startup and staying at my current stable job that I like. What should I do?",
@@ -275,6 +461,99 @@
             },
             "completion_tokens_details": {
               "reasoning_tokens": 614,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "draft-a2": {
+      "template": "draft",
+      "prompt": "Draft an email telling my landlord I'll be a week late on rent for me.",
+      "samples": [
+        {
+          "reply": "Here are three options, ranging from standard to short and direct. Choose the one that best fits your relationship with your landlord.\n\n### Option 1: Standard & Professional (Recommended)\n*Best for most situations—polite, responsible, and clear.*\n\n**Subject:** Rent Payment Delay - Unit [Your Apartment/House Number] - [Your Name]\n\nDear [Landlord's Name],\n\nI am writing to let you know that my rent payment for [Month] will be delayed by one week. I experienced [an unexpected expense / a brief delay in my payroll], but I will be able to pay the full amount of $[Rent Amount] on **[Exact Date you will pay, e.g., Friday, November 10th]**. \n\nI understand that a late fee may apply according to our lease agreement, and I am prepared to include that with my payment. \n\nI apologize for any inconvenience this may cause and appreciate your understanding. Please let me know if you have any questions.\n\nBest regards,\n\n[Your Name]  \n[Your Phone Number]  \n[Your Unit Number]  \n\n---\n\n### Option 2: Short & Direct\n*Best if you rent from a large property management company or prefer a strictly business tone.*\n\n**Subject:** Late Rent Notice: [Your Name] - Unit [Your Unit Number]\n\nDear [Landlord/Property Manager Name],\n\nPlease be advised that my rent payment for [Month] will be submitted one week late. The full payment will be made on **[Exact Date you will pay]**. \n\nI apologize for the delay and will include any applicable late fees as outlined in my lease. Thank you for your patience.\n\nSincerely,\n\n[Your Name]  \n[Your Unit Number]  \n\n---\n\n### Option 3: Friendly & Personal\n*Best if you have a close or very friendly relationship with an individual landlord.*\n\n**Subject:** Quick update regarding [Month] rent - [Your Name]\n\nHi [Landlord's Name],\n\nI hope you’re having a good week. \n\nI’m reaching out to give you an early heads-up that my rent payment for this month will be about a week late due to [brief reason, e.g., a temporary banking issue / an unexpected bill]. I will send the full payment over to you on **[Exact Date you will pay]**. \n\nI’m very sorry for the inconvenience, and I truly appreciate your understanding. \n\nBest,\n\n[Your Name]  \n[Your Unit Number]  \n\n---\n\n### 💡 A quick tip before sending:\n* **Give an exact date:** Always provide a specific day rather than just saying \"in a week.\" It reassures the landlord that you have a plan.\n* **Check your lease:** Check if you have a grace period (many leases offer a 3 to 5-day grace period before late fees kick in).",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 18,
+            "completion_tokens": 1146,
+            "total_tokens": 1164,
+            "cost": 0.0021555,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0021555,
+              "upstream_inference_prompt_cost": 6.75e-06,
+              "upstream_inference_completions_cost": 0.00214875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 534,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are a few options, ranging from standard/professional to short and direct. Choose the one that best fits your relationship with your landlord.\n\n### Option 1: Standard & Professional (Recommended)\n**Subject:** Rent Payment Update for [Your Apartment/Unit Number] – [Your Name]\n\nDear [Landlord's Name],\n\nI am writing to inform you that my rent payment for [Month] will unfortunately be about a week late. Due to [brief reason, e.g., an unexpected expense / a slight delay in my paycheck], I will not be able to pay on the 1st as usual. \n\nI will be submitting the full payment of $[Rent Amount] on **[Exact Date you will pay, e.g., Friday, November 8th]**. \n\nI understand that a late fee may apply per our lease agreement, and I am prepared to include that with my payment. I sincerely apologize for any inconvenience this may cause and appreciate your understanding. \n\nPlease let me know if you need any additional information from me in the meantime.\n\nBest regards,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### Option 2: Short & Direct (Best for property management companies)\n**Subject:** Late Rent Notice: Unit [Your Unit Number] – [Your Name]\n\nDear [Landlord/Property Manager Name],\n\nPlease be advised that my rent payment for [Month] will be delayed by one week. \n\nI will make the full payment of $[Rent Amount], along with any applicable late fees, on **[Exact Date you will pay]**. \n\nI apologize for the delay and thank you for your patience and understanding.\n\nSincerely,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### Tips before sending:\n* **Send it early:** Send this *before* rent is due. Landlords appreciate proactive communication far more than being chased down after the due date.\n* **Give an exact date:** Always specify the exact calendar date you will pay, rather than just saying \"in a week.\"\n* **Check your lease:** Double-check if you have a grace period (often 3–5 days) or what the specific late fee amount is so there are no surprises.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 1003,
+            "total_tokens": 1022,
+            "cost": 0.0037755,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0037755,
+              "upstream_inference_prompt_cost": 1.425e-05,
+              "upstream_inference_completions_cost": 0.00376125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 516,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "Here are two options you can choose from—one that is standard and polite, and a shorter, more direct one. \n\n### Option 1: Standard & Polite (Recommended)\n**Subject:** Rent Payment for [Month] – Unit [Your Apartment/Unit Number] – [Your Full Name]\n\nDear [Landlord/Property Manager's Name],\n\nI am writing to let you know in advance that my rent payment for [Month] will be approximately one week late. \n\n[Optional: Due to an unexpected delay with my paycheck / an unforeseen personal expense], I will not be able to pay on the 1st as usual. However, I will be able to make the full payment of $[Rent Amount] on **[Specific Date - e.g., Friday, October 8th]**.\n\nI understand that a late fee may apply according to our lease agreement, and I am prepared to pay that along with the rent. \n\nI sincerely apologize for any inconvenience this may cause and truly appreciate your understanding and patience. Please let me know if you have any questions or need anything else from me in the meantime.\n\nBest regards,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]  \n\n---\n\n### Option 2: Short & Direct\n**Subject:** Notice of Late Rent – Unit [Your Apartment/Unit Number]\n\nHi [Landlord's Name],\n\nI am writing to inform you that my rent payment for [Month] will be delayed by one week. I will be submitting the full payment of $[Rent Amount] on **[Specific Date]**.\n\nI apologize for the delay and will include any applicable late fees as outlined in my lease. \n\nThank you for your understanding.\n\nBest,\n\n[Your Name]  \n[Your Apartment/Unit Number]  \n[Your Phone Number]\n\n---\n\n### A quick tip before sending:\n* **Give an exact date:** Landlords appreciate certainty. Instead of saying \"in a week,\" give the exact calendar date you will pay.\n* **Send it early:** Send this a few days *before* rent is due if possible; landlords are much more lenient when you notify them ahead of time rather than after the due date.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 1047,
+            "total_tokens": 1066,
+            "cost": 0.0039405,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.0039405,
+              "upstream_inference_prompt_cost": 1.425e-05,
+              "upstream_inference_completions_cost": 0.00392625
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 580,
               "image_tokens": 0,
               "audio_tokens": 0
             }
@@ -740,6 +1019,99 @@
             },
             "completion_tokens_details": {
               "reasoning_tokens": 738,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        }
+      ]
+    },
+    "interpret-a2": {
+      "template": "interpret",
+      "prompt": "What does this mean? \"So much depends / upon / a red wheel / barrow / glazed with rain / water / beside the white / chickens.\"",
+      "samples": [
+        {
+          "reply": "This is the entirety of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American modernist poet **William Carlos Williams**. \n\nDespite its brevity (just 16 words), it is one of the most celebrated poems in American literature. Its meaning can be understood on a few different levels:\n\n---\n\n### 1. The Practical Meaning: The Importance of Simple Tools\nOn a literal level, **human survival depends on basic agricultural labor.** \nA wheelbarrow is a simple, unglamorous tool, yet without it (and the farm work it represents), food is not grown, animals are not fed, and society cannot sustain itself. The poem reminds us that civilization relies heavily on ordinary, everyday objects and manual labor that we often take for granted.\n\n### 2. The Artistic Meaning: The Beauty of the Ordinary (Imagism)\nWilliams belonged to a poetic movement called **Imagism**. Imagists believed poetry should reject fancy, flowery metaphors and instead focus on **clear, sharp, sensory images**. \n* Williams had a famous motto: *\"No ideas but in things.\"*\n* The poem suggests that \"so much depends\" on our ability to simply **slow down and perceive the world as it is**. The vivid contrast of colors (the *red* wheelbarrow against the *white* chickens) and textures (*glazed* with rain) turns a mundane backyard scene into a moment of pure beauty and art.\n\n### 3. The Form: Forcing the Reader to \"Look\"\nThe unusual line breaks are intentional:\n* Williams splits compound words: **\"wheel / barrow\"** and **\"rain / water.\"**\n* By breaking these words across lines, he forces the reader to pause and examine each part of the image separately—first the wheel, then the barrow; first the rain, then the water. The structure mimics the act of carefully looking at a painting.\n\n---\n\n### Summary\n\"So much depends\" on the red wheelbarrow because:\n1. **Practically:** It is an essential tool for human labor and sustenance.\n2. **Philosophically:** Our appreciation of life depends on noticing and valuing the simple, beautiful, everyday things right in front of us.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 31,
+            "completion_tokens": 1244,
+            "total_tokens": 1275,
+            "cost": 0.002344125,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.002344125,
+              "upstream_inference_prompt_cost": 1.1625e-05,
+              "upstream_inference_completions_cost": 0.0023325
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 778,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is the complete text of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American Modernist poet **William Carlos Williams**. \n\nOn the surface, the poem is simply a description of a common farm scene: a wet, red wheelbarrow sitting next to some white chickens. However, the poem is considered a masterpiece of the **Imagist movement**, and its meaning lies in several layers:\n\n---\n\n### 1. The Importance of Everyday Labor and Tools\nLiterally, \"so much depends\" on the wheelbarrow and the chickens. In an agricultural or working-class setting, human survival depends on basic tools (the wheelbarrow) and livestock (the chickens). The poem is an appreciation of the simple, functional objects that sustain everyday life, which are often overlooked or taken for granted.\n\n### 2. \"No Ideas but in Things\" (Imagism)\nWilliams was a leader in the Imagist movement, which rejected the grand, flowery, and abstract language of 19th-century romantic poetry. His motto was **\"No ideas but in things.\"** \n* Instead of writing an abstract poem about \"beauty,\" \"nature,\" or \"hard work,\" he presents a single, clear, concrete image and lets the reader experience it directly.\n* The poem argues that profound meaning and reality are found in physical objects, not in abstract philosophy.\n\n### 3. Mindfulness and Visual Appreciation\nThe poem forces the reader to slow down and truly *see* the world. Williams breaks the words across short lines (e.g., splitting \"wheel / barrow\" and \"rain / water\") to make you linger on each part of the image:\n* **Color contrast:** The vibrant **red** against the pure **white**.\n* **Texture and light:** The word **\"glazed\"** makes the ordinary rainwater look like a shiny, artistic varnish.\n\n### 4. A Meditation on Human Perception\nAnother interpretation of \"so much depends\" is that our sense of reality, groundedness, and gratitude depends on our ability to notice and appreciate these small, quiet moments. \n\n---\n\n### Summary\nThe poem means that **the ordinary, mundane parts of our world are deeply essential and beautiful.** It asks the reader to pause, look closely at simple things, and realize how much of human life and meaning rests upon them.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 32,
+            "completion_tokens": 1251,
+            "total_tokens": 1283,
+            "cost": 0.00471525,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00471525,
+              "upstream_inference_prompt_cost": 2.4e-05,
+              "upstream_inference_completions_cost": 0.00469125
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 761,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "run_date": "2026-08-26"
+        },
+        {
+          "reply": "This is the entirety of the famous 1923 poem **\"The Red Wheelbarrow\"** by the American Modernist poet **William Carlos Williams**. \n\nOn the surface, it is simply a description of a farm scene after a rainstorm. However, beneath its simplicity, the poem explores deep themes about human existence, perception, and art. \n\nHere is what the poem means across a few different layers:\n\n---\n\n### 1. The Importance of Everyday Labor and Tools\nThe poem opens with the bold claim: **\"So much depends / upon...\"** \nLiterally, human survival and society depend on basic, humble tools. A wheelbarrow on a farm is essential for hauling feed, moving manure, harvesting crops, and tending to animals (the \"white chickens\"). \n* Williams is reminding us not to overlook the simple, unglamorous things that make human life and labor possible.\n\n---\n\n### 2. Finding Beauty in the Mundane (Imagism)\nWilliams was a leading figure in **Imagism**, a movement that rejected the grand, flowery, and dramatic language of 19th-century poetry. Instead, Imagists believed poetry should capture clear, sharp, concrete snapshots of reality (\"No ideas but in things,\" as Williams famously said).\n* The poem acts like a still-life painting. \n* By focusing on the vivid visual contrast—the **red** wheelbarrow, the **glistening/glazed** rainwater, and the **white** chickens—Williams argues that everyday reality is full of profound, sensory beauty if we simply slow down and look at it.\n\n---\n\n### 3. The Act of Perception\n\"So much depends\" can also mean that **our experience of life depends on our ability to pay attention.** \n* By breaking up the words into tiny, two-line stanzas (even splitting \"wheel / barrow\" and \"rain / water\"), Williams forces the reader to slow down and examine each object piece by piece. \n* In a busy world, finding meaning depends on our capacity for mindfulness and presence.\n\n---\n\n### 4. Biographical Context\nIn addition to being a poet, Williams was a practicing medical doctor (a pediatrician and general practitioner in New Jersey). He spent his days dealing with life, death, sickness, and hard-working, ordinary people. Many scholars believe this background gave him a deep appreciation for the fragility of life and the quiet, vital details that sustain it.\n\n---\n\n### Summary\n\"The Red Wheelbarrow\" is a meditation on **how much of human life and meaning rests upon the ordinary physical world**. It asks the reader to appreciate the quiet, indispensable beauty of simple things doing simple work.",
+          "finish_reason": "stop",
+          "model_version": "google/gemini-3.7-flash",
+          "usage": {
+            "prompt_tokens": 32,
+            "completion_tokens": 1389,
+            "total_tokens": 1421,
+            "cost": 0.00523275,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00523275,
+              "upstream_inference_prompt_cost": 2.4e-05,
+              "upstream_inference_completions_cost": 0.00520875
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 829,
               "image_tokens": 0,
               "audio_tokens": 0
             }
