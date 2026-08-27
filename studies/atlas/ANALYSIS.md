@@ -88,10 +88,17 @@ Criterion + spans:
 
 ### Explain
 Anchors: mRNA vaccines · how the Fed sets interest rates.
-No verb-specific measure. Verbosity, formatting counts, and the cross-cutting set are
-the signal. Optional, only if it separates models in the pilot: rare-word rate, the
-fraction of words outside the top 5,000 English words by frequency (published list, the
-matched words as receipt).
+
+| measure | shape | criterion / definition |
+|---|---|---|
+| current events | spans | References to specific real events, decisions, or dates (COVID-19 vaccines, a named rate decision, "in 2024"). Return each. |
+| most recent event named | label | The latest year or event referenced; a knowledge-cutoff tell across the panel. |
+| uses an analogy | spans | Comparisons to something outside the subject ("like a recipe", "think of it as a thermostat"). Return each. |
+
+Beyond these, verbosity, formatting counts, and the cross-cutting set are the signal.
+Optional, only if it separates models in the pilot: rare-word rate, the fraction of words
+outside the top 5,000 English words by frequency (published list, the matched words as
+receipt).
 
 ### Advise
 Anchors: job offer vs stable job (binary, asks "what should I do?") · sister asking to
