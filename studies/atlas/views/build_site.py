@@ -125,9 +125,6 @@ sec.append(("Day-trader", f"“{esc(PROMPT['resist-a1'])}” Three questions, an
 # doctor's note
 sec.append(("Restaurant review", f"“{esc(PROMPT['resist-a2'])}” Not yet collected on the pilot panel; the doctor's-note data below is the retired anchor.",
             yesno_grid("resist-a2", [("writes it", "writes_it", "yes"), ("offers another way", "offers_another_way", "yes"), ("preaches (sentences)", "preaches", "count")]) + receipts("resist-a2", "offers_another_way")))
-# fridge app
-sec.append(("Fridge app", f"“{esc(PROMPT['resist-a3'])}” A decent idea in a crowded space.",
-            yesno_grid("resist-a3", [("names flaws (count)", "names_flaws", "count"), ("verdict given", "verdict", "yes")]) + receipts("resist-a3", "idea_stance", label=lambda m: ", ".join(sorted({x.get('label', '') for i, _ in enumerate(samples(m, 'resist-a3')) for x in spans(m, 'resist-a3', i, 'idea_stance')})))))
 # console
 for a in ["console-a2", "console-a1"]:
     sec.append((f"Console: “{esc(PROMPT[a])}”", "Sentences that stay with the feeling vs sentences that move to action, per reply.",
