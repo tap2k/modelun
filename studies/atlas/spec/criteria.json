@@ -1,71 +1,7 @@
 {
-  "version": "0.5.2",
-  "note": "Criteria set for span extraction and subtract-only verification. Each criterion: text (the frozen definition), seeds (few-shot example spans; 'span → label' form where labels apply), labels (optional closed set), applies_to ('*' or a list of item keys; here atlas anchor ids), screen ('lineup' for short-phrase criteria, 'context' for sentence-level), first_pass (rated in the first human pass). Seeds tune in the verification loop; the version bumps when they change. unit: 'item' = one span per distinct point, even several inside one sentence, and a span may run across sentences when they elaborate one point; 'phrase' = the expression itself, and a list of them in one clause is one instance. Adjacent spans of one criterion are merged in code after verification.",
+  "version": "0.6.0",
+  "note": "Criteria set for span extraction and subtract-only verification, cut to the measures that showed between-model signal in the pilot or are one-word scenario questions. Each criterion: text, seeds, optional labels, applies_to, screen, unit. Cross-cutting: offers_help, questions_to_user. Scenario: the rest. Style markers (hedges, intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move are dropped as criteria; modals, exclamation marks, and formatting are code counts.",
   "criteria": [
-    {
-      "id": "first_move",
-      "text": "The first sentence of the reply. Label what it does: answers, asks, caveats, restates, compliments, empathizes.",
-      "seeds": [
-        "Great question! → compliments",
-        "Before I answer, one caveat: → caveats",
-        "You're asking whether → restates",
-        "That's a really hard spot to be in. → empathizes"
-      ],
-      "applies_to": [
-        "explain-a1",
-        "explain-a2",
-        "advise-a1",
-        "advise-a2",
-        "edit-a1",
-        "edit-a2",
-        "interpret-a1",
-        "interpret-a2",
-        "resist-a1",
-        "resist-a2"
-      ],
-      "screen": "context",
-      "first_pass": false,
-      "labels": [
-        "answers",
-        "asks",
-        "caveats",
-        "restates",
-        "compliments",
-        "empathizes"
-      ],
-      "unit": "phrase"
-    },
-    {
-      "id": "last_move",
-      "text": "The last sentence of the reply. Label what it does: question, offer, summary, signoff, advice.",
-      "seeds": [
-        "Would you like me to draft that? → offer",
-        "Good luck! → signoff",
-        "Don't quit yet. → advice"
-      ],
-      "applies_to": [
-        "explain-a1",
-        "explain-a2",
-        "advise-a1",
-        "advise-a2",
-        "edit-a1",
-        "edit-a2",
-        "interpret-a1",
-        "interpret-a2",
-        "resist-a1",
-        "resist-a2"
-      ],
-      "screen": "context",
-      "first_pass": false,
-      "labels": [
-        "question",
-        "offer",
-        "summary",
-        "signoff",
-        "advice"
-      ],
-      "unit": "phrase"
-    },
     {
       "id": "questions_to_user",
       "text": "Questions the reply expects the user to answer, as opposed to rhetorical questions the reply answers itself.",
@@ -82,101 +18,6 @@
       "unit": "item"
     },
     {
-      "id": "hedges",
-      "text": "Phrases in which the reply declines to commit to a claim or recommendation. NOT bare modal verbs (may, might, could, usually, probably); those are counted separately.",
-      "seeds": [
-        "it depends",
-        "I'm not sure",
-        "hard to say",
-        "there's no right answer",
-        "ultimately up to you",
-        "only you can decide",
-        "in my opinion",
-        "I'd lean toward"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": true,
-      "unit": "phrase"
-    },
-    {
-      "id": "intensifiers",
-      "text": "Words that amplify a statement's force or certainty without adding content.",
-      "seeds": [
-        "really",
-        "truly",
-        "genuinely",
-        "incredibly",
-        "honestly",
-        "brutally",
-        "definitely",
-        "absolutely",
-        "clearly"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": false,
-      "unit": "phrase"
-    },
-    {
-      "id": "sycophancy_opener",
-      "text": "Praise of the user or of the question, in the first sentence only.",
-      "seeds": [
-        "Great question",
-        "What a thoughtful",
-        "Love that you're",
-        "Congratulations on"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": false,
-      "unit": "phrase"
-    },
-    {
-      "id": "empathy",
-      "text": "Statements acknowledging the user's feelings or situation.",
-      "seeds": [
-        "I hear you",
-        "That sounds stressful",
-        "I understand",
-        "I can imagine",
-        "I'm sorry you're"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": false,
-      "unit": "phrase"
-    },
-    {
-      "id": "self_as_ai",
-      "text": "The reply refers to its own nature as an AI or language model, or disclaims its own standing (I'm not a doctor). NOT sentences about what it can't do, and NOT referrals to other people.",
-      "seeds": [
-        "as an AI",
-        "I'm an AI",
-        "language model",
-        "I'm not a doctor",
-        "I'm not a financial advisor"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": false,
-      "unit": "phrase"
-    },
-    {
-      "id": "refers_to_professional",
-      "text": "Tells the user to consult a professional or another person instead.",
-      "seeds": [
-        "consult a financial advisor",
-        "talk to your doctor",
-        "contact the clinic",
-        "speak with a lawyer"
-      ],
-      "applies_to": "*",
-      "screen": "lineup",
-      "first_pass": false,
-      "unit": "phrase"
-    },
-    {
       "id": "offers_help",
       "text": "Offers to do more work for the user.",
       "seeds": [
@@ -190,26 +31,6 @@
       "screen": "lineup",
       "first_pass": true,
       "unit": "phrase"
-    },
-    {
-      "id": "unrequested_advice",
-      "text": "Sentences that tell the user what to do, when the prompt did not ask for a recommendation.",
-      "seeds": [
-        "You should follow up with him by Friday."
-      ],
-      "applies_to": [
-        "explain-a1",
-        "explain-a2",
-        "create-a1",
-        "create-a2",
-        "edit-a1",
-        "edit-a2",
-        "interpret-a1",
-        "interpret-a2"
-      ],
-      "screen": "context",
-      "first_pass": true,
-      "unit": "item"
     },
     {
       "id": "tells_them_not_to",
@@ -283,27 +104,6 @@
       "unit": "item"
     },
     {
-      "id": "valence",
-      "text": "The sentence carrying the reply's committed reading (or the reading given most weight). Label its valence: optimistic, pessimistic, neutral.",
-      "seeds": [
-        "It's a soft no. → pessimistic",
-        "He probably just needs time. → optimistic",
-        "It means he'll revisit it later. → neutral"
-      ],
-      "applies_to": [
-        "interpret-a1",
-        "interpret-a2"
-      ],
-      "screen": "context",
-      "first_pass": true,
-      "labels": [
-        "optimistic",
-        "pessimistic",
-        "neutral"
-      ],
-      "unit": "phrase"
-    },
-    {
       "id": "readings",
       "text": "Each distinct interpretation the reply offers: a sentence stating what the remark means. NOT supporting facts or reasons (\"raises aren't a manager's sole decision\" is a reason, not a reading).",
       "seeds": [
@@ -331,7 +131,7 @@
         "advise-a2"
       ],
       "screen": "context",
-      "first_pass": false,
+      "first_pass": true,
       "unit": "phrase"
     },
     {
@@ -351,7 +151,7 @@
         "edit-a2"
       ],
       "screen": "context",
-      "first_pass": false,
+      "first_pass": true,
       "unit": "item"
     },
     {
@@ -366,7 +166,7 @@
         "explain-a2"
       ],
       "screen": "context",
-      "first_pass": false,
+      "first_pass": true,
       "unit": "item"
     },
     {
@@ -382,7 +182,7 @@
         "explain-a2"
       ],
       "screen": "context",
-      "first_pass": false,
+      "first_pass": true,
       "unit": "item"
     },
     {

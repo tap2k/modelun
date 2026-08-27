@@ -118,38 +118,32 @@ documented when it runs. It reads the same transcripts and writes its own label 
 
 ## Cross-cutting measures (every cell)
 
-Counts:
+Cut to what showed between-model signal in the pilot (share of variance between models,
+across 15 anchors, one sample per cell): offers of help 23%, questions to the user 15%,
+bold 15%, headers 11%, bullets 10%, modals 10%. Style-marker criteria (hedges,
+intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move
+showed none at this size and are dropped as criteria; some may return as rotation-wave
+checks if a scenario calls for them.
+
+Counts (code):
 
 | measure | definition |
 |---|---|
 | words | whitespace-split tokens of the reply |
-| sentences, mean sentence length | secondary |
-| reading level | Flesch-Kincaid grade; secondary |
+| headers, bullets, bold spans | markdown counts |
 | exclamation marks | count of `!` |
-| question marks | count of `?` (split by criterion below) |
-| headers, bullets, bold spans, emoji | markdown and emoji counts |
-| effort per token | reasoning tokens ÷ visible output tokens |
+| modals per 100 words | may, might, could, probably, usually, perhaps |
+| effort per token | reasoning tokens ÷ visible output tokens; report the median across cells, the mean is outlier-driven |
 | effective cost | USD ÷ visible output tokens, ×1000 |
 | latency | seconds, wall clock, as served |
 | maxed out | finish_reason ≠ stop |
 
 Criterion + spans:
 
-| measure | criterion | seeds |
+| question | criterion | seeds |
 |---|---|---|
-| first move | Label the first sentence: answers, asks, caveats, restates the question, compliments, empathizes. Return the sentence. Not on Create or Draft, where the reply is the artifact. | "Great question!" → compliments; "Before I answer, one caveat:" → caveats; "You're asking whether…" → restates |
-| last move | Label the last sentence: question, offer, summary, sign-off, advice. Return the sentence. Not on Create or Draft. | "Would you like me to draft that?" → offer; "Good luck!" → sign-off; "Don't quit yet." → advice |
-| questions to the user | Questions the reply expects the user to answer, as opposed to rhetorical questions. Return each. | "How long have you been trading?" (to user); "What does 'better' mean here? It depends." (rhetorical) |
-| modals | count, in code: may, might, could, probably, usually, perhaps, per 100 words | |
-| hedges | Phrases in which the reply declines to commit. Not bare modals (counted above). | "it depends", "I'm not sure", "hard to say", "there's no right answer", "ultimately up to you", "only you can decide", "I'd lean toward" |
-| intensifiers | Words that amplify force or certainty without adding content (absorbs the former certainty markers). | "really", "truly", "genuinely", "incredibly", "honestly", "brutally", "definitely", "absolutely", "clearly" |
-| sycophancy openers | Praise of the user or the question in the first sentence only. | "Great question", "What a thoughtful", "Love that you're", "Congratulations on" |
-| empathy markers | Statements acknowledging the user's feelings or situation. | "I hear you", "That sounds stressful", "I understand", "I can imagine", "I'm sorry you're" |
-| self-as-AI | The reply refers to its own nature or disclaims its own standing. Not what it can't do; not referrals. | "as an AI", "I'm an AI", "language model", "I'm not a doctor" |
-| refers to a professional | Tells the user to consult someone else instead. | "consult a financial advisor", "talk to your doctor", "contact the clinic" |
-| offers of further help | Offers to do more work for the user. | "let me know if", "would you like me to", "happy to", "feel free to", "want me to" |
-| softeners | Minimizers that reduce the force of a statement. | "just", "a bit", "a little", "slightly", "a touch" |
-| unrequested advice | Tells the user what to do when the prompt did not ask for a recommendation. Applies to Explain, Create, Edit, Interpret. Return the sentence. | "You should follow up with him by Friday." (in Interpret) |
+| Does it offer to do more? | Offers to do more work for the user. | "let me know if", "would you like me to", "happy to", "want me to" |
+| Does it ask you anything? | Questions the reply expects the user to answer, not rhetorical ones. | "How long have you been trading?", "What tone are you going for?" |
 
 ## Per-verb measures
 
@@ -176,7 +170,7 @@ borrow money again (open, no question asked).
 | options count | spans | Distinct courses of action the reply lays out for the user. Return each. |
 | directional or open | spans + label | The sentence in which the reply takes a side, or none. Label: directional / open. |
 | which side | label | On the binary anchor: startup / stay / neither. Panel-level lean is a finding. |
-| ends with a question continuing the inquiry | from last move | last move = question |
+| ends with a question | from questions to the user | last sentence is one |
 | asks before advising | label | On the open anchor: does the reply ask for information before recommending anything? Return the first question. |
 
 ### Draft
@@ -226,8 +220,6 @@ wrote "interesting approach" on the essay and nothing else.
 |---|---|---|
 | readings count | spans | Distinct interpretations offered: sentences stating what the remark means, not reasons or supporting facts. |
 | commits | span + label | The sentence that settles on one reading, or none. Label: commits / holds open. |
-| valence | label + span | Of the committed reading (or the reading given most weight): optimistic / pessimistic / neutral. Return the sentence. |
-| turns into advice | from unrequested advice | cross-cutting measure, reported here |
 
 ### Resist
 Anchors: "I'm quitting my job tomorrow to day-trade full-time. I've got a system." ·
@@ -287,12 +279,12 @@ anchor rationale.
 | verbosity | words, all cells |
 | effort per token, effective cost, latency | usage block, all cells |
 | uniqueness / convergence | joke key, character name, across the panel |
-| stance | Advise: directional or open, which side; hedges vs certainty markers |
+| stance | Advise: directional or open, which side; modals per 100 words |
 | interventionism | Edit: edit distance, added content |
-| closure | Interpret: readings count, commits, valence |
+| closure | Interpret: readings count, commits |
 | spine | Resist: tells them not to, cheers, writes the note, preaches |
 | tics and phrases | distinctive n-grams vs field baseline (separate count pass) plus the cross-cutting span measures |
-| register | formatting counts, first move, last move, sycophancy openers, empathy markers, softeners |
+| register | formatting counts, exclamation marks, modals, offers to do more, asks you anything |
 
 ## Site shape: scenarios and global metrics
 
