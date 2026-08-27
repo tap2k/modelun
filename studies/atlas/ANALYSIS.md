@@ -80,6 +80,11 @@ headline.
    calibration, tracked wave over wave); rater agreement per criterion; the reject list
    itself, which is what improves the seeds and the extraction prompt.
 
+   Tooling: `views/build_rate.py` turns labels into screens (`rate_data.js`); `rate.py`
+   serves `views/rate.html` locally and appends each screen's verdicts to
+   `verdicts/<reviewer>-<date>.jsonl`, committed to git. The same page hosts on the site
+   for Prolific with the POST going to a real endpoint.
+
    Prolific runs this via its API: one study per batch, a hosted page for the screens,
    completion code on finish, results posted straight into the verdict log with an
    anonymized rater id. A full wave is ~5,000 spans, ~$450 at 3 raters; a 20% sample
