@@ -91,7 +91,7 @@ def norm(s): return re.sub(r"[^a-z0-9 ]", "", s.lower()).strip()
 # ---------- sections ----------
 sec = []
 G = global_rows()
-sec.append(("Profile", "Global measures on every cell, per model, pilot panel. Words and formatting are means over all replies; asks and offers are per reply; effort per token is the median of reasoning ÷ visible output; cost is USD per 1k visible output tokens.",
+sec.append(("Profile", "Global measures on every cell, per model, pilot panel. <b>words</b>, <b>bullets</b>, <b>headers</b>, <b>bold</b>: means per reply. <b>modals</b>: may / might / could / probably / usually / perhaps per 100 words. <b>asks</b>: questions the reply expects you to answer, per reply. <b>offers</b>: offers to do more work, per reply. <b>effort</b>: median reasoning tokens ÷ visible output tokens. <b>cost</b>: USD per 1k visible output tokens.",
             table(["model", "words", "bullets", "headers", "bold", "modals", "asks", "offers", "effort", "cost"], G,
                   {"words": "{:.0f}", "modals": "{:.2f}", "effort": "{:.2f}", "cost": "${:.4f}"})))
 
@@ -107,7 +107,7 @@ sec.append(("Joke census", f"“{esc(PROMPT['create-a1'])}” Convergence: share
 
 # coffee shop
 C, ex = cluster("create-a3", "names_offered", key=lambda s: norm(s.strip('*"')))
-h = "<p>Names per reply: " + ", ".join(f"{esc(short(m))} {mean(nsp(m, 'create-a3', 'names_offered')):.0f}" for m in models) + "</p>"
+h = "<p>Names per reply (the prompt asks for one): " + ", ".join(f"{esc(short(m))} {mean(nsp(m, 'create-a3', 'names_offered')):.0f}" for m in models) + "</p>"
 h += "<table><tr><th>name</th><th class=num>times suggested</th></tr>" + "".join(f"<tr><td>{esc(ex[k])}</td><td class=num>{c} {bar(c, C.most_common(1)[0][1])}</td></tr>" for k, c in C.most_common(12)) + "</table>"
 sec.append(("Coffee shop", f"“{esc(PROMPT['create-a3'])}” Names suggested across the panel; the top of the list is what everyone reaches for.", h))
 
