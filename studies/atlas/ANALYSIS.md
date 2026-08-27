@@ -44,18 +44,40 @@ headline.
 4. Spot-check: a sample of spans per criterion per wave is reviewed by hand; the review
    file lives beside the labels and the pass rate is published with the wave. Every
    verdict is logged as a record: `{model, anchor, i, criterion, span, verdict:
-   accept | reject | edit, edited_span?, reviewer, date}`. This file is a training set:
-   accepted and rejected spans are positive and negative examples for the criterion,
-   edits are corrections. It calibrates the extractor against humans and, as it accrues,
+   accept | reject, reviewer, date}`. This file is a training set: accepted and rejected
+   spans are positive and negative examples for the criterion. It calibrates the extractor against humans and, as it accrues,
    supports fine-tuning a dedicated extractor or RL on the extraction prompt. Log it from
    wave 1; build nothing on it until it is large.
 
-   The spot-check can run on Prolific via its API: one study per batch of ~60 spans
-   (~10 minutes), a hosted verification page (reply with the span highlighted, the
-   criterion, the seeds, and accept / reject / edit), 3 raters per span with majority
-   verdict and agreement published per wave, 10% gold items as attention checks, and
-   results posted straight into the verdict log with an anonymized rater id. A full wave
-   is ~5,000 spans, about $450 at 3 raters; a 20% sample about $90.
+   **The verification task: subtract only.** Raters never add or edit; they strike
+   what doesn't belong. Every span defaults to accept; a strike is a reject. This keeps a
+   screen to a few seconds and makes the log unambiguous. Recall (what the extractor
+   missed) is not measured by raters; it is measured on a small hand-labeled gold set.
+
+   Two screen types, chosen per criterion:
+   - **Lineup** ("which of these doesn't belong"): one criterion at the top with its
+     seeds, then 6–8 candidate spans from different replies as cards. Strike the odd
+     ones. For short-phrase criteria: hedges, certainty, intensifiers, sycophancy
+     openers, empathy, self-as-AI, offers, softeners.
+   - **In context**: one reply with that criterion's spans highlighted, criterion and
+     seeds at the top. Strike any highlight that doesn't fit. For sentence and label
+     criteria: first move, last move, questions to the user, unrequested advice, valence,
+     readings, directional, options, and the Resist questions. Labels are shown on the
+     highlight and a strike rejects the label too.
+
+   Batch: ~40 screens, criteria mixed, about 10 minutes. 10% gold screens carry one
+   planted span known not to fit; a rater who misses most golds is excluded. Three
+   raters per screen; a span is rejected on majority strike.
+
+   Numbers produced: per criterion, precision = accepted ÷ shown (the extractor's
+   calibration, tracked wave over wave); rater agreement per criterion; the reject list
+   itself, which is what improves the seeds and the extraction prompt.
+
+   Prolific runs this via its API: one study per batch, a hosted page for the screens,
+   completion code on finish, results posted straight into the verdict log with an
+   anonymized rater id. A full wave is ~5,000 spans, ~$450 at 3 raters; a 20% sample
+   ~$90. The first rater is us, on the pilot extraction, before any of this is wired.
+
 5. Aggregate: per model × anchor, mean over samples; per model × verb; per model. The site
    dimensions are read off the aggregates (mapping in the last section). Convergence
    measures aggregate across the panel, not within a model.
