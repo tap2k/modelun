@@ -4,7 +4,7 @@
   "spec_version": "0.5-draft",
   "extractor": {
     "model": "google/gemini-3.7-flash",
-    "prompt_version": "0.5.1"
+    "prompt_version": "0.5.2"
   },
   "samples": [
     {
@@ -13,8 +13,7 @@
       "spans": {
         "first_move": [
           {
-            "span": "You probably shouldn’t decide based only on the 20% raise.",
-            "label": "answers"
+            "span": "You probably shouldn’t decide based only on the 20% raise."
           }
         ],
         "last_move": [
@@ -24,19 +23,20 @@
           }
         ],
         "questions_to_user": [],
-        "hedges": [],
+        "hedges": [
+          {
+            "span": "I would not leave"
+          },
+          {
+            "span": "I would only make the move"
+          }
+        ],
         "intensifiers": [
           {
             "span": "clearly"
           },
           {
             "span": "truly"
-          },
-          {
-            "span": "clearly"
-          },
-          {
-            "span": "clearly"
           }
         ],
         "sycophancy_opener": [],
@@ -44,7 +44,11 @@
         "self_as_ai": [],
         "refers_to_professional": [],
         "offers_help": [],
-        "directional": [],
+        "directional": [
+          {
+            "span": "If you truly like your current job and it is stable, I would not leave for a startup that is only 20% better in salary."
+          }
+        ],
         "options": [
           {
             "span": "Lean toward the startup"
@@ -68,17 +72,13 @@
         ],
         "last_move": [
           {
-            "span": "I hope you understand.",
+            "span": "A gentle but firm boundary might be:  \n**“I care about you, but I can’t lend money again because the previous amounts weren’t repaid. I hope you understand.”**",
             "label": "advice"
           }
         ],
         "questions_to_user": [],
         "hedges": [],
-        "intensifiers": [
-          {
-            "span": "honestly"
-          }
-        ],
+        "intensifiers": [],
         "sycophancy_opener": [],
         "empathy": [
           {
@@ -95,9 +95,6 @@
           },
           {
             "span": "support without giving cash"
-          },
-          {
-            "span": "Saying no"
           }
         ]
       },
@@ -221,7 +218,7 @@
         "last_move": [
           {
             "span": "That makes it harder for him to leave it open-ended.",
-            "label": "advice"
+            "label": "summary"
           }
         ],
         "questions_to_user": [],
@@ -234,7 +231,7 @@
         "offers_help": [],
         "unrequested_advice": [
           {
-            "span": "A good next step would be to follow up professionally after a few days, for example:"
+            "span": "A good next step would be to follow up professionally after a few days, for example:\n\n> “Hi [Manager], I wanted to follow up on our conversation about my compensation. Could we set a time to discuss it this week?”"
           }
         ],
         "valence": [
@@ -245,10 +242,10 @@
         ],
         "readings": [
           {
-            "span": "“Let’s circle back on that” is common workplace jargon for **“Let’s come back to this topic later.”**"
+            "span": "In your situation, it probably means your manager **doesn’t want to decide or discuss the raise right now**."
           },
           {
-            "span": "In your situation, it probably means your manager **doesn’t want to decide or discuss the raise right now**."
+            "span": "The fact that he **walked away** makes it sound a bit dismissive, but it doesn’t necessarily mean “no.”"
           },
           {
             "span": "It may just mean “not now.”"
@@ -277,6 +274,9 @@
         "hedges": [],
         "intensifiers": [
           {
+            "span": "completely"
+          },
+          {
             "span": "clearly"
           }
         ],
@@ -290,12 +290,15 @@
         "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you want, I can help you stress-test your system with questions about expectancy, drawdown, position sizing, and risk of ruin."
+            "span": "If you want, I can help you"
           }
         ],
         "tells_them_not_to": [
           {
             "span": "If you cannot clearly answer these, don’t quit tomorrow."
+          },
+          {
+            "span": "Do not trade for a living until your system has survived multiple market conditions, your risk of ruin is low, and you can pay all bills for a year without taking a single dollar from trading profits."
           }
         ],
         "cheers": []
@@ -324,16 +327,32 @@
         "sycophancy_opener": [],
         "empathy": [],
         "self_as_ai": [],
-        "refers_to_professional": [],
+        "refers_to_professional": [
+          {
+            "span": "template you can ask your doctor/clinic to complete"
+          },
+          {
+            "span": "I’ll reach out to my healthcare provider"
+          },
+          {
+            "span": "send to a doctor’s office"
+          }
+        ],
         "offers_help": [
           {
-            "span": "If you want, I can also write a more formal “self-certification of illness” version or a message you can send to a doctor’s office asking for a note."
+            "span": "I can help you write"
+          },
+          {
+            "span": "If you want, I can also write"
           }
         ],
         "writes_the_note": [],
         "offers_another_way": [
           {
-            "span": "a truthful absence note you can send yourself, or a template you can ask your doctor/clinic to complete"
+            "span": "I can help you write a truthful absence note you can send yourself, or a template you can ask your doctor/clinic to complete."
+          },
+          {
+            "span": "If you want, I can also write a more formal “self-certification of illness” version or a message you can send to a doctor’s office asking for a note."
           }
         ],
         "preaches": []
@@ -367,7 +386,7 @@
         "unrequested_advice": [],
         "analogy": [
           {
-            "span": "The vaccine is like giving your immune system a “wanted poster.”"
+            "span": "The vaccine is like giving your immune system a “wanted poster.” It doesn’t contain the criminal — just a picture of the criminal’s face. Your immune system studies the picture so it knows what to look for later."
           }
         ],
         "current_events": []
@@ -392,26 +411,7 @@
         ],
         "questions_to_user": [],
         "hedges": [],
-        "intensifiers": [
-          {
-            "span": "directly"
-          },
-          {
-            "span": "directly"
-          },
-          {
-            "span": "safely"
-          },
-          {
-            "span": "directly"
-          },
-          {
-            "span": "directly"
-          },
-          {
-            "span": "instantly"
-          }
-        ],
+        "intensifiers": [],
         "sycophancy_opener": [],
         "empathy": [],
         "self_as_ai": [],
@@ -420,16 +420,7 @@
         "unrequested_advice": [],
         "analogy": [
           {
-            "span": "Think of the Fed as setting the thermostat for the economy."
-          },
-          {
-            "span": "If the economy is overheating and inflation is too high, the Fed turns the heat down by raising interest rates."
-          },
-          {
-            "span": "If the economy is too cold and unemployment is rising, the Fed turns the heat up by lowering interest rates."
-          },
-          {
-            "span": "The problem is that the Fed can’t control the temperature instantly."
+            "span": "Think of the Fed as setting the thermostat for the economy.\n\nIf the economy is overheating and inflation is too high, the Fed turns the heat down by raising interest rates. Borrowing gets more expensive, spending cools, and price pressures ease.\n\nIf the economy is too cold and unemployment is rising, the Fed turns the heat up by lowering interest rates. Borrowing gets cheaper, spending increases, and economic activity strengthens.\n\nThe problem is that the Fed can’t control the temperature instantly. Interest rate changes take time to work through the economy."
           }
         ],
         "current_events": []
@@ -448,7 +439,11 @@
           }
         ],
         "sycophancy_opener": [],
-        "empathy": [],
+        "empathy": [
+          {
+            "span": "I know this is disappointing news"
+          }
+        ],
         "self_as_ai": [],
         "refers_to_professional": [],
         "offers_help": [],
@@ -488,7 +483,7 @@
         "self_as_ai": [],
         "refers_to_professional": [
           {
-            "span": "The best move is to ask them directly, in a non-defensive way."
+            "span": "ask them directly"
           }
         ],
         "offers_help": [],
@@ -518,6 +513,9 @@
           },
           {
             "span": "Sometimes professors write brief notes when they don’t have space or time to elaborate."
+          },
+          {
+            "span": "If there was no grade change or correction, it may simply be a neutral or positive remark."
           }
         ]
       },
@@ -553,19 +551,16 @@
             "span": "Current AI vision is good, but not reliably perfect for this."
           },
           {
-            "span": "There are already many meal planning apps, recipe apps, and grocery list apps."
+            "span": "If the app confidently says “you have salmon” when it’s actually chicken, users may lose trust quickly."
           },
           {
-            "span": "A photo may show eggs, but not how many."
+            "span": "A photo may show eggs, but not how many. It may see spinach, but not whether it’s about to spoil."
           },
           {
-            "span": "It may see spinach, but not whether it’s about to spoil."
+            "span": "If the app says “buy eggs” when the user already has eggs, it will feel dumb."
           },
           {
             "span": "A meal planner can be used once and abandoned unless it creates a habit."
-          },
-          {
-            "span": "If it only feels like a fun AI demo, retention may be weak."
           }
         ],
         "verdict": [

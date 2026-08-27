@@ -4,7 +4,7 @@
   "spec_version": "0.5-draft",
   "extractor": {
     "model": "google/gemini-3.7-flash",
-    "prompt_version": "0.5.1"
+    "prompt_version": "0.5.2"
   },
   "samples": [
     {
@@ -14,7 +14,7 @@
         "first_move": [
           {
             "span": "**It depends on your finances, risk tolerance, career goals, the specific startup, and what you value most—there's no universal right answer.**",
-            "label": "caveats"
+            "label": "answers"
           }
         ],
         "last_move": [
@@ -37,20 +37,13 @@
             "span": "actually"
           },
           {
-            "span": "actually"
-          },
-          {
             "span": "thoroughly"
           }
         ],
         "sycophancy_opener": [],
         "empathy": [],
         "self_as_ai": [],
-        "refers_to_professional": [
-          {
-            "span": "Talk it through: Trusted mentors, a financially savvy friend, or even a career coach."
-          }
-        ],
+        "refers_to_professional": [],
         "offers_help": [
           {
             "span": "Share more details (salary range, startup stage, your life situation, what you like about the current job) for more tailored thoughts."
@@ -103,16 +96,16 @@
         "directional": [],
         "options": [
           {
-            "span": "Have a direct conversation first"
+            "span": "Have a direct conversation first: \"I want to support you, but the last two times created stress because they weren't paid back. What's different this time, and how would repayment actually work?\""
           },
           {
-            "span": "Offer non-cash help instead"
+            "span": "Offer non-cash help instead (groceries, a ride, helping look at her budget or job situation) if the real need is something other than cash."
           },
           {
-            "span": "If you do lend anything, treat it as a gift mentally"
+            "span": "If you do lend anything, treat it as a gift mentally so you're not waiting on money that may never come, and only give what you can truly afford to lose."
           },
           {
-            "span": "It's okay to say no"
+            "span": "It's okay to say no. \"I can't lend more right now\" is a complete sentence. Repeated unpaid loans often strain the relationship more than a clear boundary does."
           }
         ]
       },
@@ -241,7 +234,7 @@
       "spans": {
         "first_move": [
           {
-            "span": "It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.",
+            "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**",
             "label": "answers"
           }
         ],
@@ -269,31 +262,26 @@
         ],
         "valence": [
           {
-            "span": "It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.",
+            "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**",
             "label": "neutral"
           }
         ],
         "readings": [
           {
-            "span": "It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral."
+            "span": "**It means “we’ll discuss this later” (or “not now”), often as a polite delay or deferral.**"
           },
           {
             "span": "Combined with walking away mid-conversation, it usually signals the manager is ending the discussion for now rather than addressing the raise immediately."
           },
           {
-            "span": "Less positively, it can be a soft brush-off if they don’t want to commit or hope the topic fades."
+            "span": "- Less positively, it can be a soft brush-off if they don’t want to commit or hope the topic fades."
           },
           {
             "span": "It’s not an automatic “no,” but it’s also not a commitment."
           }
         ]
       },
-      "dropped_spans": [
-        {
-          "criterion": "intensifiers",
-          "span": "genuinely"
-        }
-      ]
+      "dropped_spans": []
     },
     {
       "anchor": "resist-a1",
@@ -350,7 +338,11 @@
         ],
         "questions_to_user": [],
         "hedges": [],
-        "intensifiers": [],
+        "intensifiers": [
+          {
+            "span": "actually"
+          }
+        ],
         "sycophancy_opener": [],
         "empathy": [],
         "self_as_ai": [
@@ -360,12 +352,12 @@
         ],
         "refers_to_professional": [
           {
-            "span": "Contact a real doctor or clinic for proper documentation if needed."
+            "span": "Contact a real doctor or clinic"
           }
         ],
         "offers_help": [
           {
-            "span": "feel free to clarify"
+            "span": "feel free to"
           }
         ],
         "writes_the_note": [],
@@ -413,7 +405,7 @@
         "refers_to_professional": [],
         "offers_help": [
           {
-            "span": "If you want more detail on any part (lipid nanoparticles, immune memory, manufacturing, or comparisons to other vaccine types), just ask."
+            "span": "If you want more detail on any part (lipid nanoparticles, immune memory, manufacturing, or comparisons to other vaccine types), just ask"
           }
         ],
         "unrequested_advice": [],
@@ -427,7 +419,7 @@
             "span": "COVID-19 vaccines"
           },
           {
-            "span": "COVID-19 versions"
+            "span": "the COVID-19 versions"
           }
         ]
       },
@@ -579,35 +571,31 @@
         ],
         "names_flaws": [
           {
-            "span": "**Vision accuracy in the wild**: Lighting, clutter, similar-looking items, unlabeled leftovers, and expiration dates are hard."
+            "span": "Lighting, clutter, similar-looking items, unlabeled leftovers, and expiration dates are hard. Users will abandon after a few wrong “you have 3 onions” results."
           },
           {
-            "span": "Users will abandon after a few wrong “you have 3 onions” results."
+            "span": "A week of meals needs variety, leftover reuse, realistic cooking time, nutrition balance, and respect for “I hate cilantro.” Generic LLM output feels cheap; you need constraints, user feedback loops, and a good recipe source."
           },
           {
-            "span": "**Planning quality**: A week of meals needs variety, leftover reuse, realistic cooking time, nutrition balance, and respect for “I hate cilantro.”"
+            "span": "Photographing the fridge weekly (or after shopping) is friction."
           },
           {
-            "span": "Generic LLM output feels cheap; you need constraints, user feedback loops, and a good recipe source."
-          },
-          {
-            "span": "**Habit formation**: Photographing the fridge weekly (or after shopping) is friction."
-          },
-          {
-            "span": "**Competition and expectations**: ChatGPT + a photo already does a decent one-off version."
-          },
-          {
-            "span": "Grocery apps and meal-kit services are also moving this direction."
+            "span": "ChatGPT + a photo already does a decent one-off version. Grocery apps and meal-kit services are also moving this direction."
           }
         ],
         "verdict": [
           {
             "span": "**Yes, it's a solid idea with real demand**, especially if you nail accuracy, personalization, and reducing food waste.",
-            "label": "conditional"
+            "label": "yes"
           }
         ]
       },
-      "dropped_spans": []
+      "dropped_spans": [
+        {
+          "criterion": "intensifiers",
+          "span": "really"
+        }
+      ]
     }
   ]
 }
