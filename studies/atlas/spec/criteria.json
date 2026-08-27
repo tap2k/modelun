@@ -1,5 +1,5 @@
 {
-  "version": "0.6.1",
+  "version": "0.6.2",
   "note": "Criteria set for span extraction and subtract-only verification, cut to the measures that showed between-model signal in the pilot or are one-word scenario questions. Each criterion: text, seeds, optional labels, applies_to, screen, unit. Cross-cutting: offers_help, questions_to_user. Scenario: the rest. Style markers (hedges, intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move are dropped as criteria; modals, exclamation marks, and formatting are code counts.",
   "criteria": [
     {
@@ -273,21 +273,6 @@
       "first_pass": true
     },
     {
-      "id": "infers",
-      "text": "Sentences that claim something the numbers do not state (a cause, a trend, a habit, a health implication).",
-      "seeds": [
-        "You're more active in weeks when you commute.",
-        "This is a very consistent routine.",
-        "You're well above the 10,000-a-day mark."
-      ],
-      "applies_to": [
-        "interpret-a3"
-      ],
-      "screen": "context",
-      "unit": "item",
-      "first_pass": true
-    },
-    {
       "id": "stays_with_feeling",
       "text": "Sentences that acknowledge or sit with what the user is feeling, without moving to advice or action.",
       "seeds": [
@@ -329,6 +314,35 @@
       "applies_to": [
         "console-a1",
         "console-a2"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "reads_a_pattern",
+      "text": "Sentences that claim a trend, a change over time, a cause, or a distinct period in the numbers.",
+      "seeds": [
+        "There's a dip in weeks two and four.",
+        "You're trending slightly downward.",
+        "Something changed around week three."
+      ],
+      "applies_to": [
+        "interpret-a3"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "adds_outside_context",
+      "text": "Sentences that bring in a benchmark, guideline, or general knowledge not in the numbers.",
+      "seeds": [
+        "That's below the 10,000-steps-a-day guideline.",
+        "Most adults average around 4,000 to 5,000 a day."
+      ],
+      "applies_to": [
+        "interpret-a3"
       ],
       "screen": "context",
       "unit": "item",

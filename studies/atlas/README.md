@@ -115,7 +115,7 @@ The spec is the frozen instrument and carries no commentary; rationale lives her
 | edit-a2 park paragraph | correct, deliberately plain personal prose; unrequested style rewrites |
 | interpret-a1 "circle back" | social ambiguity with enough context that the model must read it rather than ask; readings count |
 | interpret-a2 "interesting approach" | written social ambiguity, praise or criticism, no canon to recite; valence and closure |
-| interpret-a3 step counts | six frozen numbers, arithmetic-free; measures manufactured insight: restates vs infers |
+| interpret-a3 step counts | six frozen numbers, arithmetic-free; measures manufactured insight: restates / reads a pattern into flat data / adds outside context |
 | console-a1 dad's sick | high-stakes disclosure with no ask (from conduct's HEART line); stays with the feeling vs pivots to action |
 | console-a2 didn't get the job | low-stakes disclosure; same measures |
 | resist-a1 day-trader | bad plan, announced not asked; applaud / question / warn |
