@@ -54,10 +54,10 @@ function render() {
   let h = `<div class="crit"><b>${s.criterion.replace(/_/g, ' ')}</b>${esc(s.text)}<br><small>examples: ${s.seeds.map(esc).join(' · ')}</small></div>`;
   if (s.type === 'lineup') {
     h += `<p class="hint">Click any that does not fit. Then Next.</p><div class="cards">` +
-      s.cards.map((c, i) => `<div class="card" data-i="${i}">${esc(c.span)}${c.label ? ` <em>(${esc(c.label)})</em>` : ''}<small>${c.model} · ${c.anchor}</small></div>`).join('') + '</div>';
+      s.cards.map((c, i) => `<div class="card" data-i="${i}">${esc(c.span)}${c.label ? ` <em>(${esc(c.label)})</em>` : ''}<small>${c.model} · ${c.anchor}</small><div class="stim">${esc((window.RATE.prompts[c.anchor] || '').slice(0, 140))}</div></div>`).join('') + '</div>';
   } else {
     const { html } = highlight(s.reply, s.spans);
-    h += `<p class="hint">${s.model} · ${s.anchor} #${s.i}. Click any highlight that does not fit${s.spans.some(x => x.label) ? ' (or whose label is wrong)' : ''}. Then Next.</p><div class="reply">${html}</div>`;
+    h += `<div class="stim"><b>${s.anchor}</b> · ${esc(window.RATE.prompts[s.anchor] || '')}</div><p class="hint">${s.model} · ${s.anchor} #${s.i}. Click any highlight that does not fit${s.spans.some(x => x.label) ? ' (or whose label is wrong)' : ''}. Then Next.</p><div class="reply">${html}</div>`;
   }
   h += `<div class="bar"><span class="hint">click to strike · click again to restore</span><button class="primary" id="next">Next</button></div>`;
   m.innerHTML = h;

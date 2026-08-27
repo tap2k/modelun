@@ -27,6 +27,7 @@ crits = a.criteria.split(",")
 rng = random.Random(a.seed)
 
 T = {p.stem: json.loads(p.read_text()) for p in (STUDY / "transcripts").glob("*.json")}
+PROMPTS = {aid: c["prompt"] for t in T.values() for aid, c in t["cells"].items()}
 L = {p.stem: json.loads(p.read_text()) for p in (STUDY / "labels").glob("*.json")}
 
 items = []   # one per (model, anchor, i, criterion) with spans
@@ -57,6 +58,6 @@ for c in crits:
 
 rng.shuffle(screens)
 screens = screens[:a.max_screens]
-out = {"prompt_version": PROMPT_VERSION, "screens": screens}
+out = {"prompt_version": PROMPT_VERSION, "prompts": PROMPTS, "screens": screens}
 (HERE / "rate_data.js").write_text("window.RATE = " + json.dumps(out, ensure_ascii=False) + ";\n")
 print(f"→ rate_data.js  {len(screens)} screens from {len(items)} items; spans to rate: {sum(len(s.get('cards', s.get('spans', []))) for s in screens)}")
