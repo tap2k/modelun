@@ -22,13 +22,14 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--criteria", default=",".join(FIRST_PASS))
 ap.add_argument("--max-screens", type=int, default=60)
 ap.add_argument("--seed", type=int, default=1)
+ap.add_argument("--labels", default=str(STUDY / "labels"))
 a = ap.parse_args()
 crits = a.criteria.split(",")
 rng = random.Random(a.seed)
 
 T = {p.stem: json.loads(p.read_text()) for p in (STUDY / "transcripts").glob("*.json")}
 PROMPTS = {aid: c["prompt"] for t in T.values() for aid, c in t["cells"].items()}
-L = {p.stem: json.loads(p.read_text()) for p in (STUDY / "labels").glob("*.json")}
+L = {p.stem: json.loads(p.read_text()) for p in Path(a.labels).glob("*.json")}
 
 items = []   # one per (model, anchor, i, criterion) with spans
 for m, lab in L.items():
