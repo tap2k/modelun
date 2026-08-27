@@ -42,7 +42,13 @@ headline.
    verbatim (case-sensitive, whitespace-normalized) and writes `dropped_spans` for audit.
    Extractor model, prompt, and seeds are recorded in the label file.
 4. Spot-check: a sample of spans per criterion per wave is reviewed by hand; the review
-   file lives beside the labels and the pass rate is published with the wave.
+   file lives beside the labels and the pass rate is published with the wave. Every
+   verdict is logged as a record: `{model, anchor, i, criterion, span, verdict:
+   accept | reject | edit, edited_span?, reviewer, date}`. This file is a training set:
+   accepted and rejected spans are positive and negative examples for the criterion,
+   edits are corrections. It calibrates the extractor against humans and, as it accrues,
+   supports fine-tuning a dedicated extractor or RL on the extraction prompt. Log it from
+   wave 1; build nothing on it until it is large.
 5. Aggregate: per model × anchor, mean over samples; per model × verb; per model. The site
    dimensions are read off the aggregates (mapping in the last section). Convergence
    measures aggregate across the panel, not within a model.
