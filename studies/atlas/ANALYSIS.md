@@ -69,6 +69,13 @@ headline.
    planted span known not to fit; a rater who misses most golds is excluded. Three
    raters per screen; a span is rejected on majority strike.
 
+   **Seeds tune in the loop.** A rejected span is a reason to sharpen the criterion:
+   add it as a negative example, add a clearer positive, re-extract, rate again. The
+   rejection log is the record of that convergence. For the atlas, seeds are tuned during
+   development and frozen with the battery version; re-tuning is a new version. For the
+   labeling service the loop is the product: each criterion set carries a version and a
+   precision per version.
+
    Numbers produced: per criterion, precision = accepted ÷ shown (the extractor's
    calibration, tracked wave over wave); rater agreement per criterion; the reject list
    itself, which is what improves the seeds and the extraction prompt.
