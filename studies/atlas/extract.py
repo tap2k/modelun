@@ -85,7 +85,7 @@ def verify(reply, out, crits):
                 spans[cid].append(rec)
             else:
                 dropped.append({"criterion": cid, "span": sp})
-        if len(spans[cid]) > 1:
+        if len(spans[cid]) > 1 and UNIT[cid] == "phrase":
             spans[cid] = merge_adjacent(reply, spans[cid])
     return spans, dropped
 

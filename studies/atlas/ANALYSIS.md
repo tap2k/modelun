@@ -51,7 +51,8 @@ A customer engagement is a new corpus and a new criteria file. The atlas is one 
    verbatim (case-sensitive, whitespace-normalized) and writes `dropped_spans` for audit.
    Extractor model, prompt, and seeds are recorded in the label file.
 4. Spot-check: a sample of spans per criterion per wave is reviewed by hand; the review
-   file lives beside the labels and the pass rate is published with the wave. Every
+   file lives beside the labels and the pass rate is published with the wave. Verdicts
+   carry the criteria version they were rated against. Every
    verdict is logged as a record: `{model, anchor, i, criterion, span, verdict:
    accept | reject, reviewer, date}`. This file is a training set: accepted and rejected
    spans are positive and negative examples for the criterion. It calibrates the extractor against humans and, as it accrues,
@@ -80,10 +81,12 @@ A customer engagement is a new corpus and a new criteria file. The atlas is one 
 
    **Granularity.** Each criterion has a unit. `item`: one span per distinct point, even
    several inside one sentence; one point elaborated across sentences is one span. `phrase`:
-   the expression itself; a list of them in one clause is one instance. After verification,
-   adjacent spans of one criterion (separated only by whitespace or punctuation) are merged
-   in code into one instance. Raters never merge or split; over-segmentation the merge
-   misses appears as adjacent rejects and is fixed in the criterion.
+   the expression itself; a list of them in one clause is one instance. For `phrase`
+   criteria, adjacent spans (separated only by whitespace or punctuation) are merged in
+   code after verification. For `item` criteria there is no code merge: adjacency cannot
+   distinguish one elaborated point from two points in a row, so the unit instruction to
+   the extractor carries it. Raters never merge or split; over-segmentation appears as
+   adjacent rejects and is fixed in the criterion.
 
    **Seeds tune in the loop.** A rejected span is a reason to sharpen the criterion:
    add it as a negative example, add a clearer positive, re-extract, rate again. The
