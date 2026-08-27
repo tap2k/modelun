@@ -152,10 +152,12 @@ usage block with USD cost, wall-clock latency as served (reasoning included), an
 generation id (time-to-first-token is fetchable from OpenRouter by id); the run prints per-call, per-model, and total cost.
 `--dry-run` verifies slugs against OpenRouter and counts calls without spending.
 
-`views/build.py` writes `views/data.js`; open `views/index.html`. Tabs: Grid (model × anchor,
-mean words and effort per token; click a cell to read), Read (one anchor across models, or one
-model across anchors), Effort per token (per verb), Cost (USD, and effective cost = USD ÷
-visible output, i.e. list price × (1 + effort per token)).
+One viewer in two layers. `views/build_site.py` → `views/site/index.html`: the atlas draft
+(profile table, model entries, scenario sections with receipts), all computed from
+transcripts and labels. `views/build.py` → `views/data.js` for `views/index.html`: the full
+transcripts, one anchor across models or one model across anchors, reached by deep link
+(`?anchor=…&model=…`) from every name and receipt on the site page. `views/rate.html` is the
+verification task, separate.
 
 Pilot panel (0.4): one current mid-tier model per major vendor plus contrasts; flagships
 join at the full wave.

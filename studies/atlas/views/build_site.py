@@ -63,7 +63,7 @@ def receipts(a, crit=None, label=None, n=1, maxlen=420):
             body = "<br>".join(f"“{esc(x)}”" for x in sp) if sp else "<span class=mut>none</span>"
         else:
             body = esc(ss[0]["reply"][:maxlen]) + ("…" if len(ss[0]["reply"]) > maxlen else "")
-        h += f'<div class="r"><b>{esc(short(m))}</b>{(" · " + label(m)) if label else ""}<div>{body}</div></div>'
+        h += f'<div class="r"><b><a href="../index.html?anchor={a}&model={m}">{esc(short(m))}</a></b>{(" · " + label(m)) if label else ""}<div>{body}</div></div>'
     return h + "</div>"
 
 def yesno_grid(a, qs):
@@ -196,8 +196,9 @@ def entry(m):
     if nn: rec.append(("Name for a coffee shop", " · ".join(nn[:6]) + (f" … (+{len(nn)-6})" if len(nn) > 6 else "")))
     if sn: rec.append(("Write a story, three times", " · ".join(sn)))
     if q(m, "resist-a1"): rec.append(("Day-trader", q(m, "resist-a1", crit="tells_them_not_to") or q(m, "resist-a1", crit="questions_to_user") or q(m, "resist-a1")))
-    h = f'<div class="entry"><h3>{esc(short(m))} <span class=mut>· Aug 2026 · pilot</span></h3><p><b>{esc(head)}</b> {esc(" ".join(facts[:3]))}</p><ul>'
-    h += "".join(f"<li><i>{esc(k)}:</i> {esc(v)}</li>" for k, v in rec[:4])
+    h = f'<div class="entry"><h3><a href="../index.html?model={m}">{esc(short(m))}</a> <span class=mut>· Aug 2026 · pilot</span></h3><p><b>{esc(head)}</b> {esc(" ".join(facts[:3]))}</p><ul>'
+    links = {"“I didn’t get the job.”": "console-a2", "Name for a coffee shop": "create-a3", "Write a story, three times": "create-a2", "Day-trader": "resist-a1"}
+    h += "".join(f'<li><i><a href="../index.html?anchor={links.get(k, "")}&model={m}">{esc(k)}</a>:</i> {esc(v)}</li>' for k, v in rec[:4])
     return h + "</ul></div>"
 
 entries = "".join(entry(m) for m in models)
@@ -217,10 +218,11 @@ th{color:var(--mut);font-weight:500}td.num,th.num{text-align:right;white-space:n
 .receipts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:10px 0}
 .r{background:var(--soft);border-radius:6px;padding:8px 10px;font-size:12.5px;line-height:1.4}.r b{display:block;margin-bottom:4px}
 .entry{background:var(--soft);border-radius:8px;padding:12px 16px;margin:10px 0}.entry h3{margin:0 0 6px;font-size:15px}.entry p{margin:0 0 6px}.entry ul{margin:0;padding-left:18px;font-size:13px;color:var(--mut)}.entry li i{color:var(--fg);font-style:normal;font-weight:500}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 nav{font-size:13px;color:var(--mut);margin:8px 0 20px}nav a{color:var(--acc);text-decoration:none;margin-right:10px}
 """
 nav = "".join(f'<a href="#s{i}">{esc(re.sub(r"[“”].*", "", t).strip(": "))}</a>' for i, (t, _, _) in enumerate(sec))
-body = f"<h1>atlas · draft</h1><p class=lead>Pilot panel, {len(models)} models, spec {esc(SPEC['spec_version'])}. Placeholder data; the layout is what is under review.</p><nav>{nav}</nav>"
+body = f"<h1>atlas · draft</h1><p class=lead>Pilot panel, {len(models)} models, spec {esc(SPEC['spec_version'])}. Placeholder data; the layout is what is under review. Every model name and receipt links to the full transcripts.</p><nav>{nav}</nav>"
 body += "".join(f'<h2 id="s{i}">{t}</h2><p class=lead>{d}</p>{h}' for i, (t, d, h) in enumerate(sec))
 (HERE / "site/index.html").write_text(f"<!doctype html><meta charset=utf-8><title>atlas · draft</title><style>{css}</style><main>{body}</main>\n")
 print(f"→ {HERE/'site/index.html'}  {len(sec)} sections")

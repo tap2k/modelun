@@ -27,10 +27,8 @@
 </style>
 <header>
   <h1>atlas · <span id="ver"></span></h1>
-  <span class="tab on" data-v="grid">Grid</span>
-  <span class="tab" data-v="read">Read</span>
-  <span class="tab" data-v="effort">Effort per token</span>
-  <span class="tab" data-v="cost">Cost</span>
+  <a href="site/index.html" style="color:var(--acc);text-decoration:none">← atlas</a>
+  <span class="tab on" data-v="read">Transcripts</span>
   <span id="ctl"></span>
 </header>
 <main id="main"></main>
@@ -41,7 +39,10 @@ const esc = s => (s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'
 const cell = (m, a) => D[m]?.cells?.[a];
 const mean = xs => xs.length ? xs.reduce((p, q) => p + q, 0) / xs.length : 0;
 const f1 = x => x.toFixed(x < 10 ? 2 : 1);
-const state = { view: 'grid', model: M[0], anchor: AN[0].id, mode: 'anchor', sample: '0' };
+const P = new URLSearchParams(location.search);
+const state = { view: 'read', model: P.get('model') && M.includes(P.get('model')) ? P.get('model') : M[0],
+                anchor: P.get('anchor') && AN.some(a => a.id === P.get('anchor')) ? P.get('anchor') : AN[0].id,
+                mode: P.get('model') && !P.get('anchor') ? 'model' : 'anchor', sample: P.get('sample') || 'all' };
 
 function stats(m, a) {
   const c = cell(m, a); if (!c) return null;
@@ -126,10 +127,10 @@ function render() {
   document.getElementById('ver').textContent = A.spec_version;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === state.view));
   document.getElementById('ctl').innerHTML = controls();
-  document.getElementById('main').innerHTML = { grid, read, effort, cost }[state.view]();
+  document.getElementById('main').innerHTML = read();
   const on = (id, k) => { const el = document.getElementById(id); if (el) el.onchange = e => { state[k] = e.target.value; render(); }; };
   on('mode', 'mode'); on('anchor', 'anchor'); on('model', 'model'); on('sample', 'sample');
-  document.querySelectorAll('td.cell').forEach(td => td.onclick = () => { state.view = 'read'; state.mode = 'anchor'; state.anchor = td.dataset.a; render(); document.querySelector(`.card h3`)?.scrollIntoView(); });
+  const hl = P.get('model'); if (hl && state.mode === 'anchor') document.querySelectorAll('.card').forEach(c => { if (c.querySelector('h3')?.textContent.startsWith(hl)) c.style.outline = '2px solid var(--acc)'; });
 }
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => { state.view = t.dataset.v; render(); });
 render();
