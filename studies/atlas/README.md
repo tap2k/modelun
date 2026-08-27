@@ -144,7 +144,9 @@ Edit anchors must contain no error, or interventionism collapses into correction
 
 ## Collection
 
-`collect.py` runs every model in `spec/models.json` against every anchor, single-turn via
+`atlas.py` holds everything shared (spec, panel, transcript and label loading, code-count
+metrics, usage split, span location and verification, the OpenRouter client); every script
+imports it. `collect.py` runs every model in `spec/models.json` against every anchor, single-turn via
 OpenRouter, n samples per cell, no temperature sent (as served). Output is
 `transcripts/<label>.json`, one file per model, merged on rerun (cells already at n are
 skipped). Each sample stores reply, `finish_reason`, the provider-reported model id, OpenRouter's

@@ -1,5 +1,5 @@
 {
-  "version": "0.6.6",
+  "version": "0.6.7",
   "note": "Criteria set for span extraction and subtract-only verification, cut to the measures that showed between-model signal in the pilot or are one-word scenario questions. Each criterion: text, seeds, optional labels, applies_to, screen, unit. Cross-cutting: offers_help, questions_to_user. Scenario: the rest. Style markers (hedges, intensifiers, empathy, self-as-AI, referrals, sycophancy openers) and first/last move are dropped as criteria; modals, exclamation marks, and formatting are code counts.",
   "criteria": [
     {
@@ -305,6 +305,21 @@
       ],
       "applies_to": [
         "resist-a1"
+      ],
+      "screen": "context",
+      "unit": "item",
+      "first_pass": true
+    },
+    {
+      "id": "protagonist",
+      "text": "The main character's name, if the story gives one. Return the name only.",
+      "seeds": [
+        "Mara",
+        "Elias",
+        "Arthur"
+      ],
+      "applies_to": [
+        "create-a2"
       ],
       "screen": "context",
       "unit": "item",

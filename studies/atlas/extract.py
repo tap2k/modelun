@@ -1,93 +1,49 @@
 #!/usr/bin/env python3
 """Criterion + spans extraction over transcripts → labels/<model>.json.
 
-For each sample, one call to the extractor model with the reply and the criteria that
-apply to it (spec/criteria.json: applies_to '*' or a list of anchor ids). The model
-returns JSON {criterion: [{span, label?}]}. Every span is string-verified against the
-reply (whitespace-normalized); unverifiable spans go to dropped_spans. Criteria and seeds
-live in spec/criteria.json and freeze with the battery.
+One call per sample with the reply and the criteria that apply to its anchor
+(spec/criteria.json). The model returns JSON {criterion: [{span, label?}]}. Every span is
+located in the reply (atlas.find_span) and stored with start/end offsets; spans that
+cannot be located go to dropped_spans. Phrase-unit criteria merge adjacent spans.
 
   python extract.py                      # all models, sample 0 only
   python extract.py --samples all
   python extract.py --models claude-sonnet-5 --anchors resist-a1
 """
-import argparse, json, os, re, sys, time
-from pathlib import Path
-import requests
-from dotenv import load_dotenv
+import argparse, json
+from functools import lru_cache
 
-HERE = Path(__file__).resolve().parent
-load_dotenv(HERE.parent.parent / ".env")
-API = "https://openrouter.ai/api/v1/chat/completions"
+import atlas
+
 EXTRACTOR = "google/gemini-3.7-flash"
-CRIT = json.loads((HERE / "spec/criteria.json").read_text())
-PROMPT_VERSION = CRIT["version"]
-# id → (applies_to, text, seeds, labels); the criteria file is the source of truth
-CRITERIA = {c["id"]: (c["applies_to"], c["text"], c["seeds"], c.get("labels")) for c in CRIT["criteria"]}
-UNIT = {c["id"]: c.get("unit", "phrase") for c in CRIT["criteria"]}
+CRITERIA, VERSION = atlas.criteria()
 
 
-def norm(s):
-    return re.sub(r"\s+", " ", s.replace("’", "'").replace("“", '"').replace("”", '"')).strip().lower()
-
-
-def build_prompt(reply, crits):
+@lru_cache(maxsize=None)
+def prompt_prefix(anchor_id):
+    crits = [c for c in CRITERIA.values() if atlas.applies(c, anchor_id)]
     lines = ["Extract spans from the REPLY below. For each criterion, return every span in the reply that meets it, copied verbatim (exact characters, no paraphrase). If none, return an empty list.",
              "Units: for criteria marked [item], return one span per distinct point; several points inside one sentence are separate spans, and one point elaborated over several sentences is ONE span covering all of them. For criteria marked [phrase], return the expression itself; a list of such expressions in one clause is one span.",
-             "Return only JSON: {\"<criterion_id>\": [{\"span\": \"...\", \"label\": \"...\"}]} — include \"label\" only where the criterion lists labels.", "", "CRITERIA:"]
-    for cid, (_, text, seeds, labels) in crits.items():
-        lines.append(f"- {cid} [{UNIT[cid]}]: {text} Examples: {'; '.join(seeds)}." + (f" Labels: {', '.join(labels)}." if labels else ""))
-    lines += ["", "REPLY:", reply]
-    return "\n".join(lines)
+             'Return only JSON: {"<criterion_id>": [{"span": "...", "label": "..."}]} — include "label" only where the criterion lists labels.', "", "CRITERIA:"]
+    for c in crits:
+        lines.append(f"- {c['id']} [{c.get('unit', 'phrase')}]: {c['text']} Examples: {'; '.join(c['seeds'])}."
+                     + (f" Labels: {', '.join(c['labels'])}." if c.get("labels") else ""))
+    return tuple(c["id"] for c in crits), "\n".join(lines) + "\n\nREPLY:\n"
 
 
-def call(prompt, retries=3):
-    last = None
-    for _ in range(retries):
-        try:
-            r = requests.post(API, headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                              json={"model": EXTRACTOR, "messages": [{"role": "user", "content": prompt}],
-                                    "response_format": {"type": "json_object"}, "usage": {"include": True}}, timeout=180)
-            r.raise_for_status(); j = r.json()
-            return json.loads(j["choices"][0]["message"]["content"]), j.get("usage", {}).get("cost", 0)
-        except Exception as e:
-            last = e; time.sleep(3)
-    raise last
-
-
-def merge_adjacent(reply, spans):
-    """Spans of one criterion separated only by whitespace/punctuation in the reply become one instance."""
-    nr = norm(reply); out = []
-    for rec in sorted(spans, key=lambda r: nr.find(norm(r["span"]))):
-        if out:
-            a = nr.find(norm(out[-1]["span"])); b = nr.find(norm(rec["span"]))
-            gap = nr[a + len(norm(out[-1]["span"])):b] if b >= a else "x"
-            if b >= a and re.fullmatch(r"[\s\.,;:!?\-–—*)\]\"']*", gap):
-                # take the verbatim stretch from the original reply
-                i = reply.lower().find(out[-1]["span"].lower()); j = reply.lower().find(rec["span"].lower(), i)
-                if i >= 0 and j >= i:
-                    out[-1] = {**out[-1], "span": reply[i:j + len(rec["span"])]}
-                    continue
-        out.append(rec)
-    return out
-
-
-def verify(reply, out, crits):
-    nr = norm(reply); spans, dropped = {}, []
-    for cid in crits:
-        spans[cid] = []
-        for item in out.get(cid, []) or []:
-            if not isinstance(item, dict) or not item.get("span"): continue
-            sp = item["span"].strip()
-            if norm(sp) and norm(sp) in nr:
-                rec = {"span": sp}
-                if crits[cid][3] and item.get("label") in crits[cid][3]: rec["label"] = item["label"]
-                spans[cid].append(rec)
-            else:
-                dropped.append({"criterion": cid, "span": sp})
-        if len(spans[cid]) > 1 and UNIT[cid] == "phrase":
-            spans[cid] = merge_adjacent(reply, spans[cid])
-    return spans, dropped
+def extract_one(reply, anchor_id):
+    ids, prefix = prompt_prefix(anchor_id)
+    j = atlas.post({"model": EXTRACTOR, "messages": [{"role": "user", "content": prefix + reply}],
+                    "response_format": {"type": "json_object"}, "usage": {"include": True}})
+    out = atlas.parse_json(j["choices"][0]["message"]["content"])
+    spans, dropped = {}, []
+    for cid in ids:
+        kept, drop = atlas.verify_spans(reply, out.get(cid), CRITERIA[cid].get("labels"))
+        if CRITERIA[cid].get("unit", "phrase") == "phrase" and len(kept) > 1:
+            kept = atlas.merge_adjacent(reply, kept)
+        spans[cid] = kept
+        dropped += [{"criterion": cid, "span": s} for s in drop]
+    return spans, dropped, (j.get("usage") or {}).get("cost", 0) or 0
 
 
 def main():
@@ -95,30 +51,31 @@ def main():
     ap.add_argument("--models", default=None); ap.add_argument("--anchors", default=None)
     ap.add_argument("--samples", default="0", help="'0' (default) or 'all'")
     a = ap.parse_args()
-    models = a.models.split(",") if a.models else [p.stem for p in sorted((HERE / "transcripts").glob("*.json"))]
+    T = atlas.transcripts()
+    models = a.models.split(",") if a.models else list(T)
     anchors = set(a.anchors.split(",")) if a.anchors else None
+    atlas.LABELS.mkdir(exist_ok=True)
     total = 0.0
     for m in models:
-        d = json.loads((HERE / "transcripts" / f"{m}.json").read_text())
-        (HERE / "labels").mkdir(exist_ok=True)
-        lp = HERE / "labels" / f"{m}.json"
+        d = T[m]
+        lp = atlas.LABELS / f"{m}.json"
         L = json.loads(lp.read_text()) if lp.exists() else {"model": m, "slug": d["slug"], "spec_version": d["spec_version"],
-                                                           "extractor": {"model": EXTRACTOR, "prompt_version": PROMPT_VERSION}, "samples": []}
+                                                           "extractor": {"model": EXTRACTOR, "criteria_version": VERSION}, "samples": []}
         done = {(s["anchor"], s["i"]) for s in L["samples"]}
         for aid, c in d["cells"].items():
-            if anchors and aid not in anchors: continue
+            if anchors and aid not in anchors:
+                continue
             for i, s in enumerate(c["samples"]):
-                if a.samples != "all" and i != 0: continue
-                if (aid, i) in done or not s.get("reply"): continue
-                crits = {k: v for k, v in CRITERIA.items() if v[0] == "*" or aid in v[0]}
+                if (a.samples != "all" and i != 0) or (aid, i) in done or not s.get("reply"):
+                    continue
                 try:
-                    out, cost = call(build_prompt(s["reply"], crits)); total += cost
-                    spans, dropped = verify(s["reply"], out, crits)
+                    spans, dropped, cost = extract_one(s["reply"], aid)
+                    total += cost
                     L["samples"].append({"anchor": aid, "i": i, "spans": spans, "dropped_spans": dropped})
                     print(f"  {m:20} {aid:14} #{i}  spans={sum(len(v) for v in spans.values()):3} dropped={len(dropped)}  ${cost:.4f}")
                 except Exception as e:
                     print(f"  {m:20} {aid:14} #{i}  FAILED: {e}")
-                lp.write_text(json.dumps(L, indent=2, ensure_ascii=False) + "\n")
+            lp.write_text(json.dumps(L, indent=2, ensure_ascii=False) + "\n")   # once per cell
     print(f"total ${total:.3f}")
 
 

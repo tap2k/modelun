@@ -1,15 +1,13 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>atlas — rate spans</title>
+<link rel="stylesheet" href="atlas.css">
 <style>
-  :root { --bg:#fff; --fg:#1a1a1a; --mut:#666; --line:#e3e3e3; --acc:#2a5db0; --soft:#f5f6f8; --hi:#fff3b0; --x:#ffd6d6; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141518; --fg:#e8e8e8; --mut:#9a9a9a; --line:#2c2e33; --acc:#7aa2e8; --soft:#1d1f24; --hi:#5a4d10; --x:#5a2020; } }
-  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 -apple-system, system-ui, sans-serif; }
-  header { display:flex; gap:16px; align-items:baseline; padding:10px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); }
-  header b { font-size:15px; } header span { color:var(--mut); }
-  main { max-width:900px; margin:0 auto; padding:20px; }
+  main { max-width:900px; }
   .crit { border-left:3px solid var(--acc); background:var(--soft); padding:10px 14px; margin-bottom:16px; }
   .crit b { display:block; margin-bottom:4px; } .crit small { color:var(--mut); }
+  .stim { color:var(--mut); font-size:13px; margin:0 0 10px; padding:8px 12px; border:1px dashed var(--line); border-radius:6px; white-space:pre-wrap; }
+  .card .stim { margin:6px 0 0; padding:4px 8px; }
   .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; }
   .card { border:1px solid var(--line); border-radius:6px; padding:10px 12px; cursor:pointer; user-select:none; background:var(--bg); }
   .card.x { background:var(--x); text-decoration:line-through; color:var(--mut); }
@@ -18,17 +16,14 @@
   mark { background:var(--hi); color:inherit; cursor:pointer; padding:1px 2px; border-radius:2px; }
   mark.x { background:var(--x); text-decoration:line-through; }
   mark sup { font-size:10px; color:var(--mut); margin-left:2px; }
-  .bar { display:flex; gap:10px; justify-content:space-between; align-items:center; margin-top:16px; }
-  button { font:inherit; padding:8px 16px; border:1px solid var(--line); border-radius:6px; background:var(--soft); color:var(--fg); cursor:pointer; }
-  button.primary { background:var(--acc); color:#fff; border-color:var(--acc); }
-  .hint { color:var(--mut); font-size:13px; }
+  .bar { display:flex; gap:10px; justify-content:space-between; align-items:center; margin-top:16px; height:auto; background:none; }
   textarea { width:100%; height:200px; font:12px monospace; }
 </style>
-<header><b>atlas · rate</b><span id="prog"></span><span id="who"></span></header>
+<header><b>atlas · rate</b><span id="prog" class="mut"></span><span id="who" class="mut"></span></header>
 <main id="main"></main>
 <script src="rate_data.js"></script>
 <script>
-const S = window.RATE.screens; let k = 0; const verdicts = [];
+const R = window.RATE, S = R.screens; let k = 0; const verdicts = [];
 const esc = s => (s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 let reviewer = ''; try { reviewer = localStorage.getItem('atlas_reviewer') || ''; } catch {}
 if (!reviewer) { reviewer = prompt('Your name (goes in the verdict log):') || 'anon'; try { localStorage.setItem('atlas_reviewer', reviewer); } catch {} }
@@ -36,15 +31,15 @@ document.getElementById('who').textContent = reviewer;
 const today = new Date().toISOString().slice(0, 10);
 
 function highlight(reply, spans) {
-  // mark each span's first verbatim occurrence (whitespace-normalized match falls back to plain)
-  let html = esc(reply); const placed = [];
-  spans.forEach((sp, i) => {
-    const e = esc(sp.span); const at = html.indexOf(e);
-    if (at < 0) { placed.push(false); return; }
-    html = html.slice(0, at) + `<mark data-i="${i}">` + e + (sp.label ? `<sup>${sp.label}</sup>` : '') + '</mark>' + html.slice(at + e.length);
-    placed.push(true);
-  });
-  return { html, placed };
+  // spans carry start/end offsets from extraction; render by slicing, so what is rated is what was verified
+  const sorted = spans.map((sp, i) => ({ ...sp, i })).filter(sp => sp.start != null).sort((a, b) => a.start - b.start);
+  let html = '', pos = 0;
+  for (const sp of sorted) {
+    if (sp.start < pos) continue;                       // overlapping span: skip, still rated via its card index
+    html += esc(reply.slice(pos, sp.start)) + `<mark data-i="${sp.i}">${esc(reply.slice(sp.start, sp.end))}${sp.label ? `<sup>${esc(sp.label)}</sup>` : ''}</mark>`;
+    pos = sp.end;
+  }
+  return html + esc(reply.slice(pos));
 }
 
 function render() {
@@ -54,10 +49,9 @@ function render() {
   let h = `<div class="crit"><b>${s.criterion.replace(/_/g, ' ')}</b>${esc(s.text)}<br><small>examples: ${s.seeds.map(esc).join(' · ')}</small></div>`;
   if (s.type === 'lineup') {
     h += `<p class="hint">Click any that does not fit. Then Next.</p><div class="cards">` +
-      s.cards.map((c, i) => `<div class="card" data-i="${i}">${esc(c.span)}${c.label ? ` <em>(${esc(c.label)})</em>` : ''}<small>${c.model} · ${c.anchor}</small><div class="stim">${esc((window.RATE.prompts[c.anchor] || '').slice(0, 140))}</div></div>`).join('') + '</div>';
+      s.cards.map((c, i) => `<div class="card" data-i="${i}">${esc(c.span)}${c.label ? ` <em>(${esc(c.label)})</em>` : ''}<small>${c.model} · ${c.anchor}</small><div class="stim">${esc((R.prompts[c.anchor] || '').slice(0, 140))}</div></div>`).join('') + '</div>';
   } else {
-    const { html } = highlight(s.reply, s.spans);
-    h += `<div class="stim"><b>${s.anchor}</b> · ${esc(window.RATE.prompts[s.anchor] || '')}</div><p class="hint">${s.model} · ${s.anchor} #${s.i}. Click any highlight that does not fit${s.spans.some(x => x.label) ? ' (or whose label is wrong)' : ''}. Then Next.</p><div class="reply">${html}</div>`;
+    h += `<div class="stim"><b>${s.anchor}</b> · ${esc(R.prompts[s.anchor] || '')}</div><p class="hint">${s.model} · ${s.anchor} #${s.i}. Click any highlight that does not fit${s.spans.some(x => x.label) ? ' (or whose label is wrong)' : ''}. Then Next.</p><div class="reply">${highlight(s.reply, s.spans)}</div>`;
   }
   h += `<div class="bar"><span class="hint">click to strike · click again to restore</span><button class="primary" id="next">Next</button></div>`;
   m.innerHTML = h;
@@ -65,9 +59,9 @@ function render() {
   document.getElementById('next').onclick = () => {
     const struck = new Set([...m.querySelectorAll('.card.x, mark.x')].map(el => +el.dataset.i));
     const units = s.type === 'lineup' ? s.cards : s.spans.map(sp => ({ ...sp, model: s.model, anchor: s.anchor, i: s.i }));
-    units.forEach((u, i) => verdicts.push({ model: u.model, anchor: u.anchor, i: u.i, criterion: s.criterion, span: u.span, label: u.label ?? null,
-      verdict: struck.has(i) ? 'reject' : 'accept', reviewer, date: today, prompt_version: window.RATE.prompt_version }));
-    const batch = verdicts.slice(-units.length);
+    const batch = units.map((u, i) => ({ model: u.model, anchor: u.anchor, i: u.i, criterion: s.criterion, span: u.span, label: u.label ?? null,
+      verdict: struck.has(i) ? 'reject' : 'accept', reviewer, date: today, criteria_version: R.criteria_version }));
+    verdicts.push(...batch);
     fetch('/verdicts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(batch) }).catch(() => {});
     k++; render(); window.scrollTo(0, 0);
   };
@@ -77,8 +71,8 @@ function finish() {
   const n = verdicts.length, r = verdicts.filter(v => v.verdict === 'reject').length;
   const per = {}; verdicts.forEach(v => { per[v.criterion] = per[v.criterion] || { n: 0, r: 0 }; per[v.criterion].n++; if (v.verdict === 'reject') per[v.criterion].r++; });
   const json = JSON.stringify(verdicts, null, 1);
-  document.getElementById('main').innerHTML = `<h2>Done</h2><p>${n} spans, ${r} rejected. Precision ${((n - r) / n * 100).toFixed(0)}%.</p>
-    <table>${Object.entries(per).map(([c, x]) => `<tr><td>${c}</td><td style="text-align:right">${x.n}</td><td style="text-align:right">${((x.n - x.r) / x.n * 100).toFixed(0)}%</td></tr>`).join('')}</table>
+  document.getElementById('main').innerHTML = `<h2>Done</h2><p>${n} spans, ${r} rejected. Precision ${n ? ((n - r) / n * 100).toFixed(0) : 0}%.</p>
+    <table>${Object.entries(per).map(([c, x]) => `<tr><td>${c}</td><td class=num>${x.n}</td><td class=num>${((x.n - x.r) / x.n * 100).toFixed(0)}%</td></tr>`).join('')}</table>
     <p>Verdicts were posted to <code>studies/atlas/verdicts/${reviewer}-${today}.jsonl</code> as you went. Fallback: <a id="dl" download="verdicts-${reviewer}-${today}.json">download</a>.</p><textarea>${esc(json)}</textarea>`;
   document.getElementById('dl').href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
 }

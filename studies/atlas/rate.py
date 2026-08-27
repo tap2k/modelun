@@ -5,26 +5,29 @@
   python rate.py                      # then open http://localhost:8765/rate.html
 """
 import json, sys
-from datetime import date
+from collections import defaultdict
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-VERDICTS = HERE / "verdicts"
+import atlas
+
+VERDICTS = atlas.HERE / "verdicts"
 
 
 class H(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
-        super().__init__(*a, directory=str(HERE / "views"), **k)
+        super().__init__(*a, directory=str(atlas.HERE / "views"), **k)
 
     def do_POST(self):
         if self.path != "/verdicts":
             self.send_error(404); return
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         VERDICTS.mkdir(exist_ok=True)
+        by_file = defaultdict(list)
         for v in body:
-            f = VERDICTS / f"{v['reviewer']}-{v['date']}.jsonl"
-            with f.open("a") as fh: fh.write(json.dumps(v, ensure_ascii=False) + "\n")
+            by_file[f"{v['reviewer']}-{v['date']}.jsonl"].append(json.dumps(v, ensure_ascii=False) + "\n")
+        for name, lines in by_file.items():
+            with (VERDICTS / name).open("a") as fh:
+                fh.writelines(lines)
         self.send_response(204); self.end_headers()
 
     def log_message(self, *a): pass
