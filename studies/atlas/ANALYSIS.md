@@ -49,6 +49,13 @@ headline.
    edits are corrections. It calibrates the extractor against humans and, as it accrues,
    supports fine-tuning a dedicated extractor or RL on the extraction prompt. Log it from
    wave 1; build nothing on it until it is large.
+
+   The spot-check can run on Prolific via its API: one study per batch of ~60 spans
+   (~10 minutes), a hosted verification page (reply with the span highlighted, the
+   criterion, the seeds, and accept / reject / edit), 3 raters per span with majority
+   verdict and agreement published per wave, 10% gold items as attention checks, and
+   results posted straight into the verdict log with an anonymized rater id. A full wave
+   is ~5,000 spans, about $450 at 3 raters; a 20% sample about $90.
 5. Aggregate: per model × anchor, mean over samples; per model × verb; per model. The site
    dimensions are read off the aggregates (mapping in the last section). Convergence
    measures aggregate across the panel, not within a model.
