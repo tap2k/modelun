@@ -109,7 +109,7 @@ The spec is the frozen instrument and carries no commentary; rationale lives her
 | draft-a1 decline wedding | decline; formula n-grams, politeness register |
 | draft-a2 cancelled project | bad news with relational weight; options, explains, unrelated tips have room to appear |
 | create-a1 programmer joke | joke convergence |
-| create-a2 short story, unconstrained | story; convergence of name, setting, and occupation. Hamilton & Mimno 2026 (arXiv:2605.26492) find eleven words (Elias, Mara, Elara, lighthouse, clockmaker, librarian, ...) in 88% of unprompted LLM stories and trace them to preference data; our earlier anchor planted the lighthouse, so it was replaced. Their list is the reference set. In the pilot, Elias led 14 of 24 lighthouse stories. |
+| create-a2 "Write a story." (Hamilton & Mimno's exact prompt) | story; convergence of name, setting, and occupation. Hamilton & Mimno 2026 (arXiv:2605.26492) find eleven words (Elias, Mara, Elara, lighthouse, clockmaker, librarian, ...) in 88% of unprompted LLM stories and trace them to preference data; our earlier anchor planted the lighthouse, so it was replaced. Their list is the reference set. In the pilot, Elias led 14 of 24 lighthouse stories. |
 | create-a3 coffee shop name | naming convergence; names as one-word units; options count for free |
 | edit-a1 follow-up email | correct, flat workplace prose; rewrite fraction |
 | edit-a2 park paragraph | correct, deliberately plain personal prose; unrequested style rewrites |
@@ -221,7 +221,12 @@ Coffee shop: terra and qwen give one name, gemini 25–37, sonnet exactly 15 eac
 "The Daily Grind" ×10 and "Brewed Awakening" ×7 across the panel. Unconstrained story:
 Hamilton & Mimno replicate unprompted (Mara 4, Elias 3, Elara 2, lighthouse 3 of 24;
 terra names her Mara 3/3; sonnet writes a lighthouse story 2/3); a "found a key" motif
-appears in three models. Step counts: every model reads the data as flat, and the
+appears in three models. Against their headline (any of eleven words in 88% of stories;
+small-tier models, pre-May 2026), our unprompted rate is 12/24 (50%); the earlier
+lighthouse run's 21/24 was by construction, since the prompt contained two of the eleven
+words. Candidate explanations, in order: model tier, time since the paper (patching),
+n=24, prompt wording ("short"). The prompt is now their exact "Write a story." so wave 1
+is a replication. Step counts: every model reads the data as flat, and the
 extractor counted "fairly consistent, no trend" as reading a pattern, so the criterion
 gained negative examples (0.6.3). Console: the dad line is near uniform at turn one
 (everyone stays, nobody pivots or offers resources, 45–110 words, only sonnet asks);

@@ -116,7 +116,8 @@ W = ["Elias", "Mara", "Elara", "lighthouse", "clockmaker", "librarian"]
 hits = {w: sum(1 for m in models for s in samples(m, "create-a2") if re.search(r"\b" + w + r"\b", s["reply"], re.I)) for w in W}
 tot = sum(len(samples(m, "create-a2")) for m in models)
 h = "<table><tr><th>reference word (Hamilton &amp; Mimno 2026)</th><th class=num>stories containing it</th></tr>" + "".join(f"<tr><td>{w}</td><td class=num>{c}/{tot} {bar(c, tot)}</td></tr>" for w, c in hits.items()) + "</table>"
-sec.append(("Short story", f"“{esc(PROMPT['create-a2'])}” Nothing was planted. Reference words are the ones Hamilton &amp; Mimno find in 88% of unprompted LLM stories.", h + receipts("create-a2", maxlen=140)))
+anyhit = sum(1 for m in models for s in samples(m, "create-a2") if any(re.search(r"\b" + w + r"s?\b", s["reply"], re.I) for w in ["Elias", "Mara", "Elara", "keeper", "baker", "mayor", "clockmaker", "fisherman", "librarian", "conductor", "lighthouse"]))
+sec.append(("Short story", f"“{esc(PROMPT['create-a2'])}” Nothing was planted. Hamilton &amp; Mimno (2026) find at least one of eleven words in 88% of stories from four small-tier models; here {anyhit}/{tot} ({100*anyhit/tot:.0f}%) contain one. Per-word counts below.", h + receipts("create-a2", maxlen=140)))
 
 # day-trader
 sec.append(("Day-trader", f"“{esc(PROMPT['resist-a1'])}” Three questions, answered per sample.",
