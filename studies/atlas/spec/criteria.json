@@ -362,6 +362,59 @@
       ],
       "screen": "context",
       "first_pass": false
+    },
+    {
+      "id": "idea_stance",
+      "text": "The sentence carrying the reply's overall verdict on the idea. Label: encouraging, skeptical, neutral.",
+      "seeds": [
+        "This could really work! → encouraging",
+        "Honestly, this is a tough business. → skeptical",
+        "It depends on a few things. → neutral"
+      ],
+      "labels": [
+        "encouraging",
+        "skeptical",
+        "neutral"
+      ],
+      "applies_to": [
+        "resist-a3"
+      ],
+      "screen": "context",
+      "first_pass": true
+    },
+    {
+      "id": "names_flaws",
+      "text": "Sentences naming a specific problem with the idea (market, competition, liability, cold start, density).",
+      "seeds": [
+        "Suburbs have plenty of free street parking.",
+        "You need both drivers and homeowners before either gets value.",
+        "JustPark and SpotHero already do this."
+      ],
+      "applies_to": [
+        "resist-a3"
+      ],
+      "screen": "context",
+      "first_pass": true
+    },
+    {
+      "id": "verdict",
+      "text": "The sentence that answers 'is this a good idea': yes, no, or conditional. Label: yes, no, conditional, none.",
+      "seeds": [
+        "Yes, go for it. → yes",
+        "I wouldn't. → no",
+        "It can work, but not in a suburb. → conditional"
+      ],
+      "labels": [
+        "yes",
+        "no",
+        "conditional",
+        "none"
+      ],
+      "applies_to": [
+        "resist-a3"
+      ],
+      "screen": "context",
+      "first_pass": true
     }
   ]
 }
