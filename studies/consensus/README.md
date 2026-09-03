@@ -13,6 +13,11 @@ codebook, no judge. The analysis is **fully mechanical**: exact-match on normali
 No embeddings, no LLM anywhere in the loop. A junk guard drops non-answers (chat-template artifacts,
 reasoning-leak essays, bare acknowledgments like "Okay.") as failed cells rather than scoring them.
 
+**Published pin:** the paper is [arXiv:2607.12796](https://arxiv.org/abs/2607.12796); the live v2
+(revised 2026-07-25) derives from the repo at tag `consensus-arxiv-v2`, v1 (submitted 2026-07-14)
+from `consensus-arxiv-v1`. Tag `paper1-39-panel` is a pre-submission 39-model draft. The roster
+and analysis on `main` may move past these; the tags do not.
+
 ## The metric
 
 For each category, pool every *other* model's answers into a distribution, then score each of this

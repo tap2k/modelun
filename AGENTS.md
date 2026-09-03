@@ -44,6 +44,10 @@ columns comparable.
   intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
 
 ## Provenance & secrets
+- **Published papers are pinned by git tag**, not by `main`: `consensus-arxiv-v1`/`-v2` (plus the
+  pre-submission `paper1-39-panel`), `structured-arxiv-v1`, `suggestibility-arxiv-v1`. Rosters and analyses on `main`
+  may grow past them (new models join the live panel); never move or delete a tag. A paper revision
+  gets a new tag.
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
 - `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored** (the
   curated basis is committed under `studies/conduct/bottom-up/`). The published data lives in `studies/conduct/data/benchmark/`. Never

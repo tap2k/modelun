@@ -16,6 +16,7 @@ Sharma 2023 (feedback sycophancy — the own-baseline, counterbalanced design we
 Cornell abstention line (the opposite pole: behavior when there is *no* good answer).
 
 Paper published ([arXiv:2607.23976](https://arxiv.org/abs/2607.23976), source in `paper/main.tex`).
+Published pin: tag `suggestibility-arxiv-v1`; `main` may move past it, the tag does not.
 
 ## The instrument (ask vs plant)
 

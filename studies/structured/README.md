@@ -159,5 +159,6 @@ doubles as the format-capability scorecard.
 Status: findings frozen (2026-07-11; numbers refreshed 2026-07-16 with the echo guard);
 committed. Data collected against the 44-model roster (2026-07-10). Paper published
 ([arXiv:2607.18476](https://arxiv.org/abs/2607.18476), source in `paper/main.tex`); blog post
-published on convovo.ai ("Give me JSON, Hold the Mustard"). Depends on `../consensus/` for the
+published on convovo.ai ("Give me JSON, Hold the Mustard"). Published pin: tag `structured-arxiv-v1`
+(also pins the `../consensus/` transcripts and roster this study reads). Depends on `../consensus/` for the
 stimulus, roster, baseline transcripts, and `probe_lib.py`.
