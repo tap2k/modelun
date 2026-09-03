@@ -15,7 +15,7 @@ reasoning-leak essays, bare acknowledgments like "Okay.") as failed cells rather
 
 **Published pin:** the paper is [arXiv:2607.12796](https://arxiv.org/abs/2607.12796); the live v2
 (revised 2026-07-25) derives from the repo at tag `consensus-arxiv-v2`, v1 (submitted 2026-07-14)
-from `consensus-arxiv-v1`. Tag `paper1-39-panel` is a pre-submission 39-model draft. The roster
+from `consensus-arxiv-v1`. The roster
 and analysis on `main` may move past these; the tags do not.
 
 ## The metric
