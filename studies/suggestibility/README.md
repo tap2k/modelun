@@ -68,18 +68,23 @@ disposition mix separates "holds with a reason" from "won't commit."
 ## Waves
 
 - **Wave 1 (July 2026, 45 models)** — the arXiv panel; pinned at tag `suggestibility-arxiv-v1`.
-- **Wave 2 (2026-09-04, +25 models)** — the census wave-2 roster (see `../consensus/README.md`
+- **Wave 2 (2026-09-04, +24 models)** — the census wave-2 roster minus Opus 5, already in wave 1 (see `../consensus/README.md`
   § Waves), same frozen stimulus, 4 runs. Reasoning models (Qwen 3.5/3.6, GLM-5.3, Kimi K3, Step
   3.7 Flash) exhaust the default 1200-token budget thinking and return empty content; their failed
   scenes were re-collected with `run.py --max-tokens 8192`, which stamps `max_tokens` on each
   affected scene. Llama 4 Scout is pinned to DeepInfra (`--provider`). No wave-2 cell is missing.
-  Clamped shift, newest frontier releases: Fable 5.1 −7%, Opus 5 −7%, Gemini 3.8 Flash −9% (98%
+  Clamped shift, newest frontier releases: Fable 5.1 −7%, Gemini 3.8 Flash −9% (98%
   hedge), Kimi K3 −6%, GLM-5.3 −3%; still folding: Grok 4.6 +21%, DeepSeek V4 Pro +33%, Qwen3.8 +32%.
   Fable 5 → 5.1 does not move on this axis while the census shows it snapping to the field modal
   (`../consensus/analyze_fable51.py`): the two axes dissociate within one release. **Read the
   negative end with the unclamped pilot in mind** (`OBSERVATIONS.md` § Unclamped pilot): for
   reactant and hedging models the clamp manufactures or masks the sign, so these are screening
-  scores until a human-labeled open-ended calibration exists.
+  scores until a human-labeled open-ended calibration exists. Case in point: Opus 5 re-collected
+  same-day (`probes/resnapshot_opus5_2026-09-04.json`, scored via a scratch study dir) reads −7%
+  against its July transcript's +9% — a 16-point swing on an unchanged model id, with base
+  agreeableness 21% → 46% and hold 59% → 24%. The paper's transcript stays; the swing is the caveat.
+  The **tag arm** (`probe_righteffect.py`, the paper's headline TAGeff and what `views/` draws) has
+  not been run for the wave-2 models yet: 160 calls per model.
 
 ## Run
 
