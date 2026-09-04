@@ -94,10 +94,11 @@ def iter_scenes(spec):
                 yield reg["name"], scene
 
 
-def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None):
+def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None):
     label = slug.split("/")[-1]
     sp = spec.get("system_prompt")
-    max_tokens = spec.get("max_tokens", 1200)
+    spec_max = spec.get("max_tokens", 1200)
+    max_tokens = max_tokens or spec_max
     # Version key follows the spec shape: flat → spec_version, legacy → script_version.
     version = spec.get("spec_version") or spec["script_version"]
     version_key = "spec_version" if "spec_version" in spec else "script_version"
@@ -106,7 +107,7 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         data = json.loads(path.read_text())
     else:
         data = {"model": label, "slug": slug, version_key: version,
-                "temperature": temperature, "max_tokens": max_tokens, "scenes": {}}
+                "temperature": temperature, "max_tokens": spec_max, "scenes": {}}
     if provider:
         data["provider"] = provider          # pinned serving host (allow_fallbacks=false); absent = OpenRouter's choice
 
@@ -125,6 +126,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
                  "run_date": run_date, "runs": runs_out}
         if reg_name is not None:           # legacy shape carries the register tag through
             entry["register"] = reg_name
+        if max_tokens != spec_max:         # a raised budget (reasoning models that exhaust the default) is recorded on the cell
+            entry["max_tokens"] = max_tokens
         data["scenes"][scene["id"]] = entry
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -143,6 +146,7 @@ def main():
     ap.add_argument("--out", default=None, help="dataset dir to merge into (default: <study>/transcripts)")
     ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
     ap.add_argument("--provider", default=None, help="pin the OpenRouter serving provider (no fallbacks), stamped in the file header")
+    ap.add_argument("--max-tokens", type=int, default=None, help="override the spec's output budget for this run; stamped on each scene it applies to")
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
@@ -154,7 +158,7 @@ def main():
     out_dir = Path(args.out) if args.out else study.transcripts_dir
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
-        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider)
+        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens)
 
 
 if __name__ == "__main__":
