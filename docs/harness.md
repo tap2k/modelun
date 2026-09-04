@@ -59,6 +59,7 @@ never rewrites the file.
   "spec_version": "<frozen stimulus version>",   // bumping it invalidates comparability
   "temperature": 1.0,
   "max_tokens": 1200,
+  "provider": "DeepInfra",           // optional: serving host pinned via run.py --provider (no fallbacks); absent = router's choice
   "scenes": {
     "<scene_id>": {
       "run_date": "YYYY-MM-DD",

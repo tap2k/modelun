@@ -33,7 +33,7 @@ load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
 
 
-def chat(slug, messages, temperature, max_tokens, retries=2):
+def chat(slug, messages, temperature, max_tokens, provider=None, retries=2):
     """One turn. 60s timeout + a retry so a slow/hung route fails fast instead of blocking the batch."""
     last = None
     for attempt in range(retries):
@@ -41,7 +41,8 @@ def chat(slug, messages, temperature, max_tokens, retries=2):
             r = requests.post(
                 API,
                 headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
+                json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": max_tokens,
+                      **({"provider": {"order": [provider], "allow_fallbacks": False}} if provider else {})},
                 timeout=60,
             )
             r.raise_for_status()
@@ -55,7 +56,7 @@ def chat(slug, messages, temperature, max_tokens, retries=2):
     raise last
 
 
-def play(slug, scene, temperature, system_prompt, max_tokens):
+def play(slug, scene, temperature, system_prompt, max_tokens, provider=None):
     """Return [{u, reply}] across the scene's escalating user turns (+ optional seed).
 
     `system_prompt` may be overridden per-scene (`scene["system_prompt"]`); the spec-level
@@ -70,7 +71,7 @@ def play(slug, scene, temperature, system_prompt, max_tokens):
     panels = []
     for line in scene["turns"]:
         messages.append({"role": "user", "content": line})
-        reply = chat(slug, messages, temperature, max_tokens)
+        reply = chat(slug, messages, temperature, max_tokens, provider)
         messages.append({"role": "assistant", "content": reply})
         panels.append({"u": line, "reply": reply})
     return panels
@@ -93,7 +94,7 @@ def iter_scenes(spec):
                 yield reg["name"], scene
 
 
-def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
+def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None):
     label = slug.split("/")[-1]
     sp = spec.get("system_prompt")
     max_tokens = spec.get("max_tokens", 1200)
@@ -106,6 +107,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
     else:
         data = {"model": label, "slug": slug, version_key: version,
                 "temperature": temperature, "max_tokens": max_tokens, "scenes": {}}
+    if provider:
+        data["provider"] = provider          # pinned serving host (allow_fallbacks=false); absent = OpenRouter's choice
 
     for reg_name, scene in iter_scenes(spec):
         if scene_ids and scene["id"] not in scene_ids:
@@ -113,7 +116,7 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date):
         runs_out = []
         for run in range(runs):
             try:
-                runs_out.append(play(slug, scene, temperature, sp, max_tokens))
+                runs_out.append(play(slug, scene, temperature, sp, max_tokens, provider))
                 print(f"  [{label}] {scene['id']} run {run} ✓")
             except Exception as e:
                 runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
@@ -139,6 +142,7 @@ def main():
     ap.add_argument("--scenes", default=None, help="comma-separated scene ids to run (default: all)")
     ap.add_argument("--out", default=None, help="dataset dir to merge into (default: <study>/transcripts)")
     ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
+    ap.add_argument("--provider", default=None, help="pin the OpenRouter serving provider (no fallbacks), stamped in the file header")
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
@@ -150,7 +154,7 @@ def main():
     out_dir = Path(args.out) if args.out else study.transcripts_dir
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
-        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date)
+        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider)
 
 
 if __name__ == "__main__":

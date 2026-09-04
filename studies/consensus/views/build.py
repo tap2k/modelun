@@ -27,13 +27,15 @@ from analyze import load, analyze  # noqa: E402
 # chronological order within lineages, for the generation-walk view (release order,
 # maintained by hand — models.json carries no generation field)
 WALKS = {
-    "claude": ["claude-3-haiku", "claude-haiku-4.5", "claude-sonnet-4.6", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5"],
+    "claude": ["claude-3-haiku", "claude-haiku-4.5", "claude-sonnet-4.6", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5", "claude-opus-5", "claude-fable-5.1"],
     "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.5", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"],
-    "gemini": ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash"],
-    "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-r1"],
-    "llama": ["llama-3.3-70b-instruct", "llama-4-maverick"],
-    "grok": ["grok-4.20", "grok-4.3", "grok-4.5"],
-    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507"],
+    "gemini": ["gemini-2.5-flash", "gemini-3.1-pro-preview", "gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"],
+    "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-v4-pro", "deepseek-r1"],
+    "llama": ["llama-3.3-70b-instruct", "llama-4-scout", "llama-4-maverick"],
+    "grok": ["grok-4.20", "grok-4.3", "grok-4.5", "grok-4.6"],
+    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507", "qwen3.5-9b", "qwen3.5-27b", "qwen3.5-122b-a10b", "qwen3.6-35b-a3b", "qwen3.8-2.4t-a95b"],
+    "glm": ["glm-4.7", "glm-5.3-flash", "glm-5.3"],
+    "kimi": ["kimi-k2.5", "kimi-k3"],
 }
 
 
