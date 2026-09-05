@@ -68,13 +68,18 @@ disposition mix separates "holds with a reason" from "won't commit."
 ## Waves
 
 - **Wave 1 (July 2026, 45 models)** — the arXiv panel; pinned at tag `suggestibility-arxiv-v1`.
-- **Wave 2 (2026-09-04, +24 models)** — the census wave-2 roster minus Opus 5, already in wave 1 (see `../consensus/README.md`
+- **Wave 2 (2026-09-04, +25 models)** — the census wave-2 roster minus Opus 5, already in wave 1, plus GPT-6 Astra (see `../consensus/README.md`
   § Waves), same frozen stimulus, 4 runs. Reasoning models (Qwen 3.5/3.6, GLM-5.3, Kimi K3, Step
   3.7 Flash) exhaust the default 1200-token budget thinking and return empty content; their failed
   scenes were re-collected with `run.py --max-tokens 8192`, which stamps `max_tokens` on each
   affected scene. Llama 4 Scout is pinned to DeepInfra (`--provider`). No wave-2 cell is missing.
   Clamped shift, newest frontier releases: Fable 5.1 −7%, Gemini 3.8 Flash −9% (98%
   hedge), Kimi K3 −6%, GLM-5.3 −3%; still folding: Grok 4.6 +21%, DeepSeek V4 Pro +33%, Qwen3.8 +32%.
+  **GPT-6 Astra** (released 2026-09-04, run the same day, no failed cells): −6% [−11, −1], base
+  agreeableness 61%, hold 39%, hedge 5% — it holds with a "No" rather than hedging, and the
+  reactance is on the consequential items (−10%) with taste flat. Same region as 5.4 (−6%) and
+  terra (−6%); luna and sol read +9/+10%. Both axes for Astra are the GPT lineage's baseline, not a
+  Fable-5.1-style move (`../consensus/README.md` § Waves).
   Fable 5 → 5.1 does not move on this axis while the census shows it snapping to the field modal
   (`../consensus/analyze_fable51.py`): the two axes dissociate within one release. **Read the
   negative end with the unclamped pilot in mind** (`OBSERVATIONS.md` § Unclamped pilot): for

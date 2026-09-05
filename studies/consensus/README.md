@@ -43,7 +43,7 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 ## Spec
 
 - [`spec/stimulus.json`](spec/stimulus.json) — 31 categories, single-turn, no system prompt, frozen.
-- [`spec/models.json`](spec/models.json) — 69 models (the paper's 44 + wave 2, below): US frontier (multi-generation), Chinese labs,
+- [`spec/models.json`](spec/models.json) — 70 models (the paper's 44 + wave 2, below): US frontier (multi-generation), Chinese labs,
   enterprise, search-tuned, persona/roleplay, small open, plus an expansion wave of heirloom
   retro-tests and generation fillers (gpt-4o, gpt-4-turbo, wizardlm-2, sonnet-4.6, …). The
   **deepseek lineage**
@@ -62,6 +62,21 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   Dropped after running: Hermes 3 70B (host returns essays, 1 valid answer in 124). Llama 4 Scout is
   pinned to DeepInfra (`--provider`) because Google's route truncates the first characters of replies.
   Residual failed cells (empty content after retries): Step 3.7 Flash 9/124, Qwen3.5 9B 4/124.
+  **+1 (2026-09-04): GPT-6 Astra**, released that day, run as part of the wave (`openai/gpt-6-astra`;
+  the Pro variant is not run, matching the base-only 5.6 rows). 1.40 bits, consensus-fixed, 1%
+  novel — the GPT 5.4/5.5/luna profile, not the sol/terra one. Its off-modal defaults are the
+  lineage's house answers (mango, canada, tennis, tea, triceratops, gardening, mustard); none of
+  sol/terra's odd picks (prague, octopus, penguin, swahili, phoenix) survive. Same-day n=8
+  re-snapshot of the three 5.6 variants (`recheck.py` → `probes/recheck_2026-09-04.json`, scored
+  against the frozen wave-1 field): sol 2.02 → 2.01 and luna 1.52 → 1.57 hold; terra 1.86 → 1.66,
+  with 4 of its 8 moved categories landing on the field modal (elephant, ketchup, gardening,
+  dragon). Against that same field Astra reads 1.37, luna 1.52 (July) / 1.57 (today), 5.5 1.39,
+  5.4 1.40. So Astra is not a Fable-5.1-style snap to the mode; it is the lineage's pre-sol/terra
+  baseline, and the 5.6 → Astra drop is within the luna CI. The one drift is terra's.
+- **Drift check (`recheck.py <label>...`)** — generic form of the Fable re-snapshot: n=8 today,
+  scored next to the model's transcript against the wave-1 field, per-category DRIFT flags.
+  Run it before reading any wave-1-vs-today comparison as a release effect; the Opus 5
+  suggestibility swing (`../suggestibility/README.md` § Waves) shows an unchanged id can move.
 - **Fable 5 → 5.1 (2026-09-04)** — the headline wave-2 movement. Against the frozen wave-1 field
   Fable 5.1 scores 1.25–1.32 bits vs Fable 5's 1.71; a same-day n=8 re-snapshot of both
   (`probe_fable51.py` → `probes/resnapshot_fable.json`, scored by `analyze_fable51.py`) puts Fable 5
