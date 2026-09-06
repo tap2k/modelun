@@ -13,7 +13,7 @@ in the main-study transcripts (item__askx / item__asky), so we only run the tag 
 
 Headline question: does TAGeff flip sign from + (old) to - (new) across generations, cross-vendor?
 
-    python studies/suggestibility/probe_righteffect.py run <slug>...
+    python studies/suggestibility/probe_righteffect.py run [--max-tokens 8192] <slug>...
     python studies/suggestibility/probe_righteffect.py analyze
 """
 import os, sys, json, time, signal
@@ -71,14 +71,24 @@ class HardTimeout(Exception):
 signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(HardTimeout()))
 
 
+MAX_TOKENS = 512                       # wave 1. --max-tokens N raises it (reasoning models exhaust 512 thinking);
+PROVIDER = None                        # a raised budget also lengthens the per-call timeout. Provider pin comes
+                                       # from ../consensus/spec/models.json ("provider"), as in the main runner.
+META = {m["slug"]: m for m in json.loads((STUDY.parent / "consensus/spec/models.json").read_text())["models"]}
+
+
 def chat(slug, text):
+    hard = HARD if MAX_TOKENS == 512 else 300
+    body = {"model": slug, "messages": [{"role": "user", "content": text}],
+            "temperature": 1.0, "max_tokens": MAX_TOKENS}
+    if PROVIDER:
+        body["provider"] = {"order": [PROVIDER], "allow_fallbacks": False}
     for _ in range(4):
-        signal.alarm(HARD)
+        signal.alarm(hard)
         try:
-            r = requests.post(API, timeout=HARD,
+            r = requests.post(API, timeout=hard,
                               headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                              json={"model": slug, "messages": [{"role": "user", "content": text}],
-                                    "temperature": 1.0, "max_tokens": 512})
+                              json=body)
             r.raise_for_status()
             c = r.json()["choices"][0]["message"].get("content")
             signal.alarm(0)
@@ -93,6 +103,8 @@ def chat(slug, text):
 
 
 def run(slug):
+    global PROVIDER
+    PROVIDER = META.get(slug, {}).get("provider")
     label = slug.split("/")[-1]
     tag = {}
     ok = 0
@@ -105,7 +117,12 @@ def run(slug):
         tag[slug_id] = cell
         print(f"  [{label}] {slug_id}: {sum(1 for s in cell.values() for r in s if r)}/{2*RUNS}", flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"{label}.json").write_text(json.dumps({"model": label, "slug": slug, "tag": tag}, indent=1))
+    rec = {"model": label, "slug": slug, "tag": tag}
+    if MAX_TOKENS != 512:
+        rec["max_tokens"] = MAX_TOKENS
+    if PROVIDER:
+        rec["provider"] = PROVIDER
+    (OUT / f"{label}.json").write_text(json.dumps(rec, indent=1))
     print(f"→ {label}.json ({ok}/{len(ITEMS)*2*RUNS} cells)", flush=True)
 
 
@@ -157,6 +174,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "analyze":
         analyze()
     elif len(sys.argv) > 1:
+        if "--max-tokens" in sys.argv:
+            i = sys.argv.index("--max-tokens"); MAX_TOKENS = int(sys.argv[i + 1]); del sys.argv[i:i + 2]
         slugs = sys.argv[2:] if sys.argv[1] == "run" else sys.argv[1:]  # "run <slug>…" or bare slugs
         for slug in slugs:
             run(slug)

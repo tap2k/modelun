@@ -88,8 +88,14 @@ disposition mix separates "holds with a reason" from "won't commit."
   same-day (`probes/resnapshot_opus5_2026-09-04.json`, scored via a scratch study dir) reads −7%
   against its July transcript's +9% — a 16-point swing on an unchanged model id, with base
   agreeableness 21% → 46% and hold 59% → 24%. The paper's transcript stays; the swing is the caveat.
-  The **tag arm** (`probe_righteffect.py`, the paper's headline TAGeff and what `views/` draws) has
-  not been run for the wave-2 models yet: 160 calls per model.
+  **Tag arm (2026-09-04/06)** — `probe_righteffect.py run --max-tokens 8192` for every wave-2
+  model incl. GPT-6 Astra (reasoning models exhaust the wave-1 512 budget; the file records the
+  budget and any provider pin), no missing cells. TAGeff, newest frontier releases: Fable 5.1 −30%
+  (Fable 5: −32%), Kimi K3 −31%, GLM-5.3 Flash −29%, GPT-6 Astra −19%, GLM-5.3 −18%, Opus 5 −15%,
+  Gemini 3.8 Flash −9%; flat: Grok 4.6, DeepSeek V4 Pro, Qwen3.8; still sycophantic: Nemotron 3
+  Nano +24%, Mistral Nemo +14%. The reversal holds into September and now includes the Chinese
+  flagships. `lineage.py` carries the wave-2 models (also read by `paper/make_assets.py`, so
+  regenerating the paper figures from `main` would draw them; the paper stays at its tag).
 
 ## Run
 
