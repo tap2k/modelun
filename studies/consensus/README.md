@@ -73,6 +73,14 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   dragon). Against that same field Astra reads 1.37, luna 1.52 (July) / 1.57 (today), 5.5 1.39,
   5.4 1.40. So Astra is not a Fable-5.1-style snap to the mode; it is the lineage's pre-sol/terra
   baseline, and the 5.6 → Astra drop is within the luna CI. The one drift is terra's.
+- **Construct check vs open-ended convergence (`probe_convergence_xval.py`, 2026-09-07)** — census
+  surprisal against the convergence study's embedding `uniqueness` (free-prose replies, 9 prompts)
+  over the 18 shared models: Spearman 0.41 (p=0.09); 0.64 (p=0.007) without ernie, convergence's
+  verbosity outlier. The sampling-spread proxies agree far better (self_distinct vs
+  1−self_consistency: 0.71). Read: the census's *ranking* carries over to open text, moderately;
+  the convergence study is a weak criterion (9 prompts, verbosity-sensitive embeddings), so this
+  is not a validation, it is the absence of a contradiction. A human-labeled open-ended
+  companion remains the real test (`../suggestibility/README.md` § Waves for the same gap there).
 - **Drift check (`recheck.py <label>...`)** — generic form of the Fable re-snapshot: n=8 today,
   scored next to the model's transcript against the wave-1 field, per-category DRIFT flags.
   Run it before reading any wave-1-vs-today comparison as a release effect; the Opus 5
