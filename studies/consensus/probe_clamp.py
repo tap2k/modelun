@@ -10,6 +10,9 @@ the last-word normalizer's failure on sentences.
 If clamped-share ≈ free-presence, the monoculture is a property of what models CHOOSE, not of
 how we ASK — a direct rebuttal to "isn't this a one-word-prompt artifact?"
 
+Second check (per model): does the clamped RANKING survive in prose? For each model, the share
+of its free replies that do not contain the field's clamped-modal word ("free modal-avoid"),
+rank-correlated with its census surprisal. Written to probes/clamp_rank.json.
     python studies/consensus/probe_clamp.py --transcripts studies/consensus/transcripts-clamp
 """
 import re
@@ -68,6 +71,42 @@ def main():
         print(f"{c:10} {modal:>12}  {share:9.0%}  {pres:11.0%}     ({len(frees)})")
     print("-" * 62)
     print("clamp-share ≈ free-has-modal  ⇒  the clamp extracts the mode, it does not create it.")
+
+    # --- per-model: does the clamped ranking survive with the clamp removed? ---
+    import numpy as np
+    here = Path(__file__).resolve().parent
+    census = json.loads((here / "analysis.json").read_text())["per_model"]
+    modal = {c: clamp_toks[c].most_common(1)[0][0] for c in cats}
+    avoid = {}
+    for p in sorted(Path(args.transcripts).glob("*.json")):
+        dd = json.loads(p.read_text())
+        if dd["model"] not in census:
+            continue
+        hits = []
+        for sid, s in dd["scenes"].items():
+            cat, cond = sid.rsplit("_", 1)
+            if cond != "free" or cat not in modal:
+                continue
+            for r in s["runs"]:
+                reply = (r[0].get("reply") or "").lower() if r else ""
+                if reply:
+                    hits.append(0.0 if re.search(rf'\b{re.escape(modal[cat])}s?\b', reply) else 1.0)
+        if hits:
+            avoid[dd["model"]] = float(np.mean(hits))
+    ms = sorted(avoid)
+    x = np.array([census[m]["surprisal"] for m in ms]); y = np.array([avoid[m] for m in ms])
+    rx, ry = np.argsort(np.argsort(x)), np.argsort(np.argsort(y))
+    rho = float(np.corrcoef(rx, ry)[0, 1]); r = float(np.corrcoef(x, y)[0, 1])
+    rng = np.random.default_rng(7)
+    pval = float(np.mean([abs(np.corrcoef(rx, rng.permutation(ry))[0, 1]) >= abs(rho) for _ in range(20000)]))
+    print(f"\nper-model: census surprisal (31 cats, clamped) vs free modal-avoid ({len(cats)} cats, prose), n={len(ms)}")
+    print(f"  spearman {rho:.2f} (perm p={pval:.4f})  pearson {r:.2f}")
+    order = sorted(ms, key=lambda m: -census[m]["surprisal"])
+    for m in order[:5] + ["..."] + order[-5:]:
+        print(f"  {m:26}{census[m]['surprisal']:6.2f} bits  {avoid[m]:4.0%} free-avoid" if m != "..." else "  ...")
+    (here / "probes/clamp_rank.json").write_text(json.dumps(
+        {"n": len(ms), "cats": cats, "spearman": rho, "perm_p": pval, "pearson": r,
+         "per_model": {m: {"surprisal": census[m]["surprisal"], "free_modal_avoid": avoid[m]} for m in ms}}, indent=1) + "\n")
 
 
 if __name__ == "__main__":

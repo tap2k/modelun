@@ -73,6 +73,15 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   dragon). Against that same field Astra reads 1.37, luna 1.52 (July) / 1.57 (today), 5.5 1.39,
   5.4 1.40. So Astra is not a Fable-5.1-style snap to the mode; it is the lineage's pre-sol/terra
   baseline, and the 5.6 → Astra drop is within the luna CI. The one drift is terra's.
+- **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
+  free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
+  clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
+  90/85, blue 76/76; bird and country lower), so the clamp extracts the mode rather than creating
+  it. Model level: a model's share of free replies that avoid the modal word rank-correlates with
+  its clamped census surprisal at Spearman 0.61 (n=44, p<0.001) — the divergent tail (hermes,
+  wizardlm, mixtral) avoids the mode in prose 60–68% of the time, the conformist tail 15–30%. The
+  effect exists without the clamp and the ranking mostly survives it. This is the census's
+  validation; the convergence cross-check below is corroboration.
 - **Construct check vs open-ended convergence (`probe_convergence_xval.py`, 2026-09-07)** — census
   surprisal against the convergence study's embedding `uniqueness` (free-prose replies, 9 prompts)
   over the 18 shared models: Spearman 0.41 (p=0.09); 0.64 (p=0.007) without ernie, convergence's
