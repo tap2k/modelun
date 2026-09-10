@@ -24,3 +24,18 @@ Cohort definitions for the peaked-vs-diffuse comparison (§4.3) are explicit in
 Bibliography author lists were verified against the source PDFs (2026-07-07);
 `references.bib` corrects several entries relative to BIBLIOGRAPHY.md
 shorthand (GX-Chen et al., Gueorguieva et al., Karouzos et al., Liu).
+
+## Pending for the next revision (v3)
+
+Neither warrants a revision on its own; include both when one happens.
+
+1. **Data-availability link → tag.** The paragraph points at `tree/main`, which now carries the
+   wave-2 roster (70 models) and September re-snapshots. Point it at `tree/consensus-arxiv-v2`,
+   the frozen 44-model panel the paper describes.
+2. **Per-model unclamped sentence** after the oak/rose list in §3.4 ("Why one-word answers"):
+   the ranking survives without the clamp, not just the mode — a model's share of bare-prompt
+   replies avoiding the field's modal word rank-correlates with its census surprisal at Spearman
+   0.61 (n=44, permutation p<0.001; `probe_clamp.py`, `probes/clamp_rank.json`). Optional
+   corroboration: Spearman 0.64 against the convergence study's embedding uniqueness over the 17
+   shared models excluding ernie (`probe_convergence_xval.py`).
+
