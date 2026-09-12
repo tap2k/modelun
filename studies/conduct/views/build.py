@@ -18,8 +18,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from plot import FAMILIES, COLS, SHORT, VERDICT, CAT  # single source of order/colors
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bottom-up" / "tools"))
-from divergence import screen  # the scene-divergence heuristic, for the By-scene view
 
 VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
@@ -145,7 +143,6 @@ def main():
         "synthesis": (STUDY / "docs" / "houses.md").read_text()
                      .replace("verbatim from `data/benchmark/`", "verbatim from the transcripts"),
         "catchphrases": clean_catchphrases(cat.read_text()) if cat.exists() else "",
-        "divergence": screen(STUDY),
     }
     SITE.mkdir(exist_ok=True)
     (SITE / "data.js").write_text("window.ATLAS = " + json.dumps(blob, ensure_ascii=False) + ";\n")

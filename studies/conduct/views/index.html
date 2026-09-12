@@ -52,10 +52,6 @@
   .md{max-width:840px} .md h1{font-size:22px} .md h2{font-size:18px;border-bottom:1px solid var(--line);padding-bottom:5px;margin-top:26px}
   .md h3{font-size:15px;margin-top:18px} .md blockquote{border-left:3px solid var(--acc);margin:8px 0;padding:2px 0 2px 14px;color:#cdd3df}
   .md code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12.5px}
-  .srow{display:grid;grid-template-columns:170px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
-  .srow .sm a{font-weight:600;text-decoration:none} .srow .sr{white-space:pre-wrap} .srow .ev{grid-column:2}
-  .sgroup h3{margin:20px 0 4px;font-size:14px;display:flex;align-items:center;gap:8px} .sgroup h3 .n{font-weight:normal;color:#777}
-  .turns .t.on{font-weight:600}
   .md table{border-collapse:collapse;margin:10px 0;font-size:13px} .md th,.md td{border:1px solid var(--line);padding:5px 10px;text-align:left;vertical-align:top}
   .md th{background:var(--panel2)} .md hr{border:0;border-top:1px solid var(--line);margin:18px 0}
   .md li{margin:2px 0}
@@ -207,15 +203,13 @@ function renderModel(m){
 /* ---- scenes: the instrument scripts (categorization lives in the grid) ---- */
 function showScenes(){
   document.getElementById('side').classList.add('hidden'); setNav('scenes');
-  const div=A.divergence||[]; const rank=Object.fromEntries(div.map((r,i)=>[r.scene,i]));
-  const h=[...A.scenes].sort((a,b)=>(rank[a.id]??99)-(rank[b.id]??99)).map(s=>{
+  const h=A.scenes.map(s=>{
     const turns='<div class="turns">'+s.turns.map((t,i)=>'<div class="t"><span>U'+(i+1)+'</span> '+esc(t)+'</div>').join('')+'</div>';
     const tag=s.active? (s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker) : 'not scored';
-    const d=div.find(q=>q.scene===s.id);
-    return '<div class="sblk"><div class="sh"><a class="ttl" href="#scene/'+esc(s.id)+'">'+esc(s.subtitle)+'</a><span class="reg">'+esc(s.register)+' · '+esc(tag)+(d?' · divergence '+d.score.toFixed(2):'')+'</span> <a href="#scene/'+esc(s.id)+'">all models →</a></div>'+turns+'</div>';
+    return '<div class="sblk"><div class="sh"><span class="ttl">'+esc(s.subtitle)+'</span><span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></div>'+turns+'</div>';
   }).join('');
   document.getElementById('main').innerHTML='<h2 style="margin-top:0">The scenes</h2>'+
-    '<p class="note">The frozen instrument — each scene\'s four user turns, ordered by the divergence screen (a heuristic; the score is in each header). Open a scene to read every model\'s reply, grouped by verdict. Per-model results are in the Grid; full conversations are on each model\'s page. Scenes without a marker are kept as full data, just not scored.</p>'+h;
+    '<p class="note">The frozen instrument — each scene\'s four user turns. Per-model results are in the Grid; full conversations are on each model\'s page. Scenes without a marker are kept as full data, just not scored.</p>'+h;
 }
 
 /* ---- shared legend: the whole color grammar in one line ---- */
@@ -325,47 +319,6 @@ function showCompare(unclamped){
   location.hash=unclamped?'compare-unclamped':'compare';
 }
 
-/* ---- by scene: every model's reply to one scene, grouped by marker verdict ---- */
-let sceneTurn=3, sceneRun=0, currentScene=null;
-function showScene(sid){
-  document.getElementById('side').classList.add('hidden'); setNav('scenes');
-  const div=A.divergence||[]; const rank=Object.fromEntries(div.map((r,i)=>[r.scene,i]));
-  const ordered=[...A.scenes].sort((a,b)=>(rank[a.id]??99)-(rank[b.id]??99));
-  const s=A.scenes.find(x=>x.id===sid)||ordered[0]; sid=s.id; currentScene=sid;
-  const r=div.find(d=>d.scene===sid);
-  const f=x=>x==null?'—':x.toFixed(2);
-  const pick='<select id="scenePick">'+ordered.map(x=>{const d=div.find(q=>q.scene===x.id);
-    return '<option value="'+esc(x.id)+'"'+(x.id===sid?' selected':'')+'>'+esc(x.subtitle)+(d?' · '+d.score.toFixed(2):'')+'</option>';}).join('')+'</select>';
-  const tools='<div class="cmp-tools">'+pick+'<span class="reg">Turn</span><div class="rt">'+
-    [0,1,2,3].map(i=>'<button data-turn="'+i+'"'+(i===sceneTurn?' class="on"':'')+'>U'+(i+1)+'</button>').join('')+'</div>'+
-    '<span class="reg">Run</span><div class="rt">'+[0,1].map(x=>'<button data-run="'+x+'"'+(x===sceneRun?' class="on"':'')+'>run '+x+'</button>').join('')+'</div></div>';
-  const tag=s.active?(s.dimension?s.dimension+' · marker '+s.marker:'marker '+s.marker):'not scored';
-  const turns='<div class="turns">'+s.turns.map((t,i)=>'<div class="t'+(i===sceneTurn?' on':'')+'"><span>U'+(i+1)+'</span> '+esc(t)+'</div>').join('')+'</div>';
-  const divRow=r?'<p class="note">divergence score '+f(r.score)+' · marker '+f(r.marker_p)+' · run split '+f(r.splits)+' · readers '+f(r.readers_p)+' · hedge '+f(r.hedge_p)+
-    ' — a ranking heuristic with LLM-derived inputs (bottom-up/divergence-2026-09-12.md), not a finding.</p>':'';
-  const groups={}, order=[];
-  for(const m of ORDER){
-    const sc=A.models[m].scenes[sid]; if(!sc) continue;
-    const rec=s.active&&s.marker?A.models[m].markers[s.marker]:null;
-    const lc=rec?labelOf(rec):{label:'all models',color:'#e0e0e0'};
-    if(!groups[lc.label]){groups[lc.label]={color:lc.color,rows:[]}; order.push(lc.label);}
-    const turn=sc.runs[sceneRun]&&sc.runs[sceneRun][sceneTurn];
-    groups[lc.label].rows.push({m, reply:turn?(turn.reply||'[no reply]'):'[no run]', ev:rec&&rec.evidence?(rec.evidence['run'+sceneRun]||''):''});
-  }
-  const sev={Departed:0,Split:1,Contested:2,Held:3}, crank={'#c62828':0,'#f9a825':1,'#1565c0':2,'#2e7d32':3};
-  order.sort((a,b)=>{const x=sev[a]??(crank[groups[a].color]??5)+10, y=sev[b]??(crank[groups[b].color]??5)+10; return x-y;});
-  const body=order.map(k=>'<div class="sgroup"><h3>'+badge(groups[k].color,esc(k))+'<span class="n">'+groups[k].rows.length+' models</span></h3>'+
-    groups[k].rows.map(x=>'<div class="srow"><div class="sm"><a href="#m/'+esc(x.m)+'">'+esc(x.m)+'</a><div class="reg">'+esc(A.models[x.m].family)+'</div></div>'+
-      '<div class="sr">'+esc(x.reply)+'</div>'+(x.ev&&sceneTurn===3?'<div class="ev"><b>trigger</b> "'+esc(x.ev)+'"</div>':'')+'</div>').join('')+'</div>').join('');
-  document.getElementById('main').innerHTML='<p class="note"><a href="#scenes">← all scenes</a></p><h2 style="margin-top:0">'+esc(s.subtitle)+' <span class="reg">'+esc(s.register)+' · '+esc(tag)+'</span></h2>'+
-    '<p class="note">One scene, every model, grouped by marker verdict. Scenes in the picker are ordered by the divergence screen. Pick the turn to read (U4 is the end state) and the run.</p>'+
-    turns+divRow+legendStrip()+tools+body;
-  document.getElementById('scenePick').addEventListener('change',e=>{location.hash='scene/'+e.target.value;});
-  document.querySelectorAll('.cmp-tools [data-turn]').forEach(b=>b.addEventListener('click',()=>{sceneTurn=+b.dataset.turn; showScene(sid);}));
-  document.querySelectorAll('.cmp-tools [data-run]').forEach(b=>b.addEventListener('click',()=>{sceneRun=+b.dataset.run; showScene(sid);}));
-  location.hash='scene/'+sid; window.scrollTo(0,0);
-}
-
 /* ---- markdown tabs ---- */
 function showMd(key){ document.getElementById('side').classList.add('hidden'); document.getElementById('main').innerHTML='<div class="md">'+md(A[key])+'</div>'; }
 
@@ -377,7 +330,6 @@ function route(){
   const h=location.hash.replace(/^#/,'');
   if(h.startsWith('m/')&&A.models[h.slice(2)]){ currentModel=h.slice(2); showModels(currentModel); }
   else if(h==='scenes') showScenes();
-  else if(h.startsWith('scene/')) showScene(h.slice(6));
   else if(h==='grid') showGrid();
   else if(h==='compare') showCompare(false);
   else if(h==='compare-unclamped'&&hasUnclamped) showCompare(true);
