@@ -108,8 +108,9 @@ and unverifiable codes dropped. The LLM is a coder whose output is compared to t
 reference; do not read its files before your own coding is in. `harness/compare_codes.py` reports,
 per pair of coders, span overlap on arcs both coded (judge-free); label matching is the
 reconciliation pass a person does afterwards, which is also the first axial step. Each human code
-carries `sitting`, `secs_on_arc`, and `secs_total`, so time per arc and multi-sitting coding are
-in the record.
+carries `sitting`, `secs_on_arc` (since the previous code on this arc), and `secs_total` (since the
+first code on this arc); the clock starts at the first code, not when the arc opens, and the
+page's median excludes arcs with a gap over ten minutes, so breaks do not count.
 
 ## Plan
 
