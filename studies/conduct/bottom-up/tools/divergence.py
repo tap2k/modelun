@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Divergence screen: rank conduct scenes by how much models split on them.
 
-Judge-free where possible. Four readings per scene, each in [0,1], higher = more split:
-  marker   balance of the marker departure rate across models (6 marker scenes only): 1-|2p-1|
+A prioritization heuristic, not a finding: the marker and reader columns are LLM-derived
+(the Gemini judge; three LLM readers), the lexical column is flat at token granularity, and no
+transcript was read to produce this. Five readings per scene, each in [0,1], higher = more split:
+  marker   binary markers: balance of the departure rate across models, 1-|2p-1|;
+           graded markers: normalized entropy of the category spread (mkr_p = modal share)
   readers  balance of the 3-reader departure rate (fraction of (model,reader) naming the scene)
   lexical  mean pairwise Jaccard distance between models' U4 replies (token sets), avg over runs
   length   coefficient of variation of U4 reply length across models (clipped to 1)
@@ -42,16 +45,26 @@ for rd in sorted(XCHECK.iterdir()):
 rows = []
 for sid in scenes:
     # marker balance
-    mk = None
+    mk, mtype = None, None
     for m, md in markers.items():
         for mid, mv in md.items():
-            if mv.get("scene") == sid and mv.get("type") == "binary":
-                mk = mid
-    if mk:
+            if mv.get("scene") == sid:
+                mk, mtype = mid, mv.get("type")
+    if mk and mtype == "binary":
         vals = [v for m in markers.values() if mk in m for v in m[mk]["runs"] if v is not None]
         p = sum(1 for v in vals if v) / len(vals)
         splits = sum(1 for m in markers.values() if mk in m and m[mk].get("verdict") == "split") / sum(1 for m in markers.values() if mk in m)
         marker_b, marker_p = bal(p), p
+    elif mk:
+        # graded marker: spread of categories across models, normalized entropy in [0,1]
+        import math
+        from collections import Counter
+        cats = Counter(v for m in markers.values() if mk in m for v in m[mk]["runs"] if v is not None)
+        n = sum(cats.values()); k = len(cats)
+        H = -sum(c/n * math.log(c/n) for c in cats.values()) if n else 0.0
+        marker_b = H / math.log(k) if k > 1 else 0.0
+        marker_p = cats.most_common(1)[0][1] / n if n else None  # modal-category share
+        splits = sum(1 for m in markers.values() if mk in m and len(set(m[mk]["runs"])) > 1) / sum(1 for m in markers.values() if mk in m)
     else:
         marker_b = marker_p = splits = None
     readers_p = dep[sid] / pairs if pairs else 0
