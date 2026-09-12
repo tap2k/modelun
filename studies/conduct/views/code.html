@@ -1,0 +1,129 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>open coding</title>
+<style>
+  :root { --ink:#222; --mute:#777; --line:#ddd; --u:#f3f3f3; --a:#fff; --acc:#2a5db0; }
+  body { margin:0; font:15px/1.45 -apple-system, Segoe UI, sans-serif; color:var(--ink); }
+  header { display:flex; gap:12px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); font-size:13px; }
+  header input, header select, header button { font:inherit; padding:3px 6px; }
+  header .sp { flex:1; } header .n { color:var(--mute); }
+  main { display:grid; grid-template-columns: 1fr 380px; min-height: calc(100vh - 42px); }
+  #arc { padding:14px 18px; border-right:1px solid var(--line); overflow:auto; }
+  #arc h3 { margin:0 0 10px; font-size:14px; color:var(--mute); font-weight:normal; }
+  .panel { margin:0 0 12px; }
+  .panel .u { background:var(--u); padding:8px 10px; border-radius:6px 6px 0 0; font-size:14px; }
+  .panel .a { background:var(--a); border:1px solid var(--line); border-top:0; padding:10px; border-radius:0 0 6px 6px; white-space:pre-wrap; }
+  .panel .a.none { color:var(--mute); font-style:italic; }
+  #side { padding:14px; overflow:auto; }
+  #side label { display:block; font-size:12px; color:var(--mute); margin:10px 0 3px; }
+  #side input, #side textarea { width:100%; box-sizing:border-box; font:inherit; padding:6px; border:1px solid var(--line); border-radius:4px; }
+  #side textarea { min-height:60px; }
+  #side button { margin-top:10px; font:inherit; padding:6px 12px; background:var(--acc); color:#fff; border:0; border-radius:4px; cursor:pointer; }
+  #side button.ghost { background:none; color:var(--acc); border:1px solid var(--acc); }
+  .codes { margin-top:14px; border-top:1px solid var(--line); padding-top:8px; }
+  .code { font-size:13px; padding:6px 0; border-bottom:1px dotted var(--line); }
+  .code b { color:var(--acc); } .code q { display:block; color:#444; } .code i { color:var(--mute); }
+  .hint { font-size:12px; color:var(--mute); }
+  #book { padding:16px 20px; display:none; }
+  #book table { border-collapse:collapse; font-size:13px; } #book td, #book th { border:1px solid var(--line); padding:3px 8px; text-align:left; vertical-align:top; }
+  #book q { display:block; color:#444; font-size:12px; }
+  mark { background:#fff2a8; }
+</style>
+<header>
+  <span>coder</span><input id="coder" size="10" placeholder="name">
+  <span class="n" id="pos"></span>
+  <button id="prev">←</button><button id="next">→</button><button id="nextUncoded">next uncoded</button>
+  <span class="sp"></span>
+  <span>filter</span><select id="fScene"><option value="">all scenes</option></select>
+  <input id="fCode" size="12" placeholder="code">
+  <input id="fText" size="16" placeholder="search text">
+  <span class="n" id="sat"></span>
+  <button id="toggleBook" class="ghost">codebook</button>
+</header>
+<main>
+  <section id="arc"></section>
+  <aside id="side">
+    <div class="hint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
+    <label>code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist>
+    <label>quote (verbatim)</label><textarea id="quote"></textarea>
+    <label>memo</label><textarea id="memo"></textarea>
+    <button id="save">add code</button>
+    <div class="codes" id="mine"></div>
+  </aside>
+</main>
+<section id="book"></section>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let ARCS = [], CODES = [], i = 0, VIEW = [];
+const coder = () => $('#coder').value.trim();
+$('#coder').value = localStorage.getItem('coder') || '';
+$('#coder').onchange = () => { localStorage.setItem('coder', coder()); loadCodes(); };
+
+async function loadCodes() {
+  if (!coder()) { CODES = []; return render(); }
+  CODES = await (await fetch('/codes/' + encodeURIComponent(coder()))).json();
+  render();
+}
+function codedArcs() { return new Set(CODES.map(c => c.arc)); }
+function applyFilter() {
+  const sc = $('#fScene').value, cd = $('#fCode').value.trim().toLowerCase(), tx = $('#fText').value.trim().toLowerCase();
+  const byArc = {}; CODES.forEach(c => (byArc[c.arc] = byArc[c.arc] || []).push(c));
+  VIEW = ARCS.filter(a => (!sc || a.scene === sc)
+    && (!cd || (byArc[a.id] || []).some(c => c.code.toLowerCase().includes(cd)))
+    && (!tx || a.turns.some(t => (t.reply || '').toLowerCase().includes(tx) || t.u.toLowerCase().includes(tx))));
+  i = Math.min(i, Math.max(0, VIEW.length - 1)); render();
+}
+function render() {
+  const a = VIEW[i]; if (!a) { $('#arc').innerHTML = '<p class="hint">no arcs match</p>'; return; }
+  const tx = $('#fText').value.trim();
+  const hl = s => { s = esc(s); return tx ? s.replace(new RegExp(tx.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : s; };
+  $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' +
+    a.turns.map(t => '<div class="panel"><div class="u">' + hl(t.u) + '</div><div class="a' + (t.reply ? '' : ' none') + '">' + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
+  const done = codedArcs();
+  $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length;
+  const mine = CODES.filter(c => c.arc === a.id);
+  $('#mine').innerHTML = mine.map(c => '<div class="code"><b>' + esc(c.code) + '</b><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no codes on this arc yet</div>';
+  const labels = [...new Set(CODES.map(c => c.code))].sort();
+  $('#codelist').innerHTML = labels.map(l => '<option value="' + esc(l) + '">').join('');
+  // saturation: new codes introduced per batch of 20 coded arcs, in coding order
+  const seen = new Set(), order = [], firstArc = {};
+  CODES.forEach(c => { if (!(c.arc in firstArc)) { firstArc[c.arc] = order.length; order.push(c.arc); } });
+  const batches = []; order.forEach((arc, k) => { const b = Math.floor(k / 20); batches[b] = batches[b] || 0;
+    CODES.filter(c => c.arc === arc).forEach(c => { if (!seen.has(c.code)) { seen.add(c.code); batches[b]++; } }); });
+  $('#sat').textContent = batches.length ? 'new codes / 20 arcs: ' + batches.join(' · ') : '';
+}
+$('#arc').onmouseup = () => { const s = String(window.getSelection()).trim(); if (s) $('#quote').value = s; };
+$('#save').onclick = async () => {
+  const a = VIEW[i]; if (!a) return;
+  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString() };
+  if (!row.coder) return alert('coder name first');
+  if (!row.code || !row.quote) return alert('code and verbatim quote are required');
+  const text = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
+  if (!text.includes(row.quote)) return alert('quote is not a verbatim substring of this arc');
+  const r = await fetch('/save', { method: 'POST', body: JSON.stringify(row) });
+  if (!r.ok) return alert('save failed'); CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; render();
+};
+$('#prev').onclick = () => { i = Math.max(0, i - 1); render(); };
+$('#next').onclick = () => { i = Math.min(VIEW.length - 1, i + 1); render(); };
+$('#nextUncoded').onclick = () => { const d = codedArcs(); const k = VIEW.findIndex((a, j) => j > i && !d.has(a.id)); if (k >= 0) { i = k; render(); } };
+['#fScene', '#fCode', '#fText'].forEach(s => $(s).oninput = applyFilter);
+$('#toggleBook').onclick = async () => {
+  const b = $('#book'), on = b.style.display !== 'block'; b.style.display = on ? 'block' : 'none'; $('main').style.display = on ? 'none' : 'grid';
+  if (!on) return;
+  const reveal = await (await fetch('/reveal')).json();
+  const byCode = {}; CODES.forEach(c => (byCode[c.code] = byCode[c.code] || []).push(c));
+  const models = [...new Set(CODES.map(c => reveal[c.blind] || c.blind))].sort();
+  b.innerHTML = '<p class="hint">' + Object.keys(byCode).length + ' codes · ' + CODES.length + ' applications · ' + codedArcs().size + ' arcs · counts by model (revealed)</p>' +
+    '<table><tr><th>code</th><th>n</th>' + models.map(m => '<th>' + esc(m) + '</th>').join('') + '<th>example</th></tr>' +
+    Object.entries(byCode).sort((x, y) => y[1].length - x[1].length).map(([code, rows]) => {
+      const per = {}; rows.forEach(r => { const m = reveal[r.blind] || r.blind; per[m] = (per[m] || 0) + 1; });
+      return '<tr><td><b>' + esc(code) + '</b></td><td>' + rows.length + '</td>' + models.map(m => '<td>' + (per[m] || '') + '</td>').join('') + '<td><q>“' + esc(rows[0].quote) + '”</q></td></tr>';
+    }).join('') + '</table>';
+};
+(async () => {
+  ARCS = await (await fetch('/arcs.json')).json();
+  $('#fScene').innerHTML += [...new Set(ARCS.map(a => a.scene))].sort().map(s => '<option>' + s + '</option>').join('');
+  VIEW = ARCS; await loadCodes(); render();
+})();
+</script>

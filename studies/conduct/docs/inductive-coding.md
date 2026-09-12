@@ -80,6 +80,26 @@ python harness/viewer/code_server.py   # serves views/ + accepts POST /save
 git add data/coding && git commit && git push   # or open a PR
 ```
 
+## Built (2026-09-12)
+
+Phase 0 is in: `harness/viewer/code_server.py` and `views/code.html`, per the design above, with
+four additions from the 2026-09-12 method decisions (convovo-notes `conversation-coding-tool.md`,
+modelUN `RESEARCH-QUEUE.md` line 2):
+
+- **Blind.** The server replaces the model name with a salted id; `code.html` never sees markers,
+  reads, or judge output (it does not load `data.js`). The codebook view calls `/reveal` to show
+  counts by model after the fact.
+- **Fixed random order.** Arcs are shuffled once per salt, so every coder walks the same sequence
+  and the saturation counter (new codes per 20 coded arcs, in the header) is comparable across
+  coders.
+- **Quote check at save.** A code is refused unless its quote is a verbatim substring of the arc,
+  the same rule the judge pipeline enforces downstream.
+- **Filter and search** by scene, code, and substring, for constant comparison during coding.
+
+Run: `python harness/viewer/code_server.py --study studies/conduct --scenes bad_plan,facts,make_it_better,doctors_note`
+(the four splitters from `bottom-up/divergence-2026-09-12.md`; 304 arcs), then open
+`http://localhost:8000/code.html`. Codes land in `data/coding/open_codes.<coder>.jsonl`, committed.
+
 ## Plan
 
 - **Phase 0 — pilot tooling.** Build `code.html` (reuse the existing transcript-render code so
