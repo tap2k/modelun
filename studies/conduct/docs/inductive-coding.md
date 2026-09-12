@@ -96,9 +96,20 @@ modelUN `RESEARCH-QUEUE.md` line 2):
   the same rule the judge pipeline enforces downstream.
 - **Filter and search** by scene, code, and substring, for constant comparison during coding.
 
-Run: `python harness/viewer/code_server.py --study studies/conduct --scenes bad_plan,facts,make_it_better,doctors_note`
-(the four splitters from `bottom-up/divergence-2026-09-12.md`; 304 arcs), then open
+Run: `python harness/viewer/code_server.py --study studies/conduct --scenes bad_plan,facts,make_it_better,doctors_note --per-scene 10`
+(the four splitters from `bottom-up/divergence-2026-09-12.md`; the balanced 40-arc sample, the same first ten
+per scene in the fixed order that the LLM coders get; drop `--per-scene` for all 304), then open
 `http://localhost:8000/code.html`. Codes land in `data/coding/open_codes.<coder>.jsonl`, committed.
+
+**LLM coders, for comparison (2026-09-12).** `harness/open_code.py` runs the same arcs, same blind ids,
+same order, same three fields, and the same instructions a human coder gets, through cross-vendor
+models on OpenRouter, writing `data/coding/open_codes.llm-<slug>.jsonl`. Quotes are string-verified
+and unverifiable codes dropped. The LLM is a coder whose output is compared to the human's, never the
+reference; do not read its files before your own coding is in. `harness/compare_codes.py` reports,
+per pair of coders, span overlap on arcs both coded (judge-free); label matching is the
+reconciliation pass a person does afterwards, which is also the first axial step. Each human code
+carries `sitting`, `secs_on_arc`, and `secs_total`, so time per arc and multi-sitting coding are
+in the record.
 
 ## Plan
 

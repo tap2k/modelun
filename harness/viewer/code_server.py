@@ -8,13 +8,14 @@ Serves the study's views/ (code.html) and:
   POST /save                 append one JSON line to data/coding/open_codes.<coder>.jsonl
   GET  /reveal               blind id -> model, for the codebook view only (after coding).
 
-    python harness/viewer/code_server.py --study studies/conduct [--scenes bad_plan,facts] [--port 8000]
+    python harness/viewer/code_server.py --study studies/conduct [--scenes bad_plan,facts] [--per-scene 10] [--port 8000]
     open http://localhost:8000/code.html
 
 No dependencies beyond the stdlib. State lives in repo files; git is the collaboration layer.
 """
-import json, sys, random, hashlib, argparse
+import json, sys, argparse
 from pathlib import Path
+from arcs import load_arcs, sample
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 ap = argparse.ArgumentParser()
@@ -22,6 +23,8 @@ ap.add_argument("--study", default="studies/conduct")
 ap.add_argument("--scenes", default="", help="comma-separated scene ids to code (default: all)")
 ap.add_argument("--port", type=int, default=8000)
 ap.add_argument("--salt", default="conduct-2026-09", help="blind-id salt; keep fixed within a batch")
+ap.add_argument("--limit", type=int, default=0, help="serve only the first N arcs of the fixed order")
+ap.add_argument("--per-scene", type=int, default=0, help="serve the first N arcs of each scene (a balanced sample); use the same value for the LLM coders")
 args = ap.parse_args()
 
 STUDY = Path(args.study).resolve()
@@ -30,28 +33,8 @@ CODING = STUDY / "data" / "coding"
 VIEWS = STUDY / "views"
 WANT = set(s for s in args.scenes.split(",") if s)
 
-def blind(model):
-    return "m" + hashlib.sha1((args.salt + model).encode()).hexdigest()[:6]
-
-def load_arcs():
-    arcs, reveal = [], {}
-    for p in sorted(BENCH.glob("*.json")):
-        if p.name == "markers.json":
-            continue
-        d = json.loads(p.read_text())
-        bid = blind(d["model"]); reveal[bid] = d["model"]
-        for sid, sc in d["scenes"].items():
-            if WANT and sid not in WANT:
-                continue
-            for ri, run in enumerate(sc["runs"]):
-                arcs.append({"id": f"{bid}/{sid}/{ri}", "blind": bid, "scene": sid,
-                             "subtitle": sc.get("subtitle", sid), "register": sc.get("register", ""),
-                             "run": ri, "turns": [{"u": t["u"], "reply": t.get("reply")} for t in run]})
-    rnd = random.Random(args.salt)
-    rnd.shuffle(arcs)  # fixed random order per salt, so every coder walks the same sequence
-    return arcs, reveal
-
-ARCS, REVEAL = load_arcs()
+ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt)
+ARCS = sample(ARCS, args.per_scene, args.limit)
 
 class H(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):

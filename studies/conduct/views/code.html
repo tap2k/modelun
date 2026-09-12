@@ -37,6 +37,7 @@
   <span>filter</span><select id="fScene"><option value="">all scenes</option></select>
   <input id="fCode" size="12" placeholder="code">
   <input id="fText" size="16" placeholder="search text">
+  <span class="n" id="elapsed">0:00</span>
   <span class="n" id="sat"></span>
   <button id="toggleBook" class="ghost">codebook</button>
 </header>
@@ -56,6 +57,8 @@
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 let ARCS = [], CODES = [], i = 0, VIEW = [];
+const SITTING = new Date().toISOString().slice(0, 16) + '-' + Math.random().toString(36).slice(2, 6);
+let arcOpened = Date.now(), lastArc = null, lastSave = Date.now();
 const coder = () => $('#coder').value.trim();
 $('#coder').value = localStorage.getItem('coder') || '';
 $('#coder').onchange = () => { localStorage.setItem('coder', coder()); loadCodes(); };
@@ -76,12 +79,16 @@ function applyFilter() {
 }
 function render() {
   const a = VIEW[i]; if (!a) { $('#arc').innerHTML = '<p class="hint">no arcs match</p>'; return; }
+  if (a.id !== lastArc) { lastArc = a.id; arcOpened = Date.now(); lastSave = arcOpened; }
   const tx = $('#fText').value.trim();
   const hl = s => { s = esc(s); return tx ? s.replace(new RegExp(tx.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : s; };
   $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' +
     a.turns.map(t => '<div class="panel"><div class="u">' + hl(t.u) + '</div><div class="a' + (t.reply ? '' : ' none') + '">' + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
   const done = codedArcs();
-  $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length;
+  const perArc = {}; CODES.forEach(c => { if (c.secs_on_arc != null) perArc[c.arc] = Math.max(perArc[c.arc] || 0, c.secs_total || 0); });
+  const times = Object.values(perArc).filter(x => x > 0).sort((x, y) => x - y);
+  const med = times.length ? times[Math.floor(times.length / 2)] : null;
+  $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length + (med ? ' · median ' + Math.round(med / 60) + 'm/arc' : '');
   const mine = CODES.filter(c => c.arc === a.id);
   $('#mine').innerHTML = mine.map(c => '<div class="code"><b>' + esc(c.code) + '</b><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no codes on this arc yet</div>';
   const labels = [...new Set(CODES.map(c => c.code))].sort();
@@ -96,13 +103,14 @@ function render() {
 $('#arc').onmouseup = () => { const s = String(window.getSelection()).trim(); if (s) $('#quote').value = s; };
 $('#save').onclick = async () => {
   const a = VIEW[i]; if (!a) return;
-  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString() };
+  const now = Date.now();
+  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - arcOpened) / 1000) };
   if (!row.coder) return alert('coder name first');
   if (!row.code || !row.quote) return alert('code and verbatim quote are required');
   const text = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
   if (!text.includes(row.quote)) return alert('quote is not a verbatim substring of this arc');
   const r = await fetch('/save', { method: 'POST', body: JSON.stringify(row) });
-  if (!r.ok) return alert('save failed'); CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; render();
+  if (!r.ok) return alert('save failed'); lastSave = now; CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; render();
 };
 $('#prev').onclick = () => { i = Math.max(0, i - 1); render(); };
 $('#next').onclick = () => { i = Math.min(VIEW.length - 1, i + 1); render(); };
@@ -121,6 +129,7 @@ $('#toggleBook').onclick = async () => {
       return '<tr><td><b>' + esc(code) + '</b></td><td>' + rows.length + '</td>' + models.map(m => '<td>' + (per[m] || '') + '</td>').join('') + '<td><q>“' + esc(rows[0].quote) + '”</q></td></tr>';
     }).join('') + '</table>';
 };
+setInterval(() => { const e = Math.round((Date.now() - arcOpened) / 1000); const el = $('#sat'); if (el && VIEW[i]) el.dataset.elapsed = e; const t = $('#elapsed'); if (t) t.textContent = Math.floor(e / 60) + ':' + String(e % 60).padStart(2, '0'); }, 1000);
 (async () => {
   ARCS = await (await fetch('/arcs.json')).json();
   $('#fScene').innerHTML += [...new Set(ARCS.map(a => a.scene))].sort().map(s => '<option>' + s + '</option>').join('');
