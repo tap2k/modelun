@@ -47,7 +47,7 @@
     <label>code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist>
     <label>quote (verbatim)</label><textarea id="quote"></textarea>
     <label>memo</label><textarea id="memo"></textarea>
-    <button id="save">add code</button>
+    <button id="save">add code</button> <button id="cancel" class="ghost" hidden>cancel</button>
     <div class="codes" id="mine"></div>
   </aside>
 </main>
@@ -57,7 +57,7 @@ const $ = s => document.querySelector(s);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 let ARCS = [], CODES = [], i = 0, VIEW = [];
 const SITTING = new Date().toISOString().slice(0, 16) + '-' + Math.random().toString(36).slice(2, 6);
-let firstSave = null, lastArc = null, lastSave = null;
+let firstSave = null, lastArc = null, lastSave = null, EDITING = null;
 const coder = () => $('#coder').value.trim();
 $('#coder').value = localStorage.getItem('coder') || '';
 $('#coder').onchange = () => { localStorage.setItem('coder', coder()); loadCodes(); };
@@ -90,7 +90,9 @@ function render() {
   const med = times.length ? times[Math.floor(times.length / 2)] : null;
   $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length + (med ? ' · median ' + Math.round(med / 60) + 'm/arc' : '');
   const mine = CODES.filter(c => c.arc === a.id);
-  $('#mine').innerHTML = mine.map(c => '<div class="code"><b>' + esc(c.code) + '</b><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no codes on this arc yet</div>';
+  $('#mine').innerHTML = mine.map((c, k) => '<div class="code"><b>' + esc(c.code) + '</b> <a href="#" data-edit="' + k + '">edit</a> · <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no codes on this arc yet</div>';
+  $('#mine').querySelectorAll('[data-edit]').forEach(el => el.onclick = e => { e.preventDefault(); const c = mine[+el.dataset.edit]; EDITING = c; $('#code').value = c.code; $('#quote').value = c.quote; $('#memo').value = c.memo || ''; $('#save').textContent = 'save edit'; $('#cancel').hidden = false; });
+  $('#mine').querySelectorAll('[data-del]').forEach(el => el.onclick = async e => { e.preventDefault(); const c = mine[+el.dataset.del]; if (!confirm('delete code "' + c.code + '"?')) return; await fetch('/delete', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: c.arc, ts: c.ts } }) }); CODES = CODES.filter(x => x !== c); render(); });
   const labels = [...new Set(CODES.map(c => c.code))].sort();
   $('#codelist').innerHTML = labels.map(l => '<option value="' + esc(l) + '">').join('');
   // saturation: new codes introduced per batch of 20 coded arcs, in coding order
@@ -101,8 +103,17 @@ function render() {
   $('#sat').textContent = batches.length ? 'new codes / 20 arcs: ' + batches.join(' · ') : '';
 }
 $('#arc').onmouseup = () => { const s = String(window.getSelection()).trim(); if (s) $('#quote').value = s; };
+$('#cancel').onclick = () => { EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; $('#save').textContent = 'add code'; $('#cancel').hidden = true; };
 $('#save').onclick = async () => {
   const a = VIEW[i]; if (!a) return;
+  if (EDITING) {
+    const upd = { code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim() };
+    if (!upd.code || !upd.quote) return alert('code and verbatim quote are required');
+    const text0 = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
+    if (!text0.includes(upd.quote)) return alert('quote is not a verbatim substring of this arc');
+    const r0 = await fetch('/update', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: EDITING.arc, ts: EDITING.ts }, row: upd }) });
+    if (!r0.ok) return alert('update failed'); Object.assign(EDITING, upd); $('#cancel').onclick(); render(); return;
+  }
   const now = Date.now(); if (firstSave == null) { firstSave = now; lastSave = now; }
   const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
   if (!row.coder) return alert('coder name first');
@@ -122,12 +133,14 @@ $('#toggleBook').onclick = async () => {
   const reveal = await (await fetch('/reveal')).json();
   const byCode = {}; CODES.forEach(c => (byCode[c.code] = byCode[c.code] || []).push(c));
   const models = [...new Set(CODES.map(c => reveal[c.blind] || c.blind))].sort();
-  b.innerHTML = '<p class="hint">' + Object.keys(byCode).length + ' codes · ' + CODES.length + ' applications · ' + codedArcs().size + ' arcs · counts by model (revealed)</p>' +
+  b.innerHTML = '<p class="hint">' + Object.keys(byCode).length + ' codes · ' + CODES.length + ' applications · ' + codedArcs().size + ' arcs · counts by model (revealed) · <a href="#" id="rename">rename a code</a></p>' +
     '<table><tr><th>code</th><th>n</th>' + models.map(m => '<th>' + esc(m) + '</th>').join('') + '<th>example</th></tr>' +
     Object.entries(byCode).sort((x, y) => y[1].length - x[1].length).map(([code, rows]) => {
       const per = {}; rows.forEach(r => { const m = reveal[r.blind] || r.blind; per[m] = (per[m] || 0) + 1; });
       return '<tr><td><b>' + esc(code) + '</b></td><td>' + rows.length + '</td>' + models.map(m => '<td>' + (per[m] || '') + '</td>').join('') + '<td><q>“' + esc(rows[0].quote) + '”</q></td></tr>';
     }).join('') + '</table>';
+  $('#rename').onclick = async e => { e.preventDefault(); const from = prompt('code to rename (exact):'); if (!from || !byCode[from]) return alert('no such code'); const to = prompt('new label for "' + from + '":', from); if (!to || to === from) return;
+    await fetch('/rename', { method: 'POST', body: JSON.stringify({ coder: coder(), from, to: to.trim() }) }); CODES.forEach(c => { if (c.code === from) c.code = to.trim(); }); $('#toggleBook').onclick(); $('#toggleBook').onclick(); };
 };
 (async () => {
   ARCS = await (await fetch('/arcs.json')).json();

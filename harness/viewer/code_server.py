@@ -6,6 +6,7 @@ Serves the study's views/ (code.html) and:
                              replaced by a blind id; no markers, no reads, no judge output.
   GET  /codes/<coder>        that coder's codes so far (resume, autocomplete, saturation).
   POST /save                 append one JSON line to data/coding/open_codes.<coder>.jsonl
+  POST /update, /delete      edit or remove one code (matched on arc + ts); /rename relabels a code everywhere
   GET  /reveal               blind id -> model, for the codebook view only (after coding).
 
     python harness/viewer/code_server.py --study studies/conduct [--scenes bad_plan,facts] [--per-scene 10] [--port 8000]
@@ -57,10 +58,34 @@ class H(SimpleHTTPRequestHandler):
             return self._json(rows)
         return super().do_GET()
 
+    def _rows(self, coder):
+        f = CODING / f"open_codes.{coder}.jsonl"
+        return f, ([json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else [])
+
+    def _write(self, f, rows):
+        f.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+
     def do_POST(self):
+        body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        if self.path == "/update":  # replace one row, matched on (arc, ts)
+            f, rows = self._rows(body["coder"]); key = body["key"]; new = body["row"]; n = 0
+            for i, r in enumerate(rows):
+                if r.get("arc") == key["arc"] and r.get("ts") == key["ts"]:
+                    rows[i] = {**r, **new}; n += 1
+            self._write(f, rows); return self._json({"ok": True, "updated": n})
+        if self.path == "/delete":
+            f, rows = self._rows(body["coder"]); key = body["key"]
+            kept = [r for r in rows if not (r.get("arc") == key["arc"] and r.get("ts") == key["ts"])]
+            self._write(f, kept); return self._json({"ok": True, "deleted": len(rows) - len(kept)})
+        if self.path == "/rename":  # rename a code label everywhere (misspellings, merges)
+            f, rows = self._rows(body["coder"]); n = 0
+            for r in rows:
+                if r.get("code") == body["from"]:
+                    r["code"] = body["to"]; n += 1
+            self._write(f, rows); return self._json({"ok": True, "renamed": n})
         if self.path != "/save":
             return self.send_error(404)
-        row = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        row = body
         for k in ("coder", "arc", "code", "quote"):
             if not row.get(k):
                 return self._json({"error": f"missing {k}"}, 400)
