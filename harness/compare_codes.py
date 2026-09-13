@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare open coders (human and LLM) on the arcs they both coded. Judge-free.
 
-For each pair of coders: span overlap (how much of A's quoted text B also quoted, and vice
+Also prints per-coder drift by position in coding order. For each pair of coders: span overlap (how much of A's quoted text B also quoted, and vice
 versa, measured in characters of the assistant replies), codes per arc, and the arcs coded by
 both. Labels are not matched here; that is the reconciliation pass a person does afterwards.
 
@@ -54,6 +54,25 @@ def main():
             by[r["arc"]].append(r)
         coders[f.stem.replace("open_codes.", "")] = by
     names = list(coders)
+    # drift: per coder, codes per arc and mean quote length by position in the coding order
+    # (first-seen ts per arc), in thirds; a falling curve is coder fatigue or norm formation.
+    print("drift by position in coding order (thirds): codes/arc | mean quote chars | share of top-5 labels")
+    for n in names:
+        by = coders[n]
+        order = sorted(by, key=lambda a: min(r.get("ts", "") for r in by[a]))
+        order = [a for a in order if any(r["code"] for r in by[a])]
+        if len(order) < 6:
+            continue
+        k = len(order) // 3
+        parts = [order[:k], order[k:2 * k], order[2 * k:]]
+        cells = []
+        for part in parts:
+            rows = [r for a in part for r in by[a] if r["code"]]
+            from collections import Counter
+            top = sum(c for _, c in Counter(r["code"] for r in rows).most_common(5))
+            cells.append(f"{len(rows) / len(part):.1f} | {sum(len(r['quote']) for r in rows) / max(1, len(rows)):.0f} | {top / max(1, len(rows)):.2f}")
+        print(f"  {n:<38}" + "   ".join(cells))
+    print()
     print(f"{'coder':<40}{'arcs':>6}{'codes':>7}{'codes/arc':>10}")
     for n in names:
         arcs_n = [a for a, rs in coders[n].items() if any(r["code"] for r in rs)]

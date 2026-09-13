@@ -112,6 +112,17 @@ carries `sitting`, `secs_on_arc` (since the previous code on this arc), and `sec
 first code on this arc); the clock starts at the first code, not when the arc opens, and the
 page's median excludes arcs with a gap over ten minutes, so breaks do not count.
 
+**Drift (2026-09-13).** Paid or monotonous coding forms norms: codes per arc fall, labels converge
+on favorites, quotes shorten, later arcs get less. A per-arc quota fixes the count and nothing else,
+so there is none; one code or a recorded "nothing notable" is a valid arc. Instead drift is measured
+and re-anchored: `compare_codes.py` prints codes per arc, quote length, and top-five label share by
+thirds of the coding order, and those curves go in the reliability section. Anchor arcs: each coder
+re-codes a handful of early arcs at the end of their pass, and agreement between the two passes is
+that coder's drift number. The second coder is paid per sitting, not per arc, and codes against
+codebook version one (directed, which drifts less), with the same anchor arcs. The LLM coders have
+no fatigue and no learning, each arc independent, so human drift versus machine flatness is a
+paragraph for the paper and the files already hold the evidence.
+
 ## Plan
 
 - **Phase 0 — pilot tooling.** Build `code.html` (reuse the existing transcript-render code so
