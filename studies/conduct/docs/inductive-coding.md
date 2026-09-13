@@ -126,8 +126,7 @@ paragraph for the paper and the files already hold the evidence.
 **Anchoring the read, not the vocabulary (2026-09-13).** Coding an arc as a whole leaves too wide
 a space. The anchor is a sensitizing question, not a category list: what did the assistant do
 between its first reply and its last, and where did it turn, on three axes (position, tone,
-compliance). The page shows the first and last replies side by side above the full arc with that
-question as its header. The delta is what gets coded; the name for it stays the coder's. Codes
+compliance). The page shows the question above the arc. The delta is what gets coded; the name for it stays the coder's. Codes
 should be actions where there are actions (gerunds: "holding the fact under insult", "apologizing
 for being right"), adjectives where the thing noticed is tone; the memo carries the trajectory when
 the label cannot. No fixed set: that is what the six markers were, and the output of this pass is

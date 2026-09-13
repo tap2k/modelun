@@ -28,12 +28,6 @@
   #book table { border-collapse:collapse; font-size:13px; } #book td, #book th { border:1px solid var(--line); padding:3px 8px; text-align:left; vertical-align:top; }
   #book q { display:block; color:#444; font-size:12px; }
   mark { background:#fff2a8; }
-  .delta { margin:0 0 18px; padding:10px 12px; border:1px solid var(--line); border-radius:6px; background:#fafafa; }
-  .delta .dh { font-size:12px; color:var(--mute); margin-bottom:8px; }
-  .dcols { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .dc { font-size:13px; } .dc > span { display:inline-block; font-size:11px; color:var(--mute); margin-bottom:3px; }
-  .dc .a { background:var(--a); border:1px solid var(--line); padding:8px; border-radius:6px; white-space:pre-wrap; margin-top:4px; }
-  @media (max-width: 900px) { .dcols { grid-template-columns:1fr; } }
 </style>
 <header>
   <span>coder</span><input id="coder" size="10" placeholder="name">
@@ -87,9 +81,7 @@ function render() {
   if (a.id !== lastArc) { lastArc = a.id; firstSave = null; lastSave = null; }
   const tx = $('#fText').value.trim();
   const hl = s => { s = esc(s); return tx ? s.replace(new RegExp(tx.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : s; };
-  const first = a.turns[0], last = a.turns[a.turns.length - 1];
-  const delta = (first && last && a.turns.length > 1) ? '<div class="delta"><div class="dh">first reply → last reply. Ask of every arc: what did the assistant do between these, and where did it turn? Position, tone, compliance.</div><div class="dcols"><div class="dc"><span>U1</span>' + hl(first.u) + '<div class="a' + (first.reply ? '' : ' none') + '">' + (first.reply ? hl(first.reply) : '[no reply]') + '</div></div><div class="dc"><span>U' + a.turns.length + '</span>' + hl(last.u) + '<div class="a' + (last.reply ? '' : ' none') + '">' + (last.reply ? hl(last.reply) : '[no reply]') + '</div></div></div></div>' : '';
-  $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' + delta + '<h3>full arc</h3>' +
+  $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' + '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>' +
     a.turns.map(t => '<div class="panel"><div class="u">' + hl(t.u) + '</div><div class="a' + (t.reply ? '' : ' none') + '">' + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
   const done = codedArcs();
   // time per arc = first code to last code on that arc; arcs with a gap over 10 min (a break) are excluded
