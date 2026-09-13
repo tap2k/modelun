@@ -1,0 +1,46 @@
+coverage: {'census_conc': 70, 'suggestib': 70, 'format_tax': 44, 'conduct_dep': 38, 'capability': 36}
+models on all four behavior instruments: 22
+of those with a capability score: 7
+
+pair                           n    rho   90% CI
+census_conc x suggestib       69  -0.14   [-0.33, 0.08]
+census_conc x format_tax      44  -0.22   [-0.47, 0.05]
+census_conc x conduct_dep     23  -0.47   [-0.67, -0.17] *
+census_conc x capability      30  -0.01   [-0.31, 0.29]
+suggestib x format_tax        43  -0.02   [-0.29, 0.26]
+suggestib x conduct_dep       23  -0.00   [-0.46, 0.38]
+suggestib x capability        29  -0.48   [-0.68, -0.19] *
+format_tax x conduct_dep      22   0.15   [-0.20, 0.51]
+format_tax x capability       17   0.01   [-0.45, 0.46]
+conduct_dep x capability      12  -0.11   [-0.60, 0.48]
+
+joint panel: ['claude-opus-4.8', 'claude-sonnet-4.6', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gpt-4o', 'gpt-5.4', 'grok-4.3']
+conduct decomposed:
+census_conc x conduct STABILITY (same verdict both runs)n= 23  rho=  0.10  90% CI [-0.26, 0.42]
+census_conc x conduct DIRECTION (departure rate)n= 23  rho= -0.47  90% CI [-0.67, -0.17] *
+suggestib   x conduct STABILITY                 n= 23  rho= -0.37  90% CI [-0.67, -0.01] *
+suggestib   x conduct DIRECTION                 n= 23  rho= -0.00  90% CI [-0.46, 0.38]
+
+per marker, census_conc x departure rate:
+  caved_on_fact                                 n= 23  rho= -0.41  90% CI [-0.67, -0.08] *
+  forged_document                               n= 23  rho= -0.39  90% CI [-0.63, -0.05] *
+  cheerled_bad_plan                             n= 23  rho= -0.18  90% CI [-0.51, 0.19]
+  snapped_to_task                               n= 23  rho= -0.22  90% CI [-0.52, 0.09]
+
+same decomposition with census self-distinctness (1 - repeat rate within a model) as the peakedness measure:
+peakedness x conduct STABILITY                  n= 23  rho=  0.28  90% CI [-0.07, 0.59]
+peakedness x conduct DIRECTION                  n= 23  rho= -0.14  90% CI [-0.48, 0.26]
+
+--- Reading (2026-09-13) ---
+Not temperature. Census concentration predicts the DIRECTION of conduct (rho -0.47, CI excludes
+0) and not its run-to-run STABILITY (0.10, CI spans 0). A peakedness measure from the census
+itself (self-distinctness) predicts neither direction (-0.14) nor stability cleanly (0.28, CI
+spans 0). So the shared signal is what the model does under pressure, not how consistently it
+does it. Per marker, the correlation is carried by the two "clean" markers, the ones with an
+objective right answer (caved_on_fact -0.41, forged_document -0.39, both CIs exclude 0), and not
+by the two "shaky" ones (cheerled_bad_plan, snapped_to_task). Models that converge on the modal
+word are the models that do not cave on 5x9 and do not forge the note. One candidate account:
+both are post-training strength, the same tuning that installs the mode installs the line.
+Side finding: suggestibility predicts conduct STABILITY (-0.37, CI excludes 0) and not direction:
+models that cave to "right?" are the models whose conduct verdict flips between runs. Suggestibility
+reads as within-model variability, consistent with it tracking capability rather than conduct.
