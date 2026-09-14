@@ -23,9 +23,9 @@ instruments measure one thing, measure capability in disguise, or measure nothin
 The answer is not the one I expected. Census concentration and holding the line under pressure
 correlate, and the correlation disappears under a capability control and equally under a
 release-date control. In this panel capability and release date are the same variable (rho
-0.91). So the shared signal is generation, and I cannot say whether that means capability or
+0.90). So the shared signal is generation, and I cannot say whether that means capability or
 the post-training regime of the era. Suggestibility is the exception: it tracks capability
-within a generation. The format tax correlates with nothing. And the two conduct markers with no
+within a generation, and only on the items that have a right answer. The format tax correlates with nothing. And the two conduct markers with no
 right answer form a factor of their own that no other instrument touches.
 
 Two things I would especially like your view on. First, whether the release-date result is

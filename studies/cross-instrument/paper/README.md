@@ -10,7 +10,7 @@ tectonic main.tex         # -> main.pdf
 ```
 
 Every number in `main.tex` traces to `gen/stats.json` or to the dated result files one level up
-(`RESULTS-2026-09-13b.txt`, `DATE-CHECK-2026-09-13.txt`, `RESIDUAL-READ-2026-09-13.md`). If
+(`RESULTS-2026-09-13-eci.txt`, `RESIDUAL-READ-2026-09-13.md`). If
 `build_matrix.py` or the ECI mapping changes, rerun `make_assets.py` and re-check the prose.
 
 `NOTE-ANGELINA.md` is the unsent cover note asking Angelina Wang for a read before Oct 20.

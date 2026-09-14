@@ -5,12 +5,9 @@ import sys, io, json, itertools, contextlib, datetime
 from pathlib import Path
 H = Path(__file__).resolve().parent; sys.path.insert(0, str(H.parent))
 import os; os.chdir(H.parent)
-with contextlib.redirect_stdout(io.StringIO()):
-    from build_matrix import cols, spearman, boot, resid, allm, per_marker, MARKERS, eci, arena, core
-dates = {}
-for ln in open("eci_dates_2026-09-13.txt"):
-    if ln.startswith("#") or ":" not in ln: continue
-    k, v = ln.rsplit(":",1); dates[k.strip()] = datetime.date.fromisoformat(v.strip()).toordinal()
+from build_matrix import cols, spearman, boot, resid, allm, per_marker, MARKERS, eci, arena, BEH
+dates = cols["release_date"]
+core = [m for m in allm if all(m in cols[c] for c in BEH)]
 os.chdir(H); (H/"gen").mkdir(exist_ok=True)
 LABEL = {"census_conc":"census","suggestib":"suggestibility","format_tax":"format tax",
          "conduct_dep":"conduct","capability":"capability"}
@@ -51,6 +48,9 @@ for mid in MARKERS:
     x = resid([per_marker[mid][m] for m in ms],[dates[m] for m in ms]); y = resid([cols["census_conc"][m] for m in ms],[dates[m] for m in ms])
     out.append(f"{cell(x,y)} ({len(ms)})")
     rows.append(" & ".join(out)+" \\\\")
+for k in ["sugg_taste","sugg_conseq"]:
+    n0,x0,y0 = pair(k,"capability"); n1,x1,y1 = pair(k,"capability",[dates])
+    stats[k] = {"n": n0, "raw": spearman(x0,y0), "raw_ci": boot(x0,y0), "partial_date": spearman(x1,y1), "partial_date_ci": boot(x1,y1)}
 ms = [m for m in per_marker["cheerled_bad_plan"] if m in per_marker["snapped_to_task"]]
 stats["cheerled_x_snapped"] = {"n": len(ms), "rho": spearman([per_marker["cheerled_bad_plan"][m] for m in ms],[per_marker["snapped_to_task"][m] for m in ms])}
 open("gen/marker_table.tex","w").write("\n".join(rows)+"\n\\bottomrule%\n")

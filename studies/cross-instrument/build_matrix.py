@@ -1,45 +1,48 @@
 #!/usr/bin/env python3
 """Cross-instrument matrix: per-model scores from every published instrument, joined on the
-model label, correlated with each other and with a capability index (Arena text, 2026-09-11)."""
-import json, sys, math, itertools, random
+model label, correlated with each other, with a capability index that covers the whole panel
+(Epoch Capabilities Index) and with release date, then partialled on each. Per-marker conduct
+and the taste/consequential split of suggestibility are broken out."""
+import csv, json, math, itertools, random, datetime
 from pathlib import Path
-M = Path(__file__).resolve().parent.parent
+H = Path(__file__).resolve().parent; M = H.parent
 cons = json.load(open(M/"consensus/analysis.json"))["per_model"]
 sugg = json.load(open(M/"suggestibility/analysis.json"))["per_model"]
 s = open(M/"structured/views/data.js").read(); fmt = json.loads(s[s.index("=")+1:].rstrip().rstrip(";"))["models"]
 mk = json.load(open(M/"conduct/data/benchmark/markers.json"))["models"]
-conduct = {}
+MARKERS = ["caved_on_fact", "forged_document", "cheerled_bad_plan", "snapped_to_task"]
+conduct, per_marker = {}, {}
 for m, md in mk.items():
-    v = [1 if x else 0 for mv in md.values() if mv.get("type")=="binary" for x in mv["runs"] if x is not None]
-    if v: conduct[m] = sum(v)/len(v)
-def load_index(path):
-    d = {}
-    for ln in open(path):
-        if ln.startswith("#") or ":" not in ln: continue
-        k, v = ln.rsplit(":",1); d[k.strip()] = float(v)
-    return d
-arena = load_index("arena_2026-09-11.txt")   # LMArena text, recent half of the panel only
-eci   = load_index("eci_2026-09-13.txt")     # Epoch Capabilities Index, covers the older half
-per_marker = {}                              # departure rate per binary marker
-for m, md in mk.items():
+    v = []
     for mid, mv in md.items():
-        if mv.get("type")!="binary": continue
+        if mv.get("type") != "binary": continue
         r = [1 if x else 0 for x in mv["runs"] if x is not None]
-        if r: per_marker.setdefault(mid, {})[m] = sum(r)/len(r)
+        if r: per_marker.setdefault(mid, {})[m] = sum(r)/len(r); v += r
+    if v: conduct[m] = sum(v)/len(v)
+arena = {}
+for ln in open(H/"arena_2026-09-11.txt"):
+    if ":" in ln: k, v = ln.rsplit(":",1); arena[k.strip()] = float(v)
+eci_rows = {r["Model"]: r for r in csv.DictReader(open(H/"eci_scores_2026-09-13.csv"))}
+eci, dates = {}, {}
+for ln in open(H/"eci_map_2026-09-13.tsv"):
+    if ln.startswith("#") or "\t" not in ln: continue
+    ours, theirs = ln.rstrip("\n").split("\t")
+    r = eci_rows[theirs]; eci[ours] = float(r["eci"]); dates[ours] = datetime.date.fromisoformat(r["date"]).toordinal()
 cols = {
   "census_conc":   {m: -v["surprisal"] for m, v in cons.items()},   # higher = more concentrated
   "suggestib":     {m: v["suggestibility"] for m, v in sugg.items()},
+  "sugg_taste":    {m: v["shift_taste"] for m, v in sugg.items()},
+  "sugg_conseq":   {m: v["shift_consequential"] for m, v in sugg.items()},
   "format_tax":    {m: -v["delta"] for m, v in fmt.items()},          # higher = bigger drop under JSON
   "conduct_dep":   conduct,
-  "capability":    eci,                                              # ECI is the capability index
-  "cap_arena":     arena,                                            # Arena kept as a check
+  "capability":    eci,
+  "release_date":  dates,
+  "cap_arena":     arena,
 }
-MARKERS = ["caved_on_fact", "forged_document", "cheerled_bad_plan", "snapped_to_task"]
-names = list(cols)
-CAPS = ["capability", "cap_arena"]
+BEH = ["census_conc", "suggestib", "format_tax", "conduct_dep"]
+CTRL = ["capability", "release_date", "cap_arena"]
 allm = sorted(set().union(*[set(c) for c in cols.values()]))
 def rank(x):
-    # average ranks for ties, so results do not depend on input order
     s = sorted(range(len(x)), key=lambda i: x[i]); r=[0.0]*len(x); k=0
     while k < len(s):
         j = k
@@ -59,65 +62,43 @@ def boot(a,b,B=2000,seed=0):
     rs=[r for r in rs if r==r]; rs.sort()
     if not rs: return float("nan"), float("nan")
     return rs[int(0.05*len(rs))], rs[int(0.95*len(rs))]
-print("coverage:", {k: len(v) for k,v in cols.items()})
-core = [m for m in allm if all(m in cols[c] for c in names if c not in CAPS)]
-print(f"models on all four behavior instruments: {len(core)}")
-print(f"of those with a capability score: ECI {sum(1 for m in core if m in eci)}, Arena {sum(1 for m in core if m in arena)}")
-print(f"ECI x Arena agreement on the overlap: n={len([m for m in eci if m in arena])}")
-print()
-print(f"{'pair':<28}{'n':>4}{'rho':>7}   90% CI")
-for a,b in itertools.combinations(names,2):
-    ms=[m for m in allm if m in cols[a] and m in cols[b]]
-    if len(ms)<8: print(f"{a+' x '+b:<28}{len(ms):>4}   (too few)"); continue
-    x=[cols[a][m] for m in ms]; y=[cols[b][m] for m in ms]
-    r=spearman(x,y); lo,hi=boot(x,y)
-    flag = " *" if (lo>0 or hi<0) else ""
-    print(f"{a+' x '+b:<28}{len(ms):>4}{r:>7.2f}   [{lo:.2f}, {hi:.2f}]{flag}")
 def resid(y,x):
     ry, rx = rank(y), rank(x); n=len(y); mx=sum(rx)/n; my=sum(ry)/n
     b=sum((a-mx)*(c-my) for a,c in zip(rx,ry))/max(1e-9,sum((a-mx)**2 for a in rx))
     return [c-(my+b*(a-mx)) for a,c in zip(rx,ry)]
-def partial(a, b, ctrl):
-    ms=[m for m in allm if m in cols[a] and m in cols[b] and m in ctrl]
-    if len(ms)<8: return len(ms), float("nan"), (float("nan"), float("nan"))
-    cap=[ctrl[m] for m in ms]
-    ea=resid([cols[a][m] for m in ms],cap); eb=resid([cols[b][m] for m in ms],cap)
-    return len(ms), spearman(ea,eb), boot(ea,eb)
-# partial correlations among behavior instruments controlling for ECI, pairwise (each pair on the
-# models that have both instruments and ECI), plus the joint panel
-beh=[c for c in names if c not in CAPS]
-print(f"\npartial Spearman, controlling for capability (ECI), pairwise panels:")
-print(f"{'pair':<28}{'n':>4}{'raw':>7}{'partial':>9}   90% CI (partial)")
-for a,b in itertools.combinations(beh,2):
-    ms=[m for m in allm if m in cols[a] and m in cols[b] and m in eci]
-    if len(ms)<8: print(f"{a+' x '+b:<28}{len(ms):>4}   (too few)"); continue
-    raw=spearman([cols[a][m] for m in ms],[cols[b][m] for m in ms])
-    n,r,(lo,hi)=partial(a,b,eci)
-    flag = " *" if (lo>0 or hi<0) else ""
-    print(f"{a+' x '+b:<28}{n:>4}{raw:>7.2f}{r:>9.2f}   [{lo:.2f}, {hi:.2f}]{flag}")
-joint=[m for m in core if m in eci]
-print(f"\njoint panel (all four behavior instruments + ECI), n={len(joint)}:", sorted(joint))
-# per-marker conduct: each binary marker's departure rate against every other column
-print(f"\nper-marker conduct (departure rate) x each instrument:")
-print(f"{'pair':<40}{'n':>4}{'rho':>7}   90% CI{'':<12}partial|ECI")
-for mid in MARKERS:
-    for c in ["census_conc","suggestib","format_tax","capability","cap_arena"]:
-        ms=[m for m in per_marker[mid] if m in cols[c]]
-        if len(ms)<8: print(f"{mid+' x '+c:<40}{len(ms):>4}   (too few)"); continue
-        x=[per_marker[mid][m] for m in ms]; y=[cols[c][m] for m in ms]
-        r=spearman(x,y); lo,hi=boot(x,y); flag=" *" if (lo>0 or hi<0) else ""
-        pt=""
-        if c not in CAPS:
-            ms2=[m for m in ms if m in eci]
-            if len(ms2)>=8:
-                cap=[eci[m] for m in ms2]
-                ea=resid([per_marker[mid][m] for m in ms2],cap); eb=resid([cols[c][m] for m in ms2],cap)
-                pr=spearman(ea,eb); plo,phi=boot(ea,eb)
-                pt=f"{pr:>6.2f} [{plo:.2f}, {phi:.2f}] n={len(ms2)}{' *' if (plo>0 or phi<0) else ''}"
-        print(f"{mid+' x '+c:<40}{len(ms):>4}{r:>7.2f}   [{lo:.2f}, {hi:.2f}]{flag:<3}{'':<6}{pt}")
-print(f"\nmarker x marker (departure rates, same models):")
-for a,b in itertools.combinations(MARKERS,2):
-    ms=[m for m in per_marker[a] if m in per_marker[b]]
-    x=[per_marker[a][m] for m in ms]; y=[per_marker[b][m] for m in ms]
-    r=spearman(x,y); lo,hi=boot(x,y); flag=" *" if (lo>0 or hi<0) else ""
-    print(f"{a+' x '+b:<40}{len(ms):>4}{r:>7.2f}   [{lo:.2f}, {hi:.2f}]{flag}")
+def series(a, b, ctrls=()):
+    """x, y for the models carrying a, b and every control, residualized on the controls in turn."""
+    A = cols[a] if isinstance(a, str) else a; Bc = cols[b] if isinstance(b, str) else b
+    ms=[m for m in allm if m in A and m in Bc and all(m in cols[c] for c in ctrls)]
+    x=[A[m] for m in ms]; y=[Bc[m] for m in ms]
+    for c in ctrls:
+        cv=[cols[c][m] for m in ms]; x=resid(x,cv); y=resid(y,cv)
+    return ms, x, y
+def line(label, a, b, ctrls=(), minn=8):
+    ms, x, y = series(a, b, ctrls)
+    if len(ms) < minn: print(f"{label:<46}n={len(ms):>3}  (too few)"); return
+    r=spearman(x,y); lo,hi=boot(x,y)
+    print(f"{label:<46}n={len(ms):>3}  rho={r:>6.2f}  90% CI [{lo:.2f}, {hi:.2f}]{' *' if lo>0 or hi<0 else ''}")
+if __name__ == "__main__":
+    print("coverage:", {k: len(v) for k,v in cols.items()})
+    core=[m for m in allm if all(m in cols[c] for c in BEH)]
+    print(f"models on all four behavior instruments: {len(core)}; with ECI {sum(1 for m in core if m in eci)}; with Arena {sum(1 for m in core if m in arena)}")
+    line("capability (ECI) x cap_arena", "capability", "cap_arena")
+    line("capability (ECI) x release_date", "capability", "release_date")
+    print("\n== instruments vs each other, raw ==")
+    for a,b in itertools.combinations(BEH,2): line(a+" x "+b, a, b)
+    print("\n== instruments vs capability, vs release date, and capability | date ==")
+    for k in ["census_conc","suggestib","sugg_taste","sugg_conseq","format_tax","conduct_dep"]:
+        line(k+" x capability", k, "capability"); line(k+" x release_date", k, "release_date")
+        line("  "+k+" x capability | release_date", k, "capability", ["release_date"])
+    print("\n== instrument pairs partialled on capability, on release date, and on both ==")
+    for a,b in itertools.combinations(BEH,2):
+        line("  "+a+" x "+b+" | capability", a, b, ["capability"])
+        line("  "+a+" x "+b+" | release_date", a, b, ["release_date"])
+        line("  "+a+" x "+b+" | date then capability", a, b, ["release_date","capability"])
+    print("\n== per marker (departure rate) ==")
+    for mid in MARKERS:
+        for c in ["census_conc","capability","release_date"]: line(mid+" x "+c, per_marker[mid], c)
+        line("  "+mid+" x census_conc | release_date", per_marker[mid], "census_conc", ["release_date"])
+    for a,b in itertools.combinations(MARKERS,2): line(a+" x "+b, per_marker[a], per_marker[b])
+    print("\njoint panel (four instruments + ECI):", sorted(m for m in core if m in eci))
