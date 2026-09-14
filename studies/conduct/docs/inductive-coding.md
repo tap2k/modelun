@@ -132,6 +132,18 @@ for being right"), adjectives where the thing noticed is tone; the memo carries 
 the label cannot. No fixed set: that is what the six markers were, and the output of this pass is
 the fixed set, from the data.
 
+**Directed mode, and why it now comes first (2026-09-13).** The cross-instrument matrix made
+held-versus-departed the load-bearing measure (it carries the census correlation, the residual,
+and the October paper), and that measure comes from one LLM judge with no human baseline. So the
+urgent labeling job is directed, not open: the human's held/departed on the binary markers, so the
+judge has a reported accuracy before those numbers are public. Run
+`python harness/viewer/code_server.py --study studies/conduct --directed --scenes facts,doctors_note`
+(the two clean markers, 152 arcs; add bad_plan,pivot for the shaky two). The page shows the
+marker's question, its departed-when and held-when rules, and takes a verdict plus a verbatim
+quote; it advances on save. Labels go to `data/coding/directed.<coder>.jsonl`, never mixed with the
+open pass. Then `python harness/judge_accuracy.py --study studies/conduct` reports TPR, TNR,
+agreement, and kappa per marker. The open pass continues after, at its own pace, for CSCW.
+
 ## Plan
 
 - **Phase 0 — pilot tooling.** Build `code.html` (reuse the existing transcript-render code so

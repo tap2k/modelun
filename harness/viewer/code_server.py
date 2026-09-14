@@ -26,6 +26,7 @@ ap.add_argument("--port", type=int, default=8000)
 ap.add_argument("--salt", default="conduct-2026-09", help="blind-id salt; keep fixed within a batch")
 ap.add_argument("--limit", type=int, default=0, help="serve only the first N arcs of the fixed order")
 ap.add_argument("--per-scene", type=int, default=0, help="serve the first N arcs of each scene (a balanced sample); use the same value for the LLM coders")
+ap.add_argument("--directed", action="store_true", help="directed mode: show each scene's marker question and take a held/departed verdict; writes data/coding/directed.<coder>.jsonl")
 args = ap.parse_args()
 
 STUDY = Path(args.study).resolve()
@@ -36,6 +37,19 @@ WANT = set(s for s in args.scenes.split(",") if s)
 
 ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt)
 ARCS = sample(ARCS, args.per_scene, args.limit)
+MARKERS = {}
+if args.directed:
+    sys.path.insert(0, str(STUDY / "spec"))
+    from codebook import MARKERS as _M
+    mk = json.loads((BENCH / "markers.json").read_text())["models"]
+    scene_of = {}
+    for md in mk.values():
+        for mid, mv in md.items(): scene_of[mid] = mv.get("scene")
+    for m in _M:
+        if m.get("tier") and scene_of.get(m["id"]):
+            MARKERS[scene_of[m["id"]]] = {"id": m["id"], "question": m["question"], "true_when": m["true_when"], "false_when": m["false_when"], "read": m.get("read", "")}
+    ARCS = [a for a in ARCS if a["scene"] in MARKERS]
+    for a in ARCS: a["marker"] = MARKERS[a["scene"]]
 
 class H(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
@@ -49,17 +63,19 @@ class H(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/arcs.json":
             return self._json(ARCS)
+        if self.path == "/mode":
+            return self._json({"directed": args.directed})
         if self.path == "/reveal":
             return self._json(REVEAL)
         if self.path.startswith("/codes/"):
             coder = self.path.split("/", 2)[2]
-            f = CODING / f"open_codes.{coder}.jsonl"
+            f = CODING / (f"directed.{coder}.jsonl" if args.directed else f"open_codes.{coder}.jsonl")
             rows = [json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else []
             return self._json(rows)
         return super().do_GET()
 
     def _rows(self, coder):
-        f = CODING / f"open_codes.{coder}.jsonl"
+        f = CODING / (f"directed.{coder}.jsonl" if args.directed else f"open_codes.{coder}.jsonl")
         return f, ([json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else [])
 
     def _write(self, f, rows):
@@ -90,12 +106,12 @@ class H(SimpleHTTPRequestHandler):
             if not row.get(k):
                 return self._json({"error": f"missing {k}"}, 400)
         CODING.mkdir(exist_ok=True)
-        with (CODING / f"open_codes.{row['coder']}.jsonl").open("a") as fh:
+        with (CODING / (f"directed.{row['coder']}.jsonl" if args.directed else f"open_codes.{row['coder']}.jsonl")).open("a") as fh:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
         return self._json({"ok": True})
 
     def log_message(self, *a): pass
 
 print(f"coding {len(ARCS)} arcs from {STUDY.name} ({', '.join(sorted(WANT)) or 'all scenes'})")
-print(f"open http://localhost:{args.port}/code.html   -> {CODING}/open_codes.<coder>.jsonl")
+print(f"open http://localhost:{args.port}/code.html   -> {CODING}/" + ("directed" if args.directed else "open_codes") + ".<coder>.jsonl" + ("   [DIRECTED: marker question, held/departed]" if args.directed else ""))
 HTTPServer(("127.0.0.1", args.port), H).serve_forever()

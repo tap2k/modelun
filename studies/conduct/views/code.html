@@ -44,7 +44,9 @@
   <section id="arc"></section>
   <aside id="side">
     <div class="hint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
-    <label>code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist>
+    <div id="dq" hidden style="margin-bottom:8px"><div class="hint" id="dqtext"></div>
+      <div style="margin-top:6px"><label style="display:inline;margin-right:14px"><input type="radio" name="verdict" value="held"> held (marker false)</label><label style="display:inline"><input type="radio" name="verdict" value="departed"> departed (marker true)</label></div></div>
+    <label id="codelabel">code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist>
     <label>quote (verbatim)</label><textarea id="quote"></textarea>
     <label>memo</label><textarea id="memo"></textarea>
     <button id="save">add code</button> <button id="cancel" class="ghost" hidden>cancel</button>
@@ -55,7 +57,7 @@
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-let ARCS = [], CODES = [], i = 0, VIEW = [];
+let ARCS = [], CODES = [], i = 0, VIEW = [], DIRECTED = false;
 const SITTING = new Date().toISOString().slice(0, 16) + '-' + Math.random().toString(36).slice(2, 6);
 let firstSave = null, lastArc = null, lastSave = null, EDITING = null;
 const coder = () => $('#coder').value.trim();
@@ -81,6 +83,8 @@ function render() {
   if (a.id !== lastArc) { lastArc = a.id; firstSave = null; lastSave = null; }
   const tx = $('#fText').value.trim();
   const hl = s => { s = esc(s); return tx ? s.replace(new RegExp(tx.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : s; };
+  if (DIRECTED && a.marker) { $('#dq').hidden = false; $('#codelabel').hidden = true; $('#code').hidden = true;
+    $('#dqtext').innerHTML = '<b>' + esc(a.marker.id) + '</b>: ' + esc(a.marker.question) + '<br><b>departed when</b> ' + esc([].concat(a.marker.true_when).join('; ')) + '<br><b>held when</b> ' + esc(a.marker.false_when) + (a.marker.read ? '<br><i>' + esc(a.marker.read) + '</i>' : ''); }
   $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' + '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>' +
     a.turns.map(t => '<div class="panel"><div class="u">' + hl(t.u) + '</div><div class="a' + (t.reply ? '' : ' none') + '">' + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
   const done = codedArcs();
@@ -115,13 +119,15 @@ $('#save').onclick = async () => {
     if (!r0.ok) return alert('update failed'); Object.assign(EDITING, upd); $('#cancel').onclick(); render(); return;
   }
   const now = Date.now(); if (firstSave == null) { firstSave = now; lastSave = now; }
-  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
+  const v = document.querySelector('input[name=verdict]:checked');
+  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: DIRECTED ? (v ? v.value : '') : $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
+  if (DIRECTED && a.marker) { row.marker = a.marker.id; row.verdict = row.code; }
   if (!row.coder) return alert('coder name first');
-  if (!row.code || !row.quote) return alert('code and verbatim quote are required');
+  if (!row.code || !row.quote) return alert(DIRECTED ? 'pick held or departed, and a verbatim quote' : 'code and verbatim quote are required');
   const text = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
   if (!text.includes(row.quote)) return alert('quote is not a verbatim substring of this arc');
   const r = await fetch('/save', { method: 'POST', body: JSON.stringify(row) });
-  if (!r.ok) return alert('save failed'); lastSave = now; CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; render();
+  if (!r.ok) return alert('save failed'); lastSave = now; CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; document.querySelectorAll('input[name=verdict]').forEach(x => x.checked = false); if (DIRECTED) { $('#nextUncoded').click(); } else render();
 };
 $('#prev').onclick = () => { i = Math.max(0, i - 1); render(); };
 $('#next').onclick = () => { i = Math.min(VIEW.length - 1, i + 1); render(); };
@@ -143,6 +149,8 @@ $('#toggleBook').onclick = async () => {
     await fetch('/rename', { method: 'POST', body: JSON.stringify({ coder: coder(), from, to: to.trim() }) }); CODES.forEach(c => { if (c.code === from) c.code = to.trim(); }); $('#toggleBook').onclick(); $('#toggleBook').onclick(); };
 };
 (async () => {
+  try { DIRECTED = (await (await fetch('/mode')).json()).directed; } catch (e) {}
+  if (DIRECTED) document.title = 'directed coding';
   ARCS = await (await fetch('/arcs.json')).json();
   $('#fScene').innerHTML += [...new Set(ARCS.map(a => a.scene))].sort().map(s => '<option>' + s + '</option>').join('');
   VIEW = ARCS; await loadCodes(); render();
