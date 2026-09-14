@@ -201,6 +201,26 @@ the held-out fifty counts. A literature search on 2026-09-14 found the mechanism
 (CentaurTA Studio arXiv:2604.18589, Kim et al. ACL 2026 arXiv:2605.20809, Co-Refine
 arXiv:2604.19309) and no per-version kappa series against a human floor anywhere.
 
+**Open pass complete, first comparison, anchor recode (2026-09-14).** Forty arcs, 95 codes, 64
+labels after a spelling-and-duplicates consolidation (`COMPARE-2026-09-14.txt`). The LLM coders
+quote 59 to 69 percent of the human's quoted text and the human quotes 22 to 27 percent of theirs,
+at 3.8 to 6.9 codes per arc against 2.4; whether the surplus is blind spots or noise laundering is
+the reconciliation question. Drift by thirds: codes per arc 3.0, 2.4, 1.9; quote length 62, 72,
+91 characters; top-five label share 0.36, 0.23, 0.50; the LLM coders are flat on all three.
+Anchor recode of the first five arcs at the end of the pass, blind, no autocomplete: span overlap
+0.16 first-to-anchor and 0.28 anchor-to-first, zero exact label matches, four of six anchor labels
+share a content word with a first-pass label on the same arc. The drift is a change of vocabulary,
+not of reading: the first pass on these arcs coded tone in adjectives (sarcastic, impatient,
+encouraging, skeptical), then on 2026-09-13 evening one trajectory verb was added to each (held
+the line, folded, stood ground), and the anchor pass codes only the trajectory, as compounds
+(folded and encouraged, held and defended). The sensitizing question went on the page 2026-09-13
+13:54, after arc 0 and before arcs 2 to 4, which were still coded in adjectives; the vocabulary
+moved with the coder's own practice over the pass, not with the page. Consequence for the
+codebook: the trajectory verb is the unit, the adjective is its modifier ("folded and
+encouraged" is one code, "encouraging" is not), and the first-pass adjectives on the early arcs
+should be re-read under that form before axial coding. Consequence for the second human: give
+them the form (verb, then modifier) up front, since it took this coder a pass to arrive at it.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
