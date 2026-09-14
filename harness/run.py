@@ -167,6 +167,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
             entry.update(agent_sdk.stamp(model_id, effort))
         data["scenes"][scene["id"]] = entry
 
+    if backend == "agent_sdk":                # re-stamp: the CLI version is known only after the first call
+        data.update(agent_sdk.stamp(model_id, effort))
     out_dir.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
     print(f"→ {path}")
