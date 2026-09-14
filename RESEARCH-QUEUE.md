@@ -72,7 +72,14 @@ each other (0.47) and with nothing else, provisional on the judge (step 0 of lin
 check). Two grader errors found by eye. Not a negative result: conduct under pressure is a
 generational property across 35 models and five vendors; the index bundles conduct (it predicts
 whether a model will forge a note); upgrading buys fact-holding and refusal, not
-warmth-over-truth calibration. **Spine, revised:** (1) the instruments as measurements with a
+warmth-over-truth calibration. **The story (Tapan, 2026-09-13):** low-cost behavioral assays, a few dollars a model, no
+grader on three of four, re-runnable per release, joined to a public capability index across five
+vendors. That three of four track generation is itself the finding, because it was not obvious:
+nobody expected the modal-word census to predict fact-holding under insult, or a capability score
+to predict whether a model writes a fake doctor's note; conduct could have been a house style and
+mostly is not. The one that does not track generation, warmth over truth on the judgment calls, is
+the finding on the other side. So the assays do two things the index cannot: say which parts of
+conduct an upgrade buys, and isolate the part it does not. **Spine, revised:** (1) the instruments as measurements with a
 stated construct; (2) the check on our own record, the reversal shown honestly; (3) what
 generation buys and what it does not, plus the grader lessons. Two pages per the CFP. Send to
 Angelina only after step 0 gives the judge a number; nothing is being sent yet.
