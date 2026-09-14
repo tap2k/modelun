@@ -53,7 +53,7 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 ## Waves
 
 - **Wave 1 (July 2026, 44 models)** — the arXiv panel; pinned at tag `consensus-arxiv-v2`.
-- **Wave 2 (2026-09-03, +25 models)** — the current quorum roster (`~/Desktop/projects/LLM_REGISTRY.md`)
+- **Wave 2 (2026-09-03, +25 models)** — the current cross-study roster
   appended: Fable 5.1, Opus 5, Gemini 3.8 Flash / 3.1 Flash Lite, Grok 4.6, Llama 4 Scout, GPT-OSS
   120B/20B, DeepSeek V4 Pro, Qwen 3.5/3.6/3.8, Kimi K3, GLM-5.3 (+Flash), MiniMax M3, Step 3.7 Flash,
   Gemma 4 (31B, 26B-A4B), Nemotron 3 Nano, Mistral Small 3.2 / Nemo, Hermes 3 405B. Same frozen

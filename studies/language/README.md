@@ -53,6 +53,5 @@ verbose SOV replies need first-mentioned extraction. Any *specific* word claimed
 culture's default needs native review before publication.
 
 Status: data collected and analyzed. The pickword/framing/Ukraine strand is drafted as a blog post
-(*The One-Word Census, Redux* — convovo-site, `draft`); the deep-run script-carries-culture strand
-is unwritten. Blog-only, not paper material. Planning notes on the research desk
-(`convengineering/modelUN/language-census/`).
+(*The One-Word Census, Redux*, convovo.ai, unpublished); the deep-run script-carries-culture strand
+is unwritten. Blog-only, not paper material.

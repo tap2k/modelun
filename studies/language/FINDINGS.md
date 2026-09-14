@@ -158,5 +158,4 @@ Two consequences worth stating:
 
 Data collected and analyzed; **not yet written up as a paper or post.** The script-carries-
 culture result (§2) is the most novel and publishable. Browsable pickword explorer in
-`views/`; hypotheses and priorities on the research desk (`convengineering/modelUN/
-language-census/`).
+`views/`.

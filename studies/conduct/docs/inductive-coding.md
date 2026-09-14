@@ -83,8 +83,7 @@ git add data/coding && git commit && git push   # or open a PR
 ## Built (2026-09-12)
 
 Phase 0 is in: `harness/viewer/code_server.py` and `views/code.html`, per the design above, with
-four additions from the 2026-09-12 method decisions (convovo-notes `conversation-coding-tool.md`,
-modelUN `RESEARCH-QUEUE.md` line 2):
+four additions from the 2026-09-12 method decisions:
 
 - **Blind.** The server replaces the model name with a salted id; `code.html` never sees markers,
   reads, or judge output (it does not load `data.js`). The codebook view calls `/reveal` to show
