@@ -1,0 +1,94 @@
+ECI coverage: {'census_conc': 55, 'suggestib': 54, 'format_tax': 35, 'conduct_dep': 35} | ECI x date rho: 0.91
+
+== instruments vs capability (ECI) and vs release date ==
+census_conc x capability_eci                n= 55  rho=  0.53  90% CI [0.32, 0.69] *
+census_conc x release_date                  n= 55  rho=  0.61  90% CI [0.43, 0.74] *
+suggestib x capability_eci                  n= 54  rho= -0.38  90% CI [-0.56, -0.16] *
+suggestib x release_date                    n= 54  rho= -0.30  90% CI [-0.49, -0.05] *
+shift_taste x capability_eci                n= 54  rho= -0.16  90% CI [-0.37, 0.09]
+shift_taste x release_date                  n= 54  rho= -0.12  90% CI [-0.34, 0.14]
+shift_conseq x capability_eci               n= 54  rho= -0.50  90% CI [-0.66, -0.29] *
+shift_conseq x release_date                 n= 54  rho= -0.45  90% CI [-0.63, -0.22] *
+format_tax x capability_eci                 n= 35  rho= -0.06  90% CI [-0.36, 0.26]
+format_tax x release_date                   n= 35  rho= -0.10  90% CI [-0.38, 0.20]
+conduct_dep x capability_eci                n= 35  rho= -0.41  90% CI [-0.61, -0.16] *
+conduct_dep x release_date                  n= 35  rho= -0.43  90% CI [-0.63, -0.17] *
+
+== instruments vs each other, raw ==
+census_conc x suggestib                     n= 69  rho= -0.14  90% CI [-0.33, 0.08]
+census_conc x format_tax                    n= 44  rho= -0.22  90% CI [-0.47, 0.05]
+census_conc x conduct_dep                   n= 23  rho= -0.47  90% CI [-0.67, -0.17] *
+suggestib x format_tax                      n= 43  rho= -0.02  90% CI [-0.30, 0.25]
+suggestib x conduct_dep                     n= 23  rho= -0.00  90% CI [-0.46, 0.38]
+format_tax x conduct_dep                    n= 22  rho=  0.15  90% CI [-0.20, 0.51]
+
+== partialled on capability (ECI), then on release date ==
+  census_conc x suggestib | capability_eci  n= 54  rho=  0.10  90% CI [-0.12, 0.30]
+  census_conc x suggestib | release_date    n= 54  rho=  0.09  90% CI [-0.14, 0.29]
+  census_conc x format_tax | capability_eci n= 35  rho= -0.18  90% CI [-0.47, 0.15]
+  census_conc x format_tax | release_date   n= 35  rho= -0.15  90% CI [-0.45, 0.18]
+  census_conc x conduct_dep | capability_ecin= 22  rho= -0.08  90% CI [-0.46, 0.29]
+  census_conc x conduct_dep | release_date  n= 22  rho= -0.10  90% CI [-0.46, 0.31]
+  suggestib x format_tax | capability_eci   n= 34  rho=  0.04  90% CI [-0.27, 0.35]
+  suggestib x format_tax | release_date     n= 34  rho=  0.05  90% CI [-0.27, 0.35]
+  suggestib x conduct_dep | capability_eci  n= 22  rho= -0.26  90% CI [-0.69, 0.18]
+  suggestib x conduct_dep | release_date    n= 22  rho= -0.23  90% CI [-0.64, 0.19]
+  format_tax x conduct_dep | capability_eci n= 21  rho=  0.21  90% CI [-0.12, 0.53]
+  format_tax x conduct_dep | release_date   n= 21  rho=  0.28  90% CI [-0.08, 0.60]
+
+== capability partialled on date (does any capability signal survive generation?) ==
+  census_conc x capability_eci | release_daten= 55  rho= -0.06  90% CI [-0.29, 0.18]
+  suggestib x capability_eci | release_date n= 54  rho= -0.32  90% CI [-0.51, -0.09] *
+  shift_taste x capability_eci | release_daten= 54  rho= -0.22  90% CI [-0.43, 0.02]
+  shift_conseq x capability_eci | release_daten= 54  rho= -0.32  90% CI [-0.52, -0.10] *
+  conduct_dep x capability_eci | release_daten= 35  rho=  0.04  90% CI [-0.24, 0.33]
+
+== per marker ==
+mk:caved_on_fact x census_conc              n= 23  rho= -0.41  90% CI [-0.67, -0.08] *
+mk:caved_on_fact x capability_eci           n= 35  rho= -0.57  90% CI [-0.72, -0.39] *
+mk:caved_on_fact x release_date             n= 35  rho= -0.59  90% CI [-0.72, -0.41] *
+mk:forged_document x census_conc            n= 23  rho= -0.39  90% CI [-0.64, -0.04] *
+mk:forged_document x capability_eci         n= 35  rho= -0.23  90% CI [-0.40, -0.05] *
+mk:forged_document x release_date           n= 35  rho= -0.20  90% CI [-0.37, -0.01] *
+mk:cheerled_bad_plan x census_conc          n= 23  rho= -0.18  90% CI [-0.52, 0.18]
+mk:cheerled_bad_plan x capability_eci       n= 35  rho= -0.10  90% CI [-0.39, 0.18]
+mk:cheerled_bad_plan x release_date         n= 35  rho= -0.14  90% CI [-0.45, 0.15]
+mk:snapped_to_task x census_conc            n= 23  rho= -0.22  90% CI [-0.52, 0.10]
+mk:snapped_to_task x capability_eci         n= 35  rho= -0.16  90% CI [-0.42, 0.12]
+mk:snapped_to_task x release_date           n= 35  rho= -0.16  90% CI [-0.43, 0.11]
+mk:caved_on_fact x mk:cheerled_bad_plan     n= 38  rho=  0.19  90% CI [-0.07, 0.45]
+mk:caved_on_fact x mk:forged_document       n= 38  rho=  0.12  90% CI [-0.15, 0.40]
+mk:caved_on_fact x mk:snapped_to_task       n= 38  rho=  0.19  90% CI [-0.08, 0.42]
+mk:cheerled_bad_plan x mk:forged_document   n= 38  rho=  0.08  90% CI [-0.19, 0.34]
+mk:cheerled_bad_plan x mk:snapped_to_task   n= 38  rho=  0.47  90% CI [0.24, 0.68] *
+mk:forged_document x mk:snapped_to_task     n= 38  rho=  0.20  90% CI [-0.00, 0.37]
+
+--- Reading (2026-09-13, evening; independently replicates the other machine's reversal) ---
+1. The census-conduct pair does not survive a capability index that covers the panel. On the
+   Epoch index (55 census models, 35 conduct), census concentration tracks capability (0.53) and
+   conduct departure tracks it (-0.41); partialled on either capability or release date the pair
+   falls to about -0.1 with the interval spanning zero. The morning's null against Arena was a
+   restricted-range artifact (Arena carries only 2025-26 models). "Principled" as a trait is
+   withdrawn; what the two instruments shared was generation.
+2. Capability and release date are one variable here (0.91). Partialled on date, the census's
+   capability correlation vanishes (-0.06) and so does conduct's (0.04). This panel cannot say
+   whether newer models converge and hold because they are stronger or because of the tuning
+   regime of their era. The OLMo-stages pilot is the design that can.
+3. The taste-split claim from earlier this evening (TASTE-SPLIT) is corrected on the full panel:
+   suggestibility's capability signal lives on the consequential items (-0.50; -0.32 after date),
+   not the taste items (-0.16, interval spans zero; -0.22 after date, marginal). So "the index
+   rewards holding on questions with no right answer" is NOT supported for suggestibility. Where
+   it is supported is the census: nothing is correct there and concentration rises with the index,
+   but that rise is generation, not capability net of generation.
+4. Suggestibility is the one instrument whose capability correlation survives the date control
+   (-0.32). It ranks within a generation, on capability, mostly on items with a right answer.
+5. Per marker: the two right-answer markers (arithmetic hill, forged note) carry every census and
+   capability correlation; the two judgment-call markers (day-trader, pivot) correlate with each
+   other (0.47, n=38) and with nothing else. That within-conduct factor, warmth over truth, is the
+   one signal in the record that capability, date, and the census do not predict. Provisional on
+   the judge: two judge-read markers sharing a style would produce it; the directed pass is the
+   check.
+6. The format tax correlates with nothing on any control.
+Superseded by this file: the discriminant-validity reading in RESULTS, the "not temperature"
+conclusion in TEMPERATURE-CHECK (the direction finding stands, its interpretation does not), and
+the "principled" name in RESIDUAL. Kept as the record of how the reading moved in one day.
