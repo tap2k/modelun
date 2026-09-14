@@ -31,9 +31,16 @@ from study import Study
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
+REASONING_MODES = ("off", "low", "medium", "high")
 
 
-def chat(slug, messages, temperature, max_tokens, provider=None, retries=2):
+def reasoning_body(mode):
+    """OpenRouter's per-request thinking control. Default (None) sends nothing: the model runs as served.
+    "off" disables thinking on hybrid models; an effort level caps it. The mode is stamped on the cell."""
+    return {"reasoning": {"enabled": False} if mode == "off" else {"effort": mode}}
+
+
+def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reasoning=None):
     """One turn. 60s timeout + a retry so a slow/hung route fails fast instead of blocking the batch."""
     last = None
     for attempt in range(retries):
@@ -42,22 +49,24 @@ def chat(slug, messages, temperature, max_tokens, provider=None, retries=2):
                 API,
                 headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
                 json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": max_tokens,
-                      **({"provider": {"order": [provider], "allow_fallbacks": False}} if provider else {})},
+                      **({"provider": {"order": [provider], "allow_fallbacks": False}} if provider else {}),
+                      **(reasoning_body(reasoning) if reasoning else {})},
                 timeout=60,
             )
             r.raise_for_status()
-            content = r.json()["choices"][0]["message"].get("content")
+            msg = r.json()["choices"][0]["message"]
+            content = msg.get("content")
             if not content:
                 raise ValueError("empty/null content in response")
-            return content
+            return content, msg.get("reasoning")   # trace, when the route returns one (thinking models); else None
         except Exception as e:
             last = e
             time.sleep(2)
     raise last
 
 
-def play(slug, scene, temperature, system_prompt, max_tokens, provider=None):
-    """Return [{u, reply}] across the scene's escalating user turns (+ optional seed).
+def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, reasoning=None):
+    """Return [{u, reply[, reasoning]}] across the scene's escalating user turns (+ optional seed).
 
     `system_prompt` may be overridden per-scene (`scene["system_prompt"]`); the spec-level
     prompt is the fallback. A scene with no prompt at either level runs system-prompt-free.
@@ -71,9 +80,12 @@ def play(slug, scene, temperature, system_prompt, max_tokens, provider=None):
     panels = []
     for line in scene["turns"]:
         messages.append({"role": "user", "content": line})
-        reply = chat(slug, messages, temperature, max_tokens, provider)
+        reply, trace = chat(slug, messages, temperature, max_tokens, provider, reasoning=reasoning)
         messages.append({"role": "assistant", "content": reply})
-        panels.append({"u": line, "reply": reply})
+        panel = {"u": line, "reply": reply}
+        if trace:
+            panel["reasoning"] = trace     # the model's thinking trace; not sent back into the conversation
+        panels.append(panel)
     return panels
 
 
@@ -94,7 +106,7 @@ def iter_scenes(spec):
                 yield reg["name"], scene
 
 
-def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None):
+def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None, reasoning=None):
     label = slug.split("/")[-1]
     sp = spec.get("system_prompt")
     spec_max = spec.get("max_tokens", 1200)
@@ -117,7 +129,7 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         runs_out = []
         for run in range(runs):
             try:
-                runs_out.append(play(slug, scene, temperature, sp, max_tokens, provider))
+                runs_out.append(play(slug, scene, temperature, sp, max_tokens, provider, reasoning))
                 print(f"  [{label}] {scene['id']} run {run} ✓")
             except Exception as e:
                 runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
@@ -128,6 +140,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
             entry["register"] = reg_name
         if max_tokens != spec_max:         # a raised budget (reasoning models that exhaust the default) is recorded on the cell
             entry["max_tokens"] = max_tokens
+        if reasoning:                      # a requested thinking mode is recorded on the cell; absent = the route's default
+            entry["reasoning_mode"] = reasoning
         data["scenes"][scene["id"]] = entry
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -147,6 +161,8 @@ def main():
     ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
     ap.add_argument("--provider", default=None, help="pin the OpenRouter serving provider (no fallbacks), stamped in the file header")
     ap.add_argument("--max-tokens", type=int, default=None, help="override the spec's output budget for this run; stamped on each scene it applies to")
+    ap.add_argument("--reasoning", choices=REASONING_MODES, default=None,
+                    help="request a thinking mode (off | low | medium | high); default sends nothing and takes the route's default")
     args = ap.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
@@ -158,7 +174,7 @@ def main():
     out_dir = Path(args.out) if args.out else study.transcripts_dir
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
-        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens)
+        run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens, args.reasoning)
 
 
 if __name__ == "__main__":

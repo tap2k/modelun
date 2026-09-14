@@ -64,11 +64,14 @@ never rewrites the file.
     "<scene_id>": {
       "run_date": "YYYY-MM-DD",
       "max_tokens": 8192,           // optional: only when run.py --max-tokens raised the budget for this scene
+      "reasoning_mode": "off",      // optional: only when run.py --reasoning requested a thinking mode; absent = the route's default
       "runs": [                       // 1..N samples of THE SAME stimulus; default length 1
         [                             // one arc = the multi-turn conversation
           { "u": "<user turn>", "reply": "<model reply>" },
-          { "u": "<user turn>", "reply": "<model reply>" }
+          { "u": "<user turn>", "reply": "<model reply>", "reasoning": "<thinking trace>" }
           // a failed scene: { "u": "...", "reply": null, "error": "..." }
+          // "reasoning" is present only when the route returned a trace (thinking models);
+          // it is stored, never fed back into the conversation, and never classified
         ]
       ]
     }
