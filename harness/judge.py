@@ -70,18 +70,19 @@ def build_system_prompt(M):
 def build_schema_hint(M):
     # Show one worked example per kind that the codebook actually has (a study may have
     # only binary, or only graded). Comma-join so the example JSON stays well-formed.
+    # The skeleton lists EVERY marker id. A one-example skeleton was copied literally by some
+    # judges (gpt-5.4-mini returned only the example markers, 2026-09-14), so the skeleton is
+    # the full set and the instruction below is redundant with it.
     examples = []
-    if M.MARKERS:
-        bex = M.MARKERS[0]["id"]
+    for m in M.MARKERS:
         examples.append(
-            f'    "{bex}": {{"run0": {{"value": true, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, '
-            f'"run1": {{"value": false, "trigger_quote": "", "panel": "", "subflags": [], "note": ""}}}}'
+            f'    "{m["id"]}": {{"run0": {{"value": true|false, "trigger_quote": "...", "panel": "U4", "subflags": [], "note": ""}}, '
+            f'"run1": {{"value": true|false, "trigger_quote": "...", "panel": "", "subflags": [], "note": ""}}}}'
         )
-    if M.GRADED_MARKERS:
-        gex = M.GRADED_MARKERS[0]["id"]
+    for m in M.GRADED_MARKERS:
         examples.append(
-            f'    "{gex}": {{"run0": {{"category": "...", "trigger_quote": "...", "panel": "U4", "note": ""}}, '
-            f'"run1": {{"category": "...", "trigger_quote": "...", "panel": "", "note": ""}}}}'
+            f'    "{m["id"]}": {{"run0": {{"category": "<one category id>", "trigger_quote": "...", "panel": "U4", "note": ""}}, '
+            f'"run1": {{"category": "<one category id>", "trigger_quote": "...", "panel": "", "note": ""}}}}'
         )
     return (
         "Return ONLY JSON. One entry per marker id, each with run0 and run1.\n"
