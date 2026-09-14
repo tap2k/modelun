@@ -221,6 +221,14 @@ encouraged" is one code, "encouraging" is not), and the first-pass adjectives on
 should be re-read under that form before axial coding. Consequence for the second human: give
 them the form (verb, then modifier) up front, since it took this coder a pass to arrive at it.
 
+**Codebook version one (2026-09-14, evening).** `data/coding/CODEBOOK-v1-2026-09-14.md`. Groupings
+proposed from the human's 97 labels and the reconciliation, decided code by code by the human in
+one sitting: two trajectories with the relapse rule, eleven ways of holding, four of folding,
+register as modifiers, the slope deferred to version two. Names are the human's where a label
+existed. Phase 3's preliminary diff is in the file: convergent on the three markers in the
+sample, six blind spots, and make_it_better has no marker at all. The directed relabel of the 304
+arcs against version one is the next run.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
