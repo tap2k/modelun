@@ -2,37 +2,53 @@
 <meta charset="utf-8">
 <title>open coding</title>
 <style>
-  :root { --ink:#222; --mute:#777; --line:#ddd; --u:#f3f3f3; --a:#fff; --acc:#2a5db0; }
+  :root { --ink:#222; --mute:#777; --line:#ddd; --u:#f3f3f3; --a:#fff; --acc:#2a5db0; --held:#2e7d32; --dep:#c62828; }
   body { margin:0; font:15px/1.45 -apple-system, Segoe UI, sans-serif; color:var(--ink); }
-  header { display:flex; gap:12px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); font-size:13px; }
+  header { display:flex; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); font-size:13px; }
   header input, header select, header button { font:inherit; padding:3px 6px; }
-  header .sp { flex:1; } header .n { color:var(--mute); }
-  main { display:grid; grid-template-columns: 1fr 380px; min-height: calc(100vh - 42px); }
+  header .sp { flex:1; } header .n { color:var(--mute); white-space:nowrap; }
+  main { display:grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 42px); }
   #arc { padding:14px 18px; border-right:1px solid var(--line); overflow:auto; }
   #arc h3 { margin:0 0 10px; font-size:14px; color:var(--mute); font-weight:normal; }
   .panel { margin:0 0 12px; }
   .panel .u { background:var(--u); padding:8px 10px; border-radius:6px 6px 0 0; font-size:14px; }
   .panel .a { background:var(--a); border:1px solid var(--line); border-top:0; padding:10px; border-radius:0 0 6px 6px; white-space:pre-wrap; }
   .panel .a.none { color:var(--mute); font-style:italic; }
-  #side { padding:14px; overflow:auto; }
-  #side label { display:block; font-size:12px; color:var(--mute); margin:10px 0 3px; }
-  #side input, #side textarea { width:100%; box-sizing:border-box; font:inherit; padding:6px; border:1px solid var(--line); border-radius:4px; }
-  #side textarea { min-height:60px; }
-  #side button { margin-top:10px; font:inherit; padding:6px 12px; background:var(--acc); color:#fff; border:0; border-radius:4px; cursor:pointer; }
+  #side { padding:14px; overflow:auto; display:flex; flex-direction:column; gap:10px; }
+  #side label { display:block; font-size:12px; color:var(--mute); margin:0 0 3px; }
+  #side input, #side textarea { width:100%; box-sizing:border-box; font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:4px; }
+  #side textarea { min-height:56px; resize:vertical; }
+  #side textarea#memo { min-height:36px; }
+  #side button { font:inherit; padding:6px 12px; background:var(--acc); color:#fff; border:0; border-radius:4px; cursor:pointer; }
   #side button.ghost { background:none; color:var(--acc); border:1px solid var(--acc); }
-  .codes { margin-top:14px; border-top:1px solid var(--line); padding-top:8px; }
+  .row { display:flex; gap:8px; align-items:center; }
+  .codes { border-top:1px solid var(--line); padding-top:8px; }
   .code { font-size:13px; padding:6px 0; border-bottom:1px dotted var(--line); }
   .code b { color:var(--acc); } .code q { display:block; color:#444; } .code i { color:var(--mute); }
+  .code b.held { color:var(--held); } .code b.departed { color:var(--dep); }
   .hint { font-size:12px; color:var(--mute); }
+  /* directed mode */
+  .marker { border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-size:13px; background:#fafafa; }
+  .marker .q { font-size:14px; margin:0 0 8px; }
+  .marker .q b { font-family:ui-monospace, Menlo, monospace; font-size:12px; color:var(--mute); display:block; margin-bottom:2px; }
+  .marker dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 10px; margin:0; }
+  .marker dt { font-weight:600; } .marker dt.dep { color:var(--dep); } .marker dt.held { color:var(--held); }
+  .marker dd { margin:0; } .marker .read { margin-top:8px; color:var(--mute); font-style:italic; }
+  .verdicts { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .verdicts button { padding:12px; font-size:16px; font-weight:600; }
+  .verdicts button.held { background:var(--held); } .verdicts button.departed { background:var(--dep); }
+  .verdicts button:disabled { opacity:.35; cursor:not-allowed; }
+  .verdicts button kbd { font:12px ui-monospace, Menlo, monospace; opacity:.75; margin-left:6px; }
   #book { padding:16px 20px; display:none; }
   #book table { border-collapse:collapse; font-size:13px; } #book td, #book th { border:1px solid var(--line); padding:3px 8px; text-align:left; vertical-align:top; }
   #book q { display:block; color:#444; font-size:12px; }
   mark { background:#fff2a8; }
+  [hidden] { display:none !important; }
 </style>
 <header>
   <span>coder</span><input id="coder" size="10" placeholder="name">
   <span class="n" id="pos"></span>
-  <button id="prev">←</button><button id="next">→</button><button id="nextUncoded">next uncoded</button>
+  <button id="prev" title="previous (←)">←</button><button id="next" title="next (→)">→</button><button id="nextUncoded" title="next uncoded (n)">next uncoded</button>
   <span class="sp"></span>
   <span>filter</span><select id="fScene"><option value="">all scenes</option></select>
   <input id="fCode" size="12" placeholder="code">
@@ -43,13 +59,17 @@
 <main>
   <section id="arc"></section>
   <aside id="side">
-    <div class="hint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
-    <div id="dq" hidden style="margin-bottom:8px"><div class="hint" id="dqtext"></div>
-      <div style="margin-top:6px"><label style="display:inline;margin-right:14px"><input type="radio" name="verdict" value="held"> held (marker false)</label><label style="display:inline"><input type="radio" name="verdict" value="departed"> departed (marker true)</label></div></div>
-    <label id="codelabel">code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist>
-    <label>quote (verbatim)</label><textarea id="quote"></textarea>
-    <label>memo</label><textarea id="memo"></textarea>
-    <button id="save">add code</button> <button id="cancel" class="ghost" hidden>cancel</button>
+    <div class="hint" id="openHint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
+    <div class="marker" id="dq" hidden></div>
+    <div id="codeWrap"><label>code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist></div>
+    <div><label id="quoteLabel">quote (verbatim)</label><textarea id="quote" placeholder="select text in a reply (required for departed)"></textarea></div>
+    <div><label>memo</label><textarea id="memo" placeholder="optional"></textarea></div>
+    <div class="row" id="openActions"><button id="save">add code</button> <button id="cancel" class="ghost" hidden>cancel</button></div>
+    <div class="verdicts" id="verdicts" hidden>
+      <button class="held" data-v="held">held <kbd>H</kbd></button>
+      <button class="departed" data-v="departed">departed <kbd>D</kbd></button>
+    </div>
+    <div class="hint" id="dhint" hidden>H saves held. For departed, select the deciding text in a reply, then D. Either saves and moves to the next uncoded arc. Esc cancels an edit.</div>
     <div class="codes" id="mine"></div>
   </aside>
 </main>
@@ -70,6 +90,7 @@ async function loadCodes() {
   render();
 }
 function codedArcs() { return new Set(CODES.map(c => c.arc)); }
+function arcText(a) { return a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n'); }
 function applyFilter() {
   const sc = $('#fScene').value, cd = $('#fCode').value.trim().toLowerCase(), tx = $('#fText').value.trim().toLowerCase();
   const byArc = {}; CODES.forEach(c => (byArc[c.arc] = byArc[c.arc] || []).push(c));
@@ -78,25 +99,42 @@ function applyFilter() {
     && (!tx || a.turns.some(t => (t.reply || '').toLowerCase().includes(tx) || t.u.toLowerCase().includes(tx))));
   i = Math.min(i, Math.max(0, VIEW.length - 1)); render();
 }
+function clearForm() {
+  EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = '';
+  $('#save').textContent = 'add code'; $('#cancel').hidden = true;
+  $('#quoteLabel').textContent = 'quote (verbatim)';
+}
 function render() {
   const a = VIEW[i]; if (!a) { $('#arc').innerHTML = '<p class="hint">no arcs match</p>'; return; }
-  if (a.id !== lastArc) { lastArc = a.id; firstSave = null; lastSave = null; }
+  if (a.id !== lastArc) { lastArc = a.id; firstSave = null; lastSave = null; if (EDITING) clearForm(); }
   const tx = $('#fText').value.trim();
   const hl = s => { s = esc(s); return tx ? s.replace(new RegExp(tx.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : s; };
-  if (DIRECTED && a.marker) { $('#dq').hidden = false; $('#codelabel').hidden = true; $('#code').hidden = true;
-    $('#dqtext').innerHTML = '<b>' + esc(a.marker.id) + '</b>: ' + esc(a.marker.question) + '<br><b>departed when</b> ' + esc([].concat(a.marker.true_when).join('; ')) + '<br><b>held when</b> ' + esc(a.marker.false_when) + (a.marker.read ? '<br><i>' + esc(a.marker.read) + '</i>' : ''); }
-  $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' + '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>' +
+  if (DIRECTED && a.marker) {
+    const m = a.marker;
+    $('#dq').innerHTML = '<p class="q"><b>' + esc(m.id) + '</b>' + esc(m.question) + '</p>' +
+      '<dl><dt class="dep">departed</dt><dd>' + esc([].concat(m.true_when).join('; ')) + '</dd>' +
+      '<dt class="held">held</dt><dd>' + esc(m.false_when) + '</dd></dl>' +
+      (m.read ? '<div class="read">' + esc(m.read) + '</div>' : '');
+  }
+  $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' +
+    (DIRECTED ? '' : '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>') +
     a.turns.map(t => '<div class="panel"><div class="u">' + hl(t.u) + '</div><div class="a' + (t.reply ? '' : ' none') + '">' + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
   const done = codedArcs();
   // time per arc = first code to last code on that arc; arcs with a gap over 10 min (a break) are excluded
   const perArc = {}, broken = new Set(); CODES.forEach(c => { if (c.secs_total != null) { perArc[c.arc] = Math.max(perArc[c.arc] || 0, c.secs_total); if (c.secs_on_arc > 600) broken.add(c.arc); } });
   const times = Object.entries(perArc).filter(([k, x]) => x > 0 && !broken.has(k)).map(([, x]) => x).sort((x, y) => x - y);
   const med = times.length ? times[Math.floor(times.length / 2)] : null;
-  $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length + (med ? ' · median ' + Math.round(med / 60) + 'm/arc' : '');
+  $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length + (med && !DIRECTED ? ' · median ' + Math.round(med / 60) + 'm/arc' : '');
   const mine = CODES.filter(c => c.arc === a.id);
-  $('#mine').innerHTML = mine.map((c, k) => '<div class="code"><b>' + esc(c.code) + '</b> <a href="#" data-edit="' + k + '">edit</a> · <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no codes on this arc yet</div>';
-  $('#mine').querySelectorAll('[data-edit]').forEach(el => el.onclick = e => { e.preventDefault(); const c = mine[+el.dataset.edit]; EDITING = c; $('#code').value = c.code; $('#quote').value = c.quote; $('#memo').value = c.memo || ''; $('#save').textContent = 'save edit'; $('#cancel').hidden = false; });
-  $('#mine').querySelectorAll('[data-del]').forEach(el => el.onclick = async e => { e.preventDefault(); const c = mine[+el.dataset.del]; if (!confirm('delete code "' + c.code + '"?')) return; await fetch('/delete', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: c.arc, ts: c.ts } }) }); CODES = CODES.filter(x => x !== c); render(); });
+  $('#mine').innerHTML = mine.map((c, k) => '<div class="code"><b class="' + esc(c.code) + '">' + esc(c.code) + '</b> <a href="#" data-edit="' + k + '">edit</a> · <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('')
+    || '<div class="hint">' + (DIRECTED ? 'no verdict on this arc yet' : 'no codes on this arc yet') + '</div>';
+  $('#mine').querySelectorAll('[data-edit]').forEach(el => el.onclick = e => { e.preventDefault(); const c = mine[+el.dataset.edit]; EDITING = c; $('#code').value = c.code; $('#quote').value = c.quote; $('#memo').value = c.memo || ''; $('#save').textContent = 'save edit'; $('#cancel').hidden = false; $('#quoteLabel').textContent = DIRECTED ? 'editing: press H or D to save, Esc to cancel' : 'quote (verbatim)'; });
+  $('#mine').querySelectorAll('[data-del]').forEach(el => el.onclick = async e => { e.preventDefault(); const c = mine[+el.dataset.del]; if (!confirm('delete "' + c.code + '"?')) return; await fetch('/delete', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: c.arc, ts: c.ts } }) }); CODES = CODES.filter(x => x !== c); render(); });
+  if (DIRECTED) {
+    const n = { held: 0, departed: 0 }; CODES.forEach(c => { if (c.verdict in n) n[c.verdict]++; });
+    $('#sat').textContent = 'held ' + n.held + ' · departed ' + n.departed;
+    return;
+  }
   const labels = [...new Set(CODES.map(c => c.code))].sort();
   $('#codelist').innerHTML = labels.map(l => '<option value="' + esc(l) + '">').join('');
   // saturation: new codes introduced per batch of 20 coded arcs, in coding order
@@ -107,31 +145,45 @@ function render() {
   $('#sat').textContent = batches.length ? 'new codes / 20 arcs: ' + batches.join(' · ') : '';
 }
 $('#arc').onmouseup = () => { const s = String(window.getSelection()).trim(); if (s) $('#quote').value = s; };
-$('#cancel').onclick = () => { EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; $('#save').textContent = 'add code'; $('#cancel').hidden = true; };
-$('#save').onclick = async () => {
-  const a = VIEW[i]; if (!a) return;
+$('#cancel').onclick = clearForm;
+
+// commit one code (open mode: label from #code; directed: label = verdict). Returns true on success.
+async function commit(label) {
+  const a = VIEW[i]; if (!a) return false;
+  const quote = $('#quote').value.trim(), memo = $('#memo').value.trim();
+  if (!coder()) { alert('coder name first'); return false; }
+  const needQuote = !DIRECTED || label === 'departed';
+  if (!label || (needQuote && !quote)) { alert(DIRECTED ? 'departed needs a verbatim quote: select the deciding text in a reply' : 'code and verbatim quote are required'); return false; }
+  if (quote && !arcText(a).includes(quote)) { alert('quote is not a verbatim substring of this arc'); return false; }
   if (EDITING) {
-    const upd = { code: $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim() };
-    if (!upd.code || !upd.quote) return alert('code and verbatim quote are required');
-    const text0 = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
-    if (!text0.includes(upd.quote)) return alert('quote is not a verbatim substring of this arc');
+    const upd = { code: label, quote, memo }; if (DIRECTED) upd.verdict = label;
     const r0 = await fetch('/update', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: EDITING.arc, ts: EDITING.ts }, row: upd }) });
-    if (!r0.ok) return alert('update failed'); Object.assign(EDITING, upd); $('#cancel').onclick(); render(); return;
+    if (!r0.ok) { alert('update failed'); return false; }
+    Object.assign(EDITING, upd); clearForm(); render(); return true;
   }
   const now = Date.now(); if (firstSave == null) { firstSave = now; lastSave = now; }
-  const v = document.querySelector('input[name=verdict]:checked');
-  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: DIRECTED ? (v ? v.value : '') : $('#code').value.trim(), quote: $('#quote').value.trim(), memo: $('#memo').value.trim(), ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
-  if (DIRECTED && a.marker) { row.marker = a.marker.id; row.verdict = row.code; }
-  if (!row.coder) return alert('coder name first');
-  if (!row.code || !row.quote) return alert(DIRECTED ? 'pick held or departed, and a verbatim quote' : 'code and verbatim quote are required');
-  const text = a.turns.map(t => (t.reply || '') + '\n' + t.u).join('\n');
-  if (!text.includes(row.quote)) return alert('quote is not a verbatim substring of this arc');
+  const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: label, quote, memo, ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
+  if (DIRECTED && a.marker) { row.marker = a.marker.id; row.verdict = label; }
   const r = await fetch('/save', { method: 'POST', body: JSON.stringify(row) });
-  if (!r.ok) return alert('save failed'); lastSave = now; CODES.push(row); $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; document.querySelectorAll('input[name=verdict]').forEach(x => x.checked = false); if (DIRECTED) { $('#nextUncoded').click(); } else render();
-};
+  if (!r.ok) { alert('save failed'); return false; }
+  lastSave = now; CODES.push(row); clearForm(); return true;
+}
+$('#save').onclick = async () => { if (await commit($('#code').value.trim())) render(); };
+document.querySelectorAll('#verdicts button').forEach(b => b.onclick = async () => { if (await commit(b.dataset.v)) $('#nextUncoded').click(); });
 $('#prev').onclick = () => { i = Math.max(0, i - 1); render(); };
 $('#next').onclick = () => { i = Math.min(VIEW.length - 1, i + 1); render(); };
-$('#nextUncoded').onclick = () => { const d = codedArcs(); const k = VIEW.findIndex((a, j) => j > i && !d.has(a.id)); if (k >= 0) { i = k; render(); } };
+$('#nextUncoded').onclick = () => { const d = codedArcs(); const k = VIEW.findIndex((a, j) => j > i && !d.has(a.id)); if (k >= 0) { i = k; render(); } else render(); };
+document.onkeydown = e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if (e.key === 'Escape') { if (typing) document.activeElement.blur(); if (EDITING) clearForm(); return; }
+  if (typing) return;
+  if (e.key === 'ArrowLeft') return $('#prev').click();
+  if (e.key === 'ArrowRight') return $('#next').click();
+  if (e.key === 'n') return $('#nextUncoded').click();
+  if (DIRECTED && (e.key === 'h' || e.key === 'H')) return $('#verdicts button.held').click();
+  if (DIRECTED && (e.key === 'd' || e.key === 'D')) return $('#verdicts button.departed').click();
+};
 ['#fScene', '#fCode', '#fText'].forEach(s => $(s).oninput = applyFilter);
 $('#toggleBook').onclick = async () => {
   const b = $('#book'), on = b.style.display !== 'block'; b.style.display = on ? 'block' : 'none'; $('main').style.display = on ? 'none' : 'grid';
@@ -139,18 +191,23 @@ $('#toggleBook').onclick = async () => {
   const reveal = await (await fetch('/reveal')).json();
   const byCode = {}; CODES.forEach(c => (byCode[c.code] = byCode[c.code] || []).push(c));
   const models = [...new Set(CODES.map(c => reveal[c.blind] || c.blind))].sort();
-  b.innerHTML = '<p class="hint">' + Object.keys(byCode).length + ' codes · ' + CODES.length + ' applications · ' + codedArcs().size + ' arcs · counts by model (revealed) · <a href="#" id="rename">rename a code</a></p>' +
+  b.innerHTML = '<p class="hint">' + Object.keys(byCode).length + ' codes · ' + CODES.length + ' applications · ' + codedArcs().size + ' arcs · counts by model (revealed)' + (DIRECTED ? '' : ' · <a href="#" id="rename">rename a code</a>') + '</p>' +
     '<table><tr><th>code</th><th>n</th>' + models.map(m => '<th>' + esc(m) + '</th>').join('') + '<th>example</th></tr>' +
     Object.entries(byCode).sort((x, y) => y[1].length - x[1].length).map(([code, rows]) => {
       const per = {}; rows.forEach(r => { const m = reveal[r.blind] || r.blind; per[m] = (per[m] || 0) + 1; });
       return '<tr><td><b>' + esc(code) + '</b></td><td>' + rows.length + '</td>' + models.map(m => '<td>' + (per[m] || '') + '</td>').join('') + '<td><q>“' + esc(rows[0].quote) + '”</q></td></tr>';
     }).join('') + '</table>';
-  $('#rename').onclick = async e => { e.preventDefault(); const from = prompt('code to rename (exact):'); if (!from || !byCode[from]) return alert('no such code'); const to = prompt('new label for "' + from + '":', from); if (!to || to === from) return;
+  const rn = $('#rename'); if (rn) rn.onclick = async e => { e.preventDefault(); const from = prompt('code to rename (exact):'); if (!from || !byCode[from]) return alert('no such code'); const to = prompt('new label for "' + from + '":', from); if (!to || to === from) return;
     await fetch('/rename', { method: 'POST', body: JSON.stringify({ coder: coder(), from, to: to.trim() }) }); CODES.forEach(c => { if (c.code === from) c.code = to.trim(); }); $('#toggleBook').onclick(); $('#toggleBook').onclick(); };
 };
 (async () => {
   try { DIRECTED = (await (await fetch('/mode')).json()).directed; } catch (e) {}
-  if (DIRECTED) document.title = 'directed coding';
+  if (DIRECTED) {
+    document.title = 'directed coding';
+    ['#openHint', '#codeWrap', '#openActions', '#fCode'].forEach(s => $(s).hidden = true);
+    ['#dq', '#verdicts', '#dhint'].forEach(s => $(s).hidden = false);
+    $('#quoteLabel').textContent = 'quote (verbatim)';
+  }
   ARCS = await (await fetch('/arcs.json')).json();
   $('#fScene').innerHTML += [...new Set(ARCS.map(a => a.scene))].sort().map(s => '<option>' + s + '</option>').join('');
   VIEW = ARCS; await loadCodes(); render();

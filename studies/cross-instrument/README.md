@@ -3,17 +3,34 @@
 Do the published instruments measure one thing, measure capability in disguise, or measure
 nothing in common? Per-model scores from each instrument, joined on the model label, Spearman
 correlations with bootstrap 90 percent intervals, and partial correlations controlling for a
-capability index. The construct-validity check the validity literature (Wallach et al.;
-Salaudeen et al., "Measurement to Meaning") asks of any instrument, run on our own record.
+capability index and for release date. The construct-validity check the validity literature
+(Wallach et al.; Salaudeen et al., "Measurement to Meaning") asks of any instrument, run on our
+own record.
 
     python build_matrix.py > RESULTS-<date>.txt
 
 Columns (higher = more of the named behavior):
 - `census_conc`: negative mean answer surprisal from the One-Word Census (`consensus/analysis.json`).
-- `suggestib`: suggestibility rate from How You Ask (`suggestibility/analysis.json`).
+- `suggestib`: suggestibility rate from How You Ask (`suggestibility/analysis.json`); `sugg_taste`
+  and `sugg_conseq` are its halves, items with no right answer and items with one.
 - `format_tax`: plain minus JSON surprisal from the format study (`structured/views/data.js`).
-- `conduct_dep`: departure rate over the six binary conduct markers (`conduct/data/benchmark/markers.json`).
-- `capability`: LMArena text score, snapshot 2026-09-11 (`arena_2026-09-11.txt`, hand-mapped labels); recent models only, restricted range.
-- `capability_eci` and `release_date` (`eci_matrix.py`): the Epoch Capabilities Index, `eci_scores_2026-09-13.csv` (CC-BY, epoch.ai), mapped in `eci_map_2026-09-13.tsv`; covers the older half of the panel. Use this one.
+- `conduct_dep`: departure rate over the four binary conduct markers (`conduct/data/benchmark/markers.json`);
+  the per-marker block breaks it into `caved_on_fact`, `forged_document`, `cheerled_bad_plan`, `snapped_to_task`.
+- `capability`: the Epoch Capabilities Index, `eci_scores_2026-09-13.csv` (epoch.ai, CC-BY,
+  retrieved 2026-09-13), mapped to panel labels in `eci_map_2026-09-13.tsv`; dated variants are
+  the latest released before each study's run. Covers 69 of 70 census and 35 of 38 conduct models.
+- `release_date`: from the same ECI file. Collinear with capability on this panel (rho 0.91), so
+  "capability" and "generation" cannot be separated here; the script partials on each in turn.
+- `cap_arena`: LMArena text, snapshot 2026-09-11 (`arena_2026-09-11.txt`); recent models only,
+  restricted range, kept as a check on ECI.
 
-Read `ECI-MATRIX-2026-09-13.txt` first; the earlier files record the morning's reading and are marked superseded. Capability and release date are collinear (0.91) on this panel, so "capability" and "generation" cannot be separated here.
+Partials are rank-based sequential residualization, pairwise on the models that carry both
+instruments and the control. Companion probes: `temperature_check.py` (stability vs direction),
+`residual.py` (who is off the census-conduct diagonal), `atlas_check.py` (report honesty vs census).
+
+Files. Read `RESULTS-2026-09-13-eci.txt` first: the matrix on the full panel and the reading
+that stands. `RESIDUAL-READ-2026-09-13.md` is the by-eye read of the residual rows, with two
+judge issues. The earlier dated files (`RESULTS-2026-09-13.txt`, `TEMPERATURE-CHECK`, `RESIDUAL`,
+`TASTE-SPLIT`, all 2026-09-13) record the morning's reading against Arena and are stamped
+superseded; kept as the record of how the reading moved in one day. `paper/` is the October
+short paper.

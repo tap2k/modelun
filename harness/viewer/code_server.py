@@ -102,7 +102,8 @@ class H(SimpleHTTPRequestHandler):
         if self.path != "/save":
             return self.send_error(404)
         row = body
-        for k in ("coder", "arc", "code", "quote"):
+        need = ("coder", "arc", "code") + (() if args.directed and row.get("verdict") == "held" else ("quote",))  # held is an absence: no span
+        for k in need:
             if not row.get(k):
                 return self._json({"error": f"missing {k}"}, 400)
         CODING.mkdir(exist_ok=True)

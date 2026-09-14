@@ -1,0 +1,104 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+% DRAFT 2026-09-13 for Agent Evaluation Science Fall 2026 (abstract registration 10-20, paper 10-25).
+% Every number comes from gen/stats.json (make_assets.py) or the dated result files one level up.
+
+\title{\textbf{Four Frozen Instruments, One Panel:\\A Construct-Validity Check on Behavioral Measures of Language Models}}
+\author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
+\date{Draft, September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+We report a method and a check on it. The method is a fixed battery: frozen multi-turn or single-turn stimuli, sent identically to a cross-vendor panel of language models through one API, scored by exact match or by string-verified quotation rather than against a reference answer, yielding one number per model per instrument, re-run on each release. Four such instruments have run on overlapping panels of 38 to 70 models: answer-choice concentration on a one-word census, suggestibility under tag questions, the diversity cost of structured output, and departure under pressure on four conduct markers. The check asks whether these instruments measure one thing, measure capability in disguise, or measure nothing in common. We join per-model scores on the model label, compute Spearman correlations with bootstrap intervals, and partial them on a public capability index that covers the whole panel (Epoch AI's Capabilities Index) and on release date. Three results. Census concentration and conduct holding correlate ($\rho=-0.47$, $n=23$), and the correlation disappears when either capability or release date is controlled; in this panel capability and release date are one variable ($\rho=0.91$), so the shared signal is generation, and the data cannot say whether that means capability or the post-training regime of the era. Suggestibility tracks capability and keeps doing so after the date control ($\rho=-0.31$, $n=55$); it is the one instrument that separates stronger from weaker models within a generation. The format tax correlates with nothing. A fourth finding was not planned: the two conduct markers with no objective right answer correlate with each other ($\rho=0.47$, $n=38$) and with nothing else. Reading the residual rows by eye found two grader errors that string verification of quotations does not catch. We draw the lessons for evaluation practice: a capability index must cover the panel's range, capability and generation need same-generation size ladders to separate, pooled rates hide which markers carry a signal, and a verified quote is not a verified label.
+\end{abstract}
+
+\section{The method}
+\label{sec:method}
+
+Each instrument is a frozen stimulus set run identically on every model in a panel. The one-word census~\citep{parikh2026census} asks 31 single-turn category prompts (``Name a tree.'') four times per model with no system prompt and scores each model by the mean surprisal of its answers under the pooled answers of the other models; a low surprisal is a concentrated, modal model. The tag-question study~\citep{parikh2026tag} asks factual questions with and without a trailing ``right?'' and scores the rate at which a model changes its answer. The structured-output study~\citep{parikh2026structured} repeats the census prompts under a JSON schema and scores the change in surprisal. The conduct study~\citep{parikh2026conduct} runs six four-turn scenes in which a user insists that $5\times9=54$ and turns contemptuous, begs for a backdated doctor's note, wants applause for quitting to day-trade, or discloses a dying parent and then asks for a cheerful email; four scenes carry a binary marker (caved on the fact, forged the document, cheerled the plan, snapped to the task with no acknowledgement) scored by an LLM judge whose every positive label must cite a verbatim substring of the transcript.
+
+The design rules are shared. Stimuli are frozen and public. The panel is cross-vendor through one API, so no lab's instrument scores that lab. Scoring is exact-match on normalized tokens where the datum is a discrete choice, and a string-verified quotation where a judge is unavoidable; no instrument scores against a reference answer, because the constructs are what the model does by default, and the default has no right answer. Each instrument yields one number per model, and each re-runs on every model release at a cost of one to three dollars per model. The four have run on panels of 70, 70, 44, and 38 models; 22 models carry all four.
+
+\section{The check}
+\label{sec:check}
+
+The validity literature asks of any instrument what it measures and whether the number means what its name says~\citep{wallach2025position,salaudeen2025measurement,weidinger2025evalscience}. For a battery of behavioral instruments the question has a sharp form. If the instruments correlate with each other and not with capability, there is a behavioral factor and the axis is real. If they correlate only through capability, behavior is capability in costume, and the battery has re-measured the leaderboard. If they correlate with nothing, the axis is a name for a pile of one-off findings. This paper runs that check on our own record.
+
+Scores are joined on the model label. Correlations are Spearman's $\rho$ with a 90 percent bootstrap interval (2000 resamples). The capability index is Epoch AI's Capabilities Index (ECI), a fitted aggregate over 59 benchmarks that scores 264 models released since 2023~\citep{epoch2026eci}; it covers 69 of the 70 census models and 35 of the 38 conduct models. Labels were mapped by hand, choosing for dated variants the latest released before each study's run. Partial correlations residualize the ranks of both instruments on the rank of the control and correlate the residuals. Release dates come from the same ECI file.
+
+A first pass used LMArena text scores~\citep{chiang2024arena} as the index. Arena lists only the recent half of the panel, and on those 30 models census concentration showed no relation to capability ($\rho=-0.01$). That was a restricted-range artifact, and the remainder of this paper is what appeared when the index covered the range. ECI and Arena agree where both exist ($\rho=0.75$, $n=34$).
+
+\section{Results}
+\label{sec:results}
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Pairwise Spearman correlations between the four behavior instruments and the capability index, raw and partialled. Brackets are 90 percent bootstrap intervals; bold marks intervals excluding zero. $n$ is the raw panel and the partialled panel. Directions: census is concentration, higher for more modal models; suggestibility is the cave rate; format tax is the surprisal drop under JSON; conduct is the departure rate over the four binary markers; capability is ECI.}
+\label{tab:matrix}
+\begin{tabular}{lrlll}
+\toprule
+pair & $n$ & raw $\rho$ & partial $|$ ECI & partial $|$ date \\
+\midrule
+\input{gen/matrix_table}
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{The conduct rate broken into its four markers: each marker's departure rate against census concentration and against capability, and against census concentration after the release-date control. Parentheses give $n$.}
+\label{tab:markers}
+\begin{tabular}{llll}
+\toprule
+marker & $\times$ census & $\times$ capability (ECI) & $\times$ census $|$ date \\
+\midrule
+\input{gen/marker_table}
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:matrix} gives the matrix. Three of the ten raw pairs have intervals excluding zero, and one of them survives the controls.
+
+\paragraph{Census and conduct share a signal, and the signal is generation.} Models that converge on the modal word are the models that hold the fact and refuse the note ($\rho=-0.47$). Both instruments also track capability (census $0.51$, $n=55$; conduct $-0.40$, $n=35$), and the census-conduct correlation falls to $-0.12$ when capability is partialled out and to $-0.03$ when release date is. Capability and release date are one variable in this panel ($\rho=0.91$, $n=69$): partialling on date also removes capability's own correlation with the census ($-0.04$) and with conduct ($0.09$). So the shared signal is which generation of post-training a model comes from. Whether the generation effect is capability or the tuning regime of the era is a question this panel cannot answer, because every capable model in it is also a recent one. Table~\ref{tab:markers} shows the pair is carried by the two markers with an objective right answer (caved on fact $-0.41$, forged document $-0.39$) and not by the two without (cheerled, snapped), and that the caved-on-fact marker is the most capability-loaded measure in the battery ($-0.57$).
+
+\paragraph{Suggestibility tracks capability within a generation.} The cave rate under ``right?'' falls with capability ($\rho=-0.36$, $n=55$) and keeps falling after the date control ($-0.31$, interval $[-0.51,-0.08]$). It correlates with no other behavior instrument. Of the four instruments it is the one that ranks models against their contemporaries, and what it ranks them on looks like strength rather than disposition.
+
+\paragraph{The format tax correlates with nothing.} All of its intervals span zero, on 35 models with a capability score. The diversity cost of structured output is a property the other instruments do not touch.
+
+\paragraph{The judgment-call markers form their own factor.} Cheerleading the bad plan and snapping to the task correlate with each other ($\rho=0.47$, $n=38$, interval $[0.24,0.68]$) and with nothing outside the conduct study, not capability, not date, not the census. A model that flatters the plan is a model that drops the grief, and neither is predicted by the leaderboard. This is the one place in the matrix where a behavior factor independent of capability appears, and it lives inside a single instrument.
+
+\section{Reading the rows}
+\label{sec:rows}
+
+Rank-regressing conduct departure on census concentration and listing the residuals names the models off the diagonal. We read the top three and bottom three by eye, all four scenes, both runs, against the judge's labels. Two grader errors surfaced. The forged-document marker in practice reads ``signed as a doctor'': an unsigned note body in a doctor's voice (``this patient was under my care on Tuesday'') passed for the top-ranked model and for one run of the bottom-ranked one, though the marker's definition is ``ever produces or offers the forgery.'' And a verified trigger quote can be the wrong line: for the bottom-ranked model the judge's evidence for caving on the fact is the turn where the model states the correct answer, two turns after it agreed with the wrong one. String verification checks that a quote is present, not that it is the departure. Rescoring the first error moves the top-ranked model, a 2024 open-weight model with a low capability score, from first to roughly fourth; the top of the list is then two models from the newest generation, which is the date result in specimen form. The bottom three are three different things the pooled rate collapses: a model that agrees with whatever was said last, a model that stops asserting the fact without asserting the wrong one, and a model that holds the forgery line by citing its guidelines.
+
+\section{Lessons for evaluation practice}
+\label{sec:lessons}
+
+\textbf{The capability index has to cover the panel's range.} The leaderboard everyone uses covers the models everyone uses, and those are the recent ones, nearly uniform on any behavioral measure. The null against Arena was an artifact of its coverage. A fitted index over release-reported benchmarks was the only public source that reached back to 2023.
+
+\textbf{Capability and generation are one variable, and only a designed panel separates them.} Any correlation with capability in a cross-generation panel is a correlation with the era. Separating them needs models of one generation at several sizes (the 9B, 27B, and 122B members of one family; the mini and full members of one release) on the same instruments. The census panel has some of these; the conduct panel does not yet.
+
+\textbf{Pooled rates hide which markers carry a signal.} The conduct rate's correlation with the census and with capability comes entirely from the two markers with a right answer. The two judgment-call markers, pooled with them, looked like noise and turn out to be a factor of their own.
+
+\textbf{A verified quote is not a verified label.} Requiring a judge to cite a verbatim substring removes fabricated evidence and does not remove misread evidence. Reading the extreme rows found two errors in six models; the rate in the rest of the panel is unknown until a second reader codes a sample.
+
+\textbf{What survives.} A behavioral instrument that ranks models against their contemporaries (suggestibility) measures something the capability index also measures. Instruments that rank generations (the census, the clean conduct markers) measure the post-training era, which is a finding about the field and not about a model. The one behavior factor independent of both is warmth over truth on the judgment-call scenes, and it is measured by one instrument. The battery is not a name for a pile, and it is not one thing; it is two things the leaderboard already knows and one it does not.
+
+\paragraph{Data.} Stimuli, transcripts, scores, the label mapping, and the scripts that produce every number here are public in the \texttt{studies/cross-instrument} directory of \url{https://github.com/tap2k/modelun}.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
