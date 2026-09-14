@@ -15,5 +15,7 @@ Every number in `main.tex` traces to `gen/stats.json` or to the dated result fil
 
 Short papers are 4 to 6 pages excluding references (CFP checked 2026-09-14), so the draft fits as
 is. 2026-09-14: the suggestibility column is the tag effect (the arXiv headline; `../RESULTS-2026-09-14-tageff.txt`),
-not the ask-vs-plant shift; under it the taste/stakes split no longer separates. Open before submission: the judge accuracy number from the directed pass (step 0 of the
+not the ask-vs-plant shift; under it the taste/stakes split no longer separates. Judge accuracy against the human directed pass folded in 2026-09-14 (§4.1, Table 2, two lessons in §5), from `../../conduct/data/coding/JUDGE-ACCURACY-2026-09-14.md`; the residual-read rescoring of the top-ranked model was withdrawn (human held both runs).
+
+Open before submission: the judge accuracy number from the directed pass (step 0 of the
 conduct coding line) goes into §4 and §5; the grader finding stays here.
