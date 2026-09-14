@@ -81,8 +81,12 @@ mostly is not. The one that does not track generation, warmth over truth on the 
 the finding on the other side. So the assays do two things the index cannot: say which parts of
 conduct an upgrade buys, and isolate the part it does not. **Spine, revised:** (1) the instruments as measurements with a
 stated construct; (2) the check on our own record, the reversal shown honestly; (3) what
-generation buys and what it does not, plus the grader lessons. Two pages per the CFP. Send to
-Angelina only after step 0 gives the judge a number; nothing is being sent yet.
+generation buys and what it does not, plus the grader lessons. Two pages per the CFP now; the six-page version in spring (Datasets and Benchmarks, May
+2027, or the symposium's successor), gated on three cheap fixes that answer what a validity
+reviewer attacks first: the directed pass gives the judge a reported accuracy; a second run of
+the conduct scenes doubles the readings per model; one within-generation size ladder separates
+capability from era on at least one family. Decided 2026-09-13. Send to Angelina only after step
+0 gives the judge a number; nothing is being sent yet.
 
 The position paper is not a paper (2026-09-13). The axis alone, behavior distinct from
 capability, is trodden ground (Rahwan's machine behaviour, the propensity-evaluation camp, PSM,
