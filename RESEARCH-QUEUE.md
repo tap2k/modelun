@@ -62,7 +62,20 @@ of 70). Outcome: census x conduct is a generation effect (vanishes under either 
 release-date control; the two are one variable, rho 0.91); suggestibility tracks capability within a
 generation; format tax correlates with nothing; the two judgment-call conduct markers form a factor
 of their own. Next gate: Tapan reads the draft; register abstract by Oct 20. Per-marker conduct and
-the by-eye residual read are done; two judge errors filed in `RESIDUAL-READ-2026-09-13.md`.
+the by-eye residual read are done; two judge errors filed in `RESIDUAL-READ-2026-09-13.md`. **Reading and frame (2026-09-13, late; `RESULTS-2026-09-13-eci.txt`):** against Arena
+(recent models only) the census-conduct pair looked independent of capability and was named
+"principled"; against the Epoch index, which covers the panel, both track capability, capability
+and release date are one variable (0.90), and partialled on either the pair is gone. What they
+shared was generation. Suggestibility's capability signal survives the date control and lives on
+the right-answer items. The survivor is the two judgment-call conduct markers correlating with
+each other (0.47) and with nothing else, provisional on the judge (step 0 of line 1 is the
+check). Two grader errors found by eye. Not a negative result: conduct under pressure is a
+generational property across 35 models and five vendors; the index bundles conduct (it predicts
+whether a model will forge a note); upgrading buys fact-holding and refusal, not
+warmth-over-truth calibration. **Spine, revised:** (1) the instruments as measurements with a
+stated construct; (2) the check on our own record, the reversal shown honestly; (3) what
+generation buys and what it does not, plus the grader lessons. Two pages per the CFP. Send to
+Angelina only after step 0 gives the judge a number; nothing is being sent yet.
 
 The position paper is not a paper (2026-09-13). The axis alone, behavior distinct from
 capability, is trodden ground (Rahwan's machine behaviour, the propensity-evaluation camp, PSM,
@@ -104,7 +117,8 @@ analysis, grounded theory, interviews) applied to models as subjects. Substrate 
 corpus (decided 2026-08-26; revisit which corpus and whether the pressure-scene PoC still runs
 when this comes up in sequence). Venues: the refereed schedule above (CSCW April 2027; CHI Sept 2027 for the interview instrument,
 conditional).
-- **Step 1 (running): open coding of the forty-arc conduct sample.** Blind, one arc per sitting,
+- **Step 0, FIRST (2026-09-13 evening): the directed pass.** The cross-instrument matrix made held-versus-departed the load-bearing measure and it comes from one LLM judge with no human baseline. So before more open coding: `code_server.py --directed --scenes facts,doctors_note` (the two clean markers, 152 arcs, marker question shown, held/departed plus quote, an afternoon), then `harness/judge_accuracy.py` for TPR, TNR, kappa per marker. Labels go to `data/coding/directed.<coder>.jsonl`, never mixed with the open file. Details in `studies/conduct/docs/inductive-coding.md`. Running.
+- **Step 1 (running, after step 0): open coding of the forty-arc conduct sample.** Blind, in sittings of whatever length, no quota,
   `studies/conduct/views/code.html`; three LLM coders already run on the same sample
   (`harness/open_code.py`), span comparison in `harness/compare_codes.py`. Open before directed is
   the grounded-theory order. Then a second human coder (paid Cornell grad student, blind, same
