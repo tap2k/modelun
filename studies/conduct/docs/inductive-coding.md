@@ -197,9 +197,9 @@ tuning of the judge prompt directly against the labels (Chen et al.'s agent-iter
 step); the version number is what changes, and `judge_accuracy.py` reports the new kappa beside
 the old. Caution from He et al. (arXiv:2606.06781): examples lift agreement by surface association
 as much as by rule-following, so a rising kappa on arcs the examples touched means nothing; only
-the held-out fifty counts. The lit search (convovo-notes `lit-second-coder-2026-09-14.md`) found
-the mechanism in pieces (CentaurTA prompt principles, Kim et al. ACL 2026 guideline moderation,
-Co-Refine) and no per-version kappa series against a human floor anywhere.
+the held-out fifty counts. A literature search on 2026-09-14 found the mechanism in pieces
+(CentaurTA Studio arXiv:2604.18589, Kim et al. ACL 2026 arXiv:2605.20809, Co-Refine
+arXiv:2604.19309) and no per-version kappa series against a human floor anywhere.
 
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
