@@ -17,5 +17,7 @@ Short papers are 4 to 6 pages excluding references (CFP checked 2026-09-14), so 
 is. 2026-09-14: the suggestibility column is the tag effect (the arXiv headline; `../RESULTS-2026-09-14-tageff.txt`),
 not the ask-vs-plant shift; under it the taste/stakes split no longer separates. Judge accuracy against the human directed pass folded in 2026-09-14 (§4.1, Table 2, two lessons in §5), from `../../conduct/data/coding/JUDGE-ACCURACY-2026-09-14.md`; the residual-read rescoring of the top-ranked model was withdrawn (human held both runs).
 
+Result restated 2026-09-14 (abstract, §5 What survives): the generation signal read by date is convergence on the two right-answer conduct items (zero variance after mid-2025, six vendors) against a persisting vendor split on the two judgment-call items; saturation named, post-training as hypothesis with the two designs that test it. Structure and tables unchanged.
+
 Open before submission: the judge accuracy number from the directed pass (step 0 of the
 conduct coding line) goes into §4 and §5; the grader finding stays here.
