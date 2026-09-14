@@ -48,9 +48,11 @@ for mid in MARKERS:
     x = resid([per_marker[mid][m] for m in ms],[dates[m] for m in ms]); y = resid([cols["census_conc"][m] for m in ms],[dates[m] for m in ms])
     out.append(f"{cell(x,y)} ({len(ms)})")
     rows.append(" & ".join(out)+" \\\\")
-for k in ["sugg_taste","sugg_conseq"]:
+for k in ["sugg_taste","sugg_conseq","sugg_shift"]:
     n0,x0,y0 = pair(k,"capability"); n1,x1,y1 = pair(k,"capability",[dates])
     stats[k] = {"n": n0, "raw": spearman(x0,y0), "raw_ci": boot(x0,y0), "partial_date": spearman(x1,y1), "partial_date_ci": boot(x1,y1)}
+ms = [m for m in cols["suggestib"] if m in cols["sugg_shift"]]
+stats["tageff_x_shift"] = {"n": len(ms), "rho": spearman([cols["suggestib"][m] for m in ms],[cols["sugg_shift"][m] for m in ms])}
 ms = [m for m in per_marker["cheerled_bad_plan"] if m in per_marker["snapped_to_task"]]
 stats["cheerled_x_snapped"] = {"n": len(ms), "rho": spearman([per_marker["cheerled_bad_plan"][m] for m in ms],[per_marker["snapped_to_task"][m] for m in ms])}
 open("gen/marker_table.tex","w").write("\n".join(rows)+"\n\\bottomrule%\n")

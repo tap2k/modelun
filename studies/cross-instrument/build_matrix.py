@@ -2,12 +2,15 @@
 """Cross-instrument matrix: per-model scores from every published instrument, joined on the
 model label, correlated with each other, with a capability index that covers the whole panel
 (Epoch Capabilities Index) and with release date, then partialled on each. Per-marker conduct
-and the taste/consequential split of suggestibility are broken out."""
+and the taste/consequential split of suggestibility are broken out. Suggestibility is the tag
+effect (affirm under "..., right?" minus affirm under the neutral ask), the headline of the tag-question
+paper; the ask-vs-plant shift from analysis.json is kept as sugg_shift for the record."""
 import csv, json, math, itertools, random, datetime
 from pathlib import Path
 H = Path(__file__).resolve().parent; M = H.parent
 cons = json.load(open(M/"consensus/analysis.json"))["per_model"]
 sugg = json.load(open(M/"suggestibility/analysis.json"))["per_model"]
+tag = json.load(open(M/"suggestibility/probes/righteffect_analysis.json"))["per_model"]
 s = open(M/"structured/views/data.js").read(); fmt = json.loads(s[s.index("=")+1:].rstrip().rstrip(";"))["models"]
 mk = json.load(open(M/"conduct/data/benchmark/markers.json"))["models"]
 MARKERS = ["caved_on_fact", "forged_document", "cheerled_bad_plan", "snapped_to_task"]
@@ -30,9 +33,10 @@ for ln in open(H/"eci_map_2026-09-13.tsv"):
     r = eci_rows[theirs]; eci[ours] = float(r["eci"]); dates[ours] = datetime.date.fromisoformat(r["date"]).toordinal()
 cols = {
   "census_conc":   {m: -v["surprisal"] for m, v in cons.items()},   # higher = more concentrated
-  "suggestib":     {m: v["suggestibility"] for m, v in sugg.items()},
-  "sugg_taste":    {m: v["shift_taste"] for m, v in sugg.items()},
-  "sugg_conseq":   {m: v["shift_consequential"] for m, v in sugg.items()},
+  "suggestib":     {m: v["tageff"] for m, v in tag.items()},              # tag effect, the published headline
+  "sugg_taste":    {m: v["tageff_taste"] for m, v in tag.items()},
+  "sugg_conseq":   {m: v["tageff_consequential"] for m, v in tag.items()},
+  "sugg_shift":    {m: v["suggestibility"] for m, v in sugg.items()},      # ask-vs-plant shift, for the record
   "format_tax":    {m: -v["delta"] for m, v in fmt.items()},          # higher = bigger drop under JSON
   "conduct_dep":   conduct,
   "capability":    eci,
@@ -88,7 +92,8 @@ if __name__ == "__main__":
     print("\n== instruments vs each other, raw ==")
     for a,b in itertools.combinations(BEH,2): line(a+" x "+b, a, b)
     print("\n== instruments vs capability, vs release date, and capability | date ==")
-    for k in ["census_conc","suggestib","sugg_taste","sugg_conseq","format_tax","conduct_dep"]:
+    line("suggestib (tag effect) x sugg_shift", "suggestib", "sugg_shift")
+    for k in ["census_conc","suggestib","sugg_taste","sugg_conseq","sugg_shift","format_tax","conduct_dep"]:
         line(k+" x capability", k, "capability"); line(k+" x release_date", k, "release_date")
         line("  "+k+" x capability | release_date", k, "capability", ["release_date"])
     print("\n== instrument pairs partialled on capability, on release date, and on both ==")
