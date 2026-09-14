@@ -3,7 +3,7 @@
 Read after the human forty were committed (71516f1). Spans aligned by character overlap of the
 verbatim quotes on each arc; labels are not matched by the script, only listed side by side.
 Human file: `open_codes.Tap.jsonl` (97 codes, 64 labels, 40 arcs). LLM files: haiku 178 codes
-and 157 labels, gemini 150 and 147, mini 276 and 265. Script: scratchpad `recon.py`, output
+and 157 labels, gemini 150 and 147, mini 276 and 265. Script: `harness/reconcile_codes.py`, output
 appended below in full.
 
 ## Reading
