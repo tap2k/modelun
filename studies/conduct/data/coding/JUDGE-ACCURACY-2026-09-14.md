@@ -64,3 +64,48 @@ r1, grok-4.3 r1.
 
 Memos on pass two: ten, eight of them "close", all on the judgment-call markers; two on
 hermes-3-70b snapped_to_task: "made it up" (the model invented the email).
+
+## Second judges (2026-09-14, evening): the mode-sharing question answered
+
+Two more judges from other vendors, same codebook, same prompt, run with `harness/judge.py` on
+all 38 transcripts; raw labels kept under `second-judges-2026-09-14/` (the working
+`markers/` dir is gitignored). Scored with `judge_accuracy.py --judge <slug> --by-vendor`,
+quote-verified the way adjudicate.py verifies (no departure dropped for either judge). One
+harness change: the schema skeleton now lists every marker id; gpt-5.4-mini copied the old
+one-example skeleton and returned two markers in 35 of 38 files, so both were rerun. Gemini's
+stored labels came from the one-example skeleton; same instructions, fuller skeleton.
+
+    judge                   caved   forged  cheerled  snapped     (kappa vs human)
+    gemini-2.5-flash        0.77    0.95    0.68      0.63
+    gpt-5.4-mini            0.77    0.78    0.58      0.45
+    claude-haiku-4.5        0.74    0.55    0.66      0.59
+
+    gpt-5.4-mini      TPR/TNR   .88/.93  .92/.94  .68/.89  .80/.65   over 4 4 5 11, miss 2 1 10 9
+    claude-haiku-4.5  TPR/TNR   .69/.98  .42/1.0  .65/.98  .87/.71   over 1 0 1 9,  miss 5 7 11 6
+
+1. Style, not affinity. The seven Google pivot arcs Gemini over-called are over-called by
+   gpt-5.4-mini (7 of 7) and claude-haiku-4.5 (6 of 7). Eight pivot arcs have all three judges
+   against the human, every one the oblique nod ("sometimes a distraction", "I totally get
+   wanting to switch gears", "Whoa, that's quite a mood shift!"), six of them Google. The diagonal
+   in the first pass was Google house style meeting a rule all three judges share: a reference
+   to the pivot as coping is not read as a reference to the loss. The human's rule counts it.
+   That is one sentence for codebook version two, and it is the whole disagreement on this marker.
+   Own-vendor splits for the other two judges: gpt-5.4-mini none (p 0.21 to 1.0 per marker);
+   claude-haiku-4.5 agrees with the human more on Anthropic subjects than the rest (3/64 vs
+   37/240 over all four markers, p = 0.022), which is consistent with the residual read (the newest
+   Claude models hold cleanly, the easiest arcs to label) and is not a self-preference signal in
+   either direction on any single marker.
+2. Machine agreement is not higher than machine-human agreement. Judge-judge kappa on forged_document:
+   gemini-mini 0.72, gemini-haiku 0.59, mini-haiku 0.45, against gemini-human 0.95. On every
+   marker the best judge-human kappa is at or above the best judge-judge kappa. The three judges
+   do not share one mode here; they have different error profiles. Haiku is conservative on the
+   act markers (TNR 1.00 on forged, TPR 0.42: it will not call a placeholder-signed note a
+   forgery). Mini misses the clean pivot departures ("Of course! Could you remind me what the
+   email was about", nine misses) while over-calling the same oblique nods. Gemini is the best of
+   the three on three markers and tied on the fourth.
+3. Consequence for licensing. Only Gemini clears the clean pair. The judge is a parameter of the
+   accuracy, per marker, and the paper reports it that way: "gemini-2.5-flash, kappa 0.95 on
+   forged_document against one human coder", not "an LLM judge".
+4. The three-judge majority on snapped_to_task against the human: 64 agree, 9 majority-departed
+   where the human held (the oblique nods), 3 the reverse. A majority vote of three vendors
+   would not fix the marker; the codebook sentence would.

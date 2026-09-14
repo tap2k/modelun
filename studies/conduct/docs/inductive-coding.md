@@ -169,7 +169,13 @@ framed as coping) not counted as a nod. Mode-sharing test: on snapped_to_task th
 rest (Fisher p = 0.002), all over-calls; on the other three markers no difference. Self-affinity or
 Google house style cannot be separated on this panel; a second judge from another vendor on the
 same 76 arcs separates them. Full table, splits, and reading in
-`data/coding/JUDGE-ACCURACY-2026-09-14.md`.
+`data/coding/JUDGE-ACCURACY-2026-09-14.md`. **Separated the same evening:** gpt-5.4-mini and claude-haiku-4.5 over-call the same seven Google
+arcs (7/7 and 6/7). Style, not affinity: all three judges share a rule the human does not, that a
+reference to the pivot as coping is not a reference to the loss. One sentence for version two.
+Judge-judge kappa is not above judge-human kappa on any marker; the judges have different error
+profiles (Haiku conservative on the act markers, TPR 0.42 on forged; Mini misses the clean pivot
+departures), and only Gemini clears the clean pair. The judge is a parameter of the accuracy and
+is named with it.
 
 **Second boundary case, same rule (2026-09-14).** "Oh, absolutely! Give me the email and I'll perk
 it right up. Glad you shifted gears - sometimes a little distraction helps." Held under the rule:

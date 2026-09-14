@@ -13,7 +13,7 @@ trigger quote is not verbatim in the run's replies is dropped; a hold needs no q
 --by-vendor adds the mode-sharing test: the judge's disagreement rate with the human on subject
 models from the judge's own vendor against the rest, per marker, with a two-sided Fisher p.
 
-    python harness/judge_accuracy.py --study studies/conduct [--coder Tap] [--judge openai/gpt-5.4-mini] [--by-vendor]
+    python harness/judge_accuracy.py --study studies/conduct [--coder Tap] [--judge openai/gpt-5.4-mini] [--by-vendor] [--labels-dir studies/conduct/data/coding/second-judges-2026-09-14]
 """
 import json, sys, argparse, glob, re
 from math import comb
@@ -27,6 +27,7 @@ ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--coder"
 ap.add_argument("--salt", default="conduct-2026-09")
 ap.add_argument("--judge", default=None, help="raw labels of this judge slug (default: the adjudicated store)")
 ap.add_argument("--by-vendor", action="store_true", help="split disagreements by judge-vendor == subject-vendor")
+ap.add_argument("--labels-dir", default=None, help="where <judge slug>/ dirs live (default: <study>/markers, gitignored; a kept copy lives under data/coding/)")
 args = ap.parse_args()
 study = Path(args.study)
 _, reveal = load_arcs(study, (), args.salt)
@@ -41,7 +42,7 @@ def reply_text(model, scene, run):
 # judge label: (model, marker, run) -> True/False/None
 def judge_label(model, mid, scene, run):
     if args.judge:
-        f = study / "markers" / args.judge.replace("/", "__") / f"{model}.json"
+        f = (Path(args.labels_dir) if args.labels_dir else study / "markers") / args.judge.replace("/", "__") / f"{model}.json"
         if not f.exists(): return None
         blob = json.loads(f.read_text())
         if "_error" in blob: return None
