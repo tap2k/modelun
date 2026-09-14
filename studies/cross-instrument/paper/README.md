@@ -13,6 +13,6 @@ Every number in `main.tex` traces to `gen/stats.json` or to the dated result fil
 (`RESULTS-2026-09-13-eci.txt`, `RESIDUAL-READ-2026-09-13.md`). If
 `build_matrix.py` or the ECI mapping changes, rerun `make_assets.py` and re-check the prose.
 
-Open before submission: the CFP's page limit for short papers (the page says only "2-page
-extended abstracts"; the draft is five pages); whether the grader finding (§5) stays here or
-moves to the CSCW methods paper; a second reader on a sample of conduct labels.
+Short papers are 4 to 6 pages excluding references (CFP checked 2026-09-14), so the draft fits as
+is. Open before submission: the judge accuracy number from the directed pass (step 0 of the
+conduct coding line) goes into §4 and §5; the grader finding stays here.
