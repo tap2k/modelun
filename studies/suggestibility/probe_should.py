@@ -14,7 +14,7 @@ Diagnostic: tentative - should = the register effect net of the proposition shif
 tentative boost); should - ask = the proposition shift itself. Counterbalanced X/Y; exact-match
 yes/no; hard signal timeout.
 
-    python studies/suggestibility/probe_should.py run <slug>...
+    python studies/suggestibility/probe_should.py run [--max-tokens 8192] [--reasoning off] <slug>...
     python studies/suggestibility/probe_should.py analyze
 """
 import os, sys, json, time, signal
@@ -43,18 +43,47 @@ class HardTimeout(Exception):
 signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(HardTimeout()))
 
 
+MAX_TOKENS = 512                       # wave 1. --max-tokens N raises it (reasoning models exhaust 512 thinking);
+TRACES = []                            # reasoning traces from this run, in call order (see stamp)
+REASONING = None                       # --reasoning off|low|medium|high; None sends nothing (the route's default)
+PROVIDER = None                        # a raised budget also lengthens the per-call timeout. Provider pin comes
+                                       # from ../consensus/spec/models.json ("provider"), as in the main runner.
+META = {m["slug"]: m for m in json.loads((Path(__file__).resolve().parent.parent / "consensus/spec/models.json").read_text())["models"]}
+
+
+def stamp(rec):
+    if MAX_TOKENS != 512:
+        rec["max_tokens"] = MAX_TOKENS
+    if PROVIDER:
+        rec["provider"] = PROVIDER
+    if REASONING:
+        rec["reasoning_mode"] = REASONING
+    if TRACES:
+        rec["reasoning"] = list(TRACES)
+    return rec
+
+
 def chat(slug, text):
+    hard = HARD if MAX_TOKENS == 512 else 300
+    body = {"model": slug, "messages": [{"role": "user", "content": text}],
+            "temperature": 1.0, "max_tokens": MAX_TOKENS}
+    if PROVIDER:
+        body["provider"] = {"order": [PROVIDER], "allow_fallbacks": False}
+    if REASONING:
+        body["reasoning"] = {"enabled": False} if REASONING == "off" else {"effort": REASONING}
     for _ in range(4):
-        signal.alarm(HARD)
+        signal.alarm(hard)
         try:
-            r = requests.post(API, timeout=HARD,
+            r = requests.post(API, timeout=hard,
                               headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                              json={"model": slug, "messages": [{"role": "user", "content": text}],
-                                    "temperature": 1.0, "max_tokens": 512})
+                              json=body)
             r.raise_for_status()
-            c = r.json()["choices"][0]["message"].get("content")
+            msg = r.json()["choices"][0]["message"]
+            c = msg.get("content")
             signal.alarm(0)
             if c:
+                if msg.get("reasoning"):       # thinking trace, when the route returns one; kept in call order
+                    TRACES.append({"u": text, "reply": c, "reasoning": msg["reasoning"]})
                 return c
         except Exception:
             pass
@@ -65,11 +94,14 @@ def chat(slug, text):
 
 
 def run(slug):
+    global PROVIDER
+    PROVIDER = META.get(slug, {}).get("provider")
+    TRACES.clear()
     label = slug.split("/")[-1]
     replies = [chat(slug, prompt(d, o)) for d, x, y in ITEMS for o in (x, y) for _ in range(RUNS)]
     print(f"  [{label}] should: {sum(1 for r in replies if r)}/{len(replies)} ok", flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"{label}.json").write_text(json.dumps({"model": label, "slug": slug, "cells": {"should": replies}}, indent=1))
+    (OUT / f"{label}.json").write_text(json.dumps(stamp({"model": label, "slug": slug, "cells": {"should": replies}}), indent=1))
     print(f"→ {label}.json", flush=True)
 
 
@@ -108,6 +140,10 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "analyze":
         analyze()
     elif len(sys.argv) > 1:
+        if "--max-tokens" in sys.argv:
+            i = sys.argv.index("--max-tokens"); MAX_TOKENS = int(sys.argv[i + 1]); del sys.argv[i:i + 2]
+        if "--reasoning" in sys.argv:
+            i = sys.argv.index("--reasoning"); REASONING = sys.argv[i + 1]; del sys.argv[i:i + 2]
         slugs = sys.argv[2:] if sys.argv[1] == "run" else sys.argv[1:]
         for slug in slugs:
             run(slug)

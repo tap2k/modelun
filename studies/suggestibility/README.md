@@ -96,6 +96,57 @@ disposition mix separates "holds with a reason" from "won't commit."
   Nano +24%, Mistral Nemo +14%. The reversal holds into September and now includes the Chinese
   flagships. `lineage.py` carries the wave-2 models (also read by `paper/make_assets.py`, so
   regenerating the paper figures from `main` would draw them; the paper stays at its tag).
+  `probe_righteffect.py analyze` writes `probes/righteffect_analysis.json` (per-model TAGeff, CI,
+  taste/consequential halves), which `../cross-instrument/build_matrix.py` reads as its
+  suggestibility column.
+  **Dissection arms (2026-09-14)** — the five full-panel probes the paper's §5–6 rest on
+  (`probe_ablation`, `probe_leaning`, `probe_maybetag`, `probe_should`, and the superseded
+  `probe_maybe` that `should` reads as its control) had been run only on the wave-1 45. Now all
+  70, at `--max-tokens 8192` with the provider pin, stamped on each file; residual empties after
+  retries: Qwen 3.5 9B 6 cells, MiniMax M3 1. These cells are ten days after the wave-2 ask and
+  tag cells, so their effects mix a little date drift with the construction (cf. the Opus 5
+  swing). The tag-arm scorecard at 70 has 27 significant resisters, eight of them wave 2: Kimi
+  K3, Fable 5.1, GLM-5.3 Flash, GPT-6 Astra, GLM-5.3, Qwen 3.5 27B, Qwen 3.6, Gemini 3.8 Flash.
+  *Not the stance:* all eight affirm the bare commitment at or above their ask baseline
+  (STANCEeff Kimi K3 +10, Fable 5.1 +1, GLM-5.3 Flash +6, Astra +7, GLM-5.3 +21, Qwen 3.5 27B +34,
+  Qwen 3.6 +39, Gemini 3.8 Flash +3); the dissociation count goes 24 → 32 of 70, and per-model
+  stance effects stay uncorrelated with tag effects (r = 0.29 at 70; 0.39 within wave 2). *Not
+  the word:* correct?-effects track right?-effects at r = 0.87 (0.90 within wave 2) and run
+  larger on the new resisters — Kimi K3 −39 vs −31, Fable 5.1 −38 vs −30, GLM-5.3 Flash −42 vs
+  −29. *Live leaning:* six of the eight affirm the tag-free leaning at or above baseline; Fable
+  5.1 (−3) and GLM-5.3 Flash (−1) sit within noise of it, the wave-1 pattern (15 of 17). *The
+  confidence mirror:* maybe? draws more agreement than the neutral ask in 70 of 70 (mean +20.3;
+  the paper's 45 of 45, +19.6), Fable 5.1 +16 with a 46-point maybe?−right? gap, identical to
+  Fable 5; the smallest tentative boosts in the panel are two of the new strong resisters, GLM-5.3
+  Flash +3 and Kimi K3 +4, next to Sonnet 5 (+3) and Hermes 4 (+2); the largest are Gemma 4 26B
+  +41, Qwen 3.5 9B +36, MiniMax M3 +36. *Sufficiency control:* should−ask +22.0 at 70, tentative
+  above should in 52 of 70 with a +3.5 mean, so the tentative boost net of the proposition shift
+  stays small and the proposition shift stays large. The paper's three claims hold on the 25
+  without an exception on the decisive stance cell; the paper and its figures stay at the tag.
+  **Reasoning traces (added 2026-09-14, after the wave-2 collection):** the runner and the six
+  full-panel probes now store the thinking trace a route returns (`reasoning` on the turn in a
+  transcript; a `reasoning` list in call order on a probe file). Nothing in wave 1 or wave 2 has
+  traces — those runs read only the reply — so a trace corpus starts with the next collection.
+  Future extension: read the traces on the tag, stance, and maybe? cells to see what the model
+  says it is responding to (the construction, the user's confidence, or the decision itself) —
+  the outside-in "grammar-keyed" reading gets an inside view to check against.
+  **Thinking switch (`--reasoning off|low|medium|high`, runner and the six probes; stamped as
+  `reasoning_mode`):** default sends nothing, so every wave-1 and wave-2 cell is the model as
+  served. **No-thinking arm (2026-09-14, `probe_nothink.py`, `probes/nothink/`):** the ask and
+  tag cells re-collected with thinking off on the heavy thinkers (the models that exhaust the
+  default budget deliberating). GLM-5.3, GLM-5.3 Flash, and Step 3.7 Flash refuse the switch
+  ("Reasoning is mandatory for this endpoint"); on the five that take it, every cell filled and no
+  trace came back. TAGeff on → off: Kimi K3 −31% → −23% [−30, −17], Qwen 3.5 27B −16% → −11%
+  [−19, −3], Qwen 3.6 −12% → −7%, Qwen 3.5 122B +6% → +2%, Qwen 3.5 9B +4% → −3%. The resistance
+  survives without deliberation, so it sits in the policy, not in the thinking. Four of five
+  resist *more* with thinking on — a pattern to check, not a finding: the deltas are 4–8 points,
+  and the on arm is the Sept 4 collection while the off arm is Sept 14 (cf. the 16-point Opus 5
+  swing above). One reading: without deliberation the model has only the trained reflex to the
+  construction; with it, room to notice the bid and perform the correction more fully. That is
+  what the traces would show, which makes the parked study the trace coding above rather than
+  an effort ladder: the tag, stance, and maybe? cells for the reasoning-capable models, traces
+  stored, hand-coded for what the model says it is responding to (an LLM coder would share the
+  trait it grades, the paper's reason for exact-match classification), no dose ladder.
 
 ## Run
 
