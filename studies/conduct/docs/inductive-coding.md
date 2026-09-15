@@ -259,6 +259,19 @@ numbers, and they are not in the ECI mapping until added. Added tonight, one sec
 single-model vendor so each gets a vendor test: grok-4.6, deepseek-v4-pro, command-a,
 mistral-large-2512, kimi-k3.
 
+**Version two, the fifty, and two instrument rules (2026-09-14, night).** Version two decided
+code by code (soft cave folded; empathized needs a named feeling; warned, gave the user an out,
+folded and apologized added; shape deferred; folded and diverted dropped). Six coders on a
+held-out fifty (`data/coding/HELDOUT-50.txt`, seed 2026, from the 198 untouched by v1 examples):
+trajectory at ceiling, coder-coder manner agreement 0.62 to 0.60, the three new codes at 0.55 to
+0.78. Two rules from defects found on the way: a codebook version is self-contained (the draft
+referenced v1 text for eleven codes and the coders got names without definitions), and what a
+coder reads is generated from the author's file with every evidence sentence stripped and checked
+before sending (the first run read "over-applied" notes and under-applied those codes). The
+manner number the house claim needs is the human's directed manner pass on the same fifty, on the
+coding page in `--codebook` mode (trajectory once per arc, manner with a quote), scored by
+`harness/score_manner.py`; then the second human on the same fifty and file.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
