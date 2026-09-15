@@ -47,6 +47,7 @@ WANT = set(s for s in args.scenes.split(",") if s)
 ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt, bench=args.bench, traces=args.trace)
 ARCS = sample(ARCS, args.per_scene, args.limit)
 if args.arcs_file:
+    _keep = {l.strip() for l in open(args.arcs_file) if l.strip() and not l.startswith("#")}
     ARCS = [a for a in ARCS if a["id"] in _keep]
 if args.trace:                       # only arcs with at least one trace can be trace-coded
     ARCS = [a for a in ARCS if any(t.get("reasoning") for t in a["turns"])]
@@ -55,8 +56,6 @@ CODEBOOK = None
 if args.codebook:
     _cb = Path(args.codebook).read_text(); _cut = _cb.find("\n## E."); _cb = _cb[:_cut] if _cut > 0 else _cb
     CODEBOOK = {"version": args.version, "names": sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", _cb))), "text": _cb}
-if args.arcs_file:
-    _keep = {l.strip() for l in open(args.arcs_file) if l.strip() and not l.startswith("#")}
 MARKERS = {}
 if args.directed:
     sys.path.insert(0, str(STUDY / "spec"))
