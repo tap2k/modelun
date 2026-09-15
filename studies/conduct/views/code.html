@@ -51,6 +51,13 @@
   .yn { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:6px 0 14px; }
   #side .yn button { padding:8px; font-weight:600; background:#eee; color:var(--ink); border:1px solid var(--line); }
   #side .yn button.on { background:var(--acc); color:#fff; border-color:var(--acc); }
+  #side select { width:100%; box-sizing:border-box; font:inherit; padding:7px 32px 7px 10px; border:1px solid var(--line); border-radius:6px; background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23777' stroke-width='1.6'/></svg>") no-repeat right 10px center; -webkit-appearance:none; appearance:none; color:var(--ink); cursor:pointer; }
+  #side select:focus { outline:none; border-color:var(--acc); box-shadow:0 0 0 2px rgba(42,93,176,.15); }
+  #side select:disabled { color:var(--mute); background-color:#f7f7f7; cursor:default; }
+  #mannerWrap { display:grid; grid-template-columns: 1fr 2fr; gap:8px 10px; align-items:end; }
+  #mannerWrap label { margin:0 0 4px; }
+  #mannerWrap .f { display:flex; flex-direction:column; }
+  #traj.held { border-color:var(--held); color:var(--held); font-weight:600; } #traj.folded { border-color:var(--dep); color:var(--dep); font-weight:600; }
   [hidden] { display:none !important; }
 </style>
 <header>
@@ -70,7 +77,7 @@
     <div class="hint" id="openHint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
     <div class="marker" id="dq" hidden></div>
     <details id="cbook" hidden><summary>codebook (click to open)</summary><pre id="cbtext" style="white-space:pre-wrap;font:12px/1.4 -apple-system,Segoe UI,sans-serif;max-height:40vh;overflow:auto"></pre></details>
-    <div id="mannerWrap" hidden><label>trajectory (once per arc, no quote)</label><select id="traj"><option value="">pick</option><option value="HELD">HELD</option><option value="FOLDED">FOLDED</option></select><label>manner (quote required)</label><select id="manner"><option value="">pick a trajectory first</option></select></div>
+    <div id="mannerWrap" hidden><div class="f"><label>trajectory · once per arc</label><select id="traj"><option value="">pick</option><option value="HELD">HELD</option><option value="FOLDED">FOLDED</option></select></div><div class="f"><label>manner · quote required</label><select id="manner" disabled><option value="">pick a trajectory first</option></select></div></div>
     <div id="codeWrap"><label>code</label><input id="code" list="codelist" placeholder="short label" autocomplete="off"><datalist id="codelist"></datalist></div>
     <div><label id="quoteLabel">quote (verbatim)</label><textarea id="quote" placeholder="select text in a reply (required for departed)"></textarea></div>
     <div><label>memo</label><textarea id="memo" placeholder="optional"></textarea></div>
@@ -124,7 +131,8 @@ function applyFilter() {
 function mannerOptions() {
   if (!CODEBOOK) return; const t = $('#traj').value; const pre = t === 'HELD' ? 'held' : t === 'FOLDED' ? 'folded' : null;
   const names = pre ? CODEBOOK.names.filter(n => n.startsWith(pre)) : [];
-  $('#manner').innerHTML = (pre ? '<option value="">pick</option>' : '<option value="">pick a trajectory first</option>') + names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+  $('#manner').innerHTML = (pre ? '<option value="">pick</option>' : '<option value="">pick a trajectory first</option>') + names.map(n => '<option value="' + esc(n) + '">' + esc(n.replace(/^(held|folded) (and |but )?/, '')) + '</option>').join('');
+  $('#manner').disabled = !pre; $('#traj').className = t === 'HELD' ? 'held' : t === 'FOLDED' ? 'folded' : '';
 }
 function clearForm() {
   EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; if (CODEBOOK) $('#manner').value = '';
