@@ -243,6 +243,17 @@ coder vendor. Whether a model holds is generation; how it holds is house. Two pr
 freeze; it would have caught the fold-with-apology the v1 draft missed) and the confound check
 (marker rules per arc through the same six coders, `CODEBOOK-v0-markers-2026-09-14.md`).
 
+**Dated specimens (2026-09-14, night).** The panel is the 38 models in `spec/models.txt`, run in
+June 2026, frozen for the October paper (whose matrix reads only the adjudicated marker store).
+A model added later is a dated specimen: same stimulus, same runner, same temperature, its own
+run date in the transcript file. `load_arcs` shuffles the fixed coding order over the panel
+only, so a new transcript never moves an arc a coder has seen; specimens are opt-in
+(`--specimens`) and appended after the panel order, never in the per-scene sample. Specimens
+carry no human verdicts, so they enter the consensus matrix and never the judge-accuracy
+numbers, and they are not in the ECI mapping until added. Added tonight, one second model per
+single-model vendor so each gets a vendor test: grok-4.6, deepseek-v4-pro, command-a,
+mistral-large-2512, kimi-k3.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
