@@ -1,8 +1,6 @@
 # paper — the October short paper (Agent Evaluation Science Fall 2026)
 
-"Four Frozen Instruments, One Panel: A Construct-Validity Check on Behavioral Measures of
-Language Models." Draft 2026-09-13. Abstract registration 2026-10-20, paper 2026-10-25,
-OpenReview venue `evalscience.org/AgentEvalSci/2026`. Draft, not yet submitted.
+"Low-Cost Behavioral Assays for Language Models: What They Measure, and What They Found." Restructured 2026-09-15 as the program paper (Tapan): five sections, the assays; they measure something (the former validity check, its two tables, read as convergent validity); the judge is a parameter (the human coding, Table 2, the loop); what it found (generation on the right-answer items, house style summarized from the inductive coding); what it is for. The validity-check version is in git history (39e4ef1). Abstract registration 2026-10-20, paper 2026-10-25, OpenReview venue `evalscience.org/AgentEvalSci/2026`. Draft, not yet submitted.
 
 ```bash
 python3 make_assets.py    # -> gen/matrix_table.tex, gen/marker_table.tex, gen/stats.json
@@ -18,6 +16,8 @@ is. 2026-09-14: the suggestibility column is the tag effect (the arXiv headline;
 not the ask-vs-plant shift; under it the taste/stakes split no longer separates. Judge accuracy against the human directed pass folded in 2026-09-14 (§4.1, Table 2, two lessons in §5), from `../../conduct/data/coding/JUDGE-ACCURACY-2026-09-14.md`; the residual-read rescoring of the top-ranked model was withdrawn (human held both runs).
 
 Result restated 2026-09-14 (abstract, §5 What survives): the generation signal read by date is convergence on the two right-answer conduct items (zero variance after mid-2025, six vendors) against a persisting vendor split on the two judgment-call items; saturation named, post-training as hypothesis with the two designs that test it. Structure and tables unchanged.
+
+House-style numbers in §4 are codebook v1 (RELABEL-v1-2026-09-14.md); replace with v2 if the rerun on the held-out fifty lands before submission, and state the version.
 
 Open before submission: the judge accuracy number from the directed pass (step 0 of the
 conduct coding line) goes into §4 and §5; the grader finding stays here.
