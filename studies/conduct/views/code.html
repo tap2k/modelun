@@ -70,6 +70,7 @@
     <div class="hint" id="openHint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
     <div class="marker" id="dq" hidden></div>
     <details id="cbook" hidden><summary>codebook (click to open)</summary><pre id="cbtext" style="white-space:pre-wrap;font:12px/1.4 -apple-system,Segoe UI,sans-serif;max-height:40vh;overflow:auto"></pre></details>
+    <div id="mannerWrap" hidden><label>trajectory (once per arc, no quote)</label><select id="traj"><option value="">pick</option><option value="HELD">HELD</option><option value="FOLDED">FOLDED</option></select><label>manner (quote required)</label><select id="manner"><option value="">pick a trajectory first</option></select></div>
     <div id="codeWrap"><label>code</label><input id="code" list="codelist" placeholder="short label" autocomplete="off"><datalist id="codelist"></datalist></div>
     <div><label id="quoteLabel">quote (verbatim)</label><textarea id="quote" placeholder="select text in a reply (required for departed)"></textarea></div>
     <div><label>memo</label><textarea id="memo" placeholder="optional"></textarea></div>
@@ -120,8 +121,13 @@ function applyFilter() {
     && (!tx || a.turns.some(t => (t.reply || '').toLowerCase().includes(tx) || t.u.toLowerCase().includes(tx))));
   i = Math.min(i, Math.max(0, VIEW.length - 1)); render();
 }
+function mannerOptions() {
+  if (!CODEBOOK) return; const t = $('#traj').value; const pre = t === 'HELD' ? 'held' : t === 'FOLDED' ? 'folded' : null;
+  const names = pre ? CODEBOOK.names.filter(n => n.startsWith(pre)) : [];
+  $('#manner').innerHTML = (pre ? '<option value="">pick</option>' : '<option value="">pick a trajectory first</option>') + names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+}
 function clearForm() {
-  EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = '';
+  EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; if (CODEBOOK) $('#manner').value = '';
   $('#save').textContent = 'add code'; $('#cancel').hidden = true;
   $('#quoteLabel').textContent = 'quote (verbatim)';
 }
@@ -162,7 +168,8 @@ function render() {
   const med = times.length ? times[Math.floor(times.length / 2)] : null;
   $('#pos').textContent = (i + 1) + ' / ' + VIEW.length + ' · coded ' + done.size + ' / ' + ARCS.length + (med && !DIRECTED ? ' · median ' + Math.round(med / 60) + 'm/arc' : '');
   const mine = CODES.filter(c => c.arc === a.id);
-  $('#mine').innerHTML = mine.map((c, k) => '<div class="code"><b class="' + esc(c.code) + '">' + esc(c.code) + '</b> <a href="#" data-edit="' + k + '">edit</a> · <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('')
+  if (CODEBOOK) { const tr = mine.find(c => c.kind === 'trajectory'); $('#traj').value = tr ? tr.code : ''; mannerOptions(); }
+  $('#mine').innerHTML = mine.map((c, k) => '<div class="code"><b class="' + esc(c.code) + '">' + (c.kind === 'trajectory' ? '[trajectory] ' : '') + esc(c.code) + '</b> <a href="#" data-edit="' + k + '">edit</a> · <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote) + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('')
     || '<div class="hint">' + (DIRECTED ? 'no verdict on this arc yet' : 'no codes on this arc yet') + '</div>';
   $('#mine').querySelectorAll('[data-edit]').forEach(el => el.onclick = e => { e.preventDefault(); const c = mine[+el.dataset.edit]; EDITING = c; $('#code').value = c.code; $('#quote').value = c.quote; $('#memo').value = c.memo || ''; $('#save').textContent = 'save edit'; $('#cancel').hidden = false; $('#quoteLabel').textContent = DIRECTED ? 'editing: press H or D to save, Esc to cancel' : 'quote (verbatim)'; });
   $('#mine').querySelectorAll('[data-del]').forEach(el => el.onclick = async e => { e.preventDefault(); const c = mine[+el.dataset.del]; if (!confirm('delete "' + c.code + '"?')) return; await fetch('/delete', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: c.arc, ts: c.ts } }) }); CODES = CODES.filter(x => x !== c); render(); });
@@ -190,7 +197,12 @@ async function commit(label) {
   const quote = $('#quote').value.trim(), memo = $('#memo').value.trim();
   if (!coder()) { alert('coder name first'); return false; }
   const needQuote = !DIRECTED || label === 'departed';
-  if (CODEBOOK && !CODEBOOK.names.includes(label)) { alert('pick a code from the codebook list: ' + CODEBOOK.names.join(', ')); return false; }
+  if (CODEBOOK && !$('#traj').value) { alert('pick HELD or FOLDED first'); return false; }
+  if (CODEBOOK && !CODEBOOK.names.includes(label)) { alert('pick a manner from the list'); return false; }
+  if (CODEBOOK && !EDITING && !CODES.some(c => c.arc === a.id && c.kind === 'trajectory')) {
+    const tr = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, kind: 'trajectory', code: $('#traj').value, quote: '', memo: '', ts: new Date().toISOString(), sitting: SITTING, codebook: CODEBOOK.version };
+    const rt = await fetch('/save', { method: 'POST', body: JSON.stringify(tr) }); if (!rt.ok) { alert('save failed'); return false; } CODES.push(tr);
+  }
   if (!label || (needQuote && !quote)) { alert(DIRECTED ? 'departed needs a verbatim quote: select the deciding text in a reply' : 'code and verbatim quote are required'); return false; }
   if (quote && !arcText(a).includes(quote)) { alert('quote is not a verbatim substring of this arc'); return false; }
   if (EDITING) {
@@ -201,12 +213,14 @@ async function commit(label) {
   }
   const now = Date.now(); if (firstSave == null) { firstSave = now; lastSave = now; }
   const row = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, code: label, quote, memo, ts: new Date().toISOString(), sitting: SITTING, secs_on_arc: Math.round((now - lastSave) / 1000), secs_total: Math.round((now - firstSave) / 1000) };
+  if (CODEBOOK) { row.kind = 'code'; row.codebook = CODEBOOK.version; }
   if (DIRECTED && a.marker) { row.marker = a.marker.id; row.verdict = label; }
   const r = await fetch('/save', { method: 'POST', body: JSON.stringify(row) });
   if (!r.ok) { alert('save failed'); return false; }
   lastSave = now; CODES.push(row); clearForm(); return true;
 }
-$('#save').onclick = async () => { if (await commit($('#code').value.trim())) render(); };
+$('#save').onclick = async () => { if (await commit(CODEBOOK ? $('#manner').value : $('#code').value.trim())) render(); };
+$('#traj').onchange = mannerOptions;
 async function commitTurn() {
   const a = VIEW[i]; if (!a) return;
   if (!coder()) return alert('coder name first');
@@ -264,7 +278,7 @@ $('#toggleBook').onclick = async () => {
 };
 (async () => {
   try { const m = await (await fetch('/mode')).json(); DIRECTED = m.directed; TRACE = m.trace; CODEBOOK = m.codebook || null; } catch (e) {}
-  if (CODEBOOK) { document.title = 'manner coding ' + CODEBOOK.version; $('#cbook').hidden = false; $('#cbtext').textContent = CODEBOOK.text; $('#openHint').textContent = 'Manner pass, codebook ' + CODEBOOK.version + ': for this arc, add every code from the list that is present, each with the verbatim quote that shows it. One trajectory (HELD or FOLDED is not coded here; the directed pass has it). Codes not on the list are refused.'; $('#code').placeholder = 'pick from the list'; }
+  if (CODEBOOK) { document.title = 'manner coding ' + CODEBOOK.version; $('#cbook').hidden = false; $('#cbtext').textContent = CODEBOOK.text; $('#openHint').textContent = 'Manner pass, codebook ' + CODEBOOK.version + ': for this arc, add every code from the list that is present, each with the verbatim quote that shows it. One trajectory (HELD or FOLDED is not coded here; the directed pass has it). Codes not on the list are refused.'; $('#codeWrap').hidden = true; $('#mannerWrap').hidden = false; mannerOptions(); }
   if (TRACE) {
     document.title = 'trace coding';
     ['#openHint', '#codeWrap', '#openActions', '#fCode'].forEach(s => $(s).hidden = true);

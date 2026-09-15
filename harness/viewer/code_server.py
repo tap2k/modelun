@@ -124,7 +124,7 @@ class H(SimpleHTTPRequestHandler):
         if args.trace:      # one row per (arc, turn): the two answers, a span from the trace when either is yes
             need = ("coder", "arc", "names_move", "intent_split") + (("quote",) if "yes" in (row.get("names_move"), row.get("intent_split")) else ())
         else:
-            need = ("coder", "arc", "code") + (() if args.directed and row.get("verdict") == "held" else ("quote",))  # held is an absence: no span
+            need = ("coder", "arc", "code") + (() if (args.directed and row.get("verdict") == "held") or row.get("kind") == "trajectory" else ("quote",))  # held is an absence: no span; a trajectory row in manner mode has none
         for k in need:
             if row.get(k) in (None, ""):
                 return self._json({"error": f"missing {k}"}, 400)
