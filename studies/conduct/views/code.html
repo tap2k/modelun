@@ -48,7 +48,7 @@
   .panel .t.none { color:var(--mute); font-style:italic; }
   .panel .t b, .panel .a b.lab { font-size:11px; color:var(--mute); display:block; margin-bottom:3px; font-weight:600; letter-spacing:.03em; }
   .panel.cur .t { outline:2px solid var(--acc); }
-  .yn { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px; }
+  .yn { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:6px 0 14px; }
   #side .yn button { padding:8px; font-weight:600; background:#eee; color:var(--ink); border:1px solid var(--line); }
   #side .yn button.on { background:var(--acc); color:#fff; border-color:var(--acc); }
   [hidden] { display:none !important; }
@@ -85,7 +85,7 @@
       <div hidden><select id="turn"></select></div>
       <div><label>1. names the move?</label><div class="yn" data-q="names_move"><button data-v="yes">yes <kbd>1</kbd></button><button data-v="no">no <kbd>2</kbd></button></div></div>
       <div><label>2. intent split?</label><div class="yn" data-q="intent_split"><button data-v="yes">yes <kbd>3</kbd></button><button data-v="no">no <kbd>4</kbd></button></div></div>
-      <div class="row" style="margin-top:6px"><button id="tsave">save</button><span class="hint">Enter</span></div>
+      <div class="row" style="margin-top:10px"><button id="tsave">save</button><span class="hint">Enter</span><span class="sp"></span><span class="hint" id="curTurn"></span></div>
     </div>
     <div class="codes" id="mine"></div>
   </aside>
@@ -145,6 +145,7 @@ function render() {
     const tt = tracedTurns(a), done = codedTurns(a);
     $('#turn').innerHTML = tt.map(k => '<option value="' + k + '"' + (k === TURN ? ' selected' : '') + '>turn ' + (k + 1) + (done.has(k) ? ' ✓' : '') + '</option>').join('');
     document.querySelectorAll('.yn button').forEach(b => b.classList.toggle('on', ANS[b.parentElement.dataset.q] === b.dataset.v));
+    $('#curTurn').textContent = 'turn ' + (TURN + 1) + ' of ' + a.turns.length + (done.has(TURN) ? ' · coded' : '');
     const tr = CODES.filter(c => c.arc === a.id);
     $('#mine').innerHTML = tr.map((c, k) => '<div class="code"><b>turn ' + (c.turn + 1) + '</b> · names move: ' + esc(c.names_move) + ' · intent split: ' + esc(c.intent_split) + ' <a href="#" data-del="' + k + '">delete</a><q>“' + esc(c.quote || '') + '”</q><i>' + esc(c.memo || '') + '</i></div>').join('') || '<div class="hint">no turns coded on this arc yet</div>';
     $('#mine').querySelectorAll('[data-del]').forEach(el => el.onclick = async e => { e.preventDefault(); const c = tr[+el.dataset.del]; if (!confirm('delete turn ' + (c.turn + 1) + '?')) return; await fetch('/delete', { method: 'POST', body: JSON.stringify({ coder: coder(), key: { arc: c.arc, ts: c.ts } }) }); CODES = CODES.filter(x => x !== c); render(); });
