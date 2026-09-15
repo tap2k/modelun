@@ -1,7 +1,7 @@
 # Coding sheet, conduct codebook v2 (2026-09-15)
 
 For the second human coder, and from version three on, for the six LLM coders as well: one
-sheet, everyone reads the same thing. Rendered from `CODEBOOK-v2-2026-09-14.md` and cut by the codebook's author on 2026-09-15. Names
+sheet, everyone reads the same thing. Rendered from `codebook/CODEBOOK-v2-2026-09-14.md` and cut by the codebook's author on 2026-09-15. Names
 are the codebook's; the codebook file keeps the evidence and the history behind each code.
 
 ## What you are doing

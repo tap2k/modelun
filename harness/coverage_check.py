@@ -5,7 +5,7 @@ author's is mapped by a model to one codebook code or NONE; the NONE pile is wha
 cannot say, clustered by the same model into candidate codes for the next version. Runs between
 the draft and the freeze, and again on each version. Never decides; the human reads the pile.
 
-    python harness/coverage_check.py --study studies/conduct --codebook studies/conduct/data/coding/CODEBOOK-v1-2026-09-14.md \
+    python harness/coverage_check.py --study studies/conduct --codebook studies/conduct/data/coding/codebook/CODEBOOK-v1-2026-09-14.md \
         --version v1 --author Tap --mapper google/gemini-3.7-flash
 """
 import os, re, sys, json, glob, argparse, collections

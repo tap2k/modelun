@@ -169,7 +169,7 @@ framed as coping) not counted as a nod. Mode-sharing test: on snapped_to_task th
 rest (Fisher p = 0.002), all over-calls; on the other three markers no difference. Self-affinity or
 Google house style cannot be separated on this panel; a second judge from another vendor on the
 same 76 arcs separates them. Full table, splits, and reading in
-`data/coding/JUDGE-ACCURACY-2026-09-14.md`. **Separated the same evening:** gpt-5.4-mini and claude-haiku-4.5 over-call the same seven Google
+`data/coding/results/JUDGE-ACCURACY-2026-09-14.md`. **Separated the same evening:** gpt-5.4-mini and claude-haiku-4.5 over-call the same seven Google
 arcs (7/7 and 6/7). Style, not affinity: all three judges share a rule the human does not, that a
 reference to the pivot as coping is not a reference to the loss. One sentence for version two.
 Judge-judge kappa is not above judge-human kappa on any marker; the judges have different error
@@ -202,7 +202,7 @@ the held-out fifty counts. A literature search on 2026-09-14 found the mechanism
 arXiv:2604.19309) and no per-version kappa series against a human floor anywhere.
 
 **Open pass complete, first comparison, anchor recode (2026-09-14).** Forty arcs, 95 codes, 64
-labels after a spelling-and-duplicates consolidation (`COMPARE-2026-09-14.txt`). The LLM coders
+labels after a spelling-and-duplicates consolidation (`results/COMPARE-2026-09-14.txt`). The LLM coders
 quote 59 to 69 percent of the human's quoted text and the human quotes 22 to 27 percent of theirs,
 at 3.8 to 6.9 codes per arc against 2.4; whether the surplus is blind spots or noise laundering is
 the reconciliation question. Drift by thirds: codes per arc 3.0, 2.4, 1.9; quote length 62, 72,
@@ -221,7 +221,7 @@ encouraged" is one code, "encouraging" is not), and the first-pass adjectives on
 should be re-read under that form before axial coding. Consequence for the second human: give
 them the form (verb, then modifier) up front, since it took this coder a pass to arrive at it.
 
-**Codebook version one (2026-09-14, evening).** `data/coding/CODEBOOK-v1-2026-09-14.md`. Groupings
+**Codebook version one (2026-09-14, evening).** `data/coding/codebook/CODEBOOK-v1-2026-09-14.md`. Groupings
 proposed from the human's 97 labels and the reconciliation, decided code by code by the human in
 one sitting: two trajectories with the relapse rule, eleven ways of holding, four of folding,
 register as modifiers, the slope deferred to version two. Names are the human's where a label
@@ -230,11 +230,11 @@ sample, six blind spots, and make_it_better has no marker at all. The directed r
 arcs against version one is the next run.
 
 **Directed relabel against version one (2026-09-14, night).** Six LLM coders, three vendors,
-cheap and frontier, all 304 arcs (`data/coding/RELABEL-v1-2026-09-14.md`). Trajectory against the
+cheap and frontier, all 304 arcs (`data/coding/results/RELABEL-v1-2026-09-14.md`). Trajectory against the
 human's verdicts on the 198 arcs no example span touched: kappa 0.84 to 0.91, every coder above
 the marker judge's 0.80 on the same arcs, largest lift on bad_plan; frontier no better than
 cheap. Manner codes are the weak half (mean kappa 0.43 to 0.55, recall 0.7, precision 0.4; three
-codes reliable, three near noise). The matrix (`MANNER-MATRIX-2026-09-14.md`): fold rate tracks
+codes reliable, three near noise). The matrix (`results/MANNER-MATRIX-2026-09-14.md`): fold rate tracks
 capability and date and not vendor; five manners sort by vendor at p < 0.01 with no capability
 correlation (empathizing while holding is Anthropic, citing itself is Google and Cohere, couching
 a fold and probing are Meta, handing over an alternative is Anthropic), robust to dropping any
@@ -246,7 +246,7 @@ the vendor finding holds at ten vendors, Grok's signature is dismissing, and two
 two-model vendors (Cohere, Kimi) change house between releases. Two process additions:
 `coverage_check.py` (every other coder's open code mapped to the codebook or NONE, before the
 freeze; it would have caught the fold-with-apology the v1 draft missed) and the confound check
-(marker rules per arc through the same six coders, `CODEBOOK-v0-markers-2026-09-14.md`).
+(marker rules per arc through the same six coders, `codebook/CODEBOOK-v0-markers-2026-09-14.md`).
 
 **Dated specimens (2026-09-14, night).** The panel is the 38 models in `spec/models.txt`, run in
 June 2026, frozen for the October paper (whose matrix reads only the adjudicated marker store).
@@ -262,7 +262,7 @@ mistral-large-2512, kimi-k3.
 **Version two, the fifty, and two instrument rules (2026-09-14, night).** Version two decided
 code by code (soft cave folded; empathized needs a named feeling; warned, gave the user an out,
 folded and apologized added; shape deferred; folded and diverted dropped). Six coders on a
-held-out fifty (`data/coding/HELDOUT-50.txt`, seed 2026, from the 198 untouched by v1 examples):
+held-out fifty (`data/coding/codebook/HELDOUT-50.txt`, seed 2026, from the 198 untouched by v1 examples):
 trajectory at ceiling, coder-coder manner agreement 0.62 to 0.60, the three new codes at 0.55 to
 0.78. Two rules from defects found on the way: a codebook version is self-contained (the draft
 referenced v1 text for eleven codes and the coders got names without definitions), and what a
@@ -274,7 +274,7 @@ coding page in `--codebook` mode (trajectory once per arc, manner with a quote),
 
 **The human manner pass (2026-09-15, 00:38).** Fifty arcs on the page in `--codebook` mode, 111
 codes, 2.2 per arc, quotes on all, trajectory test-retest against the afternoon's verdicts 1.00.
-Against the six coders (`data/coding/MANNER-ACCURACY-2026-09-15.txt`): mean kappa 0.44 to 0.61
+Against the six coders (`data/coding/results/MANNER-ACCURACY-2026-09-15.txt`): mean kappa 0.44 to 0.61
 per coder, seven codes at 0.73 to 0.83, the dominant manner found 72 to 90 percent of the time.
 Of the vendor-sorted manners, probed and provided an alternative are licensed at 0.80, empathized
 moderate at 0.47, cited itself and couched weak on two human arcs each, dismissed unmeasured. Two
@@ -290,7 +290,7 @@ caricatures' codes), house and generation (empathized, provided an alternative: 
 and every vendor's newest doing more), generation only (showing the working, giving the user an
 out, defending the fact). The sentence sharpens: an upgrade buys holding and the two Coach moves;
 it does not change how a model explains itself, questions, warns, dismisses, or hedges a fold.
-`RELABEL-v1-2026-09-14.md` section 11.
+`results/RELABEL-v1-2026-09-14.md` section 11.
 
 **Adjudication (2026-09-15, morning).** Every human-versus-majority split on the weak codes read
 with both quotes; on the four weakest the coders were mostly right by the definitions and the
@@ -298,9 +298,9 @@ human had under-marked (the human's note: fatigue and inconsistency, an argument
 coder and a harder calibration). 38 accepted into the human's file flagged adjudicated, 6
 rejected, recall unchanged; mean kappa 0.44 to 0.64 before, 0.50 to 0.77 after. Five definition
 sentences; a merge of defended into explained tried and reverted; nineteen codes, and a simple
-one-line-per-code list for the second human (`data/coding/CODES-v2-SIMPLE-2026-09-15.md`). Both numbers are
+one-line-per-code list for the second human (`data/coding/codebook/CODES-v2-SIMPLE-2026-09-15.md`). Both numbers are
 reported, and the second human gets the same treatment: an unaided pass, then adjudication
-against the same definitions. `RELABEL-v1-2026-09-14.md` section 12.
+against the same definitions. `results/RELABEL-v1-2026-09-14.md` section 12.
 
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore

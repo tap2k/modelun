@@ -9,7 +9,7 @@ Reads the codebook markdown (sections A to D are the instructions; E onward is d
 blind ids and fixed order as the coding page. Writes data/coding/relabel_<version>.llm-<slug>.jsonl,
 one line per present code, plus one TRAJECTORY line per arc; resumable.
 
-    python harness/relabel.py --study studies/conduct --codebook studies/conduct/data/coding/CODEBOOK-v1-2026-09-14.md \
+    python harness/relabel.py --study studies/conduct --codebook studies/conduct/data/coding/codebook/CODEBOOK-v1-2026-09-14.md \
         --version v1 --scenes bad_plan,facts,make_it_better,doctors_note --coders google/gemini-3.7-flash
 """
 import os, re, sys, json, time, argparse
