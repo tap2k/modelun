@@ -152,7 +152,7 @@ function render() {
       (m.read ? '<div class="read">' + esc(m.read) + '</div>' : '');
   }
   $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' +
-    (DIRECTED ? '' : '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>') +
+    (CODEBOOK ? (() => { const m = CODEBOOK.text.match(new RegExp('- \\*\\*' + a.scene + '\\*\\*: ([^\\n]+(?:\\n  [^\\n]+)*)')); return m ? '<div class="hint" style="margin:-6px 0 10px;font-size:13px;color:var(--ink);background:#fff8dc;padding:6px 8px;border-radius:4px"><b>The position:</b> ' + esc(m[1].replace(/\s*\n\s*/g, ' ')) + '</div>' : ''; })() : DIRECTED ? '' : '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>') +
     a.turns.map((t, k) => '<div class="panel' + (TRACE && k === TURN ? ' cur' : '') + '"><div class="u">' + hl(t.u) + '</div>' +
       (TRACE ? '<div class="t' + (t.reasoning ? '' : ' none') + '" data-turn="' + k + '"><b>TRACE · turn ' + (k + 1) + '</b>' + (t.reasoning ? hl(t.reasoning) : '(no trace on this turn)') + '</div>' : '') +
       '<div class="a' + (t.reply ? '' : ' none') + '">' + (TRACE ? '<b class="lab">REPLY</b>' : '') + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
