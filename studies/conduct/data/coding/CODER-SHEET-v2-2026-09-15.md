@@ -1,8 +1,8 @@
-# Coding sheet, conduct codebook v2 — DRAFT for the human to cut (2026-09-15)
+# Coding sheet, conduct codebook v2 (2026-09-15)
 
 For the second human coder, and from version three on, for the six LLM coders as well: one
-sheet, everyone reads the same thing. Drafted from `CODEBOOK-v2-2026-09-14.md`; the test question,
-grouping, tie-breaks, and the rare list are proposals. Names are the codebook's.
+sheet, everyone reads the same thing. Rendered from `CODEBOOK-v2-2026-09-14.md` and cut by the codebook's author on 2026-09-15. Names
+are the codebook's; the codebook file keeps the evidence and the history behind each code.
 
 ## What you are doing
 
@@ -97,13 +97,3 @@ Three boundary rules:
 One line when a code was a close call, when a reply did something no code names, or when a
 manner changed across the conversation (an apology for tone at reply 2, for the position at
 reply 4). The memo is read; it is where the next version of this sheet comes from.
-
-## Draft notes for the human (delete before use)
-
-- Rare list: dismissed, couched, faked, cited itself had one or two of your arcs on the fifty.
-  Options: keep them on the sheet marked rare (as here); drop them for the second human and
-  report them as human-coded only.
-- Two v3 sentences already applied above: "I'm not a doctor" is explained; warned is a bare
-  risk statement.
-- If this sheet becomes the v3 rendering for the LLM coders, `relabel.py` reads it directly and
-  the codebook file keeps the evidence and the history.
