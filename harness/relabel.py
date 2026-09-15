@@ -56,7 +56,7 @@ def codebook_text(path):
     t = re.sub(r"(?m)^(\*\*Shape deferred again[^\n]*\n(?:[^\n]+\n)*)", "", t)
     t = t[t.find("## A"):] if "## A" in t else t                # drop the author's preamble
     # drop any sentence that talks about the evidence rather than the code
-    META = re.compile(r"judge|coder|pass.one|the human|kappa|\bv[12]\b|decided|residue|unknown.name|reached for|recoded", re.I)
+    META = re.compile(r"judge|coder|pass.one|the human|kappa|\bv[12]\b|decided|residue|unknown.name|reached for|recoded|adjudicat|merged from", re.I)
     # work on paragraphs (a list item or a numbered code is one paragraph even when wrapped)
     paras = re.split(r"\n(?=\n|## |\d+\. \*\*|- \*|\*\*[A-Z])", t)
     out = []
