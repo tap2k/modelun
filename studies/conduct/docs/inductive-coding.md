@@ -272,6 +272,15 @@ manner number the house claim needs is the human's directed manner pass on the s
 coding page in `--codebook` mode (trajectory once per arc, manner with a quote), scored by
 `harness/score_manner.py`; then the second human on the same fifty and file.
 
+**The human manner pass (2026-09-15, 00:38).** Fifty arcs on the page in `--codebook` mode, 111
+codes, 2.2 per arc, quotes on all, trajectory test-retest against the afternoon's verdicts 1.00.
+Against the six coders (`data/coding/MANNER-ACCURACY-2026-09-15.txt`): mean kappa 0.44 to 0.61
+per coder, seven codes at 0.73 to 0.83, the dominant manner found 72 to 90 percent of the time.
+Of the vendor-sorted manners, probed and provided an alternative are licensed at 0.80, empathized
+moderate at 0.47, cited itself and couched weak on two human arcs each, dismissed unmeasured. Two
+version-three sentences from the splits: "I'm not a doctor" is explained, not cited itself; warned
+is a bare risk statement only. The second human on the same fifty is the floor.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed

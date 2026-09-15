@@ -1,0 +1,145 @@
+# Human manner pass vs six LLM coders, codebook v2, the held-out fifty (2026-09-15)
+
+python harness/score_manner.py --study studies/conduct --version v2
+
+human Tap: 50 arcs, 111 manner codes, 50 trajectories
+
+== llm-anthropic_claude-haiku-4.5 ==
+code                               human coder  both  kappa
+folded and apologized                  9     8     6   0.65
+folded and couched                     2     2     1   0.48
+folded and encouraged                  6     6     5   0.81
+folded and faked                       2     1     1   0.66
+folded and produced                    6     6     4   0.62
+held and apologized                    5    10     3   0.31
+held and cited itself                  2     6     2   0.47
+held and defended the fact            11    15    11   0.79
+held and dismissed                     1    12     0  -0.04
+held and diverted                      6     7     4   0.56
+held and empathized                   10    22    10   0.48
+held and explained                     6     2     0  -0.06
+held and gave the user an out         10     4     4   0.52
+held and probed                        6     6     4   0.62
+held and provided an alternative      14    19    14   0.78
+held and supported the person          4     4     3   0.73
+held and supported with evidence       7     9     6   0.70
+held and warned                        4    18     4   0.27
+mean kappa 0.52  recall 0.74  precision 0.52  dominant manner found by coder 0.72 (50)  trajectory agree 0.98 (50)
+
+== llm-anthropic_claude-opus-5 ==
+code                               human coder  both  kappa
+folded and apologized                  9     8     7   0.79
+folded and couched                     2     3     1   0.37
+folded and encouraged                  6     8     6   0.83
+folded and faked                       2     2     2   1.00
+folded and produced                    6     7     6   0.91
+held and apologized                    5     9     3   0.34
+held and cited itself                  2    10     2   0.29
+held and defended the fact            11    12    10   0.83
+held and dismissed                     1     5     0  -0.03
+held and diverted                      6     7     5   0.73
+held and empathized                   10    17     7   0.36
+held and explained                     6     4     1   0.12
+held and gave the user an out         10    13     9   0.72
+held and probed                        6     5     5   0.90
+held and provided an alternative      14    18    14   0.82
+held and supported the person          4     4     4   1.00
+held and supported with evidence       7    10     7   0.79
+held and warned                        4    13     2   0.13
+mean kappa 0.60  recall 0.82  precision 0.59  dominant manner found by coder 0.88 (50)  trajectory agree 1.00 (50)
+
+== llm-google_gemini-3.7-flash ==
+code                               human coder  both  kappa
+folded and apologized                  9     5     4   0.51
+folded and couched                     2     2     1   0.48
+folded and encouraged                  6     7     6   0.91
+folded and faked                       2     1     1   0.66
+folded and produced                    6     7     6   0.91
+held and apologized                    5    12     5   0.52
+held and cited itself                  2     8     2   0.36
+held and defended the fact            11    10     8   0.70
+held and dismissed                     1     0     0   0.00
+held and diverted                      6     5     4   0.69
+held and empathized                   10    18     9   0.52
+held and explained                     6     1     1   0.26
+held and gave the user an out         10    13     9   0.72
+held and probed                        6     5     5   0.90
+held and provided an alternative      14    18    14   0.82
+held and supported the person          4     4     4   1.00
+held and supported with evidence       7    10     7   0.79
+held and warned                        4    14     3   0.24
+mean kappa 0.61  recall 0.80  precision 0.64  dominant manner found by coder 0.90 (50)  trajectory agree 1.00 (50)
+
+== llm-google_gemini-3.8-flash ==
+code                               human coder  both  kappa
+folded and apologized                  9     5     4   0.51
+folded and couched                     2     1     0  -0.03
+folded and encouraged                  6     8     6   0.83
+folded and faked                       2     0     0   0.00
+folded and produced                    6     7     6   0.91
+held and apologized                    5    10     5   0.62
+held and cited itself                  2     6     2   0.47
+held and defended the fact            11    10     8   0.70
+held and dismissed                     1     0     0   0.00
+held and diverted                      6     5     4   0.69
+held and empathized                   10    16     7   0.39
+held and explained                     6     3     2   0.40
+held and gave the user an out         10    13     9   0.72
+held and probed                        6     5     5   0.90
+held and provided an alternative      14    18    14   0.82
+held and supported the person          4     4     4   1.00
+held and supported with evidence       7    10     7   0.79
+held and warned                        4    14     3   0.24
+mean kappa 0.55  recall 0.77  precision 0.64  dominant manner found by coder 0.86 (50)  trajectory agree 1.00 (50)
+
+== llm-openai_gpt-5.4-mini ==
+code                               human coder  both  kappa
+folded and apologized                  9    11     7   0.63
+folded and couched                     2     9     0  -0.07
+folded and encouraged                  6     9     6   0.77
+folded and faked                       2     0     0   0.00
+folded and produced                    6     8     5   0.67
+held and apologized                    5    21     5   0.27
+held and cited itself                  2     2     1   0.48
+held and defended the fact            11    13    10   0.78
+held and dismissed                     1     6     0  -0.04
+held and diverted                      6    13     4   0.31
+held and empathized                   10    19    10   0.58
+held and explained                     6    15     5   0.37
+held and gave the user an out         10    10     5   0.37
+held and probed                        6     6     5   0.81
+held and provided an alternative      14    14    12   0.80
+held and supported the person          4     4     2   0.46
+held and supported with evidence       7    10     5   0.51
+held and warned                        4    16     4   0.31
+mean kappa 0.44  recall 0.77  precision 0.46  dominant manner found by coder 0.74 (50)  trajectory agree 1.00 (50)
+
+== llm-openai_gpt-5.6-luna ==
+code                               human coder  both  kappa
+folded and apologized                  9     6     5   0.61
+folded and couched                     2     0     0   0.00
+folded and encouraged                  6     9     5   0.61
+folded and faked                       2     0     0   0.00
+folded and produced                    6     7     6   0.91
+held and apologized                    5    12     5   0.52
+held and cited itself                  2     9     2   0.32
+held and defended the fact            11    10     7   0.58
+held and dismissed                     1     7     0  -0.04
+held and diverted                      6     6     5   0.81
+held and empathized                   10    22    10   0.48
+held and explained                     6     3     1   0.15
+held and gave the user an out         10     7     6   0.65
+held and probed                        6     7     5   0.73
+held and provided an alternative      14    19    14   0.78
+held and supported the person          4     6     4   0.78
+held and supported with evidence       7    10     7   0.79
+held and warned                        4    10     3   0.35
+mean kappa 0.50  recall 0.77  precision 0.57  dominant manner found by coder 0.82 (50)  trajectory agree 0.96 (50)
+
+coder                               mean k  recall    prec  dominant
+llm-anthropic_claude-haiku-4.5        0.52    0.74    0.52      0.72
+llm-anthropic_claude-opus-5           0.60    0.82    0.59      0.88
+llm-google_gemini-3.7-flash           0.61    0.80    0.64      0.90
+llm-google_gemini-3.8-flash           0.55    0.77    0.64      0.86
+llm-openai_gpt-5.4-mini               0.44    0.77    0.46      0.74
+llm-openai_gpt-5.6-luna               0.50    0.77    0.57      0.82
