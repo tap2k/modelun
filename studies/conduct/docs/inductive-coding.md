@@ -238,7 +238,12 @@ codes reliable, three near noise). The matrix (`MANNER-MATRIX-2026-09-14.md`): f
 capability and date and not vendor; five manners sort by vendor at p < 0.01 with no capability
 correlation (empathizing while holding is Anthropic, citing itself is Google and Cohere, couching
 a fold and probing are Meta, handing over an alternative is Anthropic), robust to dropping any
-coder vendor. Whether a model holds is generation; how it holds is house. Two process additions:
+coder vendor. Whether a model holds is generation; how it holds is house. Confound check done the same night: the marker rules restated per arc through the same six
+coders score 0.68 to 0.81, at or below the whole-transcript judge, so the lift is the codebook,
+not the per-arc procedure (the marker's caving rule collapses per arc on facts; the codebook's
+"folded and produced" with example spans restores it). Five dated specimens added and coded;
+the vendor finding holds at ten vendors, Grok's signature is dismissing, and two of five
+two-model vendors (Cohere, Kimi) change house between releases. Two process additions:
 `coverage_check.py` (every other coder's open code mapped to the codebook or NONE, before the
 freeze; it would have caught the fold-with-apology the v1 draft missed) and the confound check
 (marker rules per arc through the same six coders, `CODEBOOK-v0-markers-2026-09-14.md`).

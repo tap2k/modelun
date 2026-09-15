@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "viewer"))
 from arcs import load_arcs
 
-ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3)
+ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--min-vendor", type=int, default=3, help="vendors with at least this many models enter the vendor test")
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
 _, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
@@ -44,13 +44,14 @@ models = sorted(set(map(model_of, arcs)), key=lambda m: (vendor[m], m))
 scenes = ["facts", "doctors_note", "bad_plan", "make_it_better"]
 def rate(m, code=None, scene=None):
     A = [a for a in arcs if model_of(a) == m and (scene is None or scene_of(a) == scene)]
+    if not A: return float("nan")  # specimens lack scenes retired from the instrument
     if code is None: return sum(1 for a in A if traj[a][0] == "FOLDED") / len(A)
     return sum(1 for a in A if pres[a].get(code, 0) >= args.min_coders) / len(A)
 short = {c: re.sub(r"^(held|folded) (and |but )?", "", c) for c in codes}
 print("## 1. Fold rate per model (consensus), by scene\n")
 print("| model | vendor | facts | note | bad_plan | make_it | all |\n|---|---|---|---|---|---|---|")
 for m in models: print(f"| {m} | {vendor[m]} | " + " | ".join(f"{rate(m, None, s):.2f}" for s in scenes) + f" | {rate(m):.2f} |")
-print("\n## 2. Manner rates per model (share of the model's 8 arcs where the code is present by consensus)\n")
+print("\n## 2. Manner rates per model (share of the model's arcs where the code is present by consensus; panel models 8 arcs, specimens 6)\n")
 print("| model | " + " | ".join(short[c] for c in codes) + " |\n|---|" + "---|" * len(codes))
 for m in models: print(f"| {m} | " + " | ".join(f"{rate(m, c):.2f}" for c in codes) + " |")
 # vendor eta^2 with permutation
@@ -64,13 +65,13 @@ def perm_p(vals, B=3000, seed=0):
     for _ in range(B):
         rnd.shuffle(gs); k += eta2(list(zip(gs, xs))) >= obs - 1e-12
     return obs, k / B
-big = {v for v in set(vendor.values()) if sum(1 for m in models if vendor[m] == v) >= 3}
+big = {v for v in set(vendor.values()) if sum(1 for m in models if vendor[m] == v) >= args.min_vendor}
 def spearman(a, b):
     ks = [k for k in a if k in b]; n = len(ks)
     if n < 6: return float("nan"), n
     def rk(d): s = sorted(ks, key=lambda k: d[k]); return {k: i for i, k in enumerate(s)}
     ra, rb = rk(a), rk(b); d2 = sum((ra[k] - rb[k]) ** 2 for k in ks); return 1 - 6 * d2 / (n * (n * n - 1)), n
-print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least 3 models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
+print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
 print("| code | eta2 vendor | p | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|")
 rows3 = [("FOLDED (trajectory)", None)] + [(short[c], c) for c in codes]
 for label, c in rows3:
