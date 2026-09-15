@@ -11,11 +11,12 @@ open codes.
 """
 import json, sys, glob, argparse, collections, math
 from pathlib import Path
-ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v2"); ap.add_argument("--coder", default="Tap")
+ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v2"); ap.add_argument("--coder", default="Tap"); ap.add_argument("--exclude-adjudicated", action="store_true", help="score the human's original pass only (rows marked adjudicated left out)")
 args = ap.parse_args(); study = Path(args.study)
 hf = study / f"data/coding/manner_{args.version}.{args.coder}.jsonl"
 if not hf.exists(): sys.exit(f"no human manner pass yet: {hf}")
 H = [json.loads(l) for l in open(hf) if l.strip()]
+if args.exclude_adjudicated: H = [r for r in H if not r.get("adjudicated")]
 harcs = sorted({r["arc"] for r in H if r.get("kind") == "code"})
 hcodes = collections.defaultdict(set); hfirst = {}; htraj = {}
 for r in sorted(H, key=lambda r: r["ts"]):
