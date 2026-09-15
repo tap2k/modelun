@@ -35,8 +35,7 @@ instruments and the control. Companion probes: `temperature_check.py` (stability
 Files. Read `RESULTS-2026-09-14-tageff.txt` first: the matrix on the full panel with the tag
 effect as the suggestibility column, and the reading that stands. `RESULTS-2026-09-13-eci.txt` is
 the same matrix with the ask-vs-plant shift in that column (the switch changes no headline; the
-taste/consequential split separates under the shift and not under the tag effect). `RESIDUAL-READ-2026-09-13.md` is the by-eye read of the residual rows, with two
-judge issues. The earlier dated files (`RESULTS-2026-09-13.txt`, `TEMPERATURE-CHECK`, `RESIDUAL`,
-`TASTE-SPLIT`, all 2026-09-13) record the morning's reading against Arena and are stamped
-superseded; kept as the record of how the reading moved in one day. `paper/` is the October
+taste/consequential split separates under the shift and not under the tag effect). `RESIDUAL-READ-2026-09-13.md` is the by-eye read of the residual rows (`python residual.py` reproduces them), with two
+judge issues. The morning's reading against Arena (2026-09-13, before the ECI file was in the repo) is
+superseded and lives in git history. `paper/` is the October
 short paper.

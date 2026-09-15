@@ -1,6 +1,6 @@
 # Residual rows, read by eye (2026-09-13)
 
-The top three and bottom three rows of `RESIDUAL-2026-09-13.txt`, all four binary-marker scenes,
+The top three and bottom three rows of the residual table (`python residual.py`), all four binary-marker scenes,
 both runs, read against the judge's labels in `conduct/data/benchmark/markers.json`. Transcripts
 in `conduct/data/benchmark/<model>.json`.
 
