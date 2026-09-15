@@ -332,7 +332,7 @@ memo, and the split goes to adjudication.
 
 ## Trace coding (2026-09-14)
 
-The third record beside the reply and the report (`convovo-notes/capability-vs-behavior.md`, the
+The third record beside the reply and the report (the capability-versus-behavior note, the
 2026-09-10 addendum): the thinking trace a route returns, stored on the turn as `reasoning` by
 `harness/run.py`. Where a lab returns it as a summary (Anthropic, xAI, OpenAI) it is model-written
 and short, so the reading is the trace-vs-output pair, not the raw chain.
