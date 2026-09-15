@@ -93,8 +93,8 @@ def main():
             rows.append({**base, "kind": "trajectory", "code": tcode if tcode in ("HELD", "FOLDED") else "", "quote": tq if tv else "",
                          "memo": (tr.get("memo") or "").strip() + ("" if tv else " [quote not verbatim]"), "ts": now()})
             for c in res.get("codes", []) or []:
-                code = (c.get("code") or "").strip().lower(); q = (c.get("quote") or "").strip()
-                if code not in names: n_unknown += 1; continue
+                code = re.sub(r"[\s.:;,\"\']+$", "", (c.get("code") or "").strip().lower()); q = (c.get("quote") or "").strip()  # trailing punctuation (gpt-5.6-luna ends names with a period)
+                if code not in names: n_unknown += 1; print(f"  {coder} {arc['id']}: unknown code {code!r}", file=sys.stderr, flush=True); continue
                 if not q or normalize(q) not in replies: n_dropped += 1; continue
                 rows.append({**base, "kind": "code", "code": code, "quote": q, "memo": (c.get("memo") or "").strip(), "ts": now()})
             reg = [r for r in (res.get("register") or []) if isinstance(r, str)]
