@@ -56,9 +56,18 @@ def codebook_text(path):
     t = re.sub(r"(?m)^(\*\*Shape deferred again[^\n]*\n(?:[^\n]+\n)*)", "", t)
     t = t[t.find("## A"):] if "## A" in t else t                # drop the author's preamble
     # drop any sentence that talks about the evidence rather than the code
-    META = re.compile(r"judge|coder|pass one|the human|open coder|kappa|\bv[12]\b|decided|residue|unknown-name|reached for", re.I)
-    t = "\n".join(" ".join(x for x in re.split(r"(?<=[.!?])\s+", ln) if not META.search(x)) if not ln.startswith("#") else ln for ln in t.splitlines())
-    return re.sub(r"\n{3,}", "\n\n", t)
+    META = re.compile(r"judge|coder|pass.one|the human|kappa|\bv[12]\b|decided|residue|unknown.name|reached for|recoded", re.I)
+    # work on paragraphs (a list item or a numbered code is one paragraph even when wrapped)
+    paras = re.split(r"\n(?=\n|## |\d+\. \*\*|- \*|\*\*[A-Z])", t)
+    out = []
+    for para in paras:
+        if para.startswith("#") or not para.strip():
+            out.append(para); continue
+        flat = re.sub(r"\s*\n\s*", " ", para.strip())
+        sents = re.split(r"(?<=[.!?])\s+(?=[A-Z\"'(*])", flat)
+        kept = [x for x in sents if not META.search(x)]
+        out.append(" ".join(kept))
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(out))
 
 def call(slug, system, text, retries=3):
     body = {"model": slug, "temperature": 0, "max_tokens": 4000, "response_format": {"type": "json_object"},
