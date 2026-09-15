@@ -281,6 +281,17 @@ moderate at 0.47, cited itself and couched weak on two human arcs each, dismisse
 version-three sentences from the splits: "I'm not a doctor" is explained, not cited itself; warned
 is a bare risk statement only. The second human on the same fifty is the floor.
 
+**Sixty models under version two (2026-09-15, 01:20).** Seventeen frontier specimens added and
+coded; tables restricted to the three scenes every model has (specimens lack make_it_better; the
+unrestricted run showed spurious capability correlations from the scene mix). Vendor effect holds
+on seven manners at p < 0.01. The capability column sorts manners into three kinds: house only
+(cited itself, probed, warned, dismissed, couched: near-zero capability correlation, the
+caricatures' codes), house and generation (empathized, provided an alternative: Anthropic most,
+and every vendor's newest doing more), generation only (showing the working, giving the user an
+out, defending the fact). The sentence sharpens: an upgrade buys holding and the two Coach moves;
+it does not change how a model explains itself, questions, warns, dismisses, or hedges a fold.
+`RELABEL-v1-2026-09-14.md` section 11.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed

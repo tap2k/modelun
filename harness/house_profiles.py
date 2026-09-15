@@ -9,14 +9,16 @@ import json, sys, glob, argparse, collections, re
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "viewer"))
 from arcs import load_arcs
-ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3)
+ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--scenes", default="", help="restrict to these scenes (the three every model has)")
 args = ap.parse_args(); study = Path(args.study)
 _, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
 vendor = {m: d.get("slug", "").split("/")[0] for m, d in bench.items()}
 files = sorted(glob.glob(str(study / f"data/coding/relabel_{args.version}.llm-*.jsonl"))); coders = [Path(f).name[len(f"relabel_{args.version}."):-6] for f in files]
 R = [json.loads(l) for f in files for l in open(f) if l.strip()]
-arcs = sorted({r["arc"] for r in R}); model_of = lambda a: reveal[a.split("/")[0]]; scene_of = lambda a: a.split("/")[1]
+arcs = sorted({r["arc"] for r in R})
+if args.scenes: arcs = [a for a in arcs if a.split("/")[1] in set(args.scenes.split(","))]
+model_of = lambda a: reveal[a.split("/")[0]]; scene_of = lambda a: a.split("/")[1]
 traj = {}; pres = collections.defaultdict(collections.Counter); quotes = collections.defaultdict(collections.Counter)
 for r in R:
     if r["kind"] == "trajectory" and r["code"]: traj.setdefault(r["arc"], collections.Counter())[r["code"]] += 1

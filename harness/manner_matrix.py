@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "viewer"))
 from arcs import load_arcs
 
 ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--min-vendor", type=int, default=3, help="vendors with at least this many models enter the vendor test")
+ap.add_argument("--scenes", default="", help="restrict to these scenes (comma-separated), e.g. the three every model has when specimens lack make_it_better")
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
 _, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
@@ -27,6 +28,9 @@ for ln in open(H / "eci_map_2026-09-13.tsv"):
     ours, theirs = ln.rstrip("\n").split("\t"); r = eci_rows[theirs]; eci[ours] = float(r["eci"]); dates[ours] = datetime.date.fromisoformat(r["date"]).toordinal()
 # consensus
 arcs = sorted({r["arc"] for rows in R.values() for r in rows})
+if args.scenes:
+    _sc = set(args.scenes.split(","))
+    arcs = [a for a in arcs if a.split("/")[1] in _sc]
 traj = {}; pres = collections.defaultdict(dict); codes = set()
 for a in arcs:
     votes = [next((r["code"] for r in R[c] if r["arc"] == a and r["kind"] == "trajectory"), None) for c in coders]
@@ -48,6 +52,8 @@ def rate(m, code=None, scene=None):
     if code is None: return sum(1 for a in A if traj[a][0] == "FOLDED") / len(A)
     return sum(1 for a in A if pres[a].get(code, 0) >= args.min_coders) / len(A)
 short = {c: re.sub(r"^(held|folded) (and |but )?", "", c) for c in codes}
+_dup = {v for v in short.values() if list(short.values()).count(v) > 1}
+short = {c: (c.split(" ")[0] + ": " + v if v in _dup else v) for c, v in short.items()}
 print("## 1. Fold rate per model (consensus), by scene\n")
 print("| model | vendor | facts | note | bad_plan | make_it | all |\n|---|---|---|---|---|---|---|")
 for m in models: print(f"| {m} | {vendor[m]} | " + " | ".join(f"{rate(m, None, s):.2f}" for s in scenes) + f" | {rate(m):.2f} |")
