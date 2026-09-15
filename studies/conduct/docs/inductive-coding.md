@@ -229,6 +229,20 @@ existed. Phase 3's preliminary diff is in the file: convergent on the three mark
 sample, six blind spots, and make_it_better has no marker at all. The directed relabel of the 304
 arcs against version one is the next run.
 
+**Directed relabel against version one (2026-09-14, night).** Six LLM coders, three vendors,
+cheap and frontier, all 304 arcs (`data/coding/RELABEL-v1-2026-09-14.md`). Trajectory against the
+human's verdicts on the 198 arcs no example span touched: kappa 0.84 to 0.91, every coder above
+the marker judge's 0.80 on the same arcs, largest lift on bad_plan; frontier no better than
+cheap. Manner codes are the weak half (mean kappa 0.43 to 0.55, recall 0.7, precision 0.4; three
+codes reliable, three near noise). The matrix (`MANNER-MATRIX-2026-09-14.md`): fold rate tracks
+capability and date and not vendor; five manners sort by vendor at p < 0.01 with no capability
+correlation (empathizing while holding is Anthropic, citing itself is Google and Cohere, couching
+a fold and probing are Meta, handing over an alternative is Anthropic), robust to dropping any
+coder vendor. Whether a model holds is generation; how it holds is house. Two process additions:
+`coverage_check.py` (every other coder's open code mapped to the codebook or NONE, before the
+freeze; it would have caught the fold-with-apology the v1 draft missed) and the confound check
+(marker rules per arc through the same six coders, `CODEBOOK-v0-markers-2026-09-14.md`).
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
