@@ -12,6 +12,10 @@ Serves the study's views/ (code.html) and:
     python harness/viewer/code_server.py --study studies/conduct [--scenes bad_plan,facts] [--per-scene 10] [--port 8000]
     open http://localhost:8000/code.html
 
+  Trace mode (docs/inductive-coding.md § Trace coding): each turn shows the stored thinking trace beside the
+  reply; per turn, two fixed yes/no questions and a verbatim span from the trace; writes data/coding/trace.<coder>.jsonl.
+    python harness/viewer/code_server.py --study studies/conduct --trace --bench studies/conduct/data/openrouter-thinking/high --scenes the_leap,doctors_note
+
 No dependencies beyond the stdlib. State lives in repo files; git is the collaboration layer.
 """
 import json, sys, argparse
@@ -27,6 +31,8 @@ ap.add_argument("--salt", default="conduct-2026-09", help="blind-id salt; keep f
 ap.add_argument("--limit", type=int, default=0, help="serve only the first N arcs of the fixed order")
 ap.add_argument("--per-scene", type=int, default=0, help="serve the first N arcs of each scene (a balanced sample); use the same value for the LLM coders")
 ap.add_argument("--directed", action="store_true", help="directed mode: show each scene's marker question and take a held/departed verdict; writes data/coding/directed.<coder>.jsonl")
+ap.add_argument("--trace", action="store_true", help="trace mode: show each turn's thinking trace; two fixed questions per turn; writes data/coding/trace.<coder>.jsonl")
+ap.add_argument("--bench", default=None, help="transcripts dir to code (default: <study>/data/benchmark); with a bench dir every file is the coding set")
 args = ap.parse_args()
 
 STUDY = Path(args.study).resolve()
@@ -35,8 +41,11 @@ CODING = STUDY / "data" / "coding"
 VIEWS = STUDY / "views"
 WANT = set(s for s in args.scenes.split(",") if s)
 
-ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt)
+ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt, bench=args.bench, traces=args.trace)
 ARCS = sample(ARCS, args.per_scene, args.limit)
+if args.trace:                       # only arcs with at least one trace can be trace-coded
+    ARCS = [a for a in ARCS if any(t.get("reasoning") for t in a["turns"])]
+FILE = "trace" if args.trace else "directed" if args.directed else "open_codes"
 MARKERS = {}
 if args.directed:
     sys.path.insert(0, str(STUDY / "spec"))
@@ -64,18 +73,18 @@ class H(SimpleHTTPRequestHandler):
         if self.path == "/arcs.json":
             return self._json(ARCS)
         if self.path == "/mode":
-            return self._json({"directed": args.directed})
+            return self._json({"directed": args.directed, "trace": args.trace, "bench": str(args.bench or "data/benchmark")})
         if self.path == "/reveal":
             return self._json(REVEAL)
         if self.path.startswith("/codes/"):
             coder = self.path.split("/", 2)[2]
-            f = CODING / (f"directed.{coder}.jsonl" if args.directed else f"open_codes.{coder}.jsonl")
+            f = CODING / f"{FILE}.{coder}.jsonl"
             rows = [json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else []
             return self._json(rows)
         return super().do_GET()
 
     def _rows(self, coder):
-        f = CODING / (f"directed.{coder}.jsonl" if args.directed else f"open_codes.{coder}.jsonl")
+        f = CODING / f"{FILE}.{coder}.jsonl"
         return f, ([json.loads(l) for l in f.read_text().splitlines() if l.strip()] if f.exists() else [])
 
     def _write(self, f, rows):
@@ -102,17 +111,20 @@ class H(SimpleHTTPRequestHandler):
         if self.path != "/save":
             return self.send_error(404)
         row = body
-        need = ("coder", "arc", "code") + (() if args.directed and row.get("verdict") == "held" else ("quote",))  # held is an absence: no span
+        if args.trace:      # one row per (arc, turn): the two answers, a span from the trace when either is yes
+            need = ("coder", "arc", "names_move", "intent_split") + (("quote",) if "yes" in (row.get("names_move"), row.get("intent_split")) else ())
+        else:
+            need = ("coder", "arc", "code") + (() if args.directed and row.get("verdict") == "held" else ("quote",))  # held is an absence: no span
         for k in need:
-            if not row.get(k):
+            if row.get(k) in (None, ""):
                 return self._json({"error": f"missing {k}"}, 400)
         CODING.mkdir(exist_ok=True)
-        with (CODING / (f"directed.{row['coder']}.jsonl" if args.directed else f"open_codes.{row['coder']}.jsonl")).open("a") as fh:
+        with (CODING / f"{FILE}.{row['coder']}.jsonl").open("a") as fh:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
         return self._json({"ok": True})
 
     def log_message(self, *a): pass
 
 print(f"coding {len(ARCS)} arcs from {STUDY.name} ({', '.join(sorted(WANT)) or 'all scenes'})")
-print(f"open http://localhost:{args.port}/code.html   -> {CODING}/" + ("directed" if args.directed else "open_codes") + ".<coder>.jsonl" + ("   [DIRECTED: marker question, held/departed]" if args.directed else ""))
+print(f"open http://localhost:{args.port}/code.html   -> {CODING}/{FILE}.<coder>.jsonl" + ("   [DIRECTED: marker question, held/departed]" if args.directed else "") + (f"   [TRACE: bench {args.bench}]" if args.trace else ""))
 HTTPServer(("127.0.0.1", args.port), H).serve_forever()

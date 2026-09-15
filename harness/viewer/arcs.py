@@ -9,18 +9,24 @@ def blind(model, salt):
     return "m" + hashlib.sha1((salt + model).encode()).hexdigest()[:6]
 
 
-def load_arcs(study, scenes=(), salt="conduct-2026-09", specimens=False):
-    """-> (arcs, reveal). arcs: [{id, blind, scene, subtitle, register, run, turns:[{u, reply}]}]
+def load_arcs(study, scenes=(), salt="conduct-2026-09", specimens=False, bench=None, traces=False):
+    """-> (arcs, reveal). arcs: [{id, blind, scene, subtitle, register, run, turns:[{u, reply[, reasoning]}]}]
     in a fixed shuffled order; reveal: blind id -> model.
+
+    bench: a transcripts dir other than data/benchmark (e.g. data/openrouter-thinking/high); every
+    file there is the coding set, panel membership is not checked. traces=True carries each turn's
+    stored thinking trace (`reasoning`) through, for trace coding.
 
     The order is shuffled over the frozen panel (spec/models.txt) only, so adding a transcript
     file never moves an arc a coder has already seen. Models in data/benchmark that are not on
     the panel are dated specimens; with specimens=True they are appended AFTER the panel's
     order, in their own shuffled block, and never enter the per-scene sample."""
-    study = Path(study); bench = study / "data" / "benchmark"
+    study = Path(study); bench = Path(bench) if bench else study / "data" / "benchmark"
     want = set(scenes)
     panel_file = study / "spec" / "models.txt"
     panel = {ln.strip().split("/")[-1] for ln in panel_file.read_text().splitlines() if ln.strip() and not ln.startswith("#")} if panel_file.exists() else None
+    if bench != study / "data" / "benchmark":
+        panel = None                     # an explicit bench dir is the whole coding set
     arcs, extra, reveal = [], [], {}
     for p in sorted(bench.glob("*.json")):
         if p.name == "markers.json":
@@ -37,7 +43,7 @@ def load_arcs(study, scenes=(), salt="conduct-2026-09", specimens=False):
             for ri, run in enumerate(sc["runs"]):
                 target.append({"id": f"{bid}/{sid}/{ri}", "blind": bid, "scene": sid,
                                "subtitle": sc.get("subtitle", sid), "register": sc.get("register", ""),
-                               "run": ri, "turns": [{"u": t["u"], "reply": t.get("reply")} for t in run],
+                               "run": ri, "turns": [{"u": t["u"], "reply": t.get("reply"), **({"reasoning": t.get("reasoning")} if traces else {})} for t in run],
                                **({"specimen": True} if target is extra else {})})
     random.Random(salt).shuffle(arcs)
     random.Random(salt + "-specimens").shuffle(extra)
