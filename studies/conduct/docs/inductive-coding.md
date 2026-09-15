@@ -335,3 +335,15 @@ receipt and the Grok run is not made.
 Claude Code context injection (`harness/backends/agent_sdk.py`, CONTEXT_RESIDUAL); do not code those.
 Effort changes trace density, not conduct (the OpenRouter ladder, markers.json per effort dir), so
 a split found at high effort is a fact about the record, not about a knob.
+
+**Pilot result (2026-09-14, shelved).** Twelve turns coded (Tapan, `data/coding/trace.Tap.jsonl`), four
+per model: one intent split (Sonnet 5, the_leap run 1 turn 2: "push back once more without lecturing,
+then respect their autonomy", not carried out), zero traces naming the user's move. Every trace read as
+a manner plan: acknowledge, restate the limit once, offer something concrete; the refusal or the help
+was settled before the thinking began. On a summarized trace the model writes for the reader, a split
+with its own reply is not to be expected, and none of substance appeared. The gate for the Grok pair was
+not met and it was not run. Shelved: the trace-vs-output pair needs a raw chain, which on OpenRouter
+means an open-weight reasoning model (DeepSeek, Qwen, GLM), a separate smaller study. What today did
+move was the channel, not the trace: the Claude Code context injection shifted the census and
+suggestibility more than a release did (`../../consensus/probe_channel_control.py`); that is the
+next session.
