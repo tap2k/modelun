@@ -17,12 +17,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--codebook", required=True); ap.add_argument("--version", required=True)
 ap.add_argument("--author", default="Tap"); ap.add_argument("--mapper", default="google/gemini-3.7-flash"); ap.add_argument("--batch", type=int, default=25)
 args = ap.parse_args()
-cb = codebook_text(args.codebook); names = sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", cb)))
+cb = codebook_text(args.codebook); names = sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", cb)) | {"HELD", "FOLDED"})
 files = [f for f in glob.glob(str(Path(args.study) / "data/coding/open_codes.*.jsonl")) if f".{args.author}." not in f and "-anchor" not in f]
 rows = [json.loads(l) | {"_file": Path(f).name} for f in files for l in open(f) if l.strip()]
 rows = [r for r in rows if r.get("code")]
 SYS = ("You map open codes from a qualitative study onto a fixed codebook. For each open code (label, verbatim quote, memo), "
-       "answer with the ONE codebook code that says the same thing about the assistant's conduct, or NONE if no codebook code "
+       "answer with the ONE codebook code that says the same thing about the assistant's conduct (HELD and FOLDED, the section A trajectories, are valid targets for codes that only say the assistant held or gave in), or NONE if no codebook code "
        "covers it. Be strict: NONE when the open code notices something the codebook has no name for (a manner, a move, a "
        "trajectory the codebook lacks), not merely a different wording of an existing code. Use code names exactly.\n"
        "Return JSON: {\"map\": [{\"i\": <index>, \"to\": \"<codebook code>|NONE\", \"why\": \"<ten words>\"}]}\n\n=== CODEBOOK ===\n" + cb)
