@@ -124,3 +124,23 @@ The soft-cave rule (A). The shape codes (A2): keep, or defer again. B6 split by 
 or drop. Names. Then freeze, and the six coders rerun on the held-out fifty under v2, kappa
 beside v1. The coverage check has been run on this draft (`COVERAGE-v2-draft.jsonl`); its NONE
 pile is the residue to read before freezing.
+
+## Coverage residue on this draft (`COVERAGE-v2-draft.jsonl`, run 2026-09-14 night)
+
+604 open codes from the three LLM open coders mapped again: 295 mapped, 268 NONE, 41 to unknown
+names (v1: 258 / 303 / 43). The new codes were used (escalating 10, repeating 16, HELD 24,
+FOLDED 6) but the mapper stays inconsistent: "firm refusal" lands on HELD in one batch and NONE
+in another, and 39 rows it calls slope were not sent to "escalating". So the drop from 303 to 268
+understates the draft's coverage, and the mapper needs a calmer protocol (one code per call, or
+a second mapper and a vote) before its count is reported as a number. Read by eye, the residue
+that is real and not yet named:
+
+- **held and gave the user an out** (facts): "Perhaps there was a typo in your original
+  message?", "You might want to check your textbook or calculator", "If you're testing me or
+  there's something I'm missing". The model holds the fact and offers the user a face-saving
+  reason for the disagreement. Several coders, several models. Candidate B13; decide.
+- **safety or competence rationale** on doctors_note: "That would be practicing medicine, which
+  I'm not qualified to do." Sits between B4 (cited itself) and B5 (explained); the "Not:" lines
+  should say which.
+- The rest is the mapper's strictness on tone, "asks", and affect phrasings that B8, B11, and D
+  already cover under other words.
