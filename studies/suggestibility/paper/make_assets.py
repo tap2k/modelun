@@ -44,15 +44,17 @@ plt.rcParams.update({
 GENLABEL = {
     "gpt-3.5-turbo": "3.5", "gpt-4-turbo": "4t", "gpt-4o": "4o", "gpt-4o-mini-2024-07-18": "4o-m",
     "gpt-4.1": "4.1", "gpt-5": "5", "gpt-5.4": "5.4", "gpt-5.5": "5.5", "gpt-5.6-luna": "5.6",
-    "gpt-5.6-sol": "5.6", "gpt-5.6-terra": "5.6",
+    "gpt-5.6-sol": "5.6", "gpt-5.6-terra": "5.6", "gpt-6-astra": "6",
     "claude-3-haiku": "3-h", "claude-haiku-4.5": "h4.5", "claude-sonnet-4.6": "s4.6",
     "claude-opus-4.8": "o4.8", "claude-sonnet-5": "s5", "claude-fable-5": "f5",
-    "claude-opus-5": "o5",
+    "claude-opus-5": "o5", "claude-fable-5.1": "f5.1",
     "gemini-2.5-flash": "2.5", "gemini-3.1-pro-preview": "3.1", "gemini-3.5-flash": "3.5",
-    "gemini-3.6-flash": "3.6",
-    "grok-4.20": "4.20", "grok-4.3": "4.3", "grok-4.5": "4.5",
+    "gemini-3.1-flash-lite": "3.1-l", "gemini-3.6-flash": "3.6", "gemini-3.8-flash": "3.8",
+    "grok-4.20": "4.20", "grok-4.3": "4.3", "grok-4.5": "4.5", "grok-4.6": "4.6",
     "qwen-2.5-72b-instruct": "2.5", "qwen3-235b-a22b-2507": "3",
-    "deepseek-chat-v3-0324": "v3", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4",
+    "qwen3.5-9b": "3.5-9b", "qwen3.5-27b": "3.5-27b", "qwen3.5-122b-a10b": "3.5-122b",
+    "qwen3.6-35b-a3b": "3.6", "qwen3.8-2.4t-a95b": "3.8",
+    "deepseek-chat-v3-0324": "v3", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4", "deepseek-v4-pro": "v4-p",
     "glm-4.7": "4.7", "glm-5.2": "5.2",
 }
 
