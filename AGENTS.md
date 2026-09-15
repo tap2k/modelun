@@ -3,6 +3,8 @@
 Rules and tripwires that aren't obvious from the code. For what the project is and how to run it, see
 [README.md](README.md).
 
+**Private planning material** (study plans, the research queue, paper notes and PDFs, the bibliography) lives outside this public repo at `~/Desktop/projects/modelUN/`. Look there for anything planning-shaped before assuming it does not exist.
+
 ## Layout: harness vs. study
 The repo splits into a domain-neutral **`harness/`** (the tool — runner, judge, adjudicator, the
 `viewer/core.js` renderer) and **`studies/<name>/`** (the conduct atlas is `studies/conduct/`). The
