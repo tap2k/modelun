@@ -18,7 +18,7 @@ Serves the study's views/ (code.html) and:
 
 No dependencies beyond the stdlib. State lives in repo files; git is the collaboration layer.
 """
-import json, sys, argparse
+import json, sys, argparse, re
 from pathlib import Path
 from arcs import load_arcs, sample
 from http.server import SimpleHTTPRequestHandler, HTTPServer
@@ -30,6 +30,9 @@ ap.add_argument("--port", type=int, default=8000)
 ap.add_argument("--salt", default="conduct-2026-09", help="blind-id salt; keep fixed within a batch")
 ap.add_argument("--limit", type=int, default=0, help="serve only the first N arcs of the fixed order")
 ap.add_argument("--per-scene", type=int, default=0, help="serve the first N arcs of each scene (a balanced sample); use the same value for the LLM coders")
+ap.add_argument("--codebook", default=None, help="manner mode: apply this codebook version (markdown) code by code; the page offers its code names, shows its text, and writes data/coding/manner_<version>.<coder>.jsonl")
+ap.add_argument("--version", default="v2", help="codebook version tag for the manner file")
+ap.add_argument("--arcs-file", default=None, help="serve only the arc ids listed in this file (the held-out fifty)")
 ap.add_argument("--directed", action="store_true", help="directed mode: show each scene's marker question and take a held/departed verdict; writes data/coding/directed.<coder>.jsonl")
 ap.add_argument("--trace", action="store_true", help="trace mode: show each turn's thinking trace; two fixed questions per turn; writes data/coding/trace.<coder>.jsonl")
 ap.add_argument("--bench", default=None, help="transcripts dir to code (default: <study>/data/benchmark); with a bench dir every file is the coding set")
@@ -43,9 +46,17 @@ WANT = set(s for s in args.scenes.split(",") if s)
 
 ARCS, REVEAL = load_arcs(STUDY, WANT, args.salt, bench=args.bench, traces=args.trace)
 ARCS = sample(ARCS, args.per_scene, args.limit)
+if args.arcs_file:
+    ARCS = [a for a in ARCS if a["id"] in _keep]
 if args.trace:                       # only arcs with at least one trace can be trace-coded
     ARCS = [a for a in ARCS if any(t.get("reasoning") for t in a["turns"])]
-FILE = "trace" if args.trace else "directed" if args.directed else "open_codes"
+FILE = "trace" if args.trace else "directed" if args.directed else f"manner_{args.version}" if args.codebook else "open_codes"
+CODEBOOK = None
+if args.codebook:
+    _cb = Path(args.codebook).read_text(); _cut = _cb.find("\n## E."); _cb = _cb[:_cut] if _cut > 0 else _cb
+    CODEBOOK = {"version": args.version, "names": sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", _cb))), "text": _cb}
+if args.arcs_file:
+    _keep = {l.strip() for l in open(args.arcs_file) if l.strip() and not l.startswith("#")}
 MARKERS = {}
 if args.directed:
     sys.path.insert(0, str(STUDY / "spec"))
@@ -73,7 +84,7 @@ class H(SimpleHTTPRequestHandler):
         if self.path == "/arcs.json":
             return self._json(ARCS)
         if self.path == "/mode":
-            return self._json({"directed": args.directed, "trace": args.trace, "bench": str(args.bench or "data/benchmark")})
+            return self._json({"directed": args.directed, "trace": args.trace, "bench": str(args.bench or "data/benchmark"), "codebook": CODEBOOK})
         if self.path == "/reveal":
             return self._json(REVEAL)
         if self.path.startswith("/codes/"):

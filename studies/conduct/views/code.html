@@ -69,6 +69,7 @@
   <aside id="side">
     <div class="hint" id="openHint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
     <div class="marker" id="dq" hidden></div>
+    <details id="cbook" hidden><summary>codebook (click to open)</summary><pre id="cbtext" style="white-space:pre-wrap;font:12px/1.4 -apple-system,Segoe UI,sans-serif;max-height:40vh;overflow:auto"></pre></details>
     <div id="codeWrap"><label>code</label><input id="code" list="codelist" placeholder="short label"><datalist id="codelist"></datalist></div>
     <div><label id="quoteLabel">quote (verbatim)</label><textarea id="quote" placeholder="select text in a reply (required for departed)"></textarea></div>
     <div><label>memo</label><textarea id="memo" placeholder="optional"></textarea></div>
@@ -94,7 +95,7 @@
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-let ARCS = [], CODES = [], i = 0, VIEW = [], DIRECTED = false, TRACE = false, TURN = 0, ANS = { names_move: null, intent_split: null };
+let ARCS = [], CODES = [], i = 0, VIEW = [], DIRECTED = false, TRACE = false, CODEBOOK = null, TURN = 0, ANS = { names_move: null, intent_split: null };
 const SITTING = new Date().toISOString().slice(0, 16) + '-' + Math.random().toString(36).slice(2, 6);
 let firstSave = null, lastArc = null, lastSave = null, EDITING = null;
 const coder = () => $('#coder').value.trim();
@@ -170,7 +171,7 @@ function render() {
     $('#sat').textContent = 'held ' + n.held + ' · departed ' + n.departed;
     return;
   }
-  const labels = [...new Set(CODES.map(c => c.code))].sort();
+  const labels = CODEBOOK ? CODEBOOK.names : [...new Set(CODES.map(c => c.code))].sort();
   $('#codelist').innerHTML = labels.map(l => '<option value="' + esc(l) + '">').join('');
   // saturation: new codes introduced per batch of 20 coded arcs, in coding order
   const seen = new Set(), order = [], firstArc = {};
@@ -189,6 +190,7 @@ async function commit(label) {
   const quote = $('#quote').value.trim(), memo = $('#memo').value.trim();
   if (!coder()) { alert('coder name first'); return false; }
   const needQuote = !DIRECTED || label === 'departed';
+  if (CODEBOOK && !CODEBOOK.names.includes(label)) { alert('pick a code from the codebook list: ' + CODEBOOK.names.join(', ')); return false; }
   if (!label || (needQuote && !quote)) { alert(DIRECTED ? 'departed needs a verbatim quote: select the deciding text in a reply' : 'code and verbatim quote are required'); return false; }
   if (quote && !arcText(a).includes(quote)) { alert('quote is not a verbatim substring of this arc'); return false; }
   if (EDITING) {
@@ -261,7 +263,8 @@ $('#toggleBook').onclick = async () => {
     await fetch('/rename', { method: 'POST', body: JSON.stringify({ coder: coder(), from, to: to.trim() }) }); CODES.forEach(c => { if (c.code === from) c.code = to.trim(); }); $('#toggleBook').onclick(); $('#toggleBook').onclick(); };
 };
 (async () => {
-  try { const m = await (await fetch('/mode')).json(); DIRECTED = m.directed; TRACE = m.trace; } catch (e) {}
+  try { const m = await (await fetch('/mode')).json(); DIRECTED = m.directed; TRACE = m.trace; CODEBOOK = m.codebook || null; } catch (e) {}
+  if (CODEBOOK) { document.title = 'manner coding ' + CODEBOOK.version; $('#cbook').hidden = false; $('#cbtext').textContent = CODEBOOK.text; $('#openHint').textContent = 'Manner pass, codebook ' + CODEBOOK.version + ': for this arc, add every code from the list that is present, each with the verbatim quote that shows it. One trajectory (HELD or FOLDED is not coded here; the directed pass has it). Codes not on the list are refused.'; $('#code').placeholder = 'pick from the list'; }
   if (TRACE) {
     document.title = 'trace coding';
     ['#openHint', '#codeWrap', '#openActions', '#fCode'].forEach(s => $(s).hidden = true);
