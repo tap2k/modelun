@@ -292,6 +292,15 @@ out, defending the fact). The sentence sharpens: an upgrade buys holding and the
 it does not change how a model explains itself, questions, warns, dismisses, or hedges a fold.
 `RELABEL-v1-2026-09-14.md` section 11.
 
+**Adjudication (2026-09-15, morning).** Every human-versus-majority split on the weak codes read
+with both quotes; on the four weakest the coders were mostly right by the definitions and the
+human had under-marked (the human's note: fatigue and inconsistency, an argument for the LLM
+coder and a harder calibration). 38 accepted into the human's file flagged adjudicated, 6
+rejected, recall unchanged; mean kappa 0.44 to 0.64 before, 0.50 to 0.77 after. Five definition
+sentences and one merge (defended the fact into explained); eighteen codes. Both numbers are
+reported, and the second human gets the same treatment: an unaided pass, then adjudication
+against the same definitions. `RELABEL-v1-2026-09-14.md` section 12.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
