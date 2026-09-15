@@ -297,7 +297,8 @@ with both quotes; on the four weakest the coders were mostly right by the defini
 human had under-marked (the human's note: fatigue and inconsistency, an argument for the LLM
 coder and a harder calibration). 38 accepted into the human's file flagged adjudicated, 6
 rejected, recall unchanged; mean kappa 0.44 to 0.64 before, 0.50 to 0.77 after. Five definition
-sentences and one merge (defended the fact into explained); eighteen codes. Both numbers are
+sentences; a merge of defended into explained tried and reverted; nineteen codes, and a simple
+one-line-per-code list for the second human (`data/coding/CODES-v2-SIMPLE-2026-09-15.md`). Both numbers are
 reported, and the second human gets the same treatment: an unaided pass, then adjudication
 against the same definitions. `RELABEL-v1-2026-09-14.md` section 12.
 
