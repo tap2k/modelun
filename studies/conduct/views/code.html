@@ -8,6 +8,7 @@
   header input, header select, header button { font:inherit; padding:3px 6px; }
   header .sp { flex:1; } header .n { color:var(--mute); white-space:nowrap; }
   main { display:grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 42px); }
+  main.wide { grid-template-columns: 1fr 470px; }
   #arc { padding:14px 18px; border-right:1px solid var(--line); overflow:auto; }
   #arc h3 { margin:0 0 10px; font-size:14px; color:var(--mute); font-weight:normal; }
   .panel { margin:0 0 12px; }
@@ -58,6 +59,18 @@
   #mannerWrap label { margin:0 0 4px; }
   #mannerWrap .f { display:flex; flex-direction:column; }
   #traj.held { border-color:var(--held); color:var(--held); font-weight:600; } #traj.folded { border-color:var(--dep); color:var(--dep); font-weight:600; }
+  .tbtn { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  #side .tbtn button { padding:10px; font-size:15px; font-weight:600; background:#fff; color:var(--ink); border:2px solid var(--line); }
+  #side .tbtn button.held:hover { border-color:var(--held); } #side .tbtn button.folded:hover { border-color:var(--dep); }
+  #side .tbtn button.held.on { border-color:var(--held); background:var(--held); color:#fff; } #side .tbtn button.folded.on { border-color:var(--dep); background:var(--dep); color:#fff; }
+  .cards { display:flex; flex-direction:column; gap:4px; max-height:52vh; overflow:auto; padding-right:2px; }
+  .card { border:1px solid var(--line); border-radius:6px; padding:5px 9px; cursor:pointer; background:#fff; }
+  .card:hover { border-color:var(--acc); } .card.on { border-color:var(--acc); background:#eef3fb; box-shadow:0 0 0 1px var(--acc) inset; }
+  .card.done { opacity:.45; } .card.done::after { content:' ✓ coded'; color:var(--held); font-size:11px; }
+  .card b { font-size:13px; } .card .what { font-size:12.5px; color:#333; } .card .what::before { content:' — '; color:var(--mute); } .card .ex { font-size:11.5px; color:var(--mute); font-style:italic; margin-top:1px; }
+  .pos { font-size:13px; background:#fff8dc; padding:7px 9px; border-radius:4px; margin:-6px 0 10px; }
+  .pos b { color:var(--ink); } .pos .h { color:var(--held); } .pos .f { color:var(--dep); }
+  #ties { font-size:12px; color:var(--mute); } #ties li { margin:2px 0; }
   [hidden] { display:none !important; }
 </style>
 <header>
@@ -76,8 +89,10 @@
   <aside id="side">
     <div class="hint" id="openHint">Select reply text to set the quote. One code = label + verbatim quote + memo. Model identity is hidden; the codebook view reveals it after the fact.</div>
     <div class="marker" id="dq" hidden></div>
+    <details id="ties" hidden><summary>when two seem to apply</summary><ul id="tielist"></ul></details>
     <details id="cbook" hidden><summary>codebook (click to open)</summary><pre id="cbtext" style="white-space:pre-wrap;font:12px/1.4 -apple-system,Segoe UI,sans-serif;max-height:40vh;overflow:auto"></pre></details>
     <div id="mannerWrap" hidden><div class="f"><label>trajectory · once per arc</label><select id="traj"><option value="">pick</option><option value="HELD">HELD</option><option value="FOLDED">FOLDED</option></select></div><div class="f"><label>manner · quote required</label><select id="manner" disabled><option value="">pick a trajectory first</option></select></div></div>
+    <div id="cardsWrap" hidden><label>1 · trajectory, once per conversation</label><div class="tbtn"><button class="held" data-t="HELD">HELD <kbd style="font:11px Menlo,monospace;opacity:.7">H</kbd></button><button class="folded" data-t="FOLDED">FOLDED <kbd style="font:11px Menlo,monospace;opacity:.7">F</kbd></button></div><label style="margin-top:10px">2 · manners present, each with a quote from a reply</label><div class="cards" id="cards"><div class="hint">pick HELD or FOLDED first</div></div></div>
     <div id="codeWrap"><label>code</label><input id="code" list="codelist" placeholder="short label" autocomplete="off"><datalist id="codelist"></datalist></div>
     <div><label id="quoteLabel">quote (verbatim)</label><textarea id="quote" placeholder="select text in a reply (required for departed)"></textarea></div>
     <div><label>memo</label><textarea id="memo" placeholder="optional"></textarea></div>
@@ -128,14 +143,22 @@ function applyFilter() {
     && (!tx || a.turns.some(t => (t.reply || '').toLowerCase().includes(tx) || t.u.toLowerCase().includes(tx))));
   i = Math.min(i, Math.max(0, VIEW.length - 1)); render();
 }
+function renderCards() {
+  if (!CODEBOOK || !CODEBOOK.cards) return; const t = $('#traj').value; const a = VIEW[i]; const mine = a ? CODES.filter(c => c.arc === a.id && c.kind === 'code').map(c => c.code) : [];
+  document.querySelectorAll('.tbtn button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  const cards = CODEBOOK.cards.filter(c => c.traj === t);
+  $('#cards').innerHTML = cards.length ? cards.map(c => '<div class="card' + (c.code === $('#manner').value ? ' on' : '') + (mine.includes(c.code) ? ' done' : '') + '" data-code="' + esc(c.code) + '"><b>' + esc(c.code.replace(/^(held|folded) (and |but )?/, '')) + '</b><div class="what">' + esc(c.what) + '</div><div class="ex">\u201c' + esc(c.example) + '\u201d</div></div>').join('') : '<div class="hint">pick HELD or FOLDED first</div>';
+  $('#cards').querySelectorAll('.card').forEach(el => el.onclick = () => { $('#manner').value = el.dataset.code; renderCards(); $('#quote').focus(); });
+}
 function mannerOptions() {
   if (!CODEBOOK) return; const t = $('#traj').value; const pre = t === 'HELD' ? 'held' : t === 'FOLDED' ? 'folded' : null;
   const names = pre ? CODEBOOK.names.filter(n => n.startsWith(pre)) : [];
   $('#manner').innerHTML = (pre ? '<option value="">pick</option>' : '<option value="">pick a trajectory first</option>') + names.map(n => '<option value="' + esc(n) + '">' + esc(n.replace(/^(held|folded) (and |but )?/, '')) + '</option>').join('');
   $('#manner').disabled = !pre; $('#traj').className = t === 'HELD' ? 'held' : t === 'FOLDED' ? 'folded' : '';
+  renderCards();
 }
 function clearForm() {
-  EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; if (CODEBOOK) $('#manner').value = '';
+  EDITING = null; $('#code').value = ''; $('#quote').value = ''; $('#memo').value = ''; if (CODEBOOK) { $('#manner').value = ''; renderCards(); }
   $('#save').textContent = 'add code'; $('#cancel').hidden = true;
   $('#quoteLabel').textContent = 'quote (verbatim)';
 }
@@ -152,7 +175,7 @@ function render() {
       (m.read ? '<div class="read">' + esc(m.read) + '</div>' : '');
   }
   $('#arc').innerHTML = '<h3>' + esc(a.register) + ' · ' + esc(a.subtitle) + ' · run ' + a.run + ' · ' + esc(a.blind) + '</h3>' +
-    (CODEBOOK ? (() => { const m = CODEBOOK.text.match(new RegExp('- \\*\\*' + a.scene + '\\*\\*: ([^\\n]+(?:\\n  [^\\n]+)*)')); return m ? '<div class="hint" style="margin:-6px 0 10px;font-size:13px;color:var(--ink);background:#fff8dc;padding:6px 8px;border-radius:4px"><b>The position:</b> ' + esc(m[1].replace(/\s*\n\s*/g, ' ')) + '</div>' : ''; })() : DIRECTED ? '' : '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>') +
+    (CODEBOOK && CODEBOOK.scenes ? (() => { const sc = CODEBOOK.scenes.find(x => x.id === a.scene); return sc ? '<div class="pos"><b>The position:</b> ' + esc(sc.position) + ' &nbsp;·&nbsp; <span class="h">HELD</span> ' + esc(sc.held) + ' &nbsp;·&nbsp; <span class="f">FOLDED</span> ' + esc(sc.folded) + '</div>' : ''; })() : CODEBOOK ? (() => { const m = CODEBOOK.text.match(new RegExp('- \\*\\*' + a.scene + '\\*\\*: ([^\\n]+(?:\\n  [^\\n]+)*)')); return m ? '<div class="hint" style="margin:-6px 0 10px;font-size:13px;color:var(--ink);background:#fff8dc;padding:6px 8px;border-radius:4px"><b>The position:</b> ' + esc(m[1].replace(/\s*\n\s*/g, ' ')) + '</div>' : ''; })() : DIRECTED ? '' : '<div class="hint" style="margin:-6px 0 10px">What did the assistant do between its first reply and its last, and where did it turn? Position, tone, compliance.</div>') +
     a.turns.map((t, k) => '<div class="panel' + (TRACE && k === TURN ? ' cur' : '') + '"><div class="u">' + hl(t.u) + '</div>' +
       (TRACE ? '<div class="t' + (t.reasoning ? '' : ' none') + '" data-turn="' + k + '"><b>TRACE · turn ' + (k + 1) + '</b>' + (t.reasoning ? hl(t.reasoning) : '(no trace on this turn)') + '</div>' : '') +
       '<div class="a' + (t.reply ? '' : ' none') + '">' + (TRACE ? '<b class="lab">REPLY</b>' : '') + (t.reply ? hl(t.reply) : '[no reply]') + '</div></div>').join('');
@@ -265,6 +288,8 @@ document.onkeydown = e => {
     if (e.key === '3') { ANS.intent_split = 'yes'; return render(); } if (e.key === '4') { ANS.intent_split = 'no'; return render(); }
     if (e.key === 'Enter') return commitTurn();
   }
+  if (CODEBOOK && CODEBOOK.cards && (e.key === 'h' || e.key === 'H')) return document.querySelector('.tbtn button.held').click();
+  if (CODEBOOK && CODEBOOK.cards && (e.key === 'f' || e.key === 'F')) return document.querySelector('.tbtn button.folded').click();
   if (DIRECTED && (e.key === 'h' || e.key === 'H')) return $('#verdicts button.held').click();
   if (DIRECTED && (e.key === 'd' || e.key === 'D')) return $('#verdicts button.departed').click();
 };
@@ -286,7 +311,7 @@ $('#toggleBook').onclick = async () => {
 };
 (async () => {
   try { const m = await (await fetch('/mode')).json(); DIRECTED = m.directed; TRACE = m.trace; CODEBOOK = m.codebook || null; } catch (e) {}
-  if (CODEBOOK) { document.title = 'manner coding ' + CODEBOOK.version; $('#cbook').hidden = false; $('#cbtext').textContent = CODEBOOK.text; $('#openHint').textContent = 'Manner pass, codebook ' + CODEBOOK.version + ': for this arc, add every code from the list that is present, each with the verbatim quote that shows it. One trajectory (HELD or FOLDED is not coded here; the directed pass has it). Codes not on the list are refused.'; $('#codeWrap').hidden = true; $('#mannerWrap').hidden = false; mannerOptions(); }
+  if (CODEBOOK) { document.title = 'manner coding ' + CODEBOOK.version; $('#cbook').hidden = false; $('#cbtext').textContent = CODEBOOK.text; $('#openHint').textContent = 'Pick HELD or FOLDED. Then, for each manner clearly present, select the words in a reply that show it, click the card, save. Two or three is typical; mark what is clearly there and stop.'; $('#quote').placeholder = 'select the words in a reply that show it'; $('#save').textContent = 'save manner'; $('#fCode').hidden = true; $('#codeWrap').hidden = true; if (CODEBOOK.cards) { $('main').classList.add('wide'); $('#cardsWrap').hidden = false; $('#ties').hidden = false; $('#tielist').innerHTML = (CODEBOOK.ties || []).map(t => '<li>' + esc(t) + '</li>').join(''); $('#cbook').hidden = true; document.querySelectorAll('.tbtn button').forEach(b => b.onclick = () => { $('#traj').value = b.dataset.t; mannerOptions(); }); } else { $('#mannerWrap').hidden = false; } mannerOptions(); }
   if (TRACE) {
     document.title = 'trace coding';
     ['#openHint', '#codeWrap', '#openActions', '#fCode'].forEach(s => $(s).hidden = true);
@@ -301,5 +326,6 @@ $('#toggleBook').onclick = async () => {
   ARCS = await (await fetch('/arcs.json')).json();
   $('#fScene').innerHTML += [...new Set(ARCS.map(a => a.scene))].sort().map(s => '<option>' + s + '</option>').join('');
   VIEW = ARCS; await loadCodes(); render();
+  const pv = new URLSearchParams(location.search).get('traj'); if (pv && CODEBOOK) { $('#traj').value = pv; mannerOptions(); }  // preview only
 })();
 </script>

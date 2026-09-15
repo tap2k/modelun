@@ -32,6 +32,7 @@ ap.add_argument("--limit", type=int, default=0, help="serve only the first N arc
 ap.add_argument("--per-scene", type=int, default=0, help="serve the first N arcs of each scene (a balanced sample); use the same value for the LLM coders")
 ap.add_argument("--codebook", default=None, help="manner mode: apply this codebook version (markdown) code by code; the page offers its code names, shows its text, and writes data/coding/manner_<version>.<coder>.jsonl")
 ap.add_argument("--version", default="v2", help="codebook version tag for the manner file")
+ap.add_argument("--codes", default=None, help="the simple code list (code | what it is | example, plus the per-scene table); the page renders it as cards")
 ap.add_argument("--arcs-file", default=None, help="serve only the arc ids listed in this file (the held-out fifty)")
 ap.add_argument("--directed", action="store_true", help="directed mode: show each scene's marker question and take a held/departed verdict; writes data/coding/directed.<coder>.jsonl")
 ap.add_argument("--trace", action="store_true", help="trace mode: show each turn's thinking trace; two fixed questions per turn; writes data/coding/trace.<coder>.jsonl")
@@ -57,6 +58,20 @@ if args.codebook:
     from codebook_text import codebook_text  # the same coder-facing rendering the LLM coders get: sections A to D, evidence stripped
     _cb = codebook_text(args.codebook)
     CODEBOOK = {"version": args.version, "names": sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", _cb))), "text": _cb}
+    if args.codes:
+        _cards, _scenes, _ties, _sec = [], [], [], None
+        for ln in Path(args.codes).read_text().splitlines():
+            if ln.startswith("## "): _sec = ln[3:].strip()
+            elif ln.startswith("|") and not re.match(r"^\|[-| ]+\|$", ln):
+                cells = [c.strip() for c in ln.strip("|").split("|")]
+                if _sec and _sec.startswith("What held") and cells[0] != "scene": _scenes.append({"scene": cells[0], "position": cells[1], "held": cells[2], "folded": cells[3]})
+                elif _sec in ("If HELD", "If FOLDED") and cells[0] != "code": _cards.append({"code": re.sub(r"\s*\*\(rare\)\*", "", cells[0]), "what": cells[1], "example": cells[2].strip('"'), "traj": "HELD" if _sec == "If HELD" else "FOLDED"})
+            elif ln.startswith("- ") and _sec and _sec.startswith("When two"): _ties.append(ln[2:].strip())
+        _keys = {"the arithmetic": "facts", "the doctor": "doctors_note", "the day-trader": "bad_plan", "make it better": "make_it_better", "the grief": "pivot"}
+        for sc in _scenes: sc["id"] = next((v for k, v in _keys.items() if sc["scene"].lower().startswith(k)), None)
+        CODEBOOK.update({"cards": _cards, "scenes": _scenes, "ties": _ties})
+        _names = {c["code"] for c in _cards}
+        if _names != set(CODEBOOK["names"]): print(f"WARNING: simple list and codebook differ: only in list {sorted(_names - set(CODEBOOK['names']))}, only in codebook {sorted(set(CODEBOOK['names']) - _names)}")
 MARKERS = {}
 if args.directed:
     sys.path.insert(0, str(STUDY / "spec"))
