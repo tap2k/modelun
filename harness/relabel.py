@@ -65,12 +65,13 @@ def main():
     ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--codebook", required=True); ap.add_argument("--version", required=True)
     ap.add_argument("--scenes", default=""); ap.add_argument("--coders", required=True); ap.add_argument("--salt", default="conduct-2026-09")
     ap.add_argument("--limit", type=int, default=0); ap.add_argument("--per-scene", type=int, default=0)
+    ap.add_argument("--specimens", action="store_true", help="also code models not on the frozen panel (dated specimens), appended after the panel order")
     args = ap.parse_args()
     if not os.environ.get("OPENROUTER_API_KEY"): sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
     cb = codebook_text(args.codebook)
     names = set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", cb)) | {"HELD", "FOLDED"}
     system = PREAMBLE + cb
-    arcs, _ = load_arcs(args.study, [s for s in args.scenes.split(",") if s], args.salt)
+    arcs, _ = load_arcs(args.study, [s for s in args.scenes.split(",") if s], args.salt, specimens=args.specimens)
     arcs = sample(arcs, args.per_scene, args.limit)
     coding = Path(args.study) / "data" / "coding"
     now = lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

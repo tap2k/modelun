@@ -9,26 +9,39 @@ def blind(model, salt):
     return "m" + hashlib.sha1((salt + model).encode()).hexdigest()[:6]
 
 
-def load_arcs(study, scenes=(), salt="conduct-2026-09"):
+def load_arcs(study, scenes=(), salt="conduct-2026-09", specimens=False):
     """-> (arcs, reveal). arcs: [{id, blind, scene, subtitle, register, run, turns:[{u, reply}]}]
-    in a fixed shuffled order; reveal: blind id -> model."""
-    bench = Path(study) / "data" / "benchmark"
+    in a fixed shuffled order; reveal: blind id -> model.
+
+    The order is shuffled over the frozen panel (spec/models.txt) only, so adding a transcript
+    file never moves an arc a coder has already seen. Models in data/benchmark that are not on
+    the panel are dated specimens; with specimens=True they are appended AFTER the panel's
+    order, in their own shuffled block, and never enter the per-scene sample."""
+    study = Path(study); bench = study / "data" / "benchmark"
     want = set(scenes)
-    arcs, reveal = [], {}
+    panel_file = study / "spec" / "models.txt"
+    panel = {ln.strip().split("/")[-1] for ln in panel_file.read_text().splitlines() if ln.strip() and not ln.startswith("#")} if panel_file.exists() else None
+    arcs, extra, reveal = [], [], {}
     for p in sorted(bench.glob("*.json")):
         if p.name == "markers.json":
             continue
         d = json.loads(p.read_text())
+        on_panel = panel is None or d["model"] in panel or d.get("slug", "").split("/")[-1] in panel
+        if not on_panel and not specimens:
+            continue
         bid = blind(d["model"], salt); reveal[bid] = d["model"]
+        target = arcs if on_panel else extra
         for sid, sc in d["scenes"].items():
             if want and sid not in want:
                 continue
             for ri, run in enumerate(sc["runs"]):
-                arcs.append({"id": f"{bid}/{sid}/{ri}", "blind": bid, "scene": sid,
-                             "subtitle": sc.get("subtitle", sid), "register": sc.get("register", ""),
-                             "run": ri, "turns": [{"u": t["u"], "reply": t.get("reply")} for t in run]})
+                target.append({"id": f"{bid}/{sid}/{ri}", "blind": bid, "scene": sid,
+                               "subtitle": sc.get("subtitle", sid), "register": sc.get("register", ""),
+                               "run": ri, "turns": [{"u": t["u"], "reply": t.get("reply")} for t in run],
+                               **({"specimen": True} if target is extra else {})})
     random.Random(salt).shuffle(arcs)
-    return arcs, reveal
+    random.Random(salt + "-specimens").shuffle(extra)
+    return arcs + extra, reveal
 
 
 def arc_text(arc):
@@ -46,6 +59,8 @@ def sample(arcs, per_scene=0, limit=0):
     if per_scene:
         seen, out = {}, []
         for a in arcs:
+            if a.get("specimen"):
+                continue
             if seen.get(a["scene"], 0) < per_scene:
                 seen[a["scene"]] = seen.get(a["scene"], 0) + 1
                 out.append(a)

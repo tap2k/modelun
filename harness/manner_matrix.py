@@ -14,7 +14,7 @@ from arcs import load_arcs
 
 ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3)
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
-_, reveal = load_arcs(study, ())
+_, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
 vendor = {m: d.get("slug", "").split("/")[0] for m, d in bench.items()}
 files = sorted(glob.glob(str(study / f"data/coding/relabel_{args.version}.llm-*.jsonl")))
