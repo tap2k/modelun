@@ -54,8 +54,7 @@ if args.trace:                       # only arcs with at least one trace can be 
 FILE = "trace" if args.trace else "directed" if args.directed else f"manner_{args.version}" if args.codebook else "open_codes"
 CODEBOOK = None
 if args.codebook:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from relabel import codebook_text  # the same coder-facing rendering the LLM coders get: sections A to D, evidence stripped
+    from codebook_text import codebook_text  # the same coder-facing rendering the LLM coders get: sections A to D, evidence stripped
     _cb = codebook_text(args.codebook)
     CODEBOOK = {"version": args.version, "names": sorted(set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", _cb))), "text": _cb}
 MARKERS = {}
