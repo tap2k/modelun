@@ -130,6 +130,9 @@ disposition mix separates "holds with a reason" from "won't commit."
   Future extension: read the traces on the tag, stance, and maybe? cells to see what the model
   says it is responding to (the construction, the user's confidence, or the decision itself) —
   the outside-in "grammar-keyed" reading gets an inside view to check against.
+  **Thinking-route ladder (2026-09-14):** `transcripts-sdk-thinking/` (Sonnet 5, Opus 5, Fable 5.1 via
+  the agent SDK, effort low) and `transcripts-openrouter-thinking/` (the same three via OpenRouter,
+  reasoning low), 80 scenes x 4 runs each; the same-day Claude ladder read on two channels.
   **Thinking switch (`--reasoning off|low|medium|high`, runner and the six probes; stamped as
   `reasoning_mode`):** default sends nothing, so every wave-1 and wave-2 cell is the model as
   served. **No-thinking arm (2026-09-14, `probe_nothink.py`, `probes/nothink/`):** the ask and

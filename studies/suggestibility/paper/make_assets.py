@@ -87,8 +87,8 @@ def compute():
         out[m] = {"tageff": float(np.mean(effs)), "lo": float(np.percentile(boots, 5)),
                   "hi": float(np.percentile(boots, 95)), "ask": float(np.mean([e[1] for e in per])),
                   "channel": "openrouter"}
-    # GLM (probes/righteffect_glm) intentionally NOT loaded: served via DeepInfra
-    # (reasoning-off), channel-incomparable — dropped from the 43-model panel 2026-07-23.
+    # GLM intentionally NOT loaded: served via DeepInfra (reasoning-off), channel-incomparable;
+    # dropped from the 43-model panel 2026-07-23. Its probe and output removed 2026-09-15 (git history).
     return out
 
 
