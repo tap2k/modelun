@@ -53,3 +53,44 @@ material in `ADJUDICATION-v2-Jay-2026-09-16.md`, decisions pending.
    The last 25 arcs look like arcs 5 to 50, so there is no fatigue on top of it. The third coder
    got the same line after arc 2 (see `CODER-LOG.md`), so the two are compared as two nudged
    coders with the split at the message, not as nudged against un-nudged.
+
+## The third coder, and the floor as a range (17:41)
+
+Liam, the third coder, fifty arcs, 13:23 to 17:41 with two breaks of about an hour, 162 distinct
+manner marks, quotes on all, no memos; a message after arc 2 repeated the brief's "2 to 4" line
+and the once-per-manner rule (`CODER-LOG.md`). Adjudication material in
+`ADJUDICATION-v2-Liam-2026-09-16.md`, decisions pending.
+
+    trajectory kappa:  Tap–Jay 0.95   Tap–Liam 0.64   Jay–Liam 0.69
+    manner, mean kappa over codes:
+      Tap unaided – Jay 0.52   Tap unaided – Liam 0.40   Jay – Liam 0.44
+      Tap adjudicated – Jay 0.61   Tap adjudicated – Liam 0.47
+    each against the six machines' majority (mean kappa; marks per arc; recall of the majority; precision):
+      Tap unaided      0.67   2.2   0.62   0.88
+      Tap adjudicated  0.83   3.0   0.86   0.91
+      Jay              0.62   3.0   0.72   0.76
+      Liam             0.48   3.2   0.62   0.60
+    Krippendorff alpha (nominal, per-code presence, mean over codes):
+      three humans unaided 0.46   two novices 0.44   Tap adjudicated + two novices 0.51   six machines 0.66
+    Liam by order: arcs 1–2 recall 0.88 precision 0.64; arcs 3–50 recall 0.60 precision 0.60; last 25 recall 0.57.
+
+Reading. (1) The floor is a range, not a number: 0.40 to 0.52 between humans unaided, 0.44 for
+the two people who did not write the codebook, 0.46 across all three. The six machines agree
+with each other at 0.66 on the same arcs and with the adjudicated author at 0.83. On this
+instrument the machines are the most reliable readers in the room and both novices sit below
+them, one near them (Jay) and one well below (Liam). (2) Liam disagrees even on trajectory, 0.64
+with the author where Jay is at 0.95: on eight or nine arcs he called held what two others called
+folded or the reverse, so the position rule on the sheet did not transmit to him the way it did
+to Jay. (3) Liam never used "cited itself" or the fold-side "warned", zero marks each, and put
+sixteen "explained" and nineteen "defended the fact": the explained/cited/defended boundary is
+where a novice's reading goes, twice now, and the version-three sentence on it is the most
+important one. (4) Liam's recall fell across the sitting, 0.88 to 0.60 to 0.57, a four-hour
+sitting with two breaks, so for him the word is fatigue as well as threshold; Jay's did not.
+(5) What holds across all three humans and the machines: conceded (0.81 to 1.00 everywhere),
+empathized (0.61 to 0.83), supported with evidence, diverted, folded and apologized. The house
+codes: empathized licensed by every pair; probed 0.45 to 0.55 between humans; provided an
+alternative 0.44 to 0.77; warned 0.34 to 0.80 (Jay and the author agree, Liam does not); cited
+itself unmeasurable for Liam. (6) For the paper: a codebook a second person applies at 0.6 and a
+third at 0.4, with the machines at 0.66 among themselves and 0.83 to the adjudicated author, is
+the honest picture of coding conduct at scale, and the paper prints all of it. The second human
+is not the floor; the range is.

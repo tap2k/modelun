@@ -311,7 +311,10 @@ are the ones Jay independently marked, which is the check on adjudication the me
 Jay's own weak code is explained, read broadly by a novice. A mid-pass message repeating the
 brief's "two to four codes" line cut a novice's marks from 5.8 to 2.7 per arc and recall from
 1.00 to 0.69 (`CODER-LOG.md`); the third coder got the same line after arc 2, so both order splits are at the message. Jay's adjudication file is
-written; decisions pending.
+written; decisions pending. The third coder (Liam) finished 17:41: trajectory 0.64 with the author,
+manner 0.40 unaided, 0.47 adjudicated, 0.48 against the machines; never used cited itself; recall
+fell across a four-hour sitting. Alpha across the three humans unaided 0.46, the two novices 0.44,
+the six machines 0.66. The floor is a range and the paper prints it (`MANNER-FLOOR-2026-09-16.md`).
 
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
