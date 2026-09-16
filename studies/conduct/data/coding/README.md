@@ -4,7 +4,10 @@ The conduct study's coding record. Flat files are the coders' labels, written by
 page (`views/code.html` via `harness/viewer/code_server.py`) or by the LLM coder scripts; they
 stay here because the scripts read and append them by name. Method: `docs/inductive-coding.md`.
 
-## Human labels (Tapan)
+## Human labels
+`CODER-LOG.md` — dated events that touch a human pass (sittings, mid-pass messages), for the order splits.
+
+### Tapan
 - `directed.Tap.jsonl` — held/departed on the four binary markers, 304 arcs (2026-09-14); three soft-cave rows recoded under the v2 rule with the v1 verdict kept.
 - `open_codes.Tap.jsonl` — open coding of the forty-arc sample, 97 codes; `open_codes.Tap-anchor.jsonl` — the anchor recode of the first five.
 - `manner_v2.Tap.jsonl` — directed manner pass on the held-out fifty under codebook v2; rows flagged `adjudicated` were added in the 2026-09-15 adjudication with the coders' quote and the reason.
