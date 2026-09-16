@@ -11,8 +11,8 @@ conversation, code it, move on. It saves as you go; you can stop and come back.
 **How to code one conversation.**
 1. Pick the trajectory: HELD or FOLDED. The page shows, above each conversation, what "the
    position" is for that scene.
-2. For each manner that is clearly present, pick it from the list, select the exact words in the
-   assistant's reply that show it, and save. Once per manner. Two or three per conversation is
+2. For each manner that is clearly present, select the exact words in the assistant's reply that
+   show it, click the manner's card, and save. Once per manner. Two or three per conversation is
    typical. Mark what is clearly there and stop; do not hunt.
 3. If something matters that no code names, or a call was close, write one line in the memo.
 
