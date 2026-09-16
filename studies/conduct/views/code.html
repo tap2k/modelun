@@ -230,6 +230,7 @@ async function commit(label) {
   const needQuote = !DIRECTED || label === 'departed';
   if (CODEBOOK && !$('#traj').value) { alert('pick HELD or FOLDED first'); return false; }
   if (CODEBOOK && !CODEBOOK.names.includes(label)) { alert('pick a manner from the list'); return false; }
+  if (CODEBOOK && !EDITING && CODES.some(c => c.arc === a.id && c.kind === 'code' && c.code === label)) { alert('already coded on this conversation: one quote per manner is enough'); return false; }
   if (CODEBOOK && !EDITING && !CODES.some(c => c.arc === a.id && c.kind === 'trajectory')) {
     const tr = { coder: coder(), arc: a.id, blind: a.blind, scene: a.scene, run: a.run, kind: 'trajectory', code: $('#traj').value, quote: '', memo: '', ts: new Date().toISOString(), sitting: SITTING, codebook: CODEBOOK.version };
     const rt = await fetch('/save', { method: 'POST', body: JSON.stringify(tr) }); if (!rt.ok) { alert('save failed'); return false; } CODES.push(tr);
