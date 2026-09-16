@@ -94,3 +94,15 @@ itself unmeasurable for Liam. (6) For the paper: a codebook a second person appl
 third at 0.4, with the machines at 0.66 among themselves and 0.83 to the adjudicated author, is
 the honest picture of coding conduct at scale, and the paper prints all of it. The second human
 is not the floor; the range is.
+
+## Convergence in reverse (19:56)
+
+Six machine coders from three vendors, alpha 0.66 among themselves on the fifty; three humans
+0.46; two novices 0.44; machines against the adjudicated author 0.83. The census's finding that
+models share a mode, measured on the answer side, appears here on the reading side as
+inter-coder reliability: the low variance that homogenizes answers makes machines reliable
+readers of a codebook. The census's warning applies with it: agreement among machine readers is
+the same prior read six times and cannot license itself, which is why the human reference exists;
+the machines' higher agreement with the adjudicated author than with each other, and the vendor
+effect surviving the removal of any coder vendor, are what say they read the codebook and not
+each other.
