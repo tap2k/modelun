@@ -310,7 +310,7 @@ machines than to the author cold, and the codes the adjudication had added (empa
 are the ones Jay independently marked, which is the check on adjudication the method needed.
 Jay's own weak code is explained, read broadly by a novice. A mid-pass message repeating the
 brief's "two to four codes" line cut a novice's marks from 5.8 to 2.7 per arc and recall from
-1.00 to 0.69 (`CODER-LOG.md`); the third coder gets no message. Jay's adjudication file is
+1.00 to 0.69 (`CODER-LOG.md`); the third coder got the same line after arc 2, so both order splits are at the message. Jay's adjudication file is
 written; decisions pending.
 
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;

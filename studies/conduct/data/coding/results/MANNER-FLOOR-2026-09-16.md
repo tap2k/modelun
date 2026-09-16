@@ -50,5 +50,6 @@ material in `ADJUDICATION-v2-Jay-2026-09-16.md`, decisions pending.
 5. The message. Before it Jay marked 5.8 per arc with recall 1.00 against the majority and
    precision 0.70; after it 2.7 per arc, recall 0.69, precision 0.78. The brief's line, repeated,
    moved a novice from marking everything to marking the clearest, and cost a third of the recall.
-   The last 25 arcs look like arcs 5 to 50, so there is no fatigue on top of it. For the third
-   coder the message is not sent, so the two can be compared.
+   The last 25 arcs look like arcs 5 to 50, so there is no fatigue on top of it. The third coder
+   got the same line after arc 2 (see `CODER-LOG.md`), so the two are compared as two nudged
+   coders with the split at the message, not as nudged against un-nudged.
