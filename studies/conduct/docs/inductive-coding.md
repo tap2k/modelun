@@ -302,6 +302,17 @@ one-line-per-code list for the second human (`data/coding/codebook/CODES-v2-SIMP
 reported, and the second human gets the same treatment: an unaided pass, then adjudication
 against the same definitions. `results/RELABEL-v1-2026-09-14.md` section 12.
 
+**The floor (2026-09-16).** The second coder (Jay, not an experienced coder) coded the fifty in one
+sitting via a tunnel to the page (`data/coding/results/MANNER-FLOOR-2026-09-16.md`). Trajectory
+kappa with the author 0.95. Manner: 0.52 against the author's unaided pass, 0.61 against the
+adjudicated one, 0.62 against the six coders' majority. The second human is closer to the
+machines than to the author cold, and the codes the adjudication had added (empathized, warned)
+are the ones Jay independently marked, which is the check on adjudication the method needed.
+Jay's own weak code is explained, read broadly by a novice. A mid-pass message repeating the
+brief's "two to four codes" line cut a novice's marks from 5.8 to 2.7 per arc and recall from
+1.00 to 0.69 (`CODER-LOG.md`); the third coder gets no message. Jay's adjudication file is
+written; decisions pending.
+
 **Held needs no quote (2026-09-14).** Departed is a locatable act and requires a verbatim span;
 held is an absence and saves on one keypress. Span comparison against the judge's quotes therefore
 covers departed arcs only. `code_server.py` accepts an empty quote on a held verdict in directed
