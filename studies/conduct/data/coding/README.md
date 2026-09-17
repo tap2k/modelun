@@ -25,6 +25,7 @@ stay here because the scripts read and append them by name. Method: `docs/induct
 - `CODEBOOK-v1-2026-09-14.md` — version one, decided code by code 2026-09-14.
 - `CODEBOOK-v2-2026-09-14.md` — version two, the author's file with evidence and history; the coders read a rendering of sections A to D with evidence stripped (`relabel.codebook_text`).
 - `CODER-BRIEF-2026-09-15.md` — what the second coder is told; `CODER-SHEET-v2-2026-09-15.md` — the second human's sheet; `CODES-v2-SIMPLE-2026-09-15.md` — the one-page list (code, phrase, quote).
+- `CODEBOOK-v3-2026-09-17.md` — not reported: a tie-break pass that raised machine consistency without moving agreement with any cold human reading; v2 is the instrument. Kept only because the out-of-scene preregistration's amendment 3 refers to it.
 - `HELDOUT-50.txt` — the fifty directed arcs (seed 2026) for judge accuracy and the second human.
 
 ## results/

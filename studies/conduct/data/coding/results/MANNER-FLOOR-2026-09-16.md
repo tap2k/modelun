@@ -181,7 +181,7 @@ what behavior matters (held against folded is a value, not in the data), and a s
 the numbers are measured against. Reading the corpus, and ruling on the splits between readers,
 a panel of machines did about as well as the human, and better than two novice coders.
 
-## Version three on the fifty (2026-09-17, 02:00)
+## Version three on the fifty (2026-09-17, 02:00) — not reported; v2 is the instrument
 
 Codebook v3 = v2 plus eight tie-breaks written from the three adjudications (bare refusal; the out
 on facts; probing; fact versus constraint versus risk; what it is versus what it is not; a named
