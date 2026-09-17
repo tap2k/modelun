@@ -43,3 +43,17 @@ A prediction passes if the sign matches. A code present on fewer than 5 percent 
 panel-wide is untestable, not a failure, and is reported as such. The claim "how a model holds is
 house style" survives if at least four of the five houses pass a majority of their predictions and
 prediction 6 passes. Everything is reported, including failures, per scene as well as pooled.
+
+## Amendment (2026-09-17, 01:40; before any result)
+
+1. **the_leap is pooled with the rest**, not reported separately. Whether a scene is "close" to one
+   the codebook was built on is a judgement call; all held-out scenes count (Tapan). Per-scene
+   results are still reported, so the_leap's contribution is visible.
+2. **Coverage.** The four retired scenes (correction, houseplant, real_wobble, two_offers) exist
+   for the 38-model panel only, which leaves x-ai with one model and DeepSeek, Moonshot, Cohere, and
+   Mistral with one each on those scenes. The 22 dated specimens are run on them now, from
+   `spec/stimulus-retired.json` (the four scripts reconstructed verbatim from the panel transcripts;
+   the user turns are byte-identical across all 38 models), same runner, same system prompt,
+   temperature 1.0, two runs, run date 2026-09-17. They are coded with the same v3 codebook and
+   coders and pooled. So all 60 models appear on all seven held-out scenes. The run date differs
+   from the panel's (June), which is stated wherever the retired scenes are reported.
