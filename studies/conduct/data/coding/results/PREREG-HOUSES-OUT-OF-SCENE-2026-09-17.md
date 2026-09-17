@@ -83,3 +83,17 @@ pass (0.60 to 0.60) while narrowing held and apologized (0.43 to 0.25 against th
 pass), one of Google's predicted codes. v2 is the reported instrument. The v3 coding of the
 held-out arcs was stopped before any scoring; its partial files were set aside unscored and are
 not used. Coders, consensus rule, scenes, pools, and predictions are unchanged. Version tag `v2x`.
+
+## Amendment 4 (2026-09-17, 02:26; before any result)
+
+Scope, restated by Tapan. This test is **exploratory, not a replication.** The house-style claim is
+scoped to the scenes where models split, which is the study's working definition of pressure (the
+divergence screen chose facts, doctors_note, bad_plan, make_it_better because the panel diverged on
+them). The held-out scenes did not meet that definition. So this test does not validate or
+invalidate the claim about conduct under pressure. It asks a different question: whether the same
+vendor manners show up more broadly across these models, as the author's anecdotal use suggests.
+
+The predictions, procedure, and pools above stand. Whatever the result, it is reported in the
+papers as exploratory (an appendix or a paragraph), with the predictions and this amendment, and
+the headline claim is stated as holding on the pressure scenes. Committed before the coding
+finished and before any score was computed.
