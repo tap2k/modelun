@@ -143,35 +143,40 @@ machines, never adjudicated, agree among themselves at 0.66, above the three hum
 them adjudicated. The version-three sheet writes those boundaries as tie-breaks, and the real test
 of it is a fourth coder reading cold.
 
-## Can a machine make the rulings? (2026-09-17, 00:45; partial)
+## Can a machine make the rulings? (2026-09-17, 01:15)
 
 `harness/rule_splits.py`: each of the 190 rulings Tapan made across the three adjudications (113
 marks accepted, 73 ruled out, 4 trajectories corrected) put to an LLM ruler as a neutral question
 (is this code present, with this span offered; or HELD or FOLDED), with the human's ruling as the
 reference. Two codebook conditions: the v2 text before any adjudication (commit 645a5ad: can the
 machine make the ruling?) and the current text (can it apply rulings already written down?). Raw
-answers in `rulings-pre.jsonl`, `rulings-current.jsonl`.
+answers in `rulings-pre.jsonl`, `rulings-current.jsonl`. A first attempt stopped on an OpenRouter
+402; failed calls were dropped and rerun.
 
-    ruler               condition   all          accepted marks   ruled-out marks   trajectory
-    gemini-3.7-flash    pre         0.89 (190)   0.82 (113)       0.99 (73)         1.00 (4)
-    gemini-3.7-flash    current     0.89 (190)   0.84 (113)       0.97 (73)         1.00 (4)
-    claude-opus-5       pre         0.83 (82)    0.67 (39)        0.98 (42)         1.00 (1)     partial
-    claude-opus-5       current     0.84 (73)    0.72 (39)        0.97 (33)         1.00 (1)     partial
-    gpt-5.6-luna        both        no answers                                                   partial
+    ruler               condition   all    accepted marks (113)   ruled-out marks (73)   trajectory (4)
+    gemini-3.7-flash    pre         0.89        0.82                   0.99                   1.00
+    claude-opus-5       pre         0.84        0.75                   0.97                   1.00
+    gpt-5.6-luna        pre         0.84        0.85                   0.82                   1.00
+    gemini-3.7-flash    current     0.89        0.84                   0.97                   1.00
+    claude-opus-5       current     0.84        0.75                   0.97                   1.00
+    gpt-5.6-luna        current     0.85        0.88                   0.81                   1.00
 
-Incomplete: OpenRouter returned 402 Payment Required partway through Opus 5 and before Luna started.
-Only Gemini ran all 190. Gemini 3.7 Flash was also one of the six coders, so on the accepted marks
-(whose quotes came from the coders) it is partly ruling on its own marks; the ruled-out marks
-(whose quotes came from the human coders) do not have that problem.
+    pre condition, three rulers: majority agrees with the human on 0.89 of rulings; rulers unanimous on 0.81.
 
-Reading, provisional on one full ruler. The machine agrees with the human's rulings 89 percent of
-the time with or without the written rules, and almost always on the ruled-out marks, the hard
-direction: saying "this is not an apology" or "this is the out, not an alternative" against a span
-that looks like one. The written rules add nothing measurable, which says the rulings were
-recoverable from the definitions and the conversation, not only from the sentences the human wrote.
-Its 21 disagreements (pre) are all but one in the other direction, a mark the human accepted and
-the machine would not: empathized 6, held and apologized 6, folded and apologized 3, produced 2
-(the promised-and-never-delivered note), and four singles. Those are the thresholds the human set
-on warmth and apology, and the note rule. So the machine rules the boundaries as strictly as the
-human and more strictly on warmth. To finish: Opus 5 and Luna with credit restored, then the table
-without the ruler-was-a-coder caveat.
+Reading. Three machines from three vendors, given the codebook as it stood before any ruling was
+written down, agree with the human's rulings 84 to 89 percent of the time, and the written rules
+change that by at most a point. So the rulings were recoverable from the definitions and the
+conversation; they did not depend on the sentences the human later added. The rulers split two
+ways: Gemini and Opus rule like a strict adjudicator, almost never keeping a mark the human ruled
+out (0.97 to 0.99) and sometimes refusing a mark the human accepted, mostly on warmth (empathized,
+apologized) and the promised note; Luna is the reverse, accepting more of what the human accepted
+(0.85 to 0.88) and keeping more of what the human ruled out (probed and explained, the boundaries
+the novices also crossed). The majority of three rulers matches the human at 0.89. One caveat
+stands: Gemini 3.7 Flash was one of the six coders, so on the accepted marks it partly rules on
+its own quotes; Opus 5 and Luna were coders too (in v2) but the ruled-out marks, with human coders'
+quotes, carry no such overlap, and Opus 5 scores 0.97 there.
+
+What it answers. The human was needed for two things in this pipeline and not a third: choosing
+what behavior matters (held against folded is a value, not in the data), and a small reference
+the numbers are measured against. Reading the corpus, and ruling on the splits between readers,
+a panel of machines did about as well as the human, and better than two novice coders.
