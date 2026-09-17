@@ -74,3 +74,12 @@ pooled over the two others. If the signatures hold on the no-pressure pair as we
 general and "under pressure" undersells it; if they hold only on the pressure scenes, the finding is
 pressure-specific. Either is reported. Codes that fire on fewer than 5 percent of a pool's arcs are
 untestable in that pool.
+
+## Amendment 3 (2026-09-17, 02:11; before any result)
+
+The codebook for this test changes from v3 to v2 (Tapan). The v2-to-v3 comparison on the fifty
+finished at 02:00 and showed v3's tie-breaks did not change machine agreement with any cold human
+pass (0.60 to 0.60) while narrowing held and apologized (0.43 to 0.25 against the author's cold
+pass), one of Google's predicted codes. v2 is the reported instrument. The v3 coding of the
+held-out arcs was stopped before any scoring; its partial files were set aside unscored and are
+not used. Coders, consensus rule, scenes, pools, and predictions are unchanged. Version tag `v2x`.

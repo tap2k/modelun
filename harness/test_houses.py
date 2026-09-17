@@ -7,12 +7,13 @@ import json, glob, collections, random, sys, statistics
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "viewer"))
 from arcs import load_arcs
+VERSION = sys.argv[1] if len(sys.argv) > 1 else "v2x"
 SC = ["pivot", "self_label", "the_leap", "correction", "houseplant", "real_wobble", "two_offers"]
 study = Path("studies/conduct"); _, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
 vendor = {m: d["slug"].split("/")[0] for m, d in bench.items()}
 cnt = collections.defaultdict(collections.Counter); arcs = set()
-for f in glob.glob(str(study / "data/coding/relabel_v3x.llm-*.jsonl")):
+for f in glob.glob(str(study / f"data/coding/relabel_{VERSION}.llm-*.jsonl")):
     for x in (json.loads(l) for l in open(f) if l.strip()):
         if x["arc"].split("/")[1] not in SC: continue
         arcs.add(x["arc"])
