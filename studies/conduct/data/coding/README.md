@@ -30,3 +30,4 @@ stay here because the scripts read and append them by name. Method: `docs/induct
 
 ## results/
 Dated, never edited after the day: `JUDGE-ACCURACY-2026-09-14.md` (judges vs the human, three judges), `COMPARE-2026-09-14.txt` and `RECONCILIATION-2026-09-14.md` (open coders vs the human), `RELABEL-v1-2026-09-14.md` (the relabel cycle, sections 1 to 12), `MANNER-MATRIX-*.md` and `HOUSE-PROFILES-*.md` (v1 at 43 models; v2 at 60 on the three common scenes), `MANNER-ACCURACY-2026-09-15.txt` and `ADJUDICATION-v2-2026-09-15.*` (the human manner pass vs the coders, and the adjudication).
+- `HOUSES-OUT-OF-SCENE-2026-09-17.md` — the exploratory out-of-scene house test on v2: three houses reproduce, Google and Grok untestable or not carried over; relabel files tagged `v2x`.

@@ -404,3 +404,6 @@ means an open-weight reasoning model (DeepSeek, Qwen, GLM), a separate smaller s
 move was the channel, not the trace: the Claude Code context injection shifted the census and
 suggestibility more than a release did (`../../consensus/probe_channel_control.py`); that is the
 next session.
+
+
+**Out-of-scene house test, 2026-09-17.** Anthropic, Meta, and OpenAI manners reproduce on the seven held-out scenes; Google's cited itself and apologized rarely fire without a refusal and are untestable; Grok's brevity did not carry over; the vendor effect holds on probed, warned, and provided an alternative. The preregistered four-of-five rule is not met as written (three pass, two untestable). No further data collection for the papers. See `data/coding/results/HOUSES-OUT-OF-SCENE-2026-09-17.md`.
