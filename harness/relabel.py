@@ -61,6 +61,7 @@ def main():
     ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--codebook", required=True); ap.add_argument("--version", required=True)
     ap.add_argument("--scenes", default=""); ap.add_argument("--coders", required=True); ap.add_argument("--salt", default="conduct-2026-09")
     ap.add_argument("--limit", type=int, default=0); ap.add_argument("--per-scene", type=int, default=0)
+    ap.add_argument("--workers", type=int, default=1, help="parallel requests per coder")
     ap.add_argument("--arcs-file", default=None, help="code only the arc ids listed in this file (one per line, # comments)")
     ap.add_argument("--specimens", action="store_true", help="also code models not on the frozen panel (dated specimens), appended after the panel order")
     args = ap.parse_args()
@@ -80,9 +81,11 @@ def main():
         out = coding / f"relabel_{args.version}.{coder}.jsonl"
         done = {json.loads(l)["arc"] for l in out.read_text().splitlines() if l.strip()} if out.exists() else set()
         n_rows = n_dropped = n_unknown = n_err = 0
-        for arc in arcs:
-            if arc["id"] in done: continue
-            res = call(slug, system, arc_text(arc))
+        import concurrent.futures as _cf
+        todo = [a for a in arcs if a["id"] not in done]
+        _ex = _cf.ThreadPoolExecutor(args.workers)
+        _results = _ex.map(lambda a: (a, call(slug, system, arc_text(a))), todo)
+        for arc, res in _results:
             if "_error" in res:
                 n_err += 1; print(f"  {coder} {arc['id']}: {res['_error'][:80]}", file=sys.stderr, flush=True); continue
             replies = normalize(" ".join(t["reply"] or "" for t in arc["turns"]))

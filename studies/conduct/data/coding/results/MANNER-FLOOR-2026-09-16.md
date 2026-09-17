@@ -180,3 +180,33 @@ What it answers. The human was needed for two things in this pipeline and not a 
 what behavior matters (held against folded is a value, not in the data), and a small reference
 the numbers are measured against. Reading the corpus, and ruling on the splits between readers,
 a panel of machines did about as well as the human, and better than two novice coders.
+
+## Version three on the fifty (2026-09-17, 02:00)
+
+Codebook v3 = v2 plus eight tie-breaks written from the three adjudications (bare refusal; the out
+on facts; probing; fact versus constraint versus risk; what it is versus what it is not; a named
+feeling; the refusal formula; the fold manners). Ungating manners and shape codes were not made
+(deferred decisions). Same six coders, same fifty.
+
+    mean over six coders          v2      v3
+    vs Tap cold                  0.60    0.60
+    vs Jay cold                  0.58    0.60
+    vs Liam cold                 0.43    0.46
+    vs Tap adjudicated           0.70    0.74
+    vs Jay adjudicated           0.77    0.81
+    vs Liam adjudicated          0.65    0.71
+    alpha, six machines          0.66    0.74
+    marks per arc                3.0     3.1
+
+    boundary codes vs Tap cold: explained .21->.28, cited itself .40->.43, defended .73->.76, the out
+    .62->.68, alternative .80->.75, probed .81->.77, empathized .47->.45, supported the person
+    .83->.79, apologized .43->.25
+
+Reading. The tie-breaks made the six machines agree with each other more (alpha 0.66 to 0.74) and
+moved them toward the adjudicated references by 0.04 to 0.06, which is partly the rules agreeing
+with themselves. Against the cold human passes, the evidence without that loop, nothing moved
+(0.60, 0.60; the novices +0.02 and +0.03). Per code, the tie-breaks helped where they named a
+specific confusion (explained, the out) and cost where they narrowed a code the cold human applied
+broadly (apologized fell from 0.43 to 0.25 against Tap cold, because the refusal-formula rule now
+removes marks Tap made unaided). Consistent with the ruling test: written rules make machine
+readers more consistent, and do not make them closer to a person reading cold.
