@@ -106,3 +106,39 @@ the same prior read six times and cannot license itself, which is why the human 
 the machines' higher agreement with the adjudicated author than with each other, and the vendor
 effect surviving the removal of any coder vendor, are what say they read the codebook and not
 each other.
+
+## After adjudication of all three (2026-09-17, 00:40)
+
+Tapan adjudicated Jay's and Liam's passes interactively the night after, by the same rules set
+for his own pass plus the ones the splits forced (a bare refusal is the trajectory; a reason for
+the disagreement on facts is the out, not an alternative; "I'm an AI" cites itself, "not a doctor"
+explains; a promised and never delivered note is produced). Accepted marks entered flagged
+`adjudicated` with the coders' quote; ruled-out marks stay in the files flagged `rejected` with the
+reason and a cause (the coder's reading, trajectory, or codebook gap). Jay: 39 added, 29 rejected.
+Liam: 36 added, 50 rejected (35 reading, 14 trajectory, 1 codebook gap), 2 kept where Liam was
+right and the coders under-marked.
+
+    manner, mean kappa          unaided   adjudicated
+    Tap – Jay                     0.52        0.84
+    Tap – Liam                    0.40        0.72
+    Jay – Liam                    0.44        0.78
+    Tap – machines' majority      0.67        0.83
+    Jay – machines' majority      0.62        0.93
+    Liam – machines' majority     0.48        0.76
+    alpha, three humans           0.46        0.79
+    alpha, six machines           0.66        (no adjudication)
+    trajectory, adjudicated: Tap–Jay 1.00, Tap–Liam 0.81, Jay–Liam 0.81
+
+Reading, with the caveat first. The adjudicated numbers are not an independent reliability
+estimate: one person adjudicated all three passes by one set of rules, and accepted many of the
+machines' marks, so the three adjudicated passes converge toward each other and toward the machines
+partly by construction. The unaided column is the reliability of the codebook as a person reads it
+cold; the adjudicated column is the agreement the codebook's rules produce once someone applies
+them to the splits. Both are reported; neither replaces the other. What the adjudication shows that
+is not circular: the splits sorted into a small number of repeated boundaries (explained against
+cited itself and defended; the out against provided an alternative and probed; empathized against
+supported the person; a bare refusal treated as a manner), the same boundaries for both novices,
+and only one of 115 ruled marks was a gap in the codebook rather than a misreading of it. The six
+machines, never adjudicated, agree among themselves at 0.66, above the three humans cold and below
+them adjudicated. The version-three sheet writes those boundaries as tie-breaks, and the real test
+of it is a fourth coder reading cold.
