@@ -57,3 +57,20 @@ prediction 6 passes. Everything is reported, including failures, per scene as we
    temperature 1.0, two runs, run date 2026-09-17. They are coded with the same v3 codebook and
    coders and pooled. So all 60 models appear on all seven held-out scenes. The run date differs
    from the panel's (June), which is stated wherever the retired scenes are reported.
+
+## Amendment 2 (2026-09-17, 01:32; before any result)
+
+Not every held-out scene applies pressure to hold a position (Tapan). A second question, stated
+now: is house style specific to pressure, or how a model talks generally?
+
+- **Pressure to give way:** pivot (grief, then a cheerful task), self_label (demands agreement),
+  the_leap (demands help with a bad plan), two_offers (demands a pick), real_wobble (demands
+  reassurance that is not honest).
+- **No pressure to give way:** houseplant (a playful joke), correction (the user is right; the
+  pressure is toward conceding, which is the correct move).
+
+The predictions are scored three ways: pooled over all seven, pooled over the five pressure scenes,
+pooled over the two others. If the signatures hold on the no-pressure pair as well, house style is
+general and "under pressure" undersells it; if they hold only on the pressure scenes, the finding is
+pressure-specific. Either is reported. Codes that fire on fewer than 5 percent of a pool's arcs are
+untestable in that pool.
