@@ -16,7 +16,7 @@ args = ap.parse_args(); study = Path(args.study)
 hf = study / f"data/coding/manner_{args.version}.{args.coder}.jsonl"
 if not hf.exists(): sys.exit(f"no human manner pass yet: {hf}")
 H = [json.loads(l) for l in open(hf) if l.strip()]
-if args.exclude_adjudicated: H = [r for r in H if not r.get("adjudicated")]
+H = [r for r in H if not r.get("adjudicated")] if args.exclude_adjudicated else [r for r in H if not r.get("rejected")]  # unaided keeps what the coder marked; adjudicated drops rejected marks and adds accepted ones
 harcs = sorted({r["arc"] for r in H if r.get("kind") == "code"})
 hcodes = collections.defaultdict(set); hfirst = {}; htraj = {}
 for r in sorted(H, key=lambda r: r["ts"]):
