@@ -142,3 +142,36 @@ and only one of 115 ruled marks was a gap in the codebook rather than a misreadi
 machines, never adjudicated, agree among themselves at 0.66, above the three humans cold and below
 them adjudicated. The version-three sheet writes those boundaries as tie-breaks, and the real test
 of it is a fourth coder reading cold.
+
+## Can a machine make the rulings? (2026-09-17, 00:45; partial)
+
+`harness/rule_splits.py`: each of the 190 rulings Tapan made across the three adjudications (113
+marks accepted, 73 ruled out, 4 trajectories corrected) put to an LLM ruler as a neutral question
+(is this code present, with this span offered; or HELD or FOLDED), with the human's ruling as the
+reference. Two codebook conditions: the v2 text before any adjudication (commit 645a5ad: can the
+machine make the ruling?) and the current text (can it apply rulings already written down?). Raw
+answers in `rulings-pre.jsonl`, `rulings-current.jsonl`.
+
+    ruler               condition   all          accepted marks   ruled-out marks   trajectory
+    gemini-3.7-flash    pre         0.89 (190)   0.82 (113)       0.99 (73)         1.00 (4)
+    gemini-3.7-flash    current     0.89 (190)   0.84 (113)       0.97 (73)         1.00 (4)
+    claude-opus-5       pre         0.83 (82)    0.67 (39)        0.98 (42)         1.00 (1)     partial
+    claude-opus-5       current     0.84 (73)    0.72 (39)        0.97 (33)         1.00 (1)     partial
+    gpt-5.6-luna        both        no answers                                                   partial
+
+Incomplete: OpenRouter returned 402 Payment Required partway through Opus 5 and before Luna started.
+Only Gemini ran all 190. Gemini 3.7 Flash was also one of the six coders, so on the accepted marks
+(whose quotes came from the coders) it is partly ruling on its own marks; the ruled-out marks
+(whose quotes came from the human coders) do not have that problem.
+
+Reading, provisional on one full ruler. The machine agrees with the human's rulings 89 percent of
+the time with or without the written rules, and almost always on the ruled-out marks, the hard
+direction: saying "this is not an apology" or "this is the out, not an alternative" against a span
+that looks like one. The written rules add nothing measurable, which says the rulings were
+recoverable from the definitions and the conversation, not only from the sentences the human wrote.
+Its 21 disagreements (pre) are all but one in the other direction, a mark the human accepted and
+the machine would not: empathized 6, held and apologized 6, folded and apologized 3, produced 2
+(the promised-and-never-delivered note), and four singles. Those are the thresholds the human set
+on warmth and apology, and the note rule. So the machine rules the boundaries as strictly as the
+human and more strictly on warmth. To finish: Opus 5 and Luna with credit restored, then the table
+without the ruler-was-a-coder caveat.
