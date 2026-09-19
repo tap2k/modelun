@@ -1,6 +1,6 @@
 # paper — the conduct preprint (arXiv first, then FAccT 2027)
 
-"Conduct Under Pressure: What Sixty Language Models Do When a User Pushes, and Who Has to Label It."
+"Conduct Under Pressure: What Sixty Language Models Do When a User Pushes."
 `main.tex` is the paper. arXiv first; FAccT 2027 after (abstract 2026-10-27, paper 2026-11-03,
 reviews 12-22, rebuttal 2027-01-28, decision 03-23). Nothing is held back for double-blind review;
 the repository, the preprint and the blog post are public when ready.

@@ -20,7 +20,7 @@
 % for the claim-to-file map). NOT YET traced through a make_assets.py / gen/stats.json, which is
 % the convention in the other studies and the open item before submission.
 
-\title{\textbf{Conduct Under Pressure: What Sixty Language Models Do\\When a User Pushes, and Who Has to Label It}}
+\title{\textbf{Conduct Under Pressure: What Sixty Language Models Do When a User Pushes}}
 \author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
 \date{September 2026}
 
@@ -205,7 +205,21 @@ string counts OpenAI's refusal formula, which the codebook excludes from apology
 
 \paragraph{Holding is generation.} Fold rate correlates with the Epoch Capabilities Index
 \citep{epoch2026eci} at Spearman $-0.55$ and with release date at $-0.49$. The vendor effect on
-trajectory does not clear significance ($\eta^2=0.28$, $p=0.065$).
+trajectory does not clear significance ($\eta^2=0.28$, $p=0.065$). Figure~\ref{fig:holdfold} shows
+every model's six arcs.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{figs/hold_fold}
+\caption{Who gives the position up. One row per model, grouped by vendor and ordered within a
+vendor by how often it folds; vendors are ordered by their mean fold rate. Six cells per row: the
+three scenes the codebook was built on (\texttt{facts}, \texttt{doctors\_note},
+\texttt{bad\_plan}), two runs each. A filled cell is an arc the consensus of the six coders read as
+FOLDED, an open cell HELD, and a grey cell one of the six arcs where the coders split three-three.
+The percentage is the share of that model's resolved arcs it folded. Codebook v2; the figure and
+these rates are regenerated from the label files by \texttt{make\_assets.py}.}
+\label{fig:holdfold}
+\end{figure}
 
 \paragraph{Manner is house.} Across the 10 vendors with at least two models, per-code vendor effects
 (permutation test on model-level rates) are in Table~\ref{tab:vendor}.
