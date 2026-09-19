@@ -33,7 +33,7 @@ Benchmarks measure whether a model answers correctly. Deployed assistants also f
 way: a user insists, begs, flatters or grieves, and the model gives up a correct fact, writes a
 document it should refuse, or cheers a plan that will cost the user money. We measure that
 behavior directly. We send frozen multi-turn scenes, identical for every model regardless of the
-reply, to 60 models from 10 vendors, and label each transcript with a codebook built by open
+reply, to 60 models from 13 vendors, and label each transcript with a codebook built by open
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, correlating
 with a public capability index at Spearman $-0.55$ with little vendor effect. How it holds tracks
@@ -130,9 +130,12 @@ regardless of the reply. Three scenes carry the codebook: a user insisting $5\ti
 (\texttt{doctors\_note}), and a user quitting a job to day-trade (\texttt{bad\_plan}). Scenes were
 selected because the panel diverged on them, which is this study's working definition of pressure.
 
-\paragraph{Panel.} 60 models from 10 vendors, run June to September 2026 through a single router at
-temperature 1.0, two runs per model per scene. Vendors with at least two models: Anthropic (10),
-OpenAI (14), Google (10), Meta (4), x-ai (4), plus Cohere, DeepSeek, Mistral, Moonshot, Qwen.
+\paragraph{Panel.} 60 models from 13 vendors, run June to September 2026 through a single router at
+temperature 1.0, two runs per model per scene. The panel is the 38 models frozen in
+\texttt{spec/models.txt} plus 22 dated specimens coded with them; the specimens were run later, which
+is stated wherever they carry a result. Ten vendors have at least two models and only those enter the
+vendor tests: Anthropic (10), OpenAI (15), Google (10), Meta (4), x-ai (4), plus Cohere, DeepSeek,
+Mistral, Moonshot, Qwen. The remaining three are single models from z-ai, Nous Research and Gryphe.
 
 \paragraph{Codebook.} One author open-coded 40 transcripts, producing 97 codes. Three LLM open
 coders read the same transcripts independently; their spans covered 90 of the 97 human spans and
@@ -205,7 +208,7 @@ string counts OpenAI's refusal formula, which the codebook excludes from apology
 
 \paragraph{Holding is generation.} Fold rate correlates with the Epoch Capabilities Index
 \citep{epoch2026eci} at Spearman $-0.55$ and with release date at $-0.49$. The vendor effect on
-trajectory does not clear significance ($\eta^2=0.28$, $p=0.065$). Figure~\ref{fig:holdfold} shows
+trajectory does not clear significance ($\eta^2=0.27$, $p=0.077$). Figure~\ref{fig:holdfold} shows
 every model's six arcs.
 
 \begin{figure}[p]
@@ -233,13 +236,13 @@ test on model-level rates. $\rho$ is Spearman's correlation with the capability 
 \toprule
 Code & $\eta^2$ vendor & $p$ & $\rho$ with capability & Top vendor (rate) \\
 \midrule
-folded and produced             & 0.63 & 0.000 & $0.05$  & meta-llama (0.29) \\
+folded and produced             & 0.56 & 0.000 & $0.05$  & meta-llama (0.29) \\
 held and empathized             & 0.59 & 0.000 & $0.40$  & anthropic (0.77) \\
-folded and warned               & 0.59 & 0.000 & $-0.27$ & cohere (0.33) \\
-held and warned                 & 0.54 & 0.000 & $0.20$  & moonshotai (0.67) \\
+folded and warned               & 0.58 & 0.000 & $-0.27$ & cohere (0.33) \\
+held and warned                 & 0.55 & 0.000 & $0.20$  & moonshotai (0.67) \\
 held and cited itself           & 0.52 & 0.000 & $-0.02$ & google (0.37) \\
-held and provided an alternative & 0.46 & 0.000 & $0.55$  & moonshotai (0.67) \\
-held and probed                 & 0.36 & 0.006 & $0.19$  & deepseek (0.33) \\
+held and provided an alternative & 0.43 & 0.001 & $0.55$  & moonshotai (0.67) \\
+held and probed                 & 0.36 & 0.007 & $0.19$  & deepseek (0.33) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -264,7 +267,7 @@ Vendor & Fold rate & Signature \\
 \midrule
 Anthropic (10) & 0.08 & empathized 0.77 (panel 0.41), warned 0.63 (0.38), alternative 0.63 (0.45) \\
 Meta (4)       & 0.38 & produced 0.29 (0.05), folded and warned 0.29 (0.08), probed 0.33 (0.19) \\
-OpenAI (14)    & 0.26 & warned 0.17, empathized 0.30, cited itself 0.02; defined by absences \\
+OpenAI (15)    & 0.30 & warned 0.16, empathized 0.28, cited itself 0.02; defined by absences \\
 Google (10)    & 0.25 & cited itself 0.37 (0.12), folded and apologized 0.22 (0.09) \\
 x-ai (4)       & 0.00 & never folds; warned 0.50; supported with evidence 0.00 \\
 \bottomrule

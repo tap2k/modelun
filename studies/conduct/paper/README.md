@@ -41,8 +41,8 @@ All paths under `studies/conduct/data/coding/results/`.
 | Claim | File |
 |---|---|
 | Trajectory kappa 0.84 to 0.91; marker rules 0.68 to 0.81 | `RELABEL-v1-2026-09-14.md` |
-| Manner matrix, vendor effects, capability correlations | `MANNER-MATRIX-v2-2026-09-15.md` |
-| Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-15.md` |
+| Manner matrix, vendor effects, capability correlations | `MANNER-MATRIX-v2-2026-09-19.md` |
+| Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-19.md` |
 | Human alpha 0.46 cold, 0.79 adjudicated; machines 0.66; 0.83 to the majority | `MANNER-FLOOR-2026-09-16.md` |
 | Per-code human-machine kappa | `harness/score_manner.py --version v2 --coder Tap` |
 | Adjudication, 113 accepted and 79 rejected | `ADJUDICATION-v2-*.md` |
@@ -53,6 +53,21 @@ All paths under `studies/conduct/data/coding/results/`.
 
 Bibliography source: the private read-first set under `~/Desktop/projects/modelUN/conduct-labeling/`.
 Do not point to private paths from files in this public repo.
+
+## The 2026-09-19 regeneration
+
+`gpt-3.5-turbo-instruct` carried a slug with no vendor prefix, in `spec/models.txt` and in its
+transcript, so every analysis grouped it as its own vendor instead of OpenAI. Fixed 2026-09-19;
+the two analyses were regenerated under that date and the 09-15 files are kept as the audit trail.
+OpenAI goes from 14 models to 15 and its fold rate from 0.26 to 0.30; the vendor eta-squared moves
+by at most 0.07 (`folded and produced` 0.63 to 0.56) and no code changes which side of its
+threshold. The control was checked first: the scripts reproduce the 09-15 files byte for byte on
+the unpatched data, so the deltas are the slug and nothing else.
+
+**Not regenerated:** the reply-length section appended to `HOUSE-PROFILES-v2-2026-09-15.md`, which
+no script in the repo produces. The paper's reply-length numbers (eta-squared 0.52, p 0.001, rho
+0.46 in §5) still come from the 09-15 file and still count OpenAI as 14 models. They need
+recomputing before submission.
 
 ## Open before submission
 
