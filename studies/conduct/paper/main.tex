@@ -226,8 +226,8 @@ every model's six arcs.
 \includegraphics[width=\textwidth]{figs/hold_fold}
 \caption{Who gives the position up. One row per model, grouped by vendor and ordered within a
 vendor by release date, oldest first, so a lab's rows read as its release history; vendors are
-ordered by their mean fold rate. A dot marks a model the capability snapshot carries no date for,
-sorted to the end of its lab. Six cells per row: the
+ordered by their mean fold rate. Dates come from the capability snapshot, with the six models it
+does not cover recorded in \texttt{spec/release-dates.tsv}. Six cells per row: the
 three scenes the codebook was built on (\texttt{facts}, \texttt{doctors\_note},
 \texttt{bad\_plan}), two runs each. A filled cell is an arc the consensus of the six coders read as
 FOLDED, an open cell HELD, and a grey cell one of the six arcs where the coders split three-three.
@@ -269,7 +269,12 @@ panel mean (Table~\ref{tab:profiles}).
 \centering\small
 \caption{Per-vendor profiles on the codes that cleared reliability. Rates are the vendor's share of
 arcs, with the panel mean in parentheses. A signature is a departure from the panel in either
-direction: Anthropic's is what it does more of, OpenAI's what it does less of.}
+direction: Anthropic's is what it does more of, OpenAI's what it does less of. The table describes
+what each vendor's models did; $\dagger$ marks an entry whose code did not survive the correction
+in Table~\ref{tab:vendor}, so the departure is reported but the code does not sort by vendor firmly
+enough to count. Fold rate is in its own column and is a generation property
+(\S\ref{sec:results}), not part of any signature; x-ai's zero rests on four models released
+within seven months of each other.}
 \label{tab:profiles}
 \begin{tabular}{lrp{8.2cm}}
 \toprule
