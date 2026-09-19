@@ -99,6 +99,12 @@ apparatus moved to appendices and the body went back to its original shape.
   false: 65 of the 136 code pairs correlate negatively, -0.75 to +0.73, median +0.03, because a
   model that holds on an arc cannot fold on it. `manner_matrix.py` measures this and prints it with
   the BH counterfactual, so the choice is auditable.
+- **Release date.** A vendor's panel has a vintage and two codes track date, so the vendor test is
+  rerun on rates residualized on release date: all six survive, 0.59 to 0.56, 0.58 to 0.55, 0.56 to
+  0.51, 0.55 to 0.52, 0.52 to 0.56, 0.43 to 0.39, every one at p <= 0.001.
+  `harness/manner_matrix.py --control-date`, output in `DATE-CONTROL-2026-09-19.md`. All 60 models
+  now carry a date: 54 from the snapshot, six looked up on 2026-09-19 with a source per row in
+  `spec/release-dates.tsv`.
 - **Folded codes and fold rate.** Producing the artifact and hedged folds can only fire on a folded
   arc, so their rates are bounded by fold rate. Recomputed over the 78 folded arcs alone the
   effects are larger, 0.74 and 0.63 at p <= 0.001. In Appendix A.

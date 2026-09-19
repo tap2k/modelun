@@ -60,6 +60,11 @@ for _ln in open(XI / "eci_map_2026-09-13.tsv"):
         continue
     _ours, _theirs = _ln.rstrip("\n").split("\t")
     dates[_ours] = _eci[_theirs]["date"]
+for _ln in open(STUDY / "spec" / "release-dates.tsv"):          # the six the snapshot misses
+    if _ln.startswith("#") or "\t" not in _ln:
+        continue
+    _m, _d = _ln.split("\t")[:2]
+    dates.setdefault(_m.strip(), _d.strip())
 
 # ---- trajectory consensus: majority of the six coders per arc ----------------------------
 votes = collections.defaultdict(collections.Counter)
@@ -135,8 +140,6 @@ for ci, col in enumerate(columns):
         y -= 1.15
         for r in rs:
             name = r["model"] if len(r["model"]) <= 24 else r["model"][:23] + "\u2026"
-            if r["date"] is None:
-                name += " \u00b7"        # no release date in the snapshot; sorted to the end
             ax.text(dx - 0.35, y + CH / 2, name, fontsize=6.6, ha="right", va="center")
             for i, (sid, _) in enumerate(SCENES):
                 for run_i in (0, 1):

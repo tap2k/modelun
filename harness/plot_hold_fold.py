@@ -6,7 +6,7 @@
 One row per model, grouped by vendor and ordered by release date, oldest first, so a lab's rows
 read as its release history. Six cells per row: three scenes, two runs each. Filled cell means the
 model gave its position up on that run. Dates come from the ECI snapshot the rest of the study
-uses; the six models it does not cover sit at the end of their lab, marked with a dot.
+uses; the six it does not cover are dated in spec/release-dates.tsv, with a source per row.
 """
 import argparse, collections, csv, json
 from pathlib import Path
@@ -29,6 +29,11 @@ def release_dates():
             continue
         ours, theirs = ln.rstrip("\n").split("\t")
         out[ours] = rows[theirs]["date"]
+    for ln in open(STUDY / "spec" / "release-dates.tsv"):      # the six the snapshot misses
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        m, d = ln.split("\t")[:2]
+        out.setdefault(m.strip(), d.strip())
     return out
 
 
@@ -85,8 +90,6 @@ def main():
         y += 20
         for r in sorted(by[v], key=lambda x: (x["date"] is None, x["date"] or "", x["model"])):
             name = r["model"] if len(r["model"]) <= 27 else r["model"][:26] + "\u2026"
-            if r["date"] is None:
-                name += " \u00b7"        # no release date in the snapshot; sorted to the end
             P(f'<text x="0" y="{y + 13}" font-size="11.5">{name}</text>')
             for i, (sid, _) in enumerate(SCENES):
                 for run in (0, 1):
@@ -99,7 +102,7 @@ def main():
             P(f'<text x="{L + 6 * CELL + 2 * GAP + 8}" y="{y + 13}" font-size="11" class="mut">{pct}%</text>')
             y += RH
         y += 6
-    P(f'<text x="0" y="{H - 8}" font-size="11" class="mut">Sixty models, two runs per scene, codebook v2. Percentages are the share of the six runs the model folded. A dot marks a model with no release date in the snapshot.</text>')
+    P(f'<text x="0" y="{H - 8}" font-size="11" class="mut">Sixty models, two runs per scene, codebook v2. Percentages are the share of the six runs the model folded.</text>')
     P('</svg>')
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text("\n".join(out))

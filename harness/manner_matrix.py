@@ -14,6 +14,7 @@ from arcs import load_arcs
 
 ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--min-vendor", type=int, default=3, help="vendors with at least this many models enter the vendor test")
 ap.add_argument("--scenes", default="", help="restrict to these scenes (comma-separated), e.g. the three every model has when specimens lack make_it_better")
+ap.add_argument("--control-date", action="store_true", help="residualize each model rate on its release date before the vendor test, so a vendor whose panel is newer cannot score on vintage")
 ap.add_argument("--drop-coder-vendor", default="", help="leave this vendor's coders out of the consensus (anthropic, google, openai), to test whether a vendor effect is the coders reading their own family")
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
 _, reveal = load_arcs(study, (), specimens=True)
@@ -29,6 +30,10 @@ eci, dates = {}, {}
 for ln in open(H / "eci_map_2026-09-13.tsv"):
     if ln.startswith("#") or "\t" not in ln: continue
     ours, theirs = ln.rstrip("\n").split("\t"); r = eci_rows[theirs]; eci[ours] = float(r["eci"]); dates[ours] = datetime.date.fromisoformat(r["date"]).toordinal()
+for ln in open(study / "spec" / "release-dates.tsv"):      # models the snapshot does not cover
+    if ln.startswith("#") or "\t" not in ln: continue
+    _m, _d = ln.split("\t")[:2]
+    dates.setdefault(_m.strip(), datetime.date.fromisoformat(_d.strip()).toordinal())
 # consensus
 arcs = sorted({r["arc"] for rows in R.values() for r in rows})
 if args.scenes:
@@ -82,8 +87,19 @@ def spearman(a, b):
     ra, rb = rk(a), rk(b); d2 = sum((ra[k] - rb[k]) ** 2 for k in ks); return 1 - 6 * d2 / (n * (n * n - 1)), n
 rows3 = [("FOLDED (trajectory)", None)] + [(short[c], c) for c in codes]
 computed = []
+def _resid(y, x):
+    n = len(x); mx = sum(x) / n; my = sum(y) / n
+    sxx = sum((a - mx) ** 2 for a in x)
+    b = sum((a - mx) * (c - my) for a, c in zip(x, y)) / sxx if sxx else 0.0
+    return [c - (my + b * (a - mx)) for a, c in zip(x, y)]
+
 for label, c in rows3:
-    vals = [(vendor[m], rate(m, c)) for m in models if vendor[m] in big]
+    _ms = [m for m in models if vendor[m] in big and (not args.control_date or m in dates)]
+    if args.control_date:
+        _r = _resid([rate(m, c) for m in _ms], [dates[m] for m in _ms])
+        vals = list(zip([vendor[m] for m in _ms], _r))
+    else:
+        vals = [(vendor[m], rate(m, c)) for m in _ms]
     e, p = perm_p(vals); rates = {m: rate(m, c) for m in models}
     rho_e, n_e = spearman(rates, eci); rho_d, n_d = spearman(rates, dates)
     vm = collections.defaultdict(list)
@@ -120,6 +136,7 @@ for c1, c2 in _it.combinations(codes, 2):
 _pairs.sort()
 _neg = sum(1 for r in _pairs if r < 0)
 _med = _pairs[len(_pairs) // 2]
+print(("\nRates are residualized on release date before the vendor test.\n" if args.control_date else ""), end="")
 print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
 print(f"The family is the {M} manner codes; BY marks the codes surviving Benjamini-Yekutieli at q {Q} over it. Trajectory is a primary question, not one of the family, and is marked n/a.\n")
 print(f"Dependence among the {len(codes)} code-rate vectors over {len(models)} models: {_neg} of {len(_pairs)} pairs negative, minimum {_pairs[0]:+.2f}, median {_med:+.2f}, maximum {_pairs[-1]:+.2f}. Held and folded codes are structurally opposed, so the positive dependence BH assumes does not hold and BY is the correction that does. Under BH the survivors would be {len(survives_bh)} rather than {len(survives)}; the two differ only on {', '.join(sorted(survives_bh - survives)) or 'nothing'}.\n")
