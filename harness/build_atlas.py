@@ -81,7 +81,9 @@ def labels():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", required=True, help="output directory (served statically)")
+    ap.add_argument("--out", required=True, help="static asset directory, served at /atlas")
+    ap.add_argument("--page", default=str(Path.home() / "dev/convovo/convovo-site/src/pages/atlas.astro"),
+                    help="where to write the Astro page; empty to skip")
     a = ap.parse_args()
     out = Path(a.out).expanduser().resolve()
     (out / "models").mkdir(parents=True, exist_ok=True)
@@ -161,9 +163,12 @@ def main():
         })
     (out / "index.json").write_text(json.dumps(index, ensure_ascii=False))
 
-    page = Path(__file__).parent / "viewer" / "atlas.html"
-    if page.exists():
-        shutil.copy(page, out / "index.html")
+    src = Path(__file__).parent / "viewer"
+    for f in ("atlas.css", "atlas.js"):
+        shutil.copy(src / f, out / f)
+    if a.page:                     # the route itself is an Astro page, so the dev server serves /atlas
+        Path(a.page).expanduser().parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(src / "atlas.astro", Path(a.page).expanduser())
     print(f"{len(index['models'])} models, {sum(m['arcs'] for m in index['models'])} transcripts, "
           f"{len(index['scenes'])} scenes -> {out}")
 
