@@ -37,8 +37,9 @@ reply, to 60 models from 13 vendors, and label each transcript with a codebook b
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, correlating
 with a public capability index at Spearman $-0.55$ with little vendor effect. How it holds tracks
-the vendor: six of the codebook's 17 manner codes sort by vendor under a permutation test that
-survives correction over the whole codebook, with little or no capability correlation. We report five vendor profiles on the codes that cleared reliability.
+the vendor: six of the 17 manner codes sort by vendor at permutation $p\leq0.001$, corrected across
+the codebook, with little or no capability correlation. We report five vendor profiles on the codes
+that cleared reliability.
 
 \medskip\noindent
 The second contribution concerns who must produce the labels. Six LLM coders from three vendors
@@ -200,13 +201,10 @@ deferred. Embedding clustering recovered nothing usable (silhouette 0.15). The c
 the scarce contribution. Which categories survive a reliability threshold was.
 
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
-each of Anthropic, Google and OpenAI, and those three labs are among the vendors we profile. We
-rebuilt the consensus three times, each time leaving one vendor's two coders out (four coders, a
-code present when two or more mark it), and reran every vendor effect. All six corrected codes
-survive every drop. Empathizing, Anthropic's signature at 0.77, holds at $\eta^2$ 0.57 with
-Anthropic's own coders out; self-citation, Google's at 0.37, holds at 0.47 with Google's out. The
-largest movement in either direction is hedged folds, 0.58 to 0.43 without Google's coders and to
-0.67 without OpenAI's. No code loses significance in any arm.
+each of Anthropic, Google and OpenAI, three of the vendors we profile. Rebuilding the consensus
+with one vendor's coders left out, three times over, leaves every vendor effect standing:
+empathizing holds at $\eta^2$ 0.57 without Anthropic's own coders, self-citation at 0.47 without
+Google's (Appendix~\ref{app:coders}).
 
 \paragraph{Judge-free floor.} Two vendor signatures reproduce with string matching and no judge at
 all: self-reference correlates with the coded self-citation rate at Spearman 0.75, and a simple
@@ -234,54 +232,34 @@ these rates are regenerated from the label files by \texttt{make\_assets.py}.}
 \label{fig:holdfold}
 \end{figure}
 
-\paragraph{Manner is house.} Table~\ref{tab:vendor} gives the vendor effect on all 17 manner codes,
-not only the ones that cleared. Six survive Benjamini-Yekutieli correction over the family:
-empathizing, warning in either direction, producing the artifact, citing itself and offering an
-alternative, at $\eta^2$ 0.43 to 0.59. Probing is seventh at $p=0.007$, surviving the less
-conservative correction but not this one, and we report it as suggestive. The other ten are in the
-table with their $p$-values.
+\paragraph{Manner is house.} Six of the 17 manner codes sort by vendor at $\eta^2$ 0.43 to 0.59,
+corrected across the codebook (Table~\ref{tab:vendor}).
 
 \begin{table}[t]
 \centering\small
-\caption{Vendor effects on every manner code in the codebook, from a permutation test on
-model-level rates across the 10 vendors with at least two models. The family is the 17 manner
-codes; BY marks those surviving Benjamini-Yekutieli at $q=0.05$ over it. We use BY rather than
-Benjamini-Hochberg because BH assumes positive dependence among the tests and these codes do not
-have it: over the 136 code pairs, 65 correlate negatively across the 60 models, from $-0.75$ to
-$+0.73$ with a median of $+0.03$, since a model that holds on an arc cannot fold on it. Under BH
-seven codes survive rather than six, differing only on probing. Reporting only the cleared rows
-would select on the same $p$-values, so every code stays in the table. Trajectory is a primary
-question rather than one of this family and is reported in the text. $\rho$ is Spearman's
-correlation with the capability index.}
+\caption{The manner codes that sort by vendor, from a permutation test on model-level rates across
+the 10 vendors with at least two models. All 17 manner codes were tested and corrected for
+multiplicity together; these six survive. Probing is seventh at $p=0.007$ and does not survive, so
+we treat it as suggestive. Appendix~\ref{app:codes} has every code, the correction and the
+dependence it rests on. $\rho$ is Spearman's correlation with the capability index.}
 \label{tab:vendor}
-\begin{tabular}{lrrcrl}
+\begin{tabular}{lrrrl}
 \toprule
-Code & $\eta^2$ vendor & $p$ & BY & $\rho$ with capability & Top vendor (rate) \\
+Code & $\eta^2$ vendor & $p$ & $\rho$ with capability & Top vendor (rate) \\
 \midrule
-held and empathized & 0.59 & $<$0.001 & yes & $0.40$ & anthropic (0.77) \\
-folded and warned & 0.58 & $<$0.001 & yes & $-0.27$ & cohere (0.33) \\
-folded and produced & 0.56 & $<$0.001 & yes & $0.05$ & meta-llama (0.29) \\
-held and warned & 0.55 & $<$0.001 & yes & $0.20$ & moonshotai (0.67) \\
-held and cited itself & 0.52 & $<$0.001 & yes & $-0.02$ & google (0.37) \\
-held and provided an alternative & 0.43 & 0.001 & yes & $0.55$ & moonshotai (0.67) \\
-held and probed & 0.36 & 0.007 & no & $0.19$ & deepseek (0.33) \\
-folded and encouraged & 0.32 & 0.025 & no & $-0.20$ & cohere (0.33) \\
-held and explained & 0.30 & 0.046 & no & $0.17$ & moonshotai (0.17) \\
-folded and apologized & 0.28 & 0.070 & no & $-0.01$ & google (0.22) \\
-held and defended the fact & 0.27 & 0.063 & no & $0.45$ & moonshotai (0.33) \\
-held and supported with evidence & 0.26 & 0.075 & no & $0.68$ & anthropic (0.27) \\
-held and apologized & 0.25 & 0.096 & no & $0.06$ & google (0.43) \\
-held and supported the person & 0.25 & 0.081 & no & $0.48$ & deepseek (0.33) \\
-held and gave the user an out & 0.21 & 0.210 & no & $0.52$ & qwen (0.33) \\
-held and diverted & 0.12 & 0.705 & no & $0.28$ & qwen (0.17) \\
-folded and conceded & 0.08 & 0.897 & no & $-0.11$ & mistralai (0.08) \\
+held and empathized & 0.59 & $<$0.001 & $0.40$ & anthropic (0.77) \\
+folded and warned & 0.58 & $<$0.001 & $-0.27$ & cohere (0.33) \\
+folded and produced & 0.56 & $<$0.001 & $0.05$ & meta-llama (0.29) \\
+held and warned & 0.55 & $<$0.001 & $0.20$ & moonshotai (0.67) \\
+held and cited itself & 0.52 & $<$0.001 & $-0.02$ & google (0.37) \\
+held and provided an alternative & 0.43 & 0.001 & $0.55$ & moonshotai (0.67) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Three groups fall out. House-only codes sort by vendor with no capability correlation:
-self-citation, producing the artifact and hedged folds, with probing alongside them at every
-measure except the correction. House-and-generation codes sort both
+self-citation, producing the artifact, hedged folds, and probing, which sits just under the
+correction. House-and-generation codes sort both
 ways: empathizing and offering an alternative, where every vendor's newest models do more and
 Anthropic does most. Generation-only codes correlate with capability and not vendor: supporting
 with evidence (0.68), giving the user an out (0.52), defending the fact (0.45).
@@ -312,24 +290,6 @@ $p=0.001$) and also rises with capability ($\rho=0.46$).
 
 \paragraph{Stability.} Two vendors change profile between releases in this panel (Cohere and
 Moonshot), which makes a house a description of shipped models rather than a lab trait.
-
-\section{Exploratory: do the houses appear off the coding scenes?}
-\label{sec:outofscene}
-
-Preregistered on 2026-09-17 with the predictions and amendments in the repository, and declared
-exploratory before any result: the held-out scenes did not meet the study's pressure definition, so
-this test cannot validate or invalidate the pressure claim. Seven further scenes, 839 transcripts,
-same coders. The preregistration named codebook v3 for this test; amendment 3, written before any
-result, moved it to the frozen v2 after v3 failed to improve agreement with any cold human pass and
-narrowed one of the codes under test.
-
-Anthropic's three predicted manners reproduce; Meta's probing and its low alternative rate
-reproduce while its low empathy does not; OpenAI's two testable absences reproduce. Google's two
-codes fire on 3 percent of these arcs and are untestable, because citing rules and apologizing are
-refusal manners and these scenes rarely ask for a refusal. The x-ai brevity prediction fails, with
-Meta writing shorter replies. Vendor effects hold for probing and warning ($p=0.001$) and for
-offering an alternative ($p=0.026$). The preregistered rule required four of five houses to pass and
-is not met: three pass, two are untestable.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -365,7 +325,7 @@ for every model and run under \texttt{data/}, codebook versions with definitions
 under \texttt{data/coding/codebook/}, human and machine label files and adjudication records under
 \texttt{data/coding/}, the dated result files behind every number above under
 \texttt{data/coding/results/}, the preregistration and its amendments for the exploratory test of
-\S\ref{sec:outofscene}, the coding tool, and every analysis script used for the numbers above.
+Appendix~\ref{app:outofscene}, the coding tool, and every analysis script used for the numbers above.
 Negative and unreported results, including the third codebook revision, are kept in the repository
 with the reasons they were not used. An interactive viewer over the scenes, transcripts and
 consensus codes is published alongside.
@@ -377,7 +337,88 @@ the analysis, and draft the text; the research questions and interpretation are 
 Opus 5 and Claude Haiku 4.5 are also two of the six coders that applied the codebook, and all three
 vendors those coders come from are profiled in \S\ref{sec:results}.
 
+
 \bibliographystyle{plainnat}
 \bibliography{references}
+
+\clearpage
+\appendix
+
+\section{Every code tested, and the correction}
+\label{app:codes}
+
+Table~\ref{tab:allcodes} gives the vendor effect on all 17 manner codes, cleared or not, because
+reporting only the six that cleared would select on the same $p$-values. The 17 are corrected
+together with Benjamini-Yekutieli at $q=0.05$. We use BY rather than Benjamini-Hochberg because BH
+assumes positive dependence among the tests and these codes do not have it: across the 60 models,
+65 of the 136 code pairs correlate negatively, from $-0.75$ to $+0.73$ with a median of $+0.03$,
+since a model that holds on an arc cannot fold on it. Under BH seven codes survive rather than six,
+differing only on probing. Trajectory is a primary question rather than one of this family and is
+reported in \S\ref{sec:results}.
+
+Two of the six, producing the artifact and hedged folds, can only fire on an arc the model folded,
+so their rates are bounded by its fold rate. Recomputed over folded arcs alone the effects are
+larger, not smaller: producing the artifact $\eta^2$ 0.74 and hedged folds 0.63, both at
+$p\leq0.001$ over the 78 folded arcs. Which vendor built a model predicts how it gives way, among
+the models that give way at all.
+
+\begin{table}[h]
+\centering\small
+\caption{Vendor effects on every manner code. BY marks the codes surviving Benjamini-Yekutieli at
+$q=0.05$ over the 17.}
+\label{tab:allcodes}
+\begin{tabular}{lrrcrl}
+\toprule
+Code & $\eta^2$ vendor & $p$ & BY & $\rho$ with capability & Top vendor (rate) \\
+\midrule
+held and empathized & 0.59 & $<$0.001 & yes & $0.40$ & anthropic (0.77) \\
+folded and warned & 0.58 & $<$0.001 & yes & $-0.27$ & cohere (0.33) \\
+folded and produced & 0.56 & $<$0.001 & yes & $0.05$ & meta-llama (0.29) \\
+held and warned & 0.55 & $<$0.001 & yes & $0.20$ & moonshotai (0.67) \\
+held and cited itself & 0.52 & $<$0.001 & yes & $-0.02$ & google (0.37) \\
+held and provided an alternative & 0.43 & 0.001 & yes & $0.55$ & moonshotai (0.67) \\
+held and probed & 0.36 & 0.007 & no & $0.19$ & deepseek (0.33) \\
+folded and encouraged & 0.32 & 0.025 & no & $-0.20$ & cohere (0.33) \\
+held and explained & 0.30 & 0.046 & no & $0.17$ & moonshotai (0.17) \\
+folded and apologized & 0.28 & 0.070 & no & $-0.01$ & google (0.22) \\
+held and defended the fact & 0.27 & 0.063 & no & $0.45$ & moonshotai (0.33) \\
+held and supported with evidence & 0.26 & 0.075 & no & $0.68$ & anthropic (0.27) \\
+held and apologized & 0.25 & 0.096 & no & $0.06$ & google (0.43) \\
+held and supported the person & 0.25 & 0.081 & no & $0.48$ & deepseek (0.33) \\
+held and gave the user an out & 0.21 & 0.210 & no & $0.52$ & qwen (0.33) \\
+held and diverted & 0.12 & 0.705 & no & $0.28$ & qwen (0.17) \\
+folded and conceded & 0.08 & 0.897 & no & $-0.11$ & mistralai (0.08) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The coders' vendors}
+\label{app:coders}
+
+Two of the six coders come from each of Anthropic, Google and OpenAI. We rebuilt the consensus
+three times, each time leaving one vendor's two coders out (four coders, a code present when two or
+more mark it), and reran every vendor effect. All six corrected codes survive every drop.
+Empathizing, Anthropic's signature at 0.77, holds at $\eta^2$ 0.57 with Anthropic's own coders out;
+self-citation, Google's at 0.37, holds at 0.47 with Google's out. The largest movement in either
+direction is hedged folds, 0.58 to 0.43 without Google's coders and to 0.67 without OpenAI's. No
+code loses significance in any arm.
+
+\section{Do the houses appear off the coding scenes?}
+\label{app:outofscene}
+
+Preregistered on 2026-09-17 with the predictions and amendments in the repository, and declared
+exploratory before any result: the held-out scenes did not meet the study's pressure definition, so
+this test cannot validate or invalidate the pressure claim. Seven further scenes, 839 transcripts,
+same coders. The preregistration named codebook v3 for this test; amendment 3, written before any
+result, moved it to the frozen v2 after v3 failed to improve agreement with any cold human pass and
+narrowed one of the codes under test.
+
+Anthropic's three predicted manners reproduce; Meta's probing and its low alternative rate
+reproduce while its low empathy does not; OpenAI's two testable absences reproduce. Google's two
+codes fire on 3 percent of these arcs and are untestable, because citing rules and apologizing are
+refusal manners and these scenes rarely ask for a refusal. The x-ai brevity prediction fails, with
+Meta writing shorter replies. Vendor effects hold for probing and warning ($p=0.001$) and for
+offering an alternative ($p=0.026$). The preregistered rule required four of five houses to pass and
+is not met: three pass, two are untestable.
 
 \end{document}

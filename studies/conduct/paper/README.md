@@ -29,8 +29,7 @@ suggestibility and cross-instrument each trace every quoted number to `gen/stats
   is kept only for the audit trail). §3 says so, and §6 says the exploratory test was moved from
   v3 to v2 by amendment 3 before any result.
 - The house claim is scoped to the scenes where models split. The out-of-scene test is exploratory
-  and its preregistered rule was not met. It is §6 in the current draft; the standing decision is
-  that it belongs in an appendix, which the port did not do.
+  and its preregistered rule was not met. It is Appendix C.
 - Nobody on the panel is a domain expert, and that is appropriate for conduct a non-specialist can
   judge. Do not describe the human reference as expert.
 
@@ -76,29 +75,31 @@ that is 3000 draws and a seed, and either rounds to the same claim.
 
 ## The 2026-09-19 review pass
 
-Two objections a reviewer raised, both answered from data already here, and both checks had
+A reviewer raised two objections; both were answered from data already here, and both checks had
 precedent in the v1 record (`RELABEL-v1-2026-09-14.md`) before being dropped from the v2 draft.
+Neither changed a finding. After the checks landed the paper had become hard to follow, so the
+apparatus moved to appendices and the body went back to its original shape.
 
-- **Coders share vendors with the panel.** Two of six coders come from each of Anthropic, Google
-  and OpenAI. Rebuilding the consensus three times with one vendor's coders out leaves every
-  corrected effect standing: empathizing 0.59 to 0.57 without Anthropic's coders, self-citation
-  0.52 to 0.47 without Google's. In the paper as a Validation paragraph; the table is
-  `CODER-VENDOR-2026-09-19.md`; `harness/manner_matrix.py --drop-coder-vendor` reruns it.
-- **Multiplicity.** The draft showed 7 rows with uncorrected permutation p and no denominator.
-  Table 1 now carries all 17 manner codes with a Benjamini-Yekutieli column at q 0.05. Six
-  survive; probing is seventh at p 0.007 and is reported as suggestive. Trajectory is out of the
-  table: it is a primary question reported either way, not one of the family, and folding it in
-  made the manner codes pay a penalty for it.
+- **Coders share vendors with the panel.** Rebuilding the consensus with each vendor's two coders
+  removed leaves every effect standing: empathizing 0.59 to 0.57 without Anthropic's coders,
+  self-citation 0.52 to 0.47 without Google's. Two sentences in Validation, the detail in
+  Appendix B. `harness/manner_matrix.py --drop-coder-vendor` reruns it;
+  `CODER-VENDOR-2026-09-19.md` has the table.
+- **Multiplicity.** The draft showed 7 of 17 codes with uncorrected p and no denominator. All 17
+  are now corrected together with Benjamini-Yekutieli at q 0.05; six survive and Table 1 shows
+  those six, with probing named as seventh at p 0.007 and treated as suggestive. Appendix A has
+  every code.
+- **Why BY and not BH**, which took two wrong turns. BH was tried on the claim that the codes are
+  positively correlated, BH's condition, which the reviewer asked to see rather than assume. It is
+  false: 65 of the 136 code pairs correlate negatively, -0.75 to +0.73, median +0.03, because a
+  model that holds on an arc cannot fold on it. `manner_matrix.py` measures this and prints it with
+  the BH counterfactual, so the choice is auditable.
+- **Folded codes and fold rate.** Producing the artifact and hedged folds can only fire on a folded
+  arc, so their rates are bounded by fold rate. Recomputed over the 78 folded arcs alone the
+  effects are larger, 0.74 and 0.63 at p <= 0.001. In Appendix A.
 
-  **On BY rather than BH**, which took two wrong turns before it was settled. The first pass used
-  BY without saying why. The second switched to BH on the claim that the codes are positively
-  correlated, BH's condition, which restored probing. A reviewer asked for that claim to be shown
-  rather than asserted, and it is false: of the 136 code pairs across the 60 models, 65 correlate
-  negatively, from -0.75 to +0.73 with a median of +0.03, because a model that holds on an arc
-  cannot fold on it and the held and folded codes are structurally opposed. BH's assumption fails,
-  BY holds under any dependence, so BY is the correction. `manner_matrix.py` now measures the
-  dependence and prints it above the table, and states what BH would have given, so the choice is
-  auditable rather than a matter of which test was kinder.
+**Structure.** The exploratory out-of-scene test is now Appendix C, which is what the standing
+decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
 
 ## Open before submission
 
@@ -109,7 +110,6 @@ precedent in the v1 record (`RELABEL-v1-2026-09-14.md`) before being dropped fro
   against the PDFs before posting; do the same here.
 - arXiv metadata not yet chosen: primary category (cs.CL or cs.HC, with cs.CY cross-list),
   license, and the abstract as plain text for the submission form.
-- Whether §6 moves to an appendix, per the standing decision above.
 - No figures. The held-or-folded grid (`harness/plot_hold_fold.py`) is the obvious candidate.
 - House names in the paper and post are drafts, not Tapan's words.
 - Authorship and whether the labeling contribution leads or follows.
