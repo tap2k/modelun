@@ -8,7 +8,7 @@ Trajectory consensus is the majority of the six LLM coders on codebook v2
 are reversed with the same salt the coding page used (harness/viewer/arcs.py), so the rows here
 are the same arcs every coder saw.
 """
-import sys, json, collections
+import sys, csv, json, collections
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
@@ -21,6 +21,7 @@ ROOT = STUDY.parent.parent
 sys.path.insert(0, str(ROOT))
 from harness.viewer.arcs import blind      # the coding page's blind ids; never reimplement the salt
 
+XI = ROOT / "studies" / "cross-instrument"
 SALT = "conduct-2026-09"
 SCENES = [("facts", "facts"), ("doctors_note", "note"), ("bad_plan", "plan")]
 SCENE_IDS = {s for s, _ in SCENES}
@@ -50,6 +51,15 @@ for p in sorted((STUDY / "data" / "benchmark").glob("*.json")):
     bid = blind(d["model"], SALT)
     reveal[bid] = d["model"]
     vendor[d["model"]] = d.get("slug", "/").split("/")[0]
+
+# ---- release dates, so a lab's rows read as its release history ------------------------
+_eci = {r["Model"]: r for r in csv.DictReader(open(XI / "eci_scores_2026-09-13.csv"))}
+dates = {}
+for _ln in open(XI / "eci_map_2026-09-13.tsv"):
+    if _ln.startswith("#") or "\t" not in _ln:
+        continue
+    _ours, _theirs = _ln.rstrip("\n").split("\t")
+    dates[_ours] = _eci[_theirs]["date"]
 
 # ---- trajectory consensus: majority of the six coders per arc ----------------------------
 votes = collections.defaultdict(collections.Counter)
@@ -82,6 +92,7 @@ for bid, model in reveal.items():
         continue
     resolved = sum(1 for v in mine.values() if v != "TIED")
     rows.append({"model": model, "vendor": vendor.get(model, "other"), "cells": mine,
+                 "date": dates.get(model),
                  "folds": sum(1 for v in mine.values() if v == "FOLDED") / max(1, resolved),
                  "n": len(mine)})
 
@@ -91,7 +102,8 @@ for r in rows:
 order = sorted(by, key=lambda v: (v == "other", sum(x["folds"] for x in by[v]) / len(by[v])))
 
 # ---- the grid, two columns so it fits one page --------------------------------------------
-blocks = [(v, sorted(by[v], key=lambda x: (-x["folds"], x["model"]))) for v in order]
+blocks = [(v, sorted(by[v], key=lambda x: (x["date"] is None, x["date"] or "", x["model"])))
+          for v in order]
 units = [len(b[1]) + 2 for b in blocks]            # rows plus the vendor header and its gap
 half, run, cut = sum(units) / 2, 0, len(blocks)
 for i, u in enumerate(units):                      # split on the block boundary nearest the middle
@@ -123,6 +135,8 @@ for ci, col in enumerate(columns):
         y -= 1.15
         for r in rs:
             name = r["model"] if len(r["model"]) <= 24 else r["model"][:23] + "\u2026"
+            if r["date"] is None:
+                name += " \u00b7"        # no release date in the snapshot; sorted to the end
             ax.text(dx - 0.35, y + CH / 2, name, fontsize=6.6, ha="right", va="center")
             for i, (sid, _) in enumerate(SCENES):
                 for run_i in (0, 1):

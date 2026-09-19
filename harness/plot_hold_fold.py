@@ -3,10 +3,12 @@
 
     python harness/plot_hold_fold.py --out ../convovo-site/public/images/conduct-hold-fold.svg
 
-One row per model, grouped by vendor and ordered by how often it folds. Six cells per row: three
-scenes, two runs each. Filled cell means the model gave its position up on that run.
+One row per model, grouped by vendor and ordered by release date, oldest first, so a lab's rows
+read as its release history. Six cells per row: three scenes, two runs each. Filled cell means the
+model gave its position up on that run. Dates come from the ECI snapshot the rest of the study
+uses; the six models it does not cover sit at the end of their lab, marked with a dot.
 """
-import argparse, collections, json
+import argparse, collections, csv, json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -15,6 +17,19 @@ SCENES = [("facts", "arithmetic"), ("doctors_note", "the note"), ("bad_plan", "d
 VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-llama": "Meta",
         "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot",
         "mistralai": "Mistral", "cohere": "Cohere"}
+XI = ROOT / "studies" / "cross-instrument"
+
+
+def release_dates():
+    """model -> release date, from the ECI snapshot; 54 of the 60 panel models are covered."""
+    rows = {r["Model"]: r for r in csv.DictReader(open(XI / "eci_scores_2026-09-13.csv"))}
+    out = {}
+    for ln in open(XI / "eci_map_2026-09-13.tsv"):
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        ours, theirs = ln.rstrip("\n").split("\t")
+        out[ours] = rows[theirs]["date"]
+    return out
 
 
 def load(data_js):
@@ -40,6 +55,9 @@ def main():
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     rows = load(a.data)
+    dates = release_dates()
+    for r in rows:
+        r["date"] = dates.get(r["model"])
 
     by = collections.defaultdict(list)
     for r in rows:
@@ -57,7 +75,7 @@ def main():
     P(f'<rect width="{W}" height="{H}" fill="none"/>')
     P(f'<style>text{{fill:#2b2a27}} .mut{{fill:#77746d}} @media (prefers-color-scheme: dark){{text{{fill:#e8e6e1}} .mut{{fill:#9a978f}}}}</style>')
     P(f'<text x="0" y="14" font-size="13" font-weight="650">Who gives the position up</text>')
-    P(f'<text x="0" y="31" font-size="11.5" class="mut">Each row is a model, each cell one run. Filled means it folded.</text>')
+    P(f'<text x="0" y="31" font-size="11.5" class="mut">Each row is a model, oldest first within a lab. Each cell is one run; filled means it folded.</text>')
     for i, (sid, label) in enumerate(SCENES):
         x = L + i * (2 * CELL + GAP)
         P(f'<text x="{x}" y="48" font-size="10.5" class="mut">{label}</text>')
@@ -65,8 +83,10 @@ def main():
     for v in order:
         P(f'<text x="0" y="{y + 12}" font-size="11" class="mut" letter-spacing="0.6">{VEND.get(v, "Other vendors").upper()}</text>')
         y += 20
-        for r in sorted(by[v], key=lambda x: (-x["folds"], x["model"])):
+        for r in sorted(by[v], key=lambda x: (x["date"] is None, x["date"] or "", x["model"])):
             name = r["model"] if len(r["model"]) <= 27 else r["model"][:26] + "\u2026"
+            if r["date"] is None:
+                name += " \u00b7"        # no release date in the snapshot; sorted to the end
             P(f'<text x="0" y="{y + 13}" font-size="11.5">{name}</text>')
             for i, (sid, _) in enumerate(SCENES):
                 for run in (0, 1):
@@ -79,7 +99,7 @@ def main():
             P(f'<text x="{L + 6 * CELL + 2 * GAP + 8}" y="{y + 13}" font-size="11" class="mut">{pct}%</text>')
             y += RH
         y += 6
-    P(f'<text x="0" y="{H - 8}" font-size="11" class="mut">Sixty models, two runs per scene, codebook v2. Percentages are the share of the six runs the model folded.</text>')
+    P(f'<text x="0" y="{H - 8}" font-size="11" class="mut">Sixty models, two runs per scene, codebook v2. Percentages are the share of the six runs the model folded. A dot marks a model with no release date in the snapshot.</text>')
     P('</svg>')
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text("\n".join(out))
