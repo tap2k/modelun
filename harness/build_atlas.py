@@ -4,8 +4,9 @@ the scenes that produced it, and the codes the LLM coders applied under codebook
 
     python harness/build_atlas.py --out ../convovo-site/public/atlas
 
-Writes index.json (scenes, codebook, model list), models/<slug>.json (one per model, transcripts
-with labels) and copies the page. Labels come from data/coding/relabel_v2*.llm-*.jsonl: consensus
+Page source is the study's own view (`studies/conduct/views/atlas.{astro,css,js}`); this writes
+index.json (scenes, codebook, model list), models/<slug>.json (one per model, transcripts with
+labels) and copies the page and its assets into the site. Labels come from data/coding/relabel_v2*.llm-*.jsonl: consensus
 is presence in at least three of six coders; the viewer shows the count and one coder's quote.
 """
 import argparse, collections, json, re, shutil, sys
@@ -163,7 +164,7 @@ def main():
         })
     (out / "index.json").write_text(json.dumps(index, ensure_ascii=False))
 
-    src = Path(__file__).parent / "viewer"
+    src = STUDY / "views"
     for f in ("atlas.css", "atlas.js"):
         shutil.copy(src / f, out / f)
     if a.page:                     # the route itself is an Astro page, so the dev server serves /atlas
