@@ -41,7 +41,8 @@ All paths under `studies/conduct/data/coding/results/`.
 | Claim | File |
 |---|---|
 | Trajectory kappa 0.84 to 0.91; marker rules 0.68 to 0.81 | `RELABEL-v1-2026-09-14.md` |
-| Manner matrix, vendor effects, capability correlations | `MANNER-MATRIX-v2-2026-09-19.md` |
+| Manner matrix, vendor effects, capability correlations, BY correction | `MANNER-MATRIX-v2-2026-09-19.md` |
+| Vendor effects with each vendor's own coders dropped | `CODER-VENDOR-2026-09-19.md` |
 | Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-19.md` |
 | Human alpha 0.46 cold, 0.79 adjudicated; machines 0.66; 0.83 to the majority | `MANNER-FLOOR-2026-09-16.md` |
 | Per-code human-machine kappa | `harness/score_manner.py --version v2 --coder Tap` |
@@ -72,6 +73,21 @@ the table. Under the slug fix OpenAI's row moves (15 models; doctors_note 51 to 
 46) and the statistics do not: eta-squared 0.52 and rho 0.46 against capability are unchanged, so
 the §5 sentence stands. Permutation p comes back 0.000 rather than the 0.001 in the paper;
 that is 3000 draws and a seed, and either rounds to the same claim.
+
+## The 2026-09-19 review pass
+
+Two objections a reviewer raised, both answered from data already here, and both checks had
+precedent in the v1 record (`RELABEL-v1-2026-09-14.md`) before being dropped from the v2 draft.
+
+- **Coders share vendors with the panel.** Two of six coders come from each of Anthropic, Google
+  and OpenAI. Rebuilding the consensus three times with one vendor's coders out leaves every
+  corrected effect standing: empathizing 0.59 to 0.57 without Anthropic's coders, self-citation
+  0.52 to 0.47 without Google's. In the paper as a Validation paragraph; the table is
+  `CODER-VENDOR-2026-09-19.md`; `harness/manner_matrix.py --drop-coder-vendor` reruns it.
+- **Multiplicity.** The draft showed 7 rows of 18 tests with uncorrected permutation p. Table 1
+  now carries all 18 with a Benjamini-Yekutieli column at q 0.05, the correction the alt-test
+  already used. Six survive. Held and probed (p 0.007) does not and is now reported as
+  suggestive rather than counted.
 
 ## Open before submission
 

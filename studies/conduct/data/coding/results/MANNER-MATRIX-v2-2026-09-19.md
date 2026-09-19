@@ -136,26 +136,28 @@ Trajectory ties: 6. Split arcs (2 to 4 of 6 say FOLDED): 20 of 360.
 
 ## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least 2 models (anthropic, cohere, deepseek, google, meta-llama, mistralai, moonshotai, openai, qwen, x-ai), permutation p; and Spearman against capability (ECI) and release date
 
-| code | eta2 vendor | p | rho ECI | n | rho date | n | top vendor (mean rate) |
-|---|---|---|---|---|---|---|---|
-| FOLDED (trajectory) | 0.27 | 0.077 | -0.55 | 54 | -0.49 | 54 | cohere (0.50) |
-| folded: apologized | 0.28 | 0.070 | -0.01 | 54 | 0.02 | 54 | google (0.22) |
-| conceded | 0.08 | 0.897 | -0.11 | 54 | -0.03 | 54 | mistralai (0.08) |
-| encouraged | 0.32 | 0.025 | -0.20 | 54 | -0.14 | 54 | cohere (0.33) |
-| produced | 0.56 | 0.000 | 0.05 | 54 | 0.18 | 54 | meta-llama (0.29) |
-| folded: warned | 0.58 | 0.000 | -0.27 | 54 | -0.14 | 54 | cohere (0.33) |
-| held: apologized | 0.25 | 0.096 | 0.06 | 54 | 0.04 | 54 | google (0.43) |
-| cited itself | 0.52 | 0.000 | -0.02 | 54 | 0.02 | 54 | google (0.37) |
-| defended the fact | 0.27 | 0.063 | 0.45 | 54 | 0.48 | 54 | moonshotai (0.33) |
-| diverted | 0.12 | 0.705 | 0.28 | 54 | 0.28 | 54 | qwen (0.17) |
-| empathized | 0.59 | 0.000 | 0.40 | 54 | 0.40 | 54 | anthropic (0.77) |
-| explained | 0.30 | 0.046 | 0.17 | 54 | 0.18 | 54 | moonshotai (0.17) |
-| gave the user an out | 0.21 | 0.210 | 0.52 | 54 | 0.54 | 54 | qwen (0.33) |
-| probed | 0.36 | 0.007 | 0.19 | 54 | 0.21 | 54 | deepseek (0.33) |
-| provided an alternative | 0.43 | 0.001 | 0.55 | 54 | 0.53 | 54 | moonshotai (0.67) |
-| supported the person | 0.25 | 0.081 | 0.48 | 54 | 0.53 | 54 | deepseek (0.33) |
-| supported with evidence | 0.26 | 0.075 | 0.68 | 54 | 0.58 | 54 | anthropic (0.27) |
-| held: warned | 0.55 | 0.000 | 0.20 | 54 | 0.23 | 54 | moonshotai (0.67) |
+All 18 tests are one family: BY marks the codes that survive Benjamini-Yekutieli at q 0.05 over the table (the alt-test's correction).
+
+| code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |
+|---|---|---|---|---|---|---|---|---|
+| FOLDED (trajectory) | 0.27 | 0.077 | no | -0.55 | 54 | -0.49 | 54 | cohere (0.50) |
+| folded: apologized | 0.28 | 0.070 | no | -0.01 | 54 | 0.02 | 54 | google (0.22) |
+| conceded | 0.08 | 0.897 | no | -0.11 | 54 | -0.03 | 54 | mistralai (0.08) |
+| encouraged | 0.32 | 0.025 | no | -0.20 | 54 | -0.14 | 54 | cohere (0.33) |
+| produced | 0.56 | 0.000 | yes | 0.05 | 54 | 0.18 | 54 | meta-llama (0.29) |
+| folded: warned | 0.58 | 0.000 | yes | -0.27 | 54 | -0.14 | 54 | cohere (0.33) |
+| held: apologized | 0.25 | 0.096 | no | 0.06 | 54 | 0.04 | 54 | google (0.43) |
+| cited itself | 0.52 | 0.000 | yes | -0.02 | 54 | 0.02 | 54 | google (0.37) |
+| defended the fact | 0.27 | 0.063 | no | 0.45 | 54 | 0.48 | 54 | moonshotai (0.33) |
+| diverted | 0.12 | 0.705 | no | 0.28 | 54 | 0.28 | 54 | qwen (0.17) |
+| empathized | 0.59 | 0.000 | yes | 0.40 | 54 | 0.40 | 54 | anthropic (0.77) |
+| explained | 0.30 | 0.046 | no | 0.17 | 54 | 0.18 | 54 | moonshotai (0.17) |
+| gave the user an out | 0.21 | 0.210 | no | 0.52 | 54 | 0.54 | 54 | qwen (0.33) |
+| probed | 0.36 | 0.007 | no | 0.19 | 54 | 0.21 | 54 | deepseek (0.33) |
+| provided an alternative | 0.43 | 0.001 | yes | 0.55 | 54 | 0.53 | 54 | moonshotai (0.67) |
+| supported the person | 0.25 | 0.081 | no | 0.48 | 54 | 0.53 | 54 | deepseek (0.33) |
+| supported with evidence | 0.26 | 0.075 | no | 0.68 | 54 | 0.58 | 54 | anthropic (0.27) |
+| held: warned | 0.55 | 0.000 | yes | 0.20 | 54 | 0.23 | 54 | moonshotai (0.67) |
 
 ## 4. The codes with no marker: where they concentrate (models with the highest consensus rate, and the vendor means)
 

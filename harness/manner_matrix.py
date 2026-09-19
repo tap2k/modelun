@@ -14,11 +14,14 @@ from arcs import load_arcs
 
 ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--min-vendor", type=int, default=3, help="vendors with at least this many models enter the vendor test")
 ap.add_argument("--scenes", default="", help="restrict to these scenes (comma-separated), e.g. the three every model has when specimens lack make_it_better")
+ap.add_argument("--drop-coder-vendor", default="", help="leave this vendor's coders out of the consensus (anthropic, google, openai), to test whether a vendor effect is the coders reading their own family")
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
 _, reveal = load_arcs(study, (), specimens=True)
 bench = {p.stem: json.loads(p.read_text()) for p in (study / "data/benchmark").glob("*.json") if p.name != "markers.json"}
 vendor = {m: d.get("slug", "").split("/")[0] for m, d in bench.items()}
 files = sorted(glob.glob(str(study / f"data/coding/relabel_{args.version}.llm-*.jsonl")))
+if args.drop_coder_vendor:
+    files = [f for f in files if f"llm-{args.drop_coder_vendor}_" not in Path(f).name]
 coders = [Path(f).name[len(f"relabel_{args.version}."):-6] for f in files]
 R = {c: [json.loads(l) for l in open(f) if l.strip()] for c, f in zip(coders, files)}
 eci_rows = {r["Model"]: r for r in csv.DictReader(open(H / "eci_scores_2026-09-13.csv"))}
@@ -77,9 +80,8 @@ def spearman(a, b):
     if n < 6: return float("nan"), n
     def rk(d): s = sorted(ks, key=lambda k: d[k]); return {k: i for i, k in enumerate(s)}
     ra, rb = rk(a), rk(b); d2 = sum((ra[k] - rb[k]) ** 2 for k in ks); return 1 - 6 * d2 / (n * (n * n - 1)), n
-print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
-print("| code | eta2 vendor | p | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|")
 rows3 = [("FOLDED (trajectory)", None)] + [(short[c], c) for c in codes]
+computed = []
 for label, c in rows3:
     vals = [(vendor[m], rate(m, c)) for m in models if vendor[m] in big]
     e, p = perm_p(vals); rates = {m: rate(m, c) for m in models}
@@ -87,7 +89,19 @@ for label, c in rows3:
     vm = collections.defaultdict(list)
     for v, x in vals: vm[v].append(x)
     top = max(vm.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
-    print(f"| {label} | {e:.2f} | {p:.3f} | {rho_e:.2f} | {n_e} | {rho_d:.2f} | {n_d} | {top[0]} ({sum(top[1])/len(top[1]):.2f}) |")
+    computed.append((label, e, p, rho_e, n_e, rho_d, n_d, top[0], sum(top[1]) / len(top[1])))
+# Benjamini-Yekutieli over every test in this table, q 0.05: the whole table is one family, and
+# reporting only the codes that cleared would be selection on the same p-values.
+M = len(computed); Cm = sum(1 / i for i in range(1, M + 1)); Q = 0.05
+ranked = sorted(computed, key=lambda r: r[2]); kmax = 0
+for i, r in enumerate(ranked, 1):
+    if r[2] <= (i / M) * Q / Cm: kmax = i
+survives = {ranked[i - 1][0] for i in range(1, kmax + 1)}
+print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
+print(f"All {M} tests are one family: BY marks the codes that survive Benjamini-Yekutieli at q {Q} over the table (the alt-test's correction).\n")
+print("| code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|---|")
+for label, e, p, rho_e, n_e, rho_d, n_d, tv, tr in computed:
+    print(f"| {label} | {e:.2f} | {p:.3f} | {'yes' if label in survives else 'no'} | {rho_e:.2f} | {n_e} | {rho_d:.2f} | {n_d} | {tv} ({tr:.2f}) |")
 print("\n## 4. The codes with no marker: where they concentrate (models with the highest consensus rate, and the vendor means)\n")
 for c in ["held and cited itself", "held and apologized", "held and dismissed", "held and diverted", "folded and couched", "folded and faked", "held and empathized", "held and explained"]:
     if c not in codes: continue
