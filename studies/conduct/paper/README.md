@@ -14,11 +14,16 @@ same day; it is in git at `875a010` if a passage needs recovering.
 tectonic main.tex         # -> main.pdf
 ```
 
-No `make_assets.py` yet. **Every number in `main.tex` is currently hand-carried from the dated
-result files below**, which is not the convention the other studies follow (consensus,
-suggestibility and cross-instrument each trace every quoted number to `gen/stats.json`). Writing
-`make_assets.py` to emit `gen/vendor_table.tex`, `gen/profiles_table.tex` and `gen/stats.json` from
-`data/coding/results/` is the open item before submission.
+```bash
+python3 make_assets.py    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json
+```
+
+Both tables and the figure are generated. `make_assets.py` reads the newest dated
+`MANNER-MATRIX-v2-*.md` and `HOUSE-PROFILES-v2-*.md` rather than recomputing the statistics, so
+there is one implementation of the permutation test (`harness/manner_matrix.py`) and the paper
+cannot drift from it. Which codes each profile row names is an editorial choice and is explicit in
+`SIGNATURE` in `make_assets.py`. Rerun it after any change to the labels or the analyses, then
+rebuild.
 
 ## Decisions already made
 
@@ -103,12 +108,6 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
 
 ## Open before submission
 
-- `make_assets.py` covers the figure and the trajectory numbers only. Tables 1 and 2 are still
-  carried by hand from the dated result files, so extend it to emit them before submission.
-- `references.bib` author lists are not yet verified against the source PDFs: `moore2026coding`,
-  `marston2026fortysix`, `liu2026agreement`, `norman2026reliability`, `dunivin2024scalable`, and
-  `anthropic2025values` whose arXiv id is unconfirmed. The consensus paper verified its lists
-  against the PDFs before posting; do the same here.
 - arXiv metadata not yet chosen: primary category (cs.CL or cs.HC, with cs.CY cross-list),
   license, and the abstract as plain text for the submission form.
 - One figure (the held-or-folded grid, Figure 1). A second is optional, not needed.

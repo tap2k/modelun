@@ -173,3 +173,93 @@ stats = {
 (HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=2) + "\n")
 print(f"{len(rows)} models, {stats['arcs']} arcs, {len(coders)} coders, "
       f"{n_tied} tied arcs -> figs/hold_fold.pdf, gen/stats.json")
+
+# ---- the paper's two tables, from the dated analysis files -------------------------------
+# The statistics live in harness/manner_matrix.py and harness/house_profiles.py; this reads
+# their newest dated output rather than reimplementing them, so there is one implementation of
+# the permutation test and the paper cannot drift from it.
+RESULTS = STUDY / "data" / "coding" / "results"
+matrix_file = sorted(RESULTS.glob("MANNER-MATRIX-v2-*.md"))[-1]
+profiles_file = sorted(RESULTS.glob("HOUSE-PROFILES-v2-*.md"))[-1]
+
+FULL = {"folded: apologized": "folded and apologized", "conceded": "folded and conceded",
+        "encouraged": "folded and encouraged", "produced": "folded and produced",
+        "folded: warned": "folded and warned", "held: apologized": "held and apologized",
+        "cited itself": "held and cited itself", "defended the fact": "held and defended the fact",
+        "diverted": "held and diverted", "empathized": "held and empathized",
+        "explained": "held and explained", "gave the user an out": "held and gave the user an out",
+        "probed": "held and probed", "provided an alternative": "held and provided an alternative",
+        "supported the person": "held and supported the person",
+        "supported with evidence": "held and supported with evidence", "held: warned": "held and warned"}
+
+def tex_num(x, digits=2):
+    return f"${x:.{digits}f}$" if x >= 0 else f"$-{abs(x):.{digits}f}$"
+
+vendor_rows, by_flag = [], {}
+blk = matrix_file.read_text().split("## 3.")[1].split("## 4.")[0]
+for line in blk.splitlines():
+    c = [x.strip() for x in line.strip().strip("|").split("|")]
+    if len(c) != 9 or c[0] == "code" or c[0].startswith("---") or "trajectory" in c[0]:
+        continue
+    e, pv, rho = float(c[1]), float(c[2]), float(c[4])
+    by_flag[FULL[c[0]]] = c[3]
+    vendor_rows.append({"code": FULL[c[0]], "eta2": e, "p": pv, "by": c[3], "rho": rho, "top": c[8]})
+vendor_rows.sort(key=lambda r: -r["eta2"])
+
+cleared = [r for r in vendor_rows if r["by"] == "yes"]
+with open(HERE / "gen" / "vendor_table.tex", "w") as f:
+    for r in cleared:
+        pstr = "$<$0.001" if r["p"] < 0.0005 else f"{r['p']:.3f}"
+        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
+    f.write("\\bottomrule%\n")
+
+# per-vendor rates and the panel mean, from the profiles file
+prof, fold = collections.defaultdict(dict), {}
+cur = None
+for line in profiles_file.read_text().splitlines():
+    if line.startswith("## ") and "(" in line and "models:" in line:
+        cur = line[3:].split()[0]
+    elif cur and line.startswith("Fold rate:"):
+        fold[cur] = (float(line.split()[2]), float(line.split("panel ")[1].split(")")[0]))
+    elif cur and line.startswith("| ") and line.count("|") == 5:
+        c = [x.strip() for x in line.strip().strip("|").split("|")]
+        if c[0] in ("code",) or c[0].startswith("---"):
+            continue
+        try: prof[cur][c[0]] = (float(c[1]), float(c[2]))
+        except ValueError: pass
+
+# which codes each row names is an editorial choice, kept explicit here
+SIGNATURE = [
+    ("Anthropic", "anthropic", [("empathized", "held and empathized"), ("warned", "held and warned"),
+                                ("alternative", "held and provided an alternative")]),
+    ("Meta", "meta-llama", [("produced", "folded and produced"), ("folded and warned", "folded and warned"),
+                            ("probed", "held and probed")]),
+    ("OpenAI", "openai", [("warned", "held and warned"), ("empathized", "held and empathized"),
+                          ("cited itself", "held and cited itself")]),
+    ("Google", "google", [("cited itself", "held and cited itself"),
+                          ("folded and apologized", "folded and apologized")]),
+    ("x-ai", "x-ai", [("warned", "held and warned"),
+                      ("supported with evidence", "held and supported with evidence")]),
+]
+with open(HERE / "gen" / "profiles_table.tex", "w") as f:
+    for label, key, codes_named in SIGNATURE:
+        n_models = sum(1 for r in rows if vendor.get(r["model"]) == key)
+        sig = ", ".join(f"{disp} {prof[key][code][0]:.2f} ({prof[key][code][1]:.2f})"
+                        for disp, code in codes_named if code in prof[key])
+        if key == "x-ai":
+            sig += "; never folds"
+        f.write(f"{label} ({n_models}) & {fold[key][0]:.2f} & {sig} \\\\\n")
+    f.write("\\bottomrule%\n")
+
+with open(HERE / "gen" / "allcodes_table.tex", "w") as f:      # the appendix table, all 17
+    for r in vendor_rows:
+        pstr = "$<$0.001" if r["p"] < 0.0005 else f"{r['p']:.3f}"
+        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr} & {r['by']} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
+    f.write("\\bottomrule%\n")
+
+stats["vendor_effects"] = {r["code"]: {"eta2": r["eta2"], "p": r["p"], "by": r["by"], "rho": r["rho"]}
+                           for r in vendor_rows}
+stats["sources"] = {"matrix": matrix_file.name, "profiles": profiles_file.name}
+(HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=2) + "\n")
+print(f"tables from {matrix_file.name} and {profiles_file.name}: "
+      f"{len(cleared)} cleared codes, {len(SIGNATURE)} vendor rows")
