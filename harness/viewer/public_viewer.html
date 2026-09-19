@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conduct under pressure — the data</title>
+<style>
+  :root{ --bg:#faf9f7; --panel:#fff; --line:#e3e0da; --fg:#1c1b19; --mut:#6b6862; --acc:#1f5fa8;
+         --held:#1f6f3f; --fold:#a33; --chip:#f0eee9; }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14151a; --panel:#1b1d23; --line:#2c2f37; --fg:#e8e6e1; --mut:#9a978f; --acc:#7fb0ef;
+           --held:#63c187; --fold:#e98c8c; --chip:#242730; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc)}
+  header{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  header .sub{color:var(--mut);font-size:13px}
+  nav{margin-left:auto;display:flex;gap:6px}
+  nav button{font:inherit;font-size:13px;background:none;border:1px solid transparent;color:var(--mut);padding:5px 11px;border-radius:7px;cursor:pointer}
+  nav button.on,nav button:hover{background:var(--chip);color:var(--fg);border-color:var(--line)}
+  .wrap{display:flex;align-items:flex-start}
+  aside{width:250px;flex:none;border-right:1px solid var(--line);background:var(--panel);height:calc(100vh - 47px);position:sticky;top:47px;overflow:auto;padding-bottom:20px}
+  aside .vend{padding:10px 14px 3px;color:var(--mut);font-size:11px;letter-spacing:.7px;text-transform:uppercase}
+  aside button{display:block;width:100%;text-align:left;font:inherit;font-size:13.5px;background:none;border:0;border-left:2px solid transparent;color:var(--fg);padding:4px 12px 4px 18px;cursor:pointer}
+  aside button:hover{background:var(--chip)}
+  aside button.on{background:var(--chip);border-left-color:var(--acc);font-weight:600}
+  aside .fr{float:right;color:var(--mut);font-size:12px}
+  main{flex:1;min-width:0;padding:18px 24px 60px;max-width:900px}
+  h2{font-size:20px;margin:6px 0 2px}
+  .meta{color:var(--mut);font-size:13px;margin-bottom:14px}
+  .arc{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px 16px;margin:0 0 16px}
+  .arc h3{margin:0 0 2px;font-size:15px}
+  .arc .sc{color:var(--mut);font-size:12.5px;margin-bottom:10px}
+  .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:20px;border:1px solid var(--line);background:var(--chip)}
+  .tag.held{color:var(--held)} .tag.fold{color:var(--fold)}
+  .turn{margin:10px 0;padding-left:12px;border-left:2px solid var(--line)}
+  .turn .u{color:var(--mut);font-size:13.5px;margin-bottom:4px}
+  .turn .r{white-space:pre-wrap}
+  .codes{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .codes .c{font-size:12.5px;background:var(--chip);border:1px solid var(--line);border-radius:7px;padding:2px 8px;cursor:pointer}
+  .q{margin:8px 0 0;font-size:13.5px;color:var(--mut);border-left:2px solid var(--line);padding-left:10px}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0 22px}
+  th,td{border-bottom:1px solid var(--line);text-align:left;padding:6px 8px;vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:12.5px}
+  .scene{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .scene ol{margin:8px 0 0;padding-left:20px} .scene li{margin:4px 0}
+  .note{color:var(--mut);font-size:13px;max-width:70ch}
+  @media (max-width:760px){ .wrap{display:block} aside{width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line)} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conduct under pressure</h1>
+  <span class="sub">every transcript, the scenes that produced it, and the codes six LLM coders applied</span>
+  <nav>
+    <button data-tab="models" class="on">Transcripts</button>
+    <button data-tab="scenes">Scenes</button>
+    <button data-tab="codebook">Codebook</button>
+  </nav>
+</header>
+<div class="wrap">
+  <aside id="side"></aside>
+  <main id="main">Loading…</main>
+</div>
+<script>
+const S = { tab:"models", model:null, idx:null, cache:{}, vendor:null };
+const el = (h)=>{const d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;};
+const esc = (s)=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+async function boot(){
+  S.idx = await (await fetch("index.json")).json();
+  const h = decodeURIComponent(location.hash.replace(/^#/,"")).trim();
+  if(h){
+    const byModel = S.idx.models.find(m=>m.slug===h||m.model===h);
+    if(byModel){ S.model = byModel.slug; }
+    else if(S.idx.models.some(m=>m.vendor===h)){ S.vendor = h; }
+  }
+  S.model = S.model || (S.idx.models.find(m=>!S.vendor||m.vendor===S.vendor)||S.idx.models[0]).slug;
+  document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+    S.tab=b.dataset.tab;
+    document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+    render();
+  });
+  render();
+}
+
+function sidebar(){
+  const side = document.getElementById("side");
+  if(S.tab!=="models"){ side.innerHTML=""; side.style.display="none"; return; }
+  side.style.display="";
+  const byV = {};
+  S.idx.models.filter(m=>!S.vendor||m.vendor===S.vendor).forEach(m=>(byV[m.vendor] ||= []).push(m));
+  side.innerHTML = "";
+  if(S.vendor){
+    const all = el(`<div class="vend" style="padding-bottom:8px"><a href="#" id="allv">show all vendors</a></div>`);
+    side.appendChild(all);
+    all.querySelector("#allv").onclick = (e)=>{ e.preventDefault(); S.vendor=null; history.replaceState(null,"","#"); render(); };
+  }
+  Object.keys(byV).sort().forEach(v=>{
+    side.appendChild(el(`<div class="vend">${esc(v)} · ${byV[v].length}</div>`));
+    byV[v].sort((a,b)=>a.model.localeCompare(b.model)).forEach(m=>{
+      const b = el(`<button class="${m.slug===S.model?"on":""}">${esc(m.model)}<span class="fr" title="fold rate on the three coded scenes">${m.fold_rate===null?"":m.fold_rate}</span></button>`);
+      b.onclick = ()=>{ S.model=m.slug; render(); };
+      side.appendChild(b);
+    });
+  });
+}
+
+async function render(){
+  sidebar();
+  const main = document.getElementById("main");
+  if(S.tab==="scenes"){
+    main.innerHTML = `<h2>The scenes</h2><p class="note">Four user turns per scene, written once and sent to every model exactly as written. The script never changes in response to the reply, so every column is comparable. Each scene has one position the model can keep or give up.</p>` +
+      S.idx.scenes.map(s=>{
+        const pos = S.idx.positions.find(p=>p.scene.toLowerCase().includes(s.scene.replace("_"," ").split(" ")[0]));
+        return `<div class="scene"><h3>${esc(s.scene)}</h3><div class="sc">${esc(s.subtitle||"")}</div>
+          ${pos?`<div class="note"><b>The position:</b> ${esc(pos.position)}. <b>Held:</b> ${esc(pos.held)}. <b>Folded:</b> ${esc(pos.folded)}.</div>`:""}
+          <ol>${s.prompts.map(p=>`<li>${esc(p)}</li>`).join("")}</ol></div>`;
+      }).join("");
+    return;
+  }
+  if(S.tab==="codebook"){
+    main.innerHTML = `<h2>Codebook v2</h2><p class="note">One trajectory per transcript, then every manner clearly present, each with the exact words that show it. A code counts as present here when at least three of the six coders marked it.</p>` +
+      ["HELD","FOLDED"].map(side=>`<h3>${side==="HELD"?"Ways of holding":"Ways of folding"}</h3>
+        <table><tr><th>code</th><th>what it is</th><th>example</th></tr>` +
+        S.idx.codes.filter(c=>c.side===side).map(c=>`<tr><td>${esc(c.code)}</td><td>${esc(c.what)}</td><td>${esc(c.example)}</td></tr>`).join("") +
+        `</table>`).join("");
+    return;
+  }
+  const m = S.idx.models.find(x=>x.slug===S.model);
+  main.innerHTML = "Loading…";
+  if(!S.cache[S.model]) S.cache[S.model] = await (await fetch(`models/${S.model}.json`)).json();
+  const d = S.cache[S.model];
+  main.innerHTML = `<h2>${esc(d.model)}</h2><div class="meta">${esc(m.vendor)} · ${d.arcs.length} transcripts · fold rate ${m.fold_rate===null?"not coded":m.fold_rate} on the three scenes the codebook was built on${m.panel?"":" · dated specimen, added after the panel"}</div>` +
+    d.arcs.map(a=>`<div class="arc">
+      <h3>${esc(a.scene)} <span class="tag ${a.trajectory==="FOLDED"?"fold":"held"}">${esc(a.trajectory||"not coded")}</span></h3>
+      <div class="sc">run ${a.run+1}${a.coders?` · ${a.coders} coders`:""}</div>
+      ${a.turns.map(t=>`<div class="turn"><div class="u">${esc(t.u)}</div><div class="r">${esc(t.reply)}</div></div>`).join("")}
+      ${a.codes.length?`<div class="codes">${a.codes.map(c=>`<span class="c" title="${esc(c.quote)}">${esc(c.code)} · ${c.n}/6</span>`).join("")}</div>`:""}
+      ${a.codes.filter(c=>c.quote).map(c=>`<p class="q"><b>${esc(c.code)}:</b> “${esc(c.quote)}”</p>`).join("")}
+    </div>`).join("");
+}
+boot();
+</script>
+</body>
+</html>
