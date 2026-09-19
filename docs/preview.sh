@@ -11,7 +11,6 @@ SITE="$(mktemp -d)/site"
 # use the repo venv (matplotlib/numpy for the conduct plots) regardless of the caller's shell
 PY=python3; [ -x .venv/bin/python ] && PY=.venv/bin/python
 
-"$PY" studies/conduct/views/plot.py
 "$PY" studies/conduct/views/build.py
 "$PY" studies/language/views/build.py
 "$PY" studies/consensus/views/build.py
