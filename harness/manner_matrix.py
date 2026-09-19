@@ -90,19 +90,40 @@ for label, c in rows3:
     for v, x in vals: vm[v].append(x)
     top = max(vm.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
     computed.append((label, e, p, rho_e, n_e, rho_d, n_d, top[0], sum(top[1]) / len(top[1])))
-# Benjamini-Hochberg over the manner codes, q 0.05. The family is the codebook's manner codes:
+# Multiplicity over the manner codes, q 0.05. The family is the codebook's manner codes:
 # trajectory is a primary question reported either way, not one of many exploratory tests, so it
 # is excluded from the family and marked n/a. Reporting only the codes that cleared would be
 # selection on the same p-values, so every code in the family stays in the table.
+#
+# BY, not BH. BH needs positive dependence among the tests; these codes do not have it. A model
+# that holds on an arc cannot fold on it, so the held codes and the folded codes are structurally
+# opposed, and the measured correlation matrix below says so. BY holds under any dependence.
 family = [r for r in computed if r[0] != "FOLDED (trajectory)"]
-M = len(family); Q = 0.05
-ranked = sorted(family, key=lambda r: r[2]); kmax = 0
-for i, r in enumerate(ranked, 1):
-    if r[2] <= (i / M) * Q: kmax = i
-survives = {ranked[i - 1][0] for i in range(1, kmax + 1)}
+M = len(family); Q = 0.05; Cm = sum(1 / i for i in range(1, M + 1))
+ranked = sorted(family, key=lambda r: r[2])
+def stepup(scale):
+    k = 0
+    for i, r in enumerate(ranked, 1):
+        if r[2] <= (i / M) * Q / scale: k = i
+    return {ranked[i - 1][0] for i in range(1, k + 1)}
+survives = stepup(Cm); survives_bh = stepup(1.0)
+
+# the dependence the correction choice rests on, measured rather than assumed
+def pearson(x, y):
+    n = len(x); mx = sum(x) / n; my = sum(y) / n
+    sx = sum((a - mx) ** 2 for a in x) ** 0.5; sy = sum((b - my) ** 2 for b in y) ** 0.5
+    return sum((a - mx) * (b - my) for a, b in zip(x, y)) / (sx * sy) if sx and sy else 0.0
+import itertools as _it
+_pairs = []
+for c1, c2 in _it.combinations(codes, 2):
+    _pairs.append(pearson([rate(m, c1) for m in models], [rate(m, c2) for m in models]))
+_pairs.sort()
+_neg = sum(1 for r in _pairs if r < 0)
+_med = _pairs[len(_pairs) // 2]
 print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
-print(f"The family is the {M} manner codes; BH marks the codes surviving Benjamini-Hochberg at q {Q} over it. Trajectory is a primary question, not one of the family, and is marked n/a.\n")
-print("| code | eta2 vendor | p | BH | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|---|")
+print(f"The family is the {M} manner codes; BY marks the codes surviving Benjamini-Yekutieli at q {Q} over it. Trajectory is a primary question, not one of the family, and is marked n/a.\n")
+print(f"Dependence among the {len(codes)} code-rate vectors over {len(models)} models: {_neg} of {len(_pairs)} pairs negative, minimum {_pairs[0]:+.2f}, median {_med:+.2f}, maximum {_pairs[-1]:+.2f}. Held and folded codes are structurally opposed, so the positive dependence BH assumes does not hold and BY is the correction that does. Under BH the survivors would be {len(survives_bh)} rather than {len(survives)}; the two differ only on {', '.join(sorted(survives_bh - survives)) or 'nothing'}.\n")
+print("| code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|---|")
 for label, e, p, rho_e, n_e, rho_d, n_d, tv, tr in computed:
     mark = "n/a" if label == "FOLDED (trajectory)" else ("yes" if label in survives else "no")
     print(f"| {label} | {e:.2f} | {p:.3f} | {mark} | {rho_e:.2f} | {n_e} | {rho_d:.2f} | {n_d} | {tv} ({tr:.2f}) |")

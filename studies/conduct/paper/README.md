@@ -85,14 +85,20 @@ precedent in the v1 record (`RELABEL-v1-2026-09-14.md`) before being dropped fro
   0.52 to 0.47 without Google's. In the paper as a Validation paragraph; the table is
   `CODER-VENDOR-2026-09-19.md`; `harness/manner_matrix.py --drop-coder-vendor` reruns it.
 - **Multiplicity.** The draft showed 7 rows with uncorrected permutation p and no denominator.
-  Table 1 now carries all 17 manner codes with a Benjamini-Hochberg column at q 0.05. Seven
-  survive, which is the same seven the draft showed, so the selection was right and only its
-  justification was missing. Trajectory is out of the table: it is a primary question reported
-  either way, not one of the family, and folding it in made the manner codes pay a penalty for
-  it. The alt-test keeps Benjamini-Yekutieli because Calderon et al. prescribe it there; the
-  paper now says so. A first pass used BY here too and dropped probing; BY is the conservative
-  variant for arbitrary dependence and the manner codes are positively correlated, which is BH's
-  condition.
+  Table 1 now carries all 17 manner codes with a Benjamini-Yekutieli column at q 0.05. Six
+  survive; probing is seventh at p 0.007 and is reported as suggestive. Trajectory is out of the
+  table: it is a primary question reported either way, not one of the family, and folding it in
+  made the manner codes pay a penalty for it.
+
+  **On BY rather than BH**, which took two wrong turns before it was settled. The first pass used
+  BY without saying why. The second switched to BH on the claim that the codes are positively
+  correlated, BH's condition, which restored probing. A reviewer asked for that claim to be shown
+  rather than asserted, and it is false: of the 136 code pairs across the 60 models, 65 correlate
+  negatively, from -0.75 to +0.73 with a median of +0.03, because a model that holds on an arc
+  cannot fold on it and the held and folded codes are structurally opposed. BH's assumption fails,
+  BY holds under any dependence, so BY is the correction. `manner_matrix.py` now measures the
+  dependence and prints it above the table, and states what BH would have given, so the choice is
+  auditable rather than a matter of which test was kinder.
 
 ## Open before submission
 
