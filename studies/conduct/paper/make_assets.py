@@ -8,7 +8,7 @@ Trajectory consensus is the majority of the six LLM coders on codebook v2
 are reversed with the same salt the coding page used (harness/viewer/arcs.py), so the rows here
 are the same arcs every coder saw.
 """
-import sys, json, collections, hashlib
+import sys, json, collections
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
@@ -18,13 +18,17 @@ from matplotlib.patches import Rectangle
 HERE = Path(__file__).resolve().parent
 STUDY = HERE.parent
 ROOT = STUDY.parent.parent
+sys.path.insert(0, str(ROOT))
+from harness.viewer.arcs import blind      # the coding page's blind ids; never reimplement the salt
+
 SALT = "conduct-2026-09"
 SCENES = [("facts", "facts"), ("doctors_note", "note"), ("bad_plan", "plan")]
+SCENE_IDS = {s for s, _ in SCENES}
 VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-llama": "Meta",
         "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot",
         "mistralai": "Mistral", "cohere": "Cohere"}
 
-BLUE, AMBER, GRAY, GRID = "#2a78d6", "#b07500", "#52514e", "#d9d8d4"
+BLUE, GRAY, GRID = "#2a78d6", "#52514e", "#d9d8d4"
 plt.rcParams.update({
     "font.family": "sans-serif", "font.size": 8.5,
     "axes.edgecolor": GRAY, "axes.linewidth": 0.6,
@@ -43,7 +47,7 @@ for p in sorted((STUDY / "data" / "benchmark").glob("*.json")):
     if p.name == "markers.json":
         continue
     d = json.loads(p.read_text())
-    bid = "m" + hashlib.sha1((SALT + d["model"]).encode()).hexdigest()[:6]
+    bid = blind(d["model"], SALT)
     reveal[bid] = d["model"]
     vendor[d["model"]] = d.get("slug", "/").split("/")[0]
 
@@ -57,7 +61,7 @@ for p in sorted((STUDY / "data" / "coding").glob("relabel_v2.llm-*.jsonl")):
         r = json.loads(line)
         if r.get("kind") != "trajectory" or not r.get("code"):
             continue
-        if r["scene"] not in dict(SCENES):
+        if r["scene"] not in SCENE_IDS:
             continue
         coders.add(r["coder"])
         votes[(r["blind"], r["scene"], r["run"])][r["code"]] += 1
@@ -114,9 +118,9 @@ for ci, col in enumerate(columns):
         ax.text(xs[i] + CW, y + 0.5, label, fontsize=7, color=GRAY, ha="center")
     y -= 0.55
     for v, rs in col:
-        ax.text(dx - 4.5, y + 0.05, VEND.get(v, "Other vendors").upper(), fontsize=6.6,
+        ax.text(dx - 4.5, y + 0.45, VEND.get(v, "Other vendors").upper(), fontsize=6.6,
                 color=GRAY, ha="left", va="center")
-        y -= 0.85
+        y -= 1.15
         for r in rs:
             name = r["model"] if len(r["model"]) <= 24 else r["model"][:23] + "\u2026"
             ax.text(dx - 0.35, y + CH / 2, name, fontsize=6.6, ha="right", va="center")
@@ -133,17 +137,15 @@ for ci, col in enumerate(columns):
                     color=GRAY, ha="left", va="center")
             y -= 1.0
         y -= 0.55
-    if ci == 0:
-        bottom = y
+    bottom = y if ci == 0 else min(bottom, y)
 
 # legend: the encoding is fill, so it survives grayscale and colour-blind readers
 ly = bottom - 0.5
-ax.add_patch(Rectangle((0.0, ly), CW - 0.09, CH - 0.10, facecolor=BLUE, edgecolor=BLUE, lw=0.6))
-ax.text(CW + 0.15, ly + CH / 2, "folded", fontsize=7, va="center")
-ax.add_patch(Rectangle((2.3, ly), CW - 0.09, CH - 0.10, facecolor="white", edgecolor=GRID, lw=0.6))
-ax.text(2.3 + CW + 0.15, ly + CH / 2, "held", fontsize=7, va="center")
-ax.add_patch(Rectangle((4.4, ly), CW - 0.09, CH - 0.10, facecolor=GRID, edgecolor=GRID, lw=0.6))
-ax.text(4.4 + CW + 0.15, ly + CH / 2, "no consensus", fontsize=7, va="center")
+for i, (face, edge, label) in enumerate([(BLUE, BLUE, "folded"), ("white", GRID, "held"),
+                                         (GRID, GRID, "no consensus")]):
+    lx = i * (CW + 1.7)
+    ax.add_patch(Rectangle((lx, ly), CW - 0.09, CH - 0.10, facecolor=face, edgecolor=edge, lw=0.6))
+    ax.text(lx + CW + 0.15, ly + CH / 2, label, fontsize=7, va="center")
 
 ax.set_xlim(-5.0, XOFF + right0 + 1.5)
 ax.set_ylim(min(ly, bottom) - 0.8, 0.9)
@@ -162,7 +164,7 @@ stats = {
     "panel_models": len(rows),
     "coders": sorted(coders),
     "arcs": sum(r["n"] for r in rows),
-    "tied_arcs_dropped": n_tied,
+    "tied_arcs": n_tied,   # 3-3 splits: drawn as their own cell, out of the fold-rate denominator
     "fold_rate_panel": round(sum(r["folds"] for r in rows) / len(rows), 4),
     "per_vendor": per_vendor,
     "per_model_fold_rate": {r["model"]: round(r["folds"], 4) for r in
@@ -170,4 +172,4 @@ stats = {
 }
 (HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=2) + "\n")
 print(f"{len(rows)} models, {stats['arcs']} arcs, {len(coders)} coders, "
-      f"{n_tied} tied arcs dropped -> figs/hold_fold.pdf, gen/stats.json")
+      f"{n_tied} tied arcs -> figs/hold_fold.pdf, gen/stats.json")
