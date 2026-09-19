@@ -58,7 +58,7 @@ this is the mapping to copy:
 | path overrides | [`spec/paths.json`](spec/paths.json) — keeps this study's historical `data/benchmark` + `markers/` names |
 | transcripts (Contract A) | [`data/benchmark/`](data/benchmark/) — every model × 6 scenes × 2 runs ([`MANIFEST.md`](data/benchmark/MANIFEST.md)) |
 | store (adjudicated) | `data/benchmark/markers.json` — the voted, quote-verified marker layer |
-| views | [`views/`](views/) — the coding page (`code.html`) and the public atlas (`atlas.astro/.css/.js`, built by `harness/build_atlas.py`). The earlier marker grid and its builder were removed 2026-09-19; they are in git at `a97e278~1`. |
+| views | [`views/`](views/) — the coding page (`code.html`) and the atlas (`atlas.html/.css/.js`). `harness/build_atlas.py` writes `atlas-data.js` for local review (open `views/atlas.html` directly) and generates the site's page and data. The earlier marker grid and its builder were removed 2026-09-19; they are in git at `a97e278~1`. |
 | study docs | [`docs/`](docs/) — [scenes](docs/scenes.md), [markers](docs/markers.md), [houses](docs/houses.md), [inductive-coding](docs/inductive-coding.md) |
 | earlier layer | [`bottom-up/`](bottom-up/) — the study's first, inductive methodology (emergent bestiary + 3-reader cross-check); its cards, reads, and catchphrases were rendered by the marker-era views, removed 2026-09-19 and recoverable from git. See its [README](bottom-up/README.md). |
 
@@ -72,8 +72,9 @@ python harness/run.py        --study studies/conduct anthropic/claude-opus-4.8 o
 python harness/judge.py      --study studies/conduct --judge google/gemini-2.5-flash
 python harness/adjudicate.py --study studies/conduct
 
-# the public atlas: page into the site's pages, data into its public dir
+# the atlas: views/atlas-data.js for local review, plus the site's page and data
 python harness/build_atlas.py --out ../convovo-site/public/atlas
+open studies/conduct/views/atlas.html
 ```
 
 ## Tripwires

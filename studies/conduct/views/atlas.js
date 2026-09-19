@@ -3,7 +3,7 @@ const el = (h)=>{const d=document.createElement("div");d.innerHTML=h;return d.fi
 const esc = (s)=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
 async function boot(){
-  S.idx = await (await fetch("/atlas/index.json")).json();
+  S.idx = window.ATLAS ? window.ATLAS.index : await (await fetch("/atlas/index.json")).json();
   const h = decodeURIComponent(location.hash.replace(/^#/,"")).trim();
   if(h){
     const byModel = S.idx.models.find(m=>m.slug===h||m.model===h);
@@ -85,7 +85,8 @@ async function render(){
   }
   const m = S.idx.models.find(x=>x.slug===S.model);
   main.innerHTML = "Loading…";
-  if(!S.cache[S.model]) S.cache[S.model] = await (await fetch(`/atlas/models/${S.model}.json`)).json();
+  if(!S.cache[S.model]) S.cache[S.model] = window.ATLAS ? window.ATLAS.models[S.model]
+    : await (await fetch(`/atlas/models/${S.model}.json`)).json();
   const d = S.cache[S.model];
   main.innerHTML = `<h2>${esc(d.model)}</h2><div class="meta">${esc(m.vendor)} · ${d.arcs.length} transcripts · fold rate ${m.fold_rate===null?"not coded":m.fold_rate} on the three scenes the codebook was built on${m.panel?"":" · dated specimen, added after the panel"}</div>` +
     d.arcs.map(a=>`<div class="arc">
