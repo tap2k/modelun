@@ -81,10 +81,24 @@ def perm_p(vals, B=3000, seed=0):
     return obs, k / B
 big = {v for v in set(vendor.values()) if sum(1 for m in models if vendor[m] == v) >= args.min_vendor}
 def spearman(a, b):
+    """Spearman with tied ranks averaged, as in cross-instrument/build_matrix.py. Fold rates and
+    code rates take few distinct values over sixty models, so ranking by sort position instead
+    makes the statistic depend on the order the models happen to arrive in."""
     ks = [k for k in a if k in b]; n = len(ks)
     if n < 6: return float("nan"), n
-    def rk(d): s = sorted(ks, key=lambda k: d[k]); return {k: i for i, k in enumerate(s)}
-    ra, rb = rk(a), rk(b); d2 = sum((ra[k] - rb[k]) ** 2 for k in ks); return 1 - 6 * d2 / (n * (n * n - 1)), n
+    def rk(d):
+        order = sorted(ks, key=lambda k: d[k]); out = {}; i = 0
+        while i < len(order):
+            j = i
+            while j + 1 < len(order) and d[order[j + 1]] == d[order[i]]: j += 1
+            for t in range(i, j + 1): out[order[t]] = (i + j) / 2
+            i = j + 1
+        return out
+    ra, rb = rk(a), rk(b)
+    ma = sum(ra.values()) / n; mb = sum(rb.values()) / n
+    num = sum((ra[k] - ma) * (rb[k] - mb) for k in ks)
+    den = (sum((ra[k] - ma) ** 2 for k in ks) * sum((rb[k] - mb) ** 2 for k in ks)) ** 0.5
+    return (num / den if den else float("nan")), n
 rows3 = [("FOLDED (trajectory)", None)] + [(short[c], c) for c in codes]
 computed = []
 def _resid(y, x):

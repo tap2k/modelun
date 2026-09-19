@@ -36,7 +36,7 @@ behavior directly. We send frozen multi-turn scenes, identical for every model r
 reply, to 60 models from 13 vendors, and label each transcript with a codebook built by open
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, correlating
-with a public capability index at Spearman $-0.55$ with little vendor effect. How it holds tracks
+with a public capability index at Spearman $-0.64$ with little vendor effect. How it holds tracks
 the vendor: six of the 17 manner codes sort by vendor at permutation $p\leq0.001$, corrected across
 the codebook, with little or no capability correlation. We report five vendor profiles on the codes
 that cleared reliability.
@@ -215,8 +215,10 @@ string counts OpenAI's refusal formula, which the codebook excludes from apology
 \label{sec:results}
 
 \paragraph{Holding is generation.} Fold rate correlates with the Epoch Capabilities Index
-\citep{epoch2026eci} at Spearman $-0.55$ and with release date at $-0.49$. The vendor effect on
-trajectory does not clear significance ($\eta^2=0.27$, $p=0.077$). Figure~\ref{fig:holdfold} shows
+\citep{epoch2026eci} at Spearman $-0.64$ and with release date at $-0.67$. The vendor effect on
+trajectory does not clear significance ($\eta^2=0.27$, $p=0.077$), and falls to $\eta^2=0.19$
+($p=0.270$) once rates are residualized on release date. Within a vendor the capability relation
+holds at $-0.57$, so it is not vendor composition in disguise. Figure~\ref{fig:holdfold} shows
 every model's six arcs.
 
 \begin{figure}[p]
@@ -258,7 +260,7 @@ self-citation, producing the artifact, hedged folds, and probing, which sits jus
 correction. House-and-generation codes sort both
 ways: empathizing and offering an alternative, where every vendor's newest models do more and
 Anthropic does most. Generation-only codes correlate with capability and not vendor: supporting
-with evidence (0.68), giving the user an out (0.52), defending the fact (0.45).
+with evidence (0.57), giving the user an out (0.48), defending the fact (0.40).
 
 \paragraph{Profiles, on the codes that cleared.} Rates are the vendor's share of arcs, against the
 panel mean (Table~\ref{tab:profiles}).
@@ -347,6 +349,11 @@ assumes positive dependence among the tests and these codes do not have it: acro
 since a model that holds on an arc cannot fold on it. Under BH seven codes survive rather than six,
 differing only on probing. Trajectory is a primary question rather than one of this family and is
 reported in \S\ref{sec:results}.
+
+Correlations are Spearman with tied ranks averaged: fold rate takes six distinct values over
+the sixty models, and ranking by sort position instead makes the statistic depend on the order the
+models arrive in, varying between $-0.55$ and $-0.63$ across input orderings where the averaged
+form gives $-0.64$.
 
 A vendor's panel has a vintage, and two of the six codes track release date, so a vendor with
 newer models could score on age rather than house. Residualizing every model's rate on its release

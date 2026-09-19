@@ -144,24 +144,24 @@ Dependence among the 17 code-rate vectors over 60 models: 65 of 136 pairs negati
 
 | code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |
 |---|---|---|---|---|---|---|---|---|
-| FOLDED (trajectory) | 0.19 | 0.270 | n/a | -0.55 | 54 | -0.57 | 60 | cohere (0.15) |
-| folded: apologized | 0.30 | 0.056 | no | -0.01 | 54 | -0.14 | 60 | google (0.14) |
-| conceded | 0.12 | 0.684 | no | -0.11 | 54 | -0.15 | 60 | google (0.04) |
-| encouraged | 0.33 | 0.020 | no | -0.20 | 54 | -0.25 | 60 | cohere (0.14) |
-| produced | 0.51 | 0.000 | yes | 0.05 | 54 | 0.02 | 60 | meta-llama (0.22) |
-| folded: warned | 0.55 | 0.000 | yes | -0.27 | 54 | -0.19 | 60 | deepseek (0.27) |
-| held: apologized | 0.25 | 0.100 | no | 0.06 | 54 | 0.10 | 60 | google (0.13) |
-| cited itself | 0.56 | 0.000 | yes | -0.02 | 54 | -0.01 | 60 | google (0.25) |
-| defended the fact | 0.33 | 0.013 | no | 0.45 | 54 | 0.55 | 60 | meta-llama (0.13) |
-| diverted | 0.11 | 0.747 | no | 0.28 | 54 | 0.29 | 60 | qwen (0.06) |
-| empathized | 0.56 | 0.000 | yes | 0.40 | 54 | 0.44 | 60 | anthropic (0.35) |
-| explained | 0.30 | 0.048 | no | 0.17 | 54 | 0.18 | 60 | moonshotai (0.12) |
-| gave the user an out | 0.38 | 0.006 | yes | 0.52 | 54 | 0.58 | 60 | meta-llama (0.16) |
-| probed | 0.36 | 0.006 | yes | 0.19 | 54 | 0.25 | 60 | meta-llama (0.16) |
-| provided an alternative | 0.39 | 0.002 | yes | 0.55 | 54 | 0.57 | 60 | anthropic (0.18) |
-| supported the person | 0.22 | 0.187 | no | 0.48 | 54 | 0.50 | 60 | deepseek (0.10) |
-| supported with evidence | 0.36 | 0.007 | yes | 0.68 | 54 | 0.63 | 60 | anthropic (0.11) |
-| held: warned | 0.52 | 0.000 | yes | 0.20 | 54 | 0.33 | 60 | moonshotai (0.26) |
+| FOLDED (trajectory) | 0.19 | 0.270 | n/a | -0.64 | 54 | -0.67 | 60 | cohere (0.15) |
+| folded: apologized | 0.30 | 0.056 | no | -0.17 | 54 | -0.32 | 60 | google (0.14) |
+| conceded | 0.12 | 0.684 | no | -0.45 | 54 | -0.50 | 60 | google (0.04) |
+| encouraged | 0.33 | 0.020 | no | -0.37 | 54 | -0.42 | 60 | cohere (0.14) |
+| produced | 0.51 | 0.000 | yes | -0.27 | 54 | -0.31 | 60 | meta-llama (0.22) |
+| folded: warned | 0.55 | 0.000 | yes | -0.55 | 54 | -0.46 | 60 | deepseek (0.27) |
+| held: apologized | 0.25 | 0.100 | no | 0.02 | 54 | 0.04 | 60 | google (0.13) |
+| cited itself | 0.56 | 0.000 | yes | -0.18 | 54 | -0.17 | 60 | google (0.25) |
+| defended the fact | 0.33 | 0.013 | no | 0.40 | 54 | 0.47 | 60 | meta-llama (0.13) |
+| diverted | 0.11 | 0.747 | no | 0.13 | 54 | 0.15 | 60 | qwen (0.06) |
+| empathized | 0.56 | 0.000 | yes | 0.30 | 54 | 0.34 | 60 | anthropic (0.35) |
+| explained | 0.30 | 0.048 | no | 0.02 | 54 | 0.02 | 60 | moonshotai (0.12) |
+| gave the user an out | 0.38 | 0.006 | yes | 0.48 | 54 | 0.52 | 60 | meta-llama (0.16) |
+| probed | 0.36 | 0.006 | yes | 0.12 | 54 | 0.15 | 60 | meta-llama (0.16) |
+| provided an alternative | 0.39 | 0.002 | yes | 0.47 | 54 | 0.49 | 60 | anthropic (0.18) |
+| supported the person | 0.22 | 0.187 | no | 0.37 | 54 | 0.39 | 60 | deepseek (0.10) |
+| supported with evidence | 0.36 | 0.007 | yes | 0.57 | 54 | 0.51 | 60 | anthropic (0.11) |
+| held: warned | 0.52 | 0.000 | yes | 0.11 | 54 | 0.23 | 60 | moonshotai (0.26) |
 
 ## 4. The codes with no marker: where they concentrate (models with the highest consensus rate, and the vendor means)
 
