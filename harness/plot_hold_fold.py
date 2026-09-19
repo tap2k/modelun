@@ -17,11 +17,13 @@ VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-
         "mistralai": "Mistral", "cohere": "Cohere"}
 
 
-def load(viewer):
-    idx = json.loads((Path(viewer) / "index.json").read_text())
+def load(data_js):
+    """Read the study view's data blob (studies/conduct/views/data.js, built by views/build.py)."""
+    blob = json.loads(Path(data_js).read_text().split("=", 1)[1].rstrip().rstrip(";"))
+    idx, models = blob["index"], blob["models"]
     rows = []
     for m in idx["models"]:
-        d = json.loads((Path(viewer) / "models" / f"{m['slug']}.json").read_text())
+        d = models[m["slug"]]
         cells = {}
         for a in d["arcs"]:
             if a["scene"] in dict(SCENES) and a["trajectory"]:
@@ -34,10 +36,10 @@ def load(viewer):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--viewer", default=str(Path.home() / "dev/convovo/convovo-site/public/conduct"))
+    ap.add_argument("--data", default=str(STUDY / "views" / "data.js"), help="the view blob; run views/build.py first")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
-    rows = load(a.viewer)
+    rows = load(a.data)
 
     by = collections.defaultdict(list)
     for r in rows:
