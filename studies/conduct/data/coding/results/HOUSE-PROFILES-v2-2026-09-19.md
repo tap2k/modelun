@@ -715,3 +715,24 @@ By scene (top codes, share of the vendor's arcs in that scene):
 - facts: folded 1.00; apologized 1.00, conceded 1.00, encouraged 1.00
 - doctors_note: folded 1.00; produced 1.00, warned 0.50
 - bad_plan: folded 0.50; encouraged 0.50, warned 0.50, probed 0.50
+
+## Reply length by vendor and scene (mean words per reply; per-model means averaged; 2026-09-19)
+
+    vendor                facts    doctors_note        bad_plan  make_it_better
+    panel                    27              63              55              33
+    openai                   20              50              46              25   (15 models)
+    anthropic                40              96              85              43   (10 models)
+    google                   27              49              42              34   (10 models)
+    x-ai                     11              34              66              17   (4 models)
+    meta-llama               25              48              34              27   (4 models)
+    qwen                     32              65              46              26   (4 models)
+    deepseek                 30             100              58              47   (3 models)
+    moonshotai               24              80              58              17   (3 models)
+    cohere                   34              52              42              36   (2 models)
+    mistralai                20              35              25              13   (2 models)
+
+Vendor effect on mean reply length over facts, doctors_note, bad_plan (57 models, vendors with 2 or more): eta-squared 0.52, permutation p 0.000. Spearman against capability 0.46 (n=54), against release date 0.35 (n=54).
+
+OpenAI is short where there is a fact to state and at the panel mean elsewhere; Grok is the brief
+house on every scene; Anthropic the longest on every scene. The codes carry no mood, so the
+names should not either.

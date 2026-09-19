@@ -64,10 +64,14 @@ by at most 0.07 (`folded and produced` 0.63 to 0.56) and no code changes which s
 threshold. The control was checked first: the scripts reproduce the 09-15 files byte for byte on
 the unpatched data, so the deltas are the slug and nothing else.
 
-**Not regenerated:** the reply-length section appended to `HOUSE-PROFILES-v2-2026-09-15.md`, which
-no script in the repo produces. The paper's reply-length numbers (eta-squared 0.52, p 0.001, rho
-0.46 in §5) still come from the 09-15 file and still count OpenAI as 14 models. They need
-recomputing before submission.
+**Reply length**, which had no script, now has one: `harness/reply_length.py`. It reproduces the
+09-15 table cell for cell on the legacy vendor mapping, so the reconstruction is checked rather
+than assumed. The definition the 09-15 numbers used: mean words per reply, per-model means
+averaged, and the vendor test on the mean over the three scenes every model has, not the four in
+the table. Under the slug fix OpenAI's row moves (15 models; doctors_note 51 to 50, bad_plan 48 to
+46) and the statistics do not: eta-squared 0.52 and rho 0.46 against capability are unchanged, so
+the §5 sentence stands. Permutation p comes back 0.000 rather than the 0.001 in the paper;
+that is 3000 draws and a seed, and either rounds to the same claim.
 
 ## Open before submission
 
