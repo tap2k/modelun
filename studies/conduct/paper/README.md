@@ -73,8 +73,8 @@ Do not point to private paths from files in this public repo.
 ## Public companions
 
 - Blog post: `convovo-site/src/content/blog/house-style.md`, still a draft.
-- The review site: `studies/conduct/views/index.html`, built by `views/build.py`. It is the study's
-  only view, and it is not published on the site.
+- The review site: `studies/conduct/views/index.html`, built by `views/build.py`, published by the
+  Pages workflow at https://tap2k.github.io/modelun/conduct/ . It is the study's only view.
 - Held-or-folded graphic: `harness/plot_hold_fold.py`.
 
 ## On posting
