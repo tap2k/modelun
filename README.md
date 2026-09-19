@@ -71,9 +71,9 @@ python harness/run.py        --study studies/conduct anthropic/claude-opus-4.8 o
 python harness/judge.py      --study studies/conduct --judge google/gemini-2.5-flash
 python harness/adjudicate.py --study studies/conduct
 
-# read a transcript by eye, or build + open the review site:
+# read a transcript by eye, or rebuild the public atlas (page + data for the site):
 python harness/render.py     --study studies/conduct claude-opus-4.8
-python studies/conduct/views/build.py && open studies/conduct/views/index.html
+python harness/build_atlas.py --out ../convovo-site/public/atlas
 ```
 
 Every harness script takes `--study <dir>` (default: cwd) and resolves the study's files through
