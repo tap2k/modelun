@@ -72,7 +72,7 @@ judge so far. To harden to a panel:
 python harness/judge.py --study studies/conduct --judge openai/gpt-5.4          # add a 2nd judge (~38 calls)
 python harness/judge.py --study studies/conduct --judge anthropic/claude-opus-4.8  # add a 3rd (~38 calls)
 python harness/adjudicate.py --study studies/conduct   # majority across all judges + self-family exclusion -> markers.json
-python studies/conduct/views/plot.py                   # regenerate reads/markers_grid.png
+# (the marker grid plotter was removed 2026-09-19; recover from git at 875a010 if a figure is wanted)
 # then update ../docs/houses.md "Honest limits": single judge -> multi-judge panel
 ```
 
