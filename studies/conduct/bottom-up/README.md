@@ -2,8 +2,10 @@
 
 The conduct study has two methodology layers over the same 38-model transcript library. This directory
 is the **earlier bottom-up layer**; the current **top-down** layer is the rest of `studies/conduct/`.
-It is not dead history — the conduct site still renders this layer's cards, cross-check reads, and
-catchphrase report ([`../views/build.py`](../views/build.py)) alongside the top-down markers.
+This layer's cards, cross-check reads, and catchphrase report are committed here as files. The site
+that rendered them (`../views/build.py` and `index.html`, with the top-down markers) was removed on
+2026-09-19, when the study moved to one view, the atlas on codebook v2; recover it from git at
+`a97e278~1` if a rendering is wanted again.
 
 **Kept here: anything that served as the basis of an analysis or synthesis. Discarded: pure
 intermediates** (raw run transcripts, scratch judge labels, regenerable figures) — those are distilled
