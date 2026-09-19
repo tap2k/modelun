@@ -112,7 +112,9 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
   license, and the abstract as plain text for the submission form.
 - One figure (the held-or-folded grid, Figure 1). A second is optional, not needed.
 - House names in the paper and post are drafts, not Tapan's words.
-- Authorship and whether the labeling contribution leads or follows.
+- Whether the labeling contribution leads or follows. (Authorship is settled, 2026-09-19: single
+  byline, and no acknowledgments section. The two novice coders stay described by their role in
+  §4, which is what the validation needs.)
 - A reference adjudicated without seeing machine labels, or a second adjudicator, is the honest
   next check. Not needed for this paper.
 
