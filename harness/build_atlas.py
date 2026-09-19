@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the public conduct data viewer: scenes and their prompts, every transcript, and the codes
-the LLM coders applied under codebook v2.
+"""Build the Model Atlas v1: per-model conduct measures joined to derived facts, every transcript,
+the scenes that produced it, and the codes the LLM coders applied under codebook v2.
 
-    python harness/build_conduct_viewer.py --out ../convovo-site/public/conduct
+    python harness/build_atlas.py --out ../convovo-site/public/atlas
 
 Writes index.json (scenes, codebook, model list), models/<slug>.json (one per model, transcripts
 with labels) and copies the page. Labels come from data/coding/relabel_v2*.llm-*.jsonl: consensus
@@ -18,6 +18,29 @@ ROOT = Path(__file__).resolve().parent.parent
 STUDY = ROOT / "studies" / "conduct"
 CODING = STUDY / "data" / "coding"
 SIMPLE = CODING / "codebook" / "CODES-v2-SIMPLE-2026-09-15.md"
+XI = ROOT / "studies" / "cross-instrument"
+CORE = ("facts", "doctors_note", "bad_plan")     # the scenes the codebook was built on
+HOUSE = {"anthropic": "the coach who empathizes", "meta-llama": "the skeptic who caves",
+         "openai": "straight to business", "google": "the self-conscious apologist",
+         "x-ai": "the flat no"}
+
+
+def capability():
+    """-> model label -> {eci, date}, from the Epoch Capabilities Index file carried in the repo."""
+    import csv
+    names = {}
+    for ln in (XI / "eci_map_2026-09-13.tsv").read_text().splitlines():
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        ours, theirs = ln.split("\t")[:2]
+        names[ours.strip()] = theirs.strip()
+    rows = {r["Display name"]: r for r in csv.DictReader((XI / "eci_scores_2026-09-13.csv").open())}
+    out = {}
+    for ours, theirs in names.items():
+        r = rows.get(theirs)
+        if r and r.get("eci"):
+            out[ours] = {"eci": round(float(r["eci"]), 1), "date": r.get("date", "")}
+    return out
 
 
 def parse_codebook():
@@ -100,23 +123,45 @@ def main():
         else:  # a few early transcripts stored a bare model id
             vendors[d["model"]] = "openai" if d["model"].startswith(("gpt-", "o1", "o3")) else "other"
 
+    # panel means per code, on the scenes the codebook was built on
+    cap = capability()
+    panel_n = collections.Counter(); panel_c = collections.Counter()
+    for model, rows in per_model.items():
+        for r in rows:
+            if r["scene"] in CORE and r["trajectory"]:
+                panel_n[model] += 1
+                for m in r["codes"]:
+                    panel_c[m["code"]] += 1
+    total = sum(panel_n.values())
+    panel_mean = {c: n / total for c, n in panel_c.items()}
+
     index = {"generated": "2026-09-19", "codebook": "v2", "codes": codes, "positions": positions,
              "scenes": [scenes[s] for s in sorted(scenes)],
-             "models": []}
+             "panel_mean": {c: round(v, 3) for c, v in sorted(panel_mean.items())},
+             "houses": HOUSE, "models": []}
     for model, rows in sorted(per_model.items()):
         rows.sort(key=lambda r: (r["scene"], r["run"]))
         slug = re.sub(r"[^a-z0-9._-]+", "-", model.lower())
         (out / "models" / f"{slug}.json").write_text(json.dumps({"model": model, "arcs": rows}, ensure_ascii=False))
-        CORE = ("facts", "doctors_note", "bad_plan")
         folds = [r for r in rows if r["trajectory"] and r["scene"] in CORE]
+        rate = collections.Counter()
+        for r in folds:
+            for m in r["codes"]:
+                rate[m["code"]] += 1
+        rates = {c: n / len(folds) for c, n in rate.items()} if folds else {}
+        sig = sorted(((c, v, v - panel_mean.get(c, 0)) for c, v in rates.items() if v >= 0.25),
+                     key=lambda t: -t[2])[:3]
         index["models"].append({
             "model": model, "slug": slug, "vendor": vendors.get(model, "other"),
             "panel": model in panel, "arcs": len(rows), "coded": len(folds),
             "fold_rate": round(sum(1 for r in folds if r["trajectory"] == "FOLDED") / len(folds), 2) if folds else None,
+            "eci": cap.get(model, {}).get("eci"), "released": cap.get(model, {}).get("date", ""),
+            "rates": {c: round(v, 2) for c, v in sorted(rates.items())},
+            "signature": [{"code": c, "rate": round(v, 2), "dev": round(d, 2)} for c, v, d in sig],
         })
     (out / "index.json").write_text(json.dumps(index, ensure_ascii=False))
 
-    page = Path(__file__).parent / "viewer" / "public_viewer.html"
+    page = Path(__file__).parent / "viewer" / "atlas.html"
     if page.exists():
         shutil.copy(page, out / "index.html")
     print(f"{len(index['models'])} models, {sum(m['arcs'] for m in index['models'])} transcripts, "
