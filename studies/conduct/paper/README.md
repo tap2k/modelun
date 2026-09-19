@@ -103,14 +103,15 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
 
 ## Open before submission
 
-- `make_assets.py` and `gen/`, so no number is hand-carried (above).
+- `make_assets.py` covers the figure and the trajectory numbers only. Tables 1 and 2 are still
+  carried by hand from the dated result files, so extend it to emit them before submission.
 - `references.bib` author lists are not yet verified against the source PDFs: `moore2026coding`,
   `marston2026fortysix`, `liu2026agreement`, `norman2026reliability`, `dunivin2024scalable`, and
   `anthropic2025values` whose arXiv id is unconfirmed. The consensus paper verified its lists
   against the PDFs before posting; do the same here.
 - arXiv metadata not yet chosen: primary category (cs.CL or cs.HC, with cs.CY cross-list),
   license, and the abstract as plain text for the submission form.
-- No figures. The held-or-folded grid (`harness/plot_hold_fold.py`) is the obvious candidate.
+- One figure (the held-or-folded grid, Figure 1). A second is optional, not needed.
 - House names in the paper and post are drafts, not Tapan's words.
 - Authorship and whether the labeling contribution leads or follows.
 - A reference adjudicated without seeing machine labels, or a second adjudicator, is the honest
