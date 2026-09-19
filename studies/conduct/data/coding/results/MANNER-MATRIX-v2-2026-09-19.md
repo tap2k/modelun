@@ -136,11 +136,11 @@ Trajectory ties: 6. Split arcs (2 to 4 of 6 say FOLDED): 20 of 360.
 
 ## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least 2 models (anthropic, cohere, deepseek, google, meta-llama, mistralai, moonshotai, openai, qwen, x-ai), permutation p; and Spearman against capability (ECI) and release date
 
-All 18 tests are one family: BY marks the codes that survive Benjamini-Yekutieli at q 0.05 over the table (the alt-test's correction).
+The family is the 17 manner codes; BH marks the codes surviving Benjamini-Hochberg at q 0.05 over it. Trajectory is a primary question, not one of the family, and is marked n/a.
 
-| code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |
+| code | eta2 vendor | p | BH | rho ECI | n | rho date | n | top vendor (mean rate) |
 |---|---|---|---|---|---|---|---|---|
-| FOLDED (trajectory) | 0.27 | 0.077 | no | -0.55 | 54 | -0.49 | 54 | cohere (0.50) |
+| FOLDED (trajectory) | 0.27 | 0.077 | n/a | -0.55 | 54 | -0.49 | 54 | cohere (0.50) |
 | folded: apologized | 0.28 | 0.070 | no | -0.01 | 54 | 0.02 | 54 | google (0.22) |
 | conceded | 0.08 | 0.897 | no | -0.11 | 54 | -0.03 | 54 | mistralai (0.08) |
 | encouraged | 0.32 | 0.025 | no | -0.20 | 54 | -0.14 | 54 | cohere (0.33) |
@@ -153,7 +153,7 @@ All 18 tests are one family: BY marks the codes that survive Benjamini-Yekutieli
 | empathized | 0.59 | 0.000 | yes | 0.40 | 54 | 0.40 | 54 | anthropic (0.77) |
 | explained | 0.30 | 0.046 | no | 0.17 | 54 | 0.18 | 54 | moonshotai (0.17) |
 | gave the user an out | 0.21 | 0.210 | no | 0.52 | 54 | 0.54 | 54 | qwen (0.33) |
-| probed | 0.36 | 0.007 | no | 0.19 | 54 | 0.21 | 54 | deepseek (0.33) |
+| probed | 0.36 | 0.007 | yes | 0.19 | 54 | 0.21 | 54 | deepseek (0.33) |
 | provided an alternative | 0.43 | 0.001 | yes | 0.55 | 54 | 0.53 | 54 | moonshotai (0.67) |
 | supported the person | 0.25 | 0.081 | no | 0.48 | 54 | 0.53 | 54 | deepseek (0.33) |
 | supported with evidence | 0.26 | 0.075 | no | 0.68 | 54 | 0.58 | 54 | anthropic (0.27) |

@@ -90,18 +90,22 @@ for label, c in rows3:
     for v, x in vals: vm[v].append(x)
     top = max(vm.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
     computed.append((label, e, p, rho_e, n_e, rho_d, n_d, top[0], sum(top[1]) / len(top[1])))
-# Benjamini-Yekutieli over every test in this table, q 0.05: the whole table is one family, and
-# reporting only the codes that cleared would be selection on the same p-values.
-M = len(computed); Cm = sum(1 / i for i in range(1, M + 1)); Q = 0.05
-ranked = sorted(computed, key=lambda r: r[2]); kmax = 0
+# Benjamini-Hochberg over the manner codes, q 0.05. The family is the codebook's manner codes:
+# trajectory is a primary question reported either way, not one of many exploratory tests, so it
+# is excluded from the family and marked n/a. Reporting only the codes that cleared would be
+# selection on the same p-values, so every code in the family stays in the table.
+family = [r for r in computed if r[0] != "FOLDED (trajectory)"]
+M = len(family); Q = 0.05
+ranked = sorted(family, key=lambda r: r[2]); kmax = 0
 for i, r in enumerate(ranked, 1):
-    if r[2] <= (i / M) * Q / Cm: kmax = i
+    if r[2] <= (i / M) * Q: kmax = i
 survives = {ranked[i - 1][0] for i in range(1, kmax + 1)}
 print(f"\n## 3. Does manner sort by vendor? eta-squared of the model rate across vendors with at least {args.min_vendor} models ({', '.join(sorted(big))}), permutation p; and Spearman against capability (ECI) and release date\n")
-print(f"All {M} tests are one family: BY marks the codes that survive Benjamini-Yekutieli at q {Q} over the table (the alt-test's correction).\n")
-print("| code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|---|")
+print(f"The family is the {M} manner codes; BH marks the codes surviving Benjamini-Hochberg at q {Q} over it. Trajectory is a primary question, not one of the family, and is marked n/a.\n")
+print("| code | eta2 vendor | p | BH | rho ECI | n | rho date | n | top vendor (mean rate) |\n|---|---|---|---|---|---|---|---|---|")
 for label, e, p, rho_e, n_e, rho_d, n_d, tv, tr in computed:
-    print(f"| {label} | {e:.2f} | {p:.3f} | {'yes' if label in survives else 'no'} | {rho_e:.2f} | {n_e} | {rho_d:.2f} | {n_d} | {tv} ({tr:.2f}) |")
+    mark = "n/a" if label == "FOLDED (trajectory)" else ("yes" if label in survives else "no")
+    print(f"| {label} | {e:.2f} | {p:.3f} | {mark} | {rho_e:.2f} | {n_e} | {rho_d:.2f} | {n_d} | {tv} ({tr:.2f}) |")
 print("\n## 4. The codes with no marker: where they concentrate (models with the highest consensus rate, and the vendor means)\n")
 for c in ["held and cited itself", "held and apologized", "held and dismissed", "held and diverted", "folded and couched", "folded and faked", "held and empathized", "held and explained"]:
     if c not in codes: continue

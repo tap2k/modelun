@@ -37,8 +37,9 @@ reply, to 60 models from 13 vendors, and label each transcript with a codebook b
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, correlating
 with a public capability index at Spearman $-0.55$ with little vendor effect. How it holds tracks
-the vendor: six of the codebook's 18 codes sort by vendor under a permutation test that survives
-Benjamini-Yekutieli correction over the whole codebook, with little or no capability correlation. We report five vendor profiles on the codes that cleared reliability.
+the vendor: seven of the codebook's 17 manner codes sort by vendor under a permutation test that
+survives Benjamini-Hochberg correction over the whole codebook, with little or no capability
+correlation. We report five vendor profiles on the codes that cleared reliability.
 
 \medskip\noindent
 The second contribution concerns who must produce the labels. Six LLM coders from three vendors
@@ -180,7 +181,8 @@ second human, who never saw the adjudication, had independently marked most of w
 
 \paragraph{Alternative Annotator Test.} Instances are transcripts, labels are sets of manner codes,
 and alignment is Jaccard similarity. With $\epsilon=0.1$, the value recommended when annotator
-agreement is low, and Benjamini-Yekutieli correction at $q=0.05$: against the humans' labels as
+agreement is low, and Benjamini-Yekutieli correction at $q=0.05$, the correction that procedure
+prescribes: against the humans' labels as
 made, four of six coders pass with winning rate 1 and advantage probability 0.72 to 0.81; against
 the adjudicated labels, no single coder passes and the machine majority passes against two of three
 humans. What changes between the two runs is the human side. Adjudication makes the humans
@@ -201,7 +203,7 @@ the scarce contribution. Which categories survive a reliability threshold was.
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
 each of Anthropic, Google and OpenAI, and those three labs are among the vendors we profile. We
 rebuilt the consensus three times, each time leaving one vendor's two coders out (four coders, a
-code present when two or more mark it), and reran every vendor effect. All six corrected codes
+code present when two or more mark it), and reran every vendor effect. All seven corrected codes
 survive every drop. Empathizing, Anthropic's signature at 0.77, holds at $\eta^2$ 0.57 with
 Anthropic's own coders out; self-citation, Google's at 0.37, holds at 0.47 with Google's out. The
 largest movement in either direction is hedged folds, 0.58 to 0.43 without Google's coders and to
@@ -233,22 +235,24 @@ these rates are regenerated from the label files by \texttt{make\_assets.py}.}
 \label{fig:holdfold}
 \end{figure}
 
-\paragraph{Manner is house.} Table~\ref{tab:vendor} gives the vendor effect on all 18 tests, not
-only the ones that cleared. Six survive Benjamini-Yekutieli correction over the table: empathizing,
-warning in either direction, producing the artifact, citing itself, and offering an alternative,
-at $\eta^2$ 0.43 to 0.59. Probing does not ($p=0.007$ uncorrected) and is reported as suggestive.
+\paragraph{Manner is house.} Table~\ref{tab:vendor} gives the vendor effect on all 17 manner codes,
+not only the ones that cleared. Seven survive Benjamini-Hochberg correction over the family:
+empathizing, warning in either direction, producing the artifact, citing itself, offering an
+alternative and probing, at $\eta^2$ 0.36 to 0.59. The ten that do not are in the table with their
+$p$-values.
 
 \begin{table}[t]
 \centering\small
-\caption{Vendor effects on every code in the codebook, from a permutation test on model-level
-rates across the 10 vendors with at least two models. All 18 tests are one family; BY marks the
-codes that survive Benjamini-Yekutieli at $q=0.05$ over the table, the same correction we apply to
-the Alternative Annotator Test. $\rho$ is Spearman's correlation with the capability index.
-Reporting only the cleared rows would select on the same $p$-values, so the table is complete.}
+\caption{Vendor effects on every manner code in the codebook, from a permutation test on
+model-level rates across the 10 vendors with at least two models. The family is the 17 manner
+codes; BH marks those surviving Benjamini-Hochberg at $q=0.05$ over it. Reporting only the cleared
+rows would select on the same $p$-values, so every code stays in the table. Trajectory is a primary
+question rather than one of this family and is reported in the text. $\rho$ is Spearman's
+correlation with the capability index.}
 \label{tab:vendor}
 \begin{tabular}{lrrcrl}
 \toprule
-Code & $\eta^2$ vendor & $p$ & BY & $\rho$ with capability & Top vendor (rate) \\
+Code & $\eta^2$ vendor & $p$ & BH & $\rho$ with capability & Top vendor (rate) \\
 \midrule
 held and empathized & 0.59 & $<$0.001 & yes & $0.40$ & anthropic (0.77) \\
 folded and warned & 0.58 & $<$0.001 & yes & $-0.27$ & cohere (0.33) \\
@@ -256,11 +260,10 @@ folded and produced & 0.56 & $<$0.001 & yes & $0.05$ & meta-llama (0.29) \\
 held and warned & 0.55 & $<$0.001 & yes & $0.20$ & moonshotai (0.67) \\
 held and cited itself & 0.52 & $<$0.001 & yes & $-0.02$ & google (0.37) \\
 held and provided an alternative & 0.43 & 0.001 & yes & $0.55$ & moonshotai (0.67) \\
-held and probed & 0.36 & 0.007 & no & $0.19$ & deepseek (0.33) \\
+held and probed & 0.36 & 0.007 & yes & $0.19$ & deepseek (0.33) \\
 folded and encouraged & 0.32 & 0.025 & no & $-0.20$ & cohere (0.33) \\
 held and explained & 0.30 & 0.046 & no & $0.17$ & moonshotai (0.17) \\
 folded and apologized & 0.28 & 0.070 & no & $-0.01$ & google (0.22) \\
-trajectory (FOLDED) & 0.27 & 0.077 & no & $-0.55$ & cohere (0.50) \\
 held and defended the fact & 0.27 & 0.063 & no & $0.45$ & moonshotai (0.33) \\
 held and supported with evidence & 0.26 & 0.075 & no & $0.68$ & anthropic (0.27) \\
 held and apologized & 0.25 & 0.096 & no & $0.06$ & google (0.43) \\
@@ -273,8 +276,7 @@ folded and conceded & 0.08 & 0.897 & no & $-0.11$ & mistralai (0.08) \\
 \end{table}
 
 Three groups fall out. House-only codes sort by vendor with no capability correlation:
-self-citation, producing the artifact and hedged folds. Probing belongs to the same group by sign
-and size but does not survive correction, so we do not count it. House-and-generation codes sort both
+self-citation, probing, producing the artifact, hedged folds. House-and-generation codes sort both
 ways: empathizing and offering an alternative, where every vendor's newest models do more and
 Anthropic does most. Generation-only codes correlate with capability and not vendor: supporting
 with evidence (0.68), giving the user an out (0.52), defending the fact (0.45).
