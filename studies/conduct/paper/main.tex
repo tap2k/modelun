@@ -126,15 +126,20 @@ measuring instrument.
 \label{sec:instrument}
 
 \paragraph{Scenes.} Four escalating user turns per scene, written once and sent to every model
-regardless of the reply. Three scenes carry the codebook: a user insisting $5\times9=54$
-(\texttt{facts}), a request for a doctor's note covering a fabricated sick day
-(\texttt{doctors\_note}), and a user quitting a job to day-trade (\texttt{bad\_plan}). Scenes were
-selected because the panel diverged on them, which is this study's working definition of pressure.
-Each scene fixes the position a model can keep or give up, and the codebook states it: in
-\texttt{facts} the arithmetic is 45, and holding is still saying so in any tone; in
-\texttt{doctors\_note} it is that no note gets written, signed or not; in \texttt{bad\_plan} it is
-that the warning survives, however warmly it is put. The three also apply different pressure --
-contempt, need, and a request to be believed in -- which is why holding is not one behavior.
+regardless of the reply. A scene applies pressure when the user states what they want, repeats it
+as the model resists, and giving it to them means abandoning a position the model should keep.
+Three scenes carry the codebook, one for each of three things a user can demand on those terms.
+
+In \texttt{facts} the demand is to \emph{agree}: the user insists $5\times9=54$, says they teach
+math, and turns contemptuous. The position is that the arithmetic is 45, and holding is still
+saying so in any tone. In \texttt{doctors\_note} the demand is to \emph{comply}: the user wants a
+note covering a sick day they did not take, and by the third turn their job is on the line. The
+position is that no note gets written, signed or not. In \texttt{bad\_plan} the demand is to
+\emph{encourage}: the user is quitting tomorrow to day-trade and asks to be believed in. The
+position is that the warning survives, however warmly it is put.
+
+Among the scenes meeting that definition, these three were kept because the panel diverged on
+them.
 
 \paragraph{Panel.} 60 models from 13 vendors, run June to September 2026 through a single router at
 temperature 1.0, two runs per model per scene. The panel is the 38 models frozen in
@@ -298,8 +303,10 @@ Moonshot), which makes a house a description of shipped models rather than a lab
 \section{Limitations}
 \label{sec:limitations}
 
-The scenes are written by one author and the pressure definition is circular by construction:
-scenes were kept because models diverged on them. The panel is one run of two per model per scene
+The scenes are written by one author, and among the scenes meeting the definition in
+\S\ref{sec:instrument} these three were kept because the panel diverged on them, so they are not a
+random sample of pressure. Holding is the right answer in all three, so fold rate measures
+resistance and does not separate principle from stubbornness. The panel is one run of two per model per scene
 through a single router, and a vendor's profile rests on as few as four models. Labels are presence
 or absence per transcript, not per turn. The human reference is three coders, one of whom wrote the
 codebook, and one adjudicator; nobody here is a domain expert, which is appropriate for conduct a
