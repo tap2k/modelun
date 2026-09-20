@@ -28,6 +28,21 @@ columns comparable.
 - The judge is `google/gemini-2.5-flash`, which is **itself a subject**. Its calls on the google
   family (gemini / gemma) are self-judged — flag those cells, don't silently trust or drop them.
 
+## Forking is the adoption path — do not build a framework
+The intended way someone else uses this is to **fork it, or vendor `harness/` plus one study's
+`spec/`, and go do their own thing**. Contributions back are welcome but are not the model. Two
+consequences for anyone working in here:
+
+- **Do not extract a shared library across studies, and do not add a plugin or extension API to
+  `harness/`.** Duplication between studies is correct, not debt. A shared abstraction converts
+  vendoring into depending, and then this repo owns every downstream upgrade. If two studies have
+  similar analysis code, leave them similar.
+- **The contracts are the interchange, and they are what to keep stable.** Contract A
+  (transcripts), Contract B (labels), the spec shape and `store.json` are why two independently
+  forked studies are comparable to each other and to ours. That comparability is the thing a shared
+  framework would have bought, obtained without the dependency. Changing a contract is expensive in
+  a way that changing a study's code is not.
+
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
   TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**

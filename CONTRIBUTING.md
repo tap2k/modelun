@@ -1,7 +1,20 @@
-# Contributing a study
+# Using this on your own question
 
-The harness is domain-neutral and studies are self-contained directories — you can add your
-own. A study PR adds `studies/<name>/` and touches nothing outside it. Use
+## The usual path: fork it
+
+The harness is domain-neutral and studies are self-contained directories, so the expected way to
+use this on your own question is to **fork the repo, or vendor `harness/` plus one study's
+`spec/`, and take it wherever you want**. Swap the stimulus, point it at your own panel, run the
+same four commands. Nothing needs to come back here, and a study that outgrows this repo can
+depend on a `harness/` checkout instead (see README, *Starting a new study*).
+
+If you keep Contract A and Contract B intact (`docs/harness.md`), your results stay comparable to
+ours and to anyone else's fork — which is the point of freezing the contracts rather than shipping
+a library.
+
+## The other path: contribute a study here
+
+A study PR adds `studies/<name>/` and touches nothing outside it. Use
 [`studies/consensus/`](studies/consensus/) as the template: it is the minimal shape (single-turn
 stimulus, no judge, fully mechanical analysis), and it shipped as
 [a paper](https://arxiv.org/abs/2607.12796) without needing anything the template lacks.

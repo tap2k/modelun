@@ -53,11 +53,14 @@ studies/<name>/
   views/                  bespoke views built on harness/viewer/core.js
 ```
 
-## Add your own study
+## Use it on your own question
 
-Studies are self-contained directories; the harness doesn't know or care which ones exist. To
-contribute one — harness + config + archive — see [`CONTRIBUTING.md`](CONTRIBUTING.md), with
-[`studies/consensus/`](studies/consensus/) as the minimal template.
+Studies are self-contained directories; the harness doesn't know or care which ones exist. The
+expected path is to **fork this, or vendor `harness/` plus one study's `spec/`, and go** — swap the
+stimulus, point it at your panel, keep Contract A and Contract B so your results stay comparable to
+ours. See [`CONTRIBUTING.md`](CONTRIBUTING.md), with [`studies/consensus/`](studies/consensus/) as
+the minimal template. Contributing a study back here is welcome too, and is the second half of that
+file.
 
 ## Run
 
