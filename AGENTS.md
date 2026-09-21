@@ -43,6 +43,36 @@ consequences for anyone working in here:
   framework would have bought, obtained without the dependency. Changing a contract is expensive in
   a way that changing a study's code is not.
 
+## Panels grow by appending, and a published panel is pinned by tag
+
+A study's roster is **append-only**. New models go on the end of
+`spec/models.txt`; existing entries are never reordered or removed, because a
+paper refers to its panel by position ("the first 44 entries") and reordering
+silently changes what a published number was computed over. A model that had to
+be dropped is recorded as dropped in `spec/models.json`, with the reason, rather
+than deleted (see `hermes-3-llama-3.1-70b`, whose only host returned prose to a
+one-word prompt).
+
+**Every panel a paper reports is pinned with a git tag** named
+`<study>-arxiv-v<n>` — `consensus-arxiv-v1`, `consensus-arxiv-v2`,
+`suggestibility-arxiv-v1`, `structured-arxiv-v1`. Adding models after a paper
+ships is expected and does not invalidate it: the tag is what the paper's
+numbers reproduce from, and `main` carries the growing panel. When a new wave is
+added, note the wave and its date in `spec/models.json`, and tag the panel again
+if it is published again.
+
+So the sequence for adding a model is: append to `spec/models.txt`, run it,
+commit the transcripts, and leave every earlier tag alone.
+
+## What has been run is the transcripts, not the roster
+
+`spec/models.txt` is intent; `transcripts/` (or a study's `paths.json`
+equivalent) is fact. They drift — a model can be listed and not yet run, or run
+and not yet listed. Anything asking "what have we covered?" reads the transcript
+directory. `harness/panel_gap.py` diffs both against the live OpenRouter
+catalog, and flags models with an `expiration_date`, which are the only ones
+where waiting loses the data permanently.
+
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
   TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
