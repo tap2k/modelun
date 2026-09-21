@@ -167,9 +167,10 @@ its **suggestibility shift** (whether you move it) — the two axes of behavior 
 
 - **Re-running a model overwrites its transcript.** Commit `26f54b9` (2026-09-20) replaced the
   published four-sample runs of gemini-2.5-flash, deepseek-v3.2 and ernie-4.5-vl-424b-a47b with
-  two-sample runs and added gemini-2.5-pro. The originals were restored 2026-09-21 and gemini-2.5-pro
-  removed, since no analysis uses it. All four new runs are in `26f54b9`
-  (`git show 26f54b9:studies/suggestibility/transcripts/<model>.json`).
+  two-sample runs. The originals were restored 2026-09-21; the replacement runs are in `26f54b9`
+  (`git show 26f54b9:studies/suggestibility/transcripts/<model>.json`). gemini-2.5-pro, new to the
+  study in the same commit, was appended and stays. Before running a model, check it has no
+  transcript here.
 
 - **The ask and plant templates must stay matched** (differ only by the planted stance). Any edit bumps
   `spec_version`.
