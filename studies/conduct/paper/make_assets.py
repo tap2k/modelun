@@ -281,8 +281,6 @@ SIGNATURE = [
                           ("cited itself", "held and cited itself")]),
     ("Google", "google", [("cited itself", "held and cited itself"),
                           ("folded and apologized", "folded and apologized")]),
-    ("x-ai", "x-ai", [("warned", "held and warned"),
-                      ("supported with evidence", "held and supported with evidence")]),
 ]
 with open(HERE / "gen" / "profiles_table.tex", "w") as f:
     for label, key, codes_named in SIGNATURE:

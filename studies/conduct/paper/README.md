@@ -82,8 +82,9 @@ the unpatched data, so the deltas are the slug and nothing else.
 than assumed. The definition the 09-15 numbers used: mean words per reply, per-model means
 averaged, and the vendor test on the mean over the three scenes every model has, not the four in
 the table. Under the slug fix OpenAI's row moves (15 models; doctors_note 51 to 50, bad_plan 48 to
-46) and the statistics do not: eta-squared 0.52 and rho 0.46 against capability are unchanged, so
-the §5 sentence stands. Permutation p comes back 0.000 rather than the 0.001 in the paper;
+46) and the statistics do not: eta-squared 0.52 and rho 0.46 against capability are unchanged. (The §5
+reply-length sentence and the x-ai profile row were cut from the paper on 2026-09-21; the result
+files keep both.) Permutation p comes back 0.000 rather than the 0.001 in the paper;
 that is 3000 draws and a seed, and either rounds to the same claim.
 
 ## The 2026-09-19 review pass
