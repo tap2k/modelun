@@ -154,6 +154,11 @@ The replication, planned for the FAccT version (paper due 2026-11-03) under a ne
 - Same 60-model panel, two runs, same six coders, codebook v2.
 - Then the deferred paper edits: the per-scene table as an appendix, and the vendor claim in the
   abstract and conclusion scoped to what the replication shows.
+- Revisit how the body treats Appendix C. In v1 the body only points to it, with one neutral
+  sentence at the end of "Manner is house"; the Limitations clause saying the preregistered rule
+  was not met was cut on 2026-09-21. Once the new scenes are in, the body should say what both
+  tests found, and Appendix C either folds into the replication or stays as the earlier
+  exploratory run.
 
 ## Public companions
 
