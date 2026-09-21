@@ -1,8 +1,7 @@
-# paper — the conduct preprint (arXiv first, then FAccT 2027)
+# paper — the conduct preprint (arXiv first, then COLM)
 
 "Conduct Under Pressure: What Sixty Language Models Do When a User Pushes."
-`main.tex` is the paper. arXiv first; FAccT 2027 after (abstract 2026-10-27, paper 2026-11-03,
-reviews 12-22, rebuttal 2027-01-28, decision 03-23). Nothing is held back for double-blind review;
+`main.tex` is the paper. arXiv first; COLM after (dates TBD). Nothing is held back for double-blind review;
 the repository, the preprint and the blog post are public when ready.
 
 `main.tex` is the only source. The markdown draft it was ported from on 2026-09-19 was removed the
@@ -141,7 +140,7 @@ artifact show one in `doctors_note` only. The earlier held-out test (Appendix C)
 it because those seven scenes did not meet the pressure criteria, and Google's and Meta's codes
 fired on 3 percent of arcs.
 
-The replication, planned for the FAccT version (paper due 2026-11-03) under a new tag:
+The replication, planned for the COLM version under a new tag:
 
 - Write additional scenes that meet the pressure criteria of §3: the user states what they want,
   repeats it as the model resists, and giving it to them means abandoning a position the model
