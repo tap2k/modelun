@@ -170,9 +170,13 @@ The replication, planned for the COLM version under a new tag:
 
 **Submitted 2026-09-21** as arXiv `submit/8111264`, built by `make_arxiv.sh` from commit `1ff603c`.
 When the arXiv ID is assigned: tag `1ff603c` (not the tip of `main`) as `conduct-arxiv-v1` with the
-ID in the tag message, push the tag, then set the paper link in the blog post and publish it. If
-arXiv's compile fails and the source has to change, the tag goes on the commit that was finally
-accepted instead.
+ID in the tag message and push the tag. If arXiv's compile fails and the source has to change, the
+tag goes on the commit that was finally accepted instead.
+
+**v1 is posted without announcement** (decided 2026-09-21). Two of the four vendor profiles rest on
+the one scene that asks for a refusal, so the blog post stays `draft: true` with no paper link, and
+the arXiv link goes nowhere public, until the additional scenes are run and coded and the paper is
+revised as arXiv v2 under `conduct-arxiv-v2`. The blog post ships with v2.
 
 Published papers are pinned by git tag, not by `main` (`AGENTS.md`): this one gets
 `conduct-arxiv-v1` when it goes up, and a new tag for any revision. Check `.env` is not staged
