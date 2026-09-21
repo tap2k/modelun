@@ -7,6 +7,30 @@ H = Path(__file__).resolve().parent; sys.path.insert(0, str(H.parent))
 import os; os.chdir(H.parent)
 from build_matrix import cols, spearman, boot, resid, allm, per_marker, MARKERS, eci, arena, BEH
 dates = cols["release_date"]
+
+# ---- pin the conduct panel ------------------------------------------------------------
+# The adjudicated store grows as models are judged; this paper's numbers must not move
+# because it grew. panel.txt names the conduct models this paper reports, and widening it
+# is a decision to re-report rather than a side effect of a judge pass. Delete the file to
+# report whatever the store currently holds.
+_panel_f = H / "panel.txt"
+if _panel_f.exists():
+    _panel = {l.strip() for l in _panel_f.read_text().splitlines()
+              if l.strip() and not l.startswith("#")}
+    _have = set(cols["conduct_dep"])
+    _gone = _panel - _have
+    if _gone:
+        raise SystemExit(f"panel.txt lists {len(_gone)} models the store no longer scores: "
+                         + ", ".join(sorted(_gone)))
+    _dropped = _have - _panel
+    cols["conduct_dep"] = {m: v for m, v in cols["conduct_dep"].items() if m in _panel}
+    # per_marker feeds the marker-level stats (the house pair in section 1) and is read
+    # straight from the store, so it needs the same pin or those numbers move on their own.
+    for _mid in list(per_marker):
+        per_marker[_mid] = {m: v for m, v in per_marker[_mid].items() if m in _panel}
+    print(f"conduct panel pinned to {len(cols['conduct_dep'])} models "
+          f"({len(_dropped)} scored but not reported)", file=sys.stderr)
+
 core = [m for m in allm if all(m in cols[c] for c in BEH)]
 os.chdir(H); (H/"gen").mkdir(exist_ok=True)
 LABEL = {"census_conc":"census","suggestib":"suggestibility","format_tax":"format tax",

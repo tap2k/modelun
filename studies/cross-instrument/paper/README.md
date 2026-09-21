@@ -13,6 +13,22 @@ stakes and breadths. The method is therefore the contribution and leads. The thr
 the findings section, as the payoff that shows cheap instruments find things that matter, not as the
 lead; the finding-first order in `main.tex` (matrix promoted to a section-1 lead claim) is reverted.
 
+**Panel pinned 2026-09-20.** `panel.txt` names the 38 conduct models this paper reports.
+`make_assets.py` filters both `cols["conduct_dep"]` and `per_marker` to it and fails if a listed
+model is missing. The adjudicated store now holds 62 models, and without the pin a judge pass
+would have silently moved published numbers. Widening the panel is a decision to re-report;
+delete `panel.txt` to follow the store instead.
+
+**Judge labels regenerated 2026-09-20.** The raw labels behind the old 38-model store were
+gitignored and lost, so extending coverage meant re-judging every transcript with the same judge
+(`gemini-2.5-flash`) and codebook. On the pinned panel this moved: census x conduct -0.47 -> -0.52,
+conduct x capability -0.41 -> -0.44, the capability-partial -0.05 -> -0.06, and the
+cheerled/snapped marker pair 0.47 -> 0.27. No cell changed significance. Table 2 is now
+0.81/0.95/0.62/0.72 and is still hand-written, which is why it went stale unnoticed; it should
+move into `make_assets.py`. Section 4 gains the test-retest result (95.5 percent of 1,368 cells
+reproduce; instability concentrates in the judgment-call codes), and the house claim in section 1
+now rests on the manner codes rather than the marker pair.
+
 Section order: (1) cost and the ecology claim - dollars and the per-release re-run in the first
 three sentences; fork (take the harness, change the stimuli, get a cheap instrument with no
 comparability) vs branch (keep the contracts - A, B, the spec shape, `store.json` - and your numbers
