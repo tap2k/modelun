@@ -17,6 +17,7 @@ Reads each ``studies/<name>/spec/models.txt``; no study semantics live here.
     python3 harness/panel_gap.py --study conduct consensus
     python3 harness/panel_gap.py --new-since 2026-06-01
     python3 harness/panel_gap.py --json             # machine-readable
+    python3 harness/panel_gap.py --snapshot          # also commit today's catalog
 """
 
 import argparse
@@ -102,8 +103,8 @@ def main() -> int:
     ap.add_argument("--cache", type=Path, help="read/write the catalog JSON here")
     ap.add_argument("--all-variants", action="store_true",
                     help="include :batch/:free serving variants and ~aliases")
-    ap.add_argument("--snapshot", nargs="?", const="runs/catalog", metavar="DIR",
-                    help="also write runs/catalog/<date>.json, a dated record of "
+    ap.add_argument("--snapshot", nargs="?", const="catalog", metavar="DIR",
+                    help="also write catalog/<date>.json, a dated record of "
                          "what the catalog holds today")
     ap.add_argument("--json", action="store_true", dest="as_json")
     args = ap.parse_args()
