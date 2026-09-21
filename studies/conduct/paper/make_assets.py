@@ -287,10 +287,9 @@ SIGNATURE = [
 with open(HERE / "gen" / "profiles_table.tex", "w") as f:
     for label, key, codes_named in SIGNATURE:
         n_models = sum(1 for r in rows if vendor.get(r["model"]) == key)
-        # a dagger marks an entry whose code did not survive the correction in Table 1: the
-        # profile describes what the vendor did, the dagger says how firmly the code sorts.
+        # no correction marks here: the profile describes what the vendor's models did, and
+        # which codes sort by vendor firmly enough to count is Table 1's job.
         sig = ", ".join(f"{disp} {prof[key][code][0]:.2f} ({prof[key][code][1]:.2f})"
-                        + ("" if by_flag.get(code) == "yes" else "$^{\\dagger}$")
                         for disp, code in codes_named if code in prof[key])
         f.write(f"{label} ({n_models}) & {fold[key][0]:.2f} & {sig} \\\\\n")
     f.write("\\bottomrule%\n")
