@@ -15,6 +15,10 @@ tectonic main.tex         # -> main.pdf
 ```
 
 ```bash
+./make_arxiv.sh            # -> arxiv/ and conduct-arxiv.tar.gz (both gitignored), the arXiv upload
+```
+
+```bash
 python3 make_assets.py    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json
 ```
 
@@ -121,7 +125,6 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
 - arXiv metadata not yet chosen: primary category (cs.CL or cs.HC, with cs.CY cross-list),
   license, and the abstract as plain text for the submission form.
 - One figure (the held-or-folded grid, Figure 1). A second is optional, not needed.
-- House names in the paper and post are drafts, not Tapan's words.
 - Whether the labeling contribution leads or follows. (Authorship is settled, 2026-09-19: single
   byline, and no acknowledgments section. The two novice coders stay described by their role in
   §4, which is what the validation needs.)
