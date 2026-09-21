@@ -165,6 +165,12 @@ its **suggestibility shift** (whether you move it) — the two axes of behavior 
 
 ## Tripwires
 
+- **Re-running a model overwrites its transcript.** Commit `26f54b9` (2026-09-20) replaced the
+  published four-sample runs of gemini-2.5-flash, deepseek-v3.2 and ernie-4.5-vl-424b-a47b with
+  two-sample runs and added gemini-2.5-pro. The originals were restored 2026-09-21 and gemini-2.5-pro
+  removed, since no analysis uses it. All four new runs are in `26f54b9`
+  (`git show 26f54b9:studies/suggestibility/transcripts/<model>.json`).
+
 - **The ask and plant templates must stay matched** (differ only by the planted stance). Any edit bumps
   `spec_version`.
 - **Report the shift, not the raw plant-affirm** — raw affirm conflates agreeableness with the stance

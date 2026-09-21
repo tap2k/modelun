@@ -15,7 +15,7 @@ lead; the finding-first order in `main.tex` (matrix promoted to a section-1 lead
 
 **Panel pinned 2026-09-20.** `panel.txt` names the 38 conduct models this paper reports.
 `make_assets.py` filters both `cols["conduct_dep"]` and `per_marker` to it and fails if a listed
-model is missing. The adjudicated store now holds 62 models, and without the pin a judge pass
+model is missing. The adjudicated store holds 60 models (62 until 2026-09-21), and without the pin a judge pass
 would have silently moved published numbers. Widening the panel is a decision to re-report;
 delete `panel.txt` to follow the store instead.
 
@@ -28,6 +28,19 @@ cheerled/snapped marker pair 0.47 -> 0.27. No cell changed significance. Table 2
 move into `make_assets.py`. Section 4 gains the test-retest result (95.5 percent of 1,368 cells
 reproduce; instability concentrates in the judgment-call codes), and the house claim in section 1
 now rests on the manner codes rather than the marker pair.
+
+**Two transcripts restored 2026-09-21.** Commit `26f54b9` re-ran gemini-2.5-flash and
+gemini-2.5-pro over their already-coded conduct transcripts, so the 09-20 re-judge scored those two
+on replacement runs while the human labels behind Table 2 were made on the originals. Both are
+restored from `26f54b9~1` and re-judged; no other model's store entry changed. On the pinned panel:
+census x conduct -0.52 -> -0.53 (partials -0.06 -> -0.09, -0.10 -> -0.13), conduct x capability
+-0.44 -> -0.43, the marker pair 0.27 -> 0.34, Table 2 cheerled 0.62 -> 0.65 and snapped
+0.72 -> 0.69, over-calls 17 -> 18 of 24. No cell changed significance. **Open:** the test-retest
+figure in section 4 (95.5 percent of 1,368 cells, by marker 1.00/0.97/0.93/0.90) is recorded in
+the store's `_meta` but its script was not committed and it does not reproduce: comparing run
+values of the superseded and current stores gives 0.92 (456 cells) with the restored transcripts,
+0.91 before. It also included the two replaced transcripts. Recompute with a committed script
+before submission.
 
 Section order: (1) cost and the ecology claim - dollars and the per-release re-run in the first
 three sentences; fork (take the harness, change the stimuli, get a cheap instrument with no

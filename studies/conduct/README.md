@@ -78,6 +78,13 @@ python studies/conduct/views/build.py && open studies/conduct/views/index.html
 
 ## Tripwires
 
+- **Runs merge into a transcript file.** Re-running a model that is already coded overwrites the
+  coded runs. Commit `26f54b9` did this to gemini-2.5-flash and gemini-2.5-pro on 2026-09-20; they
+  were restored 2026-09-21. The replacement runs, and uncoded runs of deepseek-v3.2 and
+  ernie-4.5-vl-424b-a47b collected before those models retire, are in `26f54b9` if needed
+  (`git show 26f54b9:studies/conduct/data/benchmark/<model>.json`). A new collection of a coded
+  model belongs in a separate dated directory.
+
 - **The stimulus is sacred.** `spec/stimulus.json` is byte-identical input to every model — that's what
   makes columns comparable. Any change (including the clamp) must bump `script_version`; old and new are
   not comparable. See [AGENTS.md](../../AGENTS.md).
