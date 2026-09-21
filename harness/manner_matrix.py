@@ -15,6 +15,7 @@ from arcs import load_arcs
 ap = argparse.ArgumentParser(); ap.add_argument("--study", default="studies/conduct"); ap.add_argument("--version", default="v1"); ap.add_argument("--min-coders", type=int, default=3); ap.add_argument("--min-vendor", type=int, default=3, help="vendors with at least this many models enter the vendor test")
 ap.add_argument("--scenes", default="", help="restrict to these scenes (comma-separated), e.g. the three every model has when specimens lack make_it_better")
 ap.add_argument("--control-date", action="store_true", help="residualize each model rate on its release date before the vendor test, so a vendor whose panel is newer cannot score on vintage")
+ap.add_argument("--partial", action="store_true", help="print only the partial rank correlations of fold rate with capability and release date, each with the other held fixed, and exit")
 ap.add_argument("--drop-coder-vendor", default="", help="leave this vendor's coders out of the consensus (anthropic, google, openai), to test whether a vendor effect is the coders reading their own family")
 args = ap.parse_args(); study = Path(args.study); H = Path("studies/cross-instrument")
 _, reveal = load_arcs(study, (), specimens=True)
@@ -106,6 +107,37 @@ def _resid(y, x):
     sxx = sum((a - mx) ** 2 for a in x)
     b = sum((a - mx) * (c - my) for a, c in zip(x, y)) / sxx if sxx else 0.0
     return [c - (my + b * (a - mx)) for a, c in zip(x, y)]
+
+if args.partial:
+    # Capability and release date rise together, so fold rate's correlation with either could be
+    # the other's. Partial Spearman: rank all three, residualize two on the third, correlate.
+    ks = [m for m in models if m in eci and m in dates]
+    def _ranks(d):
+        order = sorted(ks, key=lambda k: d[k]); out = {}; i = 0
+        while i < len(order):
+            j = i
+            while j + 1 < len(order) and d[order[j + 1]] == d[order[i]]: j += 1
+            for t in range(i, j + 1): out[order[t]] = (i + j) / 2
+            i = j + 1
+        return [out[k] for k in ks]
+    def _pearson(x, y):
+        n = len(x); mx = sum(x) / n; my = sum(y) / n
+        den = (sum((a - mx) ** 2 for a in x) * sum((c - my) ** 2 for c in y)) ** 0.5
+        return sum((a - mx) * (c - my) for a, c in zip(x, y)) / den if den else float("nan")
+    def _perm(x, y, B=5000, seed=0):
+        obs = abs(_pearson(x, y)); rnd = random.Random(seed); xs = x[:]; k = 0
+        for _ in range(B):
+            rnd.shuffle(xs); k += abs(_pearson(xs, y)) >= obs - 1e-12
+        return k / B
+    f, e, d = _ranks({m: rate(m) for m in ks}), _ranks(eci), _ranks(dates)
+    print(f"## Fold rate against capability and release date, each with the other held fixed ({len(ks)} models with both)\n")
+    print("Spearman, tied ranks averaged; partials are Pearson on rank residuals; two-sided permutation p, 5000 draws.\n")
+    print("| relation | rho | p |\n|---|---|---|")
+    for name, x, y in [("fold rate ~ capability", f, e), ("fold rate ~ release date", f, d), ("capability ~ release date", e, d),
+                       ("fold rate ~ capability, release date held fixed", _resid(f, d), _resid(e, d)),
+                       ("fold rate ~ release date, capability held fixed", _resid(f, e), _resid(d, e))]:
+        print(f"| {name} | {_pearson(x, y):.2f} | {_perm(x, y):.3f} |")
+    sys.exit(0)
 
 for label, c in rows3:
     _ms = [m for m in models if vendor[m] in big and (not args.control_date or m in dates)]

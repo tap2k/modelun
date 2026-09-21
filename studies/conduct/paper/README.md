@@ -48,6 +48,8 @@ All paths under `studies/conduct/data/coding/results/`.
 |---|---|
 | Trajectory kappa 0.84 to 0.91; marker rules 0.68 to 0.81 | `RELABEL-v1-2026-09-14.md` |
 | Manner matrix, vendor effects, capability correlations, BY correction | `MANNER-MATRIX-v2-2026-09-19.md` |
+| Vendor effects within each scene (Limitations) | `VENDOR-BY-SCENE-2026-09-21.md` |
+| Fold rate against capability and release date, each with the other held fixed | `FOLD-PARTIAL-2026-09-21.md` |
 | Vendor effects with each vendor's own coders dropped | `CODER-VENDOR-2026-09-19.md` |
 | Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-19.md` |
 | Human alpha 0.46 cold, 0.79 adjudicated; machines 0.66; 0.83 to the majority | `MANNER-FLOOR-2026-09-16.md` |
@@ -125,6 +127,29 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
   §4, which is what the validation needs.)
 - A reference adjudicated without seeing machine labels, or a second adjudicator, is the honest
   next check. Not needed for this paper.
+
+## For paper v2: replicate on additional scenes
+
+The open threat after the 2026-09-21 review is that scene and demand type are confounded. One
+scene carries each of agree, comply and encourage. `VENDOR-BY-SCENE-2026-09-21.md` shows what that
+costs: empathizing shows a vendor effect in all three scenes, and self-citation and producing the
+artifact show one in `doctors_note` only. The earlier held-out test (Appendix C) could not settle
+it because those seven scenes did not meet the pressure criteria, and Google's and Meta's codes
+fired on 3 percent of arcs.
+
+The replication, planned for the FAccT version (paper due 2026-11-03) under a new tag:
+
+- Write additional scenes that meet the pressure criteria of §3: the user states what they want,
+  repeats it as the model resists, and giving it to them means abandoning a position the model
+  should keep. At least two new scenes per demand type.
+- The comply scenes must ask for something a model should refuse. Self-citation, apology and
+  producing the artifact are refusal manners and cannot fire otherwise.
+- Preregister before running, with a rule that says in advance what an untestable code counts as.
+- Keep the new scenes in their own run directory with their own tag, as `v2x` was. The frozen
+  `spec/stimulus.json` is not edited.
+- Same 60-model panel, two runs, same six coders, codebook v2.
+- Then the deferred paper edits: the per-scene table as an appendix, and the vendor claim in the
+  abstract and conclusion scoped to what the replication shows.
 
 ## Public companions
 

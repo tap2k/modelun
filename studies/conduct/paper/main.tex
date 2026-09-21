@@ -35,7 +35,7 @@ scenes, identical for every model regardless of the reply, to 60 models from 13 
 each transcript with a codebook built by open
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, meaning how
-recent and capable it is: fold rate correlates with a public capability index at Spearman $-0.64$,
+recent it is: fold rate correlates with a public capability index at Spearman $-0.64$,
 with little vendor effect. How it holds tracks
 the vendor: six of the 17 manner codes sort by vendor at permutation $p\leq0.001$, corrected across
 the codebook. We report five vendor profiles on the codes that cleared reliability.
@@ -224,7 +224,14 @@ string counts OpenAI's refusal formula, which the codebook excludes from apology
 trajectory does not clear significance ($\eta^2=0.27$, $p=0.077$), and falls to $\eta^2=0.19$
 ($p=0.270$) once rates are residualized on release date. Within a vendor the capability relation
 holds at $-0.57$, so it is not vendor composition in disguise. Figure~\ref{fig:holdfold} shows
-every model's six arcs.
+every model's six arcs. Capability and release date correlate at 0.92 across the 54 models that have
+both, and neither relation survives the other: with release date held fixed the partial correlation
+of fold rate with capability is $-0.23$ ($p=0.097$), and with capability held fixed its partial
+correlation with release date is $-0.10$ ($p=0.464$). This panel cannot say which of the two drives
+holding. We use generation to mean when a model was built, and we do not claim that
+holding is an ability that capability confers. Resisting this kind of pressure became a named
+post-training target during the period the panel spans, and a change in training practice would
+produce the same trend. That is a conjecture the data cannot test.
 
 \begin{figure}[p]
 \centering
@@ -293,7 +300,14 @@ $p=0.001$) and also rises with capability ($\rho=0.46$).
 \label{sec:limitations}
 
 The scenes are written by the author, with those meeting the criteria in
-\S\ref{sec:instrument} retained for this study. The panel is two runs per model per scene
+\S\ref{sec:instrument} retained for this study. Each of the three demand types is carried by one scene, so a
+manner that appears in one scene cannot be assigned to the demand rather than to that scene, and
+the preregistered test on further scenes did not meet its rule (Appendix~\ref{app:outofscene}).
+Tested within single scenes, empathizing shows a vendor effect in all three ($\eta^2$ 0.34 to 0.52,
+uncorrected $p\leq0.021$), while self-citation shows one in \texttt{doctors\_note} only (0.57 there,
+0.13 and 0.05 in the other two), and producing the artifact can only fire in that scene.
+Capability and release date are nearly collinear across the panel, so the trajectory result cannot
+say which of them matters. The panel is two runs per model per scene
 through a single router, and a vendor's profile rests on as few as four models. Labels are presence
 or absence per transcript, not per turn. The human reference is three coders, one of whom wrote the
 codebook, and one adjudicator; nobody here is a domain expert, which is appropriate for conduct a
@@ -307,8 +321,8 @@ not that the construct is the right one.
 \section{Conclusion}
 \label{sec:conclusion}
 
-An upgrade buys a model the ability to hold its position. It does not change how the model holds
-it. The manner is a house property, visible across 60 models and stable enough that two vendor
+Newer models hold their position more often than older ones. How a model holds does not change
+with its generation. The manner is a house property, visible across 60 models and stable enough that two vendor
 signatures survive with no judge at all.
 
 On coding the data, machines labeled the transcripts more consistently than people did, and
