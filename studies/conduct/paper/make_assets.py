@@ -42,7 +42,13 @@ plt.rcParams.update({
 
 # ---- the panel, and blind id -> model (same salt as the coding page) ----------------------
 # The coded panel is the frozen panel (spec/models.txt, 38) plus the dated specimens coded with
-# it (22); 60 models carry v2 labels. Membership here is "has labels", not the frozen list.
+# it (22); 60 models carry v2 labels.
+#
+# Membership used to be "has labels", which was only accidentally 60: the benchmark directory
+# holds more transcripts than that, and they are excluded solely because nobody has coded them
+# yet. Code two of them and this file would quietly report 62 while the prose still said 60.
+# panel.txt names the 60 this paper reports, and _panel_check below fails if the label set and
+# the list disagree in either direction. Delete panel.txt to follow the labels again.
 reveal, vendor = {}, {}
 for p in sorted((STUDY / "data" / "benchmark").glob("*.json")):
     if p.name == "markers.json":
@@ -51,6 +57,26 @@ for p in sorted((STUDY / "data" / "benchmark").glob("*.json")):
     bid = blind(d["model"], SALT)
     reveal[bid] = d["model"]
     vendor[d["model"]] = d.get("slug", "/").split("/")[0]
+
+# ---- the frozen panel, pinned -----------------------------------------------------------
+_panel_f = HERE / "panel.txt"
+if _panel_f.exists():
+    _pinned = {l.strip() for l in _panel_f.read_text().splitlines()
+               if l.strip() and not l.startswith("#")}
+    _v2 = set()
+    for _p in sorted((STUDY / "data" / "coding").glob("relabel_v2.llm-*.jsonl")):
+        for _ln in _p.read_text().splitlines():
+            if _ln.strip():
+                _v2.add(json.loads(_ln)["blind"])
+    _coded = {reveal[b] for b in _v2 if b in reveal}
+    _new = _coded - _pinned
+    _lost = _pinned - _coded
+    if _new or _lost:
+        raise SystemExit(
+            "panel.txt and the coded set disagree, so the paper's n would move silently.\n"
+            + (f"  newly coded, not in panel.txt ({len(_new)}): {', '.join(sorted(_new))}\n" if _new else "")
+            + (f"  in panel.txt, no longer coded ({len(_lost)}): {', '.join(sorted(_lost))}\n" if _lost else "")
+            + "  Widen the panel by editing panel.txt, deliberately, and restate n in the prose.")
 
 # ---- release dates, so a lab's rows read as its release history ------------------------
 _eci = {r["Model"]: r for r in csv.DictReader(open(XI / "eci_scores_2026-09-13.csv"))}
