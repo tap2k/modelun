@@ -28,11 +28,13 @@ rebuild.
 ## Decisions already made
 
 - One paper, not two. The reliability work is the validation section, not a separate methods paper.
-  The contributions are (1) the behavior result and (2) the role of humans in labeling behavior,
-  stated as this study's finding with its limits, not as a claim about qualitative methodology.
+  The contributions are (1) the behavior result and (2) the human/AI division of labor in labeling
+  behavior. The second is a contribution about evaluation practice, placed against the
+  LLM-as-annotator literature. The paper stays out of the qualitative methods and grounded theory
+  debate and says nothing either way about it.
 - Codebook v2 is the instrument. v3 was tested and is not reported (`CODEBOOK-v3-2026-09-17.md`
-  is kept only for the audit trail). §3 says so, and §6 says the exploratory test was moved from
-  v3 to v2 by amendment 3 before any result.
+  is kept only for the audit trail). Appendix C says the exploratory test was moved from v3 to v2
+  by amendment 3 before any result, and the availability note says v3 is kept in the repository.
 - The house claim is scoped to the scenes where models split. The out-of-scene test is exploratory
   and its preregistered rule was not met. It is Appendix C.
 - Nobody on the panel is a domain expert, and that is appropriate for conduct a non-specialist can
@@ -50,7 +52,7 @@ All paths under `studies/conduct/data/coding/results/`.
 | Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-19.md` |
 | Human alpha 0.46 cold, 0.79 adjudicated; machines 0.66; 0.83 to the majority | `MANNER-FLOOR-2026-09-16.md` |
 | Per-code human-machine kappa | `harness/score_manner.py --version v2 --coder Tap` |
-| Adjudication, 113 accepted and 79 rejected | `ADJUDICATION-v2-*.md` |
+| Adjudication, 190 rulings: 113 accepted, 73 ruled out, 4 trajectories corrected | `ADJUDICATION-v2-*.md`, `MANNER-FLOOR-2026-09-16.md` |
 | Machine rulings 0.84 to 0.89 | `MANNER-FLOOR-2026-09-16.md`, `rulings-{pre,current}.jsonl` |
 | Blind machine counterfactual | `COUNTERFACTUAL-2026-09-16.md` |
 | Alternative Annotator Test | `ALT-TEST-2026-09-17.md`, `harness/alt_test.py` |
