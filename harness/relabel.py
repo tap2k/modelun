@@ -63,17 +63,22 @@ def main():
     ap.add_argument("--limit", type=int, default=0); ap.add_argument("--per-scene", type=int, default=0)
     ap.add_argument("--workers", type=int, default=1, help="parallel requests per coder")
     ap.add_argument("--arcs-file", default=None, help="code only the arc ids listed in this file (one per line, # comments)")
+    ap.add_argument("--bench", default=None, help="code a transcripts dir other than data/benchmark (the whole dir is the coding set)")
     ap.add_argument("--specimens", action="store_true", help="also code models not on the frozen panel (dated specimens), appended after the panel order")
     args = ap.parse_args()
     if not os.environ.get("OPENROUTER_API_KEY"): sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
     cb = codebook_text(args.codebook)
     names = set(re.findall(r"\*\*([a-z][a-z ]+)\.\*\*", cb)) | {"HELD", "FOLDED"}
     system = PREAMBLE + cb
-    arcs, _ = load_arcs(args.study, [s for s in args.scenes.split(",") if s], args.salt, specimens=args.specimens)
+    arcs, _ = load_arcs(args.study, [s for s in args.scenes.split(",") if s], args.salt, specimens=args.specimens, bench=args.bench)
     arcs = sample(arcs, args.per_scene, args.limit)
     if args.arcs_file:
         keep = {l.strip() for l in open(args.arcs_file) if l.strip() and not l.startswith("#")}
         arcs = [a for a in arcs if a["id"] in keep]
+    failed = [a for a in arcs if any(t.get("reply") is None for t in a["turns"])]   # a cell the runner marked FAILED has no arc to code
+    if failed:
+        print(f"skipping {len(failed)} arcs with a failed cell: {', '.join(a['id'] for a in failed[:6])}{'...' if len(failed) > 6 else ''}", file=sys.stderr)
+        arcs = [a for a in arcs if a not in failed]
     coding = Path(args.study) / "data" / "coding"
     now = lambda: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     for slug in [c for c in args.coders.split(",") if c]:

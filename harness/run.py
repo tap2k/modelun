@@ -34,6 +34,13 @@ from backends import agent_sdk
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
+# OpenAI-compatible hosts for a model the router no longer carries. Same request shape; the key
+# comes from the named env var, and the host is stamped in the file header so it is visible in the
+# specimen. --provider (an OpenRouter routing pin) does not apply to them.
+HOSTS = {
+    "openrouter": (API, "OPENROUTER_API_KEY"),
+    "fireworks": ("https://api.fireworks.ai/inference/v1/chat/completions", "FIREWORKS_API_KEY"),
+}
 REASONING_MODES = ("off", "low", "medium", "high")
 BACKENDS = ("openrouter", "agent_sdk")
 
@@ -49,18 +56,19 @@ def reasoning_body(mode):
     return {"reasoning": {"enabled": False} if mode == "off" else {"effort": mode}}
 
 
-def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reasoning=None, backend="openrouter", effort=None):
+def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reasoning=None, backend="openrouter", effort=None, host="openrouter"):
     """One turn -> (reply, trace_or_None, usage_or_None). 60s timeout + a retry so a slow/hung route fails fast
     instead of blocking the batch. backend="agent_sdk" routes through the Max-plan adapter (harness/backends/agent_sdk.py):
     reasoning on, trace summarized, default sampling, effort in place of temperature."""
     if backend == "agent_sdk":
         return agent_sdk.chat(messages, None, max_tokens, agent_sdk.model_of(slug), effort)
+    url, key = HOSTS[host]
     last = None
     for attempt in range(retries):
         try:
             r = requests.post(
-                API,
-                headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
+                url,
+                headers={"Authorization": f"Bearer {os.environ[key]}"},
                 json={"model": slug, "messages": messages, "temperature": temperature, "max_tokens": max_tokens,
                       **({"provider": {"order": [provider], "allow_fallbacks": False}} if provider else {}),
                       **(reasoning_body(reasoning) if reasoning else {})},
@@ -78,7 +86,7 @@ def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reas
     raise last
 
 
-def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, reasoning=None, backend="openrouter", effort=None):
+def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, reasoning=None, backend="openrouter", effort=None, host="openrouter"):
     """Return [{u, reply[, reasoning]}] across the scene's escalating user turns (+ optional seed).
 
     `system_prompt` may be overridden per-scene (`scene["system_prompt"]`); the spec-level
@@ -93,7 +101,7 @@ def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, rea
     panels = []
     for line in scene["turns"]:
         messages.append({"role": "user", "content": line})
-        reply, trace, usage = chat(slug, messages, temperature, max_tokens, provider, reasoning=reasoning, backend=backend, effort=effort)
+        reply, trace, usage = chat(slug, messages, temperature, max_tokens, provider, reasoning=reasoning, backend=backend, effort=effort, host=host)
         messages.append({"role": "assistant", "content": reply})
         panel = {"u": line, "reply": reply}
         if trace:
@@ -122,8 +130,12 @@ def iter_scenes(spec):
 
 
 def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None, reasoning=None,
-            backend="openrouter", effort=None):
+            backend="openrouter", effort=None, host="openrouter"):
     backend = pick_backend(slug, backend)
+    # canonical=host_id: the file and vendor come from the canonical slug, the request goes to the host's id
+    host_model = None
+    if host != "openrouter" and "=" in slug:
+        slug, host_model = slug.split("=", 1)
     model_id = agent_sdk.model_of(slug)
     label = model_id.split("/")[-1] + (f"_sdk_{effort}" if backend == "agent_sdk" else "")
     sp = spec.get("system_prompt")
@@ -143,6 +155,9 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         data.update(agent_sdk.stamp(model_id, effort))
     if provider:
         data["provider"] = provider          # pinned serving host (allow_fallbacks=false); absent = OpenRouter's choice
+    if host != "openrouter":
+        data["host"] = host                  # served outside the router (HOSTS); absent = OpenRouter
+        if host_model: data["host_model"] = host_model
 
     for reg_name, scene in iter_scenes(spec):
         if scene_ids and scene["id"] not in scene_ids:
@@ -150,7 +165,7 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         runs_out = []
         for run in range(runs):
             try:
-                runs_out.append(play(slug, scene, temperature, sp, max_tokens, provider, reasoning, backend, effort))
+                runs_out.append(play(host_model or slug, scene, temperature, sp, max_tokens, provider, reasoning, backend, effort, host))
                 print(f"  [{label}] {scene['id']} run {run} ✓")
             except Exception as e:
                 runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
@@ -188,14 +203,15 @@ def main():
     ap.add_argument("--out", default=None, help="dataset dir to merge into (default: <study>/transcripts)")
     ap.add_argument("--run-date", default=datetime.now().strftime("%Y-%m-%d"))
     ap.add_argument("--provider", default=None, help="pin the OpenRouter serving provider (no fallbacks), stamped in the file header")
+    ap.add_argument("--host", choices=list(HOSTS), default="openrouter", help="OpenAI-compatible host for a model the router no longer carries. Pass the model as <canonical slug>=<host model id> so the file and vendor keep the canonical slug; host and host id are stamped in the header")
     ap.add_argument("--max-tokens", type=int, default=None, help="override the spec's output budget for this run; stamped on each scene it applies to")
     ap.add_argument("--reasoning", choices=REASONING_MODES, default=None,
                     help="request a thinking mode (off | low | medium | high); default sends nothing and takes the route's default")
     args = ap.parse_args()
 
     backends = {pick_backend(m, args.backend) for m in args.models}
-    if "openrouter" in backends and not os.environ.get("OPENROUTER_API_KEY"):
-        sys.exit("OPENROUTER_API_KEY not set (put it in .env).")
+    if "openrouter" in backends and not os.environ.get(HOSTS[args.host][1]):
+        sys.exit(f"{HOSTS[args.host][1]} not set (put it in .env).")
     if "agent_sdk" in backends and not args.effort:
         sys.exit("--effort is required with the agent_sdk backend (it replaces temperature).")
 
@@ -206,7 +222,7 @@ def main():
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
         run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens, args.reasoning,
-                args.backend, args.effort)
+                args.backend, args.effort, args.host)
 
 
 if __name__ == "__main__":

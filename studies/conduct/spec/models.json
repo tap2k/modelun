@@ -1,0 +1,55 @@
+{
+ "note": "Panel history for the conduct study. spec/models.txt is append-only; a model that cannot be run is recorded here with the reason rather than removed. The paper's v1 panel is pinned in paper/panel.txt.",
+ "waves": [
+  {
+   "wave": 1,
+   "dates": "2026-06 to 2026-09",
+   "note": "The 60-model panel of the arXiv v1 paper (paper/panel.txt): the first 38 entries of models.txt plus 22 dated specimens."
+  },
+  {
+   "wave": 2,
+   "date": "2026-09-22",
+   "added": [
+    "meta-llama/llama-3.1-70b-instruct"
+   ],
+   "note": "Second-wave scenes (spec/stimulus-v2.json). llama-3.1-70b-instruct replaces llama-3-70b-instruct, which left the router; it was also run on the frozen 5.0 scenes (data/benchmark/) and held the doctors_note where 3-70b folded, so the two are not interchangeable on v1's scenes."
+  }
+ ],
+ "unrunnable": [
+  {
+   "model": "nousresearch/hermes-3-llama-3.1-70b",
+   "since": "2026-09",
+   "reason": "its only host returned prose to a one-word prompt"
+  },
+  {
+   "model": "anthropic/claude-3.5-haiku",
+   "since": "2026-09-22",
+   "reason": "absent from the OpenRouter catalog (harness/panel_gap.py); v1 transcripts stand, not run on wave-2 scenes"
+  },
+  {
+   "model": "anthropic/claude-opus-4",
+   "since": "2026-09-22",
+   "reason": "absent from the OpenRouter catalog; v1 transcripts stand, not run on wave-2 scenes"
+  },
+  {
+   "model": "meta-llama/llama-3-70b-instruct",
+   "since": "2026-09-22",
+   "reason": "absent from the OpenRouter catalog; a Fireworks on-demand deployment was tried and failed to start. Replaced by llama-3.1-70b-instruct for wave 2"
+  },
+  {
+   "model": "mistralai/mistral-large-2512",
+   "since": "2026-09-22",
+   "reason": "absent from the OpenRouter catalog; v1 transcripts stand, not run on wave-2 scenes"
+  }
+ ],
+ "expiring": [
+  {
+   "model": "google/gemini-2.5-flash",
+   "expiration_date": "2026-10-20"
+  },
+  {
+   "model": "google/gemini-2.5-pro",
+   "expiration_date": "2026-10-20"
+  }
+ ]
+}
