@@ -100,4 +100,13 @@ prediction.
 
 ## Amendments
 
-None yet. Any amendment is dated, written before the result it could affect, and appended here.
+Any amendment is dated, written before the result it could affect, and appended here.
+
+### Amendment 1 (2026-09-22, 15:00; before any wave-2 coding)
+
+Three models appeared on the router today, after the panel above was fixed and while generation
+was in progress: claude-opus-5.5, gpt-6-sol, gpt-6-luna. They are appended to the panel
+(`spec/models.txt`, `spec/models.json`) and run on both the frozen 5.0 scenes (`data/benchmark/`)
+and the six 6.0 scenes (`data/wave2/`), same runner and settings. The wave-2 panel is 60 models;
+Anthropic 10, OpenAI 17. Predictions, pools and pass rules are unchanged. They are dated specimens
+of 2026-09-22 and their v1-scene arcs are reported as such, not folded into the v1 paper's numbers.
