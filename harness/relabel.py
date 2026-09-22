@@ -102,6 +102,7 @@ def main():
             rows.append({**base, "kind": "trajectory", "code": tcode if tcode in ("HELD", "FOLDED") else "", "quote": tq if tv else "",
                          "memo": (tr.get("memo") or "").strip() + ("" if tv else " [quote not verbatim]"), "ts": now()})
             for c in res.get("codes", []) or []:
+                if not isinstance(c, dict): n_unknown += 1; continue   # a malformed entry (a list, a string) is dropped, not fatal
                 code = re.sub(r"[\s.:;,\"\']+$", "", (c.get("code") or "").strip().lower()); q = (c.get("quote") or "").strip()  # trailing punctuation (gpt-5.6-luna ends names with a period)
                 if code not in names: n_unknown += 1; print(f"  {coder} {arc['id']}: unknown code {code!r}", file=sys.stderr, flush=True); continue
                 if not q or normalize(q) not in replies: n_dropped += 1; continue
