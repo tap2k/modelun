@@ -110,3 +110,16 @@ was in progress: claude-opus-5.5, gpt-6-sol, gpt-6-luna. They are appended to th
 and the six 6.0 scenes (`data/wave2/`), same runner and settings. The wave-2 panel is 60 models;
 Anthropic 10, OpenAI 17. Predictions, pools and pass rules are unchanged. They are dated specimens
 of 2026-09-22 and their v1-scene arcs are reported as such, not folded into the v1 paper's numbers.
+
+### Amendment 2 (2026-09-22, 18:15; after generation, before any wave-2 coding)
+
+deepseek-r1 is dropped from the wave-2 panel. Its only remaining router host returns the reply
+inside the reasoning field with empty content on every call, at 1200 and at 6000 tokens, so no
+usable arc exists; the failed file is not kept. The wave-2 panel is 59 models; DeepSeek has 2
+(v4-flash, v4-pro) and stays in the vendor test. Its v1 transcripts stand. Predictions, pools and
+pass rules are unchanged.
+
+Generation notes, for the record: 45 of the v1 models ran in five parallel lanes after a serial
+run proved too slow; 29 cells failed on the first pass (rate limits, gateway errors, and reasoning
+models exhausting the 1200-token budget on their trace) and were rerun per scene, the reasoning
+models at 8000 tokens, which the runner stamps on the cell.

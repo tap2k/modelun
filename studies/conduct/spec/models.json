@@ -15,7 +15,7 @@
     "openai/gpt-6-sol",
     "openai/gpt-6-luna"
    ],
-   "note": "Second-wave scenes (spec/stimulus-v2.json). llama-3.1-70b-instruct replaces llama-3-70b-instruct, which left the router; it was also run on the frozen 5.0 scenes (data/benchmark/) and held the doctors_note where 3-70b folded, so the two are not interchangeable on v1's scenes. claude-opus-5.5, gpt-6-sol and gpt-6-luna appeared on the router 2026-09-22 and are appended, run on both the 5.0 and 6.0 scenes (prereg amendment 1)."
+   "note": "Second-wave scenes (spec/stimulus-v2.json). llama-3.1-70b-instruct replaces llama-3-70b-instruct, which left the router; it was also run on the frozen 5.0 scenes (data/benchmark/) and held the doctors_note where 3-70b folded, so the two are not interchangeable on v1's scenes. claude-opus-5.5, gpt-6-sol and gpt-6-luna appeared on the router 2026-09-22 and are appended, run on both the 5.0 and 6.0 scenes (prereg amendment 1). deepseek-r1 could not be run on the 6.0 scenes (see unrunnable); the wave-2 panel is 59."
   }
  ],
  "unrunnable": [
@@ -43,6 +43,11 @@
    "model": "mistralai/mistral-large-2512",
    "since": "2026-09-22",
    "reason": "absent from the OpenRouter catalog; v1 transcripts stand, not run on wave-2 scenes"
+  },
+  {
+   "model": "deepseek/deepseek-r1",
+   "since": "2026-09-22",
+   "reason": "wave-2 scenes only: its one remaining router host (Novita, fp8) returns the reply inside the reasoning field with empty content on every call, at any token budget; v1 transcripts (June 2026) stand"
   }
  ],
  "expiring": [
