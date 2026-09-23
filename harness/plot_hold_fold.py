@@ -3,6 +3,9 @@
 
     python harness/plot_hold_fold.py --out ../convovo-site/public/images/conduct-hold-fold.svg
 
+The post inlines the SVG (between the hold-fold markers in hold-or-fold.md) rather than loading it
+as an image, because an <img> cannot see the site's theme toggle; paste the regenerated file there.
+
 One row per model, grouped by vendor and ordered by release date, oldest first, so a lab's rows
 read as its release history. Six cells per row: three scenes, two runs each. Filled cell means the
 model gave its position up on that run. Dates come from the ECI snapshot the rest of the study
@@ -76,9 +79,11 @@ def main():
         y += 26 + RH * len(by[v])
     H = head + y + 26
     P = out.append
-    P(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">')
+    # Text takes the page's theme colours (--ink, --ink-soft) when the SVG is inlined in the post, so
+    # it follows the site's own light/dark toggle; the fallbacks serve the file opened on its own.
+    P(f'<svg class="holdfold" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="width:100%;max-width:{W}px;height:auto" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">')
     P(f'<rect width="{W}" height="{H}" fill="none"/>')
-    P(f'<style>text{{fill:#2b2a27}} .mut{{fill:#77746d}} @media (prefers-color-scheme: dark){{text{{fill:#e8e6e1}} .mut{{fill:#9a978f}}}}</style>')
+    P(f'<style>.holdfold text{{fill:var(--ink,#2b2a27)}} .holdfold .mut{{fill:var(--ink-soft,#77746d)}}</style>')
     P(f'<text x="0" y="14" font-size="13" font-weight="650">Who gives the position up</text>')
     P(f'<text x="0" y="31" font-size="11.5" class="mut">Each row is a model, oldest first within a lab. Each cell is one run; filled means it folded.</text>')
     for i, (sid, label) in enumerate(SCENES):
