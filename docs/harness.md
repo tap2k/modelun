@@ -206,6 +206,7 @@ modelun/
 │   ├── judge.py             #   transcript + codebook → labels
 │   ├── adjudicate.py        #   verify + vote + self-family tag
 │   ├── render.py            #   transcript → readable markdown
+│   ├── review_paper.py      #   a paper's .tex → model peer reviews, with costs
 │   ├── study.py             #   resolves a study's paths (--study)
 │   └── viewer/core.js       #   transcript + compare renderer
 │
