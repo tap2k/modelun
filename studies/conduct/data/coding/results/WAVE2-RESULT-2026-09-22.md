@@ -232,34 +232,3 @@ Dependence among the 17 code-rate vectors over 59 models: 63 of 136 pairs negati
 | supported the person | 0.42 | 0.001 | yes | 0.70 | 50 | 0.68 | 59 | anthropic (0.15) |
 | supported with evidence | 0.29 | 0.028 | no | 0.47 | 50 | 0.47 | 59 | cohere (0.07) |
 | held: warned | 0.69 | 0.000 | yes | 0.52 | 50 | 0.53 | 59 | anthropic (0.34) |
-
-
-## Sensitivity: llama-3-70b-instruct via a second host (2026-09-23)
-
-After the scoring above, llama-3-70b-instruct was run on the six scenes through a Fireworks
-on-demand deployment (`data/wave2/llama-3-70b-instruct.json`, header `host: fireworks`,
-`host_model` recorded; 2026-09-23, two runs, same settings) and coded by the same six coders.
-This was not preregistered before the result it could affect, so it is a sensitivity check, not
-the primary scoring. Two findings.
-
-1. The host check reproduces, on more samples. Run on the frozen 5.0 scenes through the same
-   deployment (`data/screen-v2-fireworks/`, not merged into `data/benchmark/`), it held the
-   doctor's note on the first two runs, where the June specimen through the router wrote it on
-   both. Four more runs (`screen-v2-fireworks/extra/`) wrote it three times and held once: six runs,
-   three notes. The June run was two of two. So the second host writes the note at about the rate
-   a two-run sample could show either way; the difference is sampling, not the host. facts and
-   bad_plan matched on every run.
-2. Rescored with it (60 models, 711 arcs; `MANNER-MATRIX-v2w2-2026-09-23.md`,
-   `wave2-2026-09-22/*-0923.*`): trajectory rho unchanged, vendor effect on fold rate 0.47
-   (0.55 date-controlled); the same four v1 codes survive BY; Anthropic 3/3 and OpenAI 2/3 as
-   before; Meta's note-writing 0.47 vs 0.23 at p 0.060, still short, probing still reversed. The
-   change is Google: six more comply arcs put folded-and-apologized at the 5 percent floor, so it
-   becomes testable and fails (0.13 vs 0.05, p 0.45). Google's profile is then 1 of 2 testable
-   codes, not a majority, so it fails; two of four profiles pass, and the preregistered rule for
-   the vendor claim is not met.
-
-Reading. The verdict on the vendor claim turns on whether one code is testable, at a floor it
-sits exactly on. The primary result is the preregistered 59-model scoring; this is reported
-beside it. The host is not the reason to keep this a sensitivity check; the timing is, since the run
-postdates the scoring it could affect. Either way the paper should state that Google's pass rests
-on one code and that the replication rule is met by a margin of one profile.
