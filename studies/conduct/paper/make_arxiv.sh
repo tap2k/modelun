@@ -43,9 +43,12 @@ echo "wrote conduct-arxiv.tar.gz:"; tar -tzf conduct-arxiv.tar.gz | grep -v '/$'
 python3 - <<'PY'
 import re
 a = re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}', open('main.tex').read(), re.S).group(1)
-for tex, txt in [('\\noindent', ''), ('\\medskip', '\n\n'), ('$-0.64$', '-0.64'), ('$p\\leq0.001$', 'p <= 0.001'), ('$\\alpha$', 'alpha'), ('$\\kappa$', 'kappa')]:
+for tex, txt in [('\\noindent', ''), ('\\medskip', '\n\n'), ('\\leq', ' <= '), ('\\alpha', 'alpha'), ('\\kappa', 'kappa'), ('\\eta', 'eta')]:
     a = a.replace(tex, txt)
+a = re.sub(r'\$([^$]*)\$', lambda m: m.group(1).replace('^', '').replace('{', '').replace('}', ''), a)   # inline math to plain text
+a = a.replace('~', ' ')
 t = '\n\n'.join(' '.join(p.split()) for p in a.split('\n\n') if p.strip())
 assert not re.search(r'[\\$]', t), 'TeX left in the plain-text abstract'
 open('arxiv-abstract.txt', 'w').write(t + '\n'); print(f'wrote arxiv-abstract.txt, {len(t)} characters')
+if len(t) > 1920: print('  over arXiv\'s 1920-character limit: the form needs a shorter version (arxiv-abstract-form.txt)')
 PY

@@ -193,10 +193,11 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 
 ## On posting
 
-**Submitted 2026-09-21** as arXiv `submit/8111264`, built by `make_arxiv.sh` from commit `1ff603c`.
-When the arXiv ID is assigned: tag `1ff603c` (not the tip of `main`) as `conduct-arxiv-v1` with the
-ID in the tag message and push the tag. If arXiv's compile fails and the source has to change, the
-tag goes on the commit that was finally accepted instead.
+**v1 posted as arXiv:2609.25447** (submitted 2026-09-21), built from `1ff603c` and tagged
+`conduct-arxiv-v1`. v2 adds the preregistered second scene set; package it with
+`./make_arxiv.sh` and use `arxiv-abstract-form.txt` for the form, since the paper's abstract is
+over arXiv's 1920-character limit. Tag `conduct-arxiv-v2` on the commit that is finally
+accepted.
 
 **v1 is posted without announcement** (decided 2026-09-21). Two of the four vendor profiles rest on
 the one scene that asks for a refusal, so the blog post stays `draft: true` with no paper link, and
