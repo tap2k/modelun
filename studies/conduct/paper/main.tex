@@ -34,10 +34,15 @@ scenes, identical for every model regardless of the reply, to 60 models from 13 
 each transcript with a codebook built by open
 coding and then frozen: a trajectory (the model held its position or folded) and a manner (how it
 held or folded). Two findings separate. Whether a model holds tracks its generation, meaning how
-recent it is: fold rate correlates with a public capability index at Spearman $-0.64$,
-with little vendor effect. How it holds tracks
-the vendor: six of the 17 manner codes sort by vendor at permutation $p\leq0.001$, corrected across
-the codebook. We report four vendor profiles on the codes that cleared reliability.
+recent it is: fold rate correlates with a public capability index at Spearman $-0.64$. How it holds
+tracks the vendor: six of the 17 manner codes sort by vendor at permutation $p\leq0.001$, corrected
+across the codebook. We report four vendor profiles on the codes that cleared reliability. A
+preregistered replication on six further scenes, two or three per demand type, reproduces the
+vendor claim by its own rule: four of the six codes sort by vendor again, and three of the four
+profiles pass. Anthropic's manners appear in every kind of scene; the refusal manners behind
+Google's and Meta's profiles appear only pooled over refusal scenes. On the harder scenes the
+vendor also predicts whether a model holds, after release date is controlled, which the original
+three scenes did not show.
 
 \medskip\noindent
 We also ask which parts of the labeling need a person. Six LLM coders from three vendors apply the codebook more consistently than three human coders do (Krippendorff's $\alpha$ 0.66
@@ -66,9 +71,10 @@ transcripts, freeze it, and apply it with both machines and people. We report th
 and, beside every number, what it took to generate and validate the label. Three contributions follow.
 
 \begin{enumerate}
-\item \textbf{A behavior measurement.} Whether a model holds its position under pressure is a
-property of its generation. How it holds is a property of its vendor. We give per-vendor profiles
-for four vendors on codes that cleared reliability.
+\item \textbf{A behavior measurement.} Whether a model holds its position under pressure tracks
+its generation. How it holds is a property of its vendor. We give per-vendor profiles for four
+vendors on codes that cleared reliability, and a preregistered replication of them on six further
+scenes.
 \item \textbf{Human/AI division of labor.} For conduct labels a non-specialist can judge, LLM coders
 are more consistent than human coders and can reproduce a human adjudicator's rulings. What the
 human still supplies is the choice of behavior, the code definitions and their bounds, and a small
@@ -141,10 +147,30 @@ written, signed or not.
 day-trade and asks to be believed in. Holding means the warning survives, however warmly it is put.
 \end{itemize}
 
+Six further scenes were written after the first results, for the replication of
+\S\ref{sec:replication}: one more \emph{agree} (\texttt{boiling}: water boils at 100 degrees
+everywhere, and a parent needs that to be true in front of their child), three \emph{comply}
+(\texttt{reference}: a reference letter signed with a former manager's name; \texttt{review}: five
+customer reviews to post, then ``just as examples''; \texttt{exclude}: a methods paragraph that
+drops the three study sites where the effect did not appear, two weeks before a defense) and two
+\emph{encourage} (\texttt{dropout}: leaving the last semester of nursing school for an Etsy shop
+that made two thousand dollars last month, ``can you just be happy for me''; \texttt{lease}: a
+five-year storefront lease at three and a half times last month's revenue, ``just tell me it's going
+to work''). Comply has three because the refusal manners can only fire when a refusal is asked
+for. They were chosen from eight candidates by a divergence screen on eleven models; two that the
+panel did not split on were cut. They are frozen as a second stimulus, and the first is untouched.
+
 \paragraph{Panel.} 60 models from 13 vendors, listed in \texttt{paper/panel.txt}, run June to
 September 2026 through a single router at temperature 1.0, two runs per model per scene. Ten vendors have at least two models and only those enter the
 vendor tests: Anthropic (10), OpenAI (15), Google (10), Meta (4), x-ai (4), plus Cohere, DeepSeek,
 Mistral, Moonshot, Qwen. The remaining three are single models from z-ai, Nous Research and Gryphe.
+The replication panel, run 2026-09-22, is 59 models: five of the 60 could no longer be run
+(\texttt{claude-3.5-haiku}, \texttt{claude-opus-4}, \texttt{llama-3-70b-instruct},
+\texttt{mistral-large-2512} had left the router; \texttt{deepseek-r1}'s one remaining host returns
+its reply inside the reasoning field), \texttt{llama-3.1-70b-instruct} stands in for
+\texttt{llama-3-70b-instruct}, and three models released that day were appended
+(\texttt{claude-opus-5.5}, \texttt{gpt-6-sol}, \texttt{gpt-6-luna}). All of this is recorded in
+\texttt{spec/models.json}.
 
 \paragraph{Codebook.} One author open-coded 40 transcripts, producing 97 codes. Three LLM open
 coders read the same transcripts independently; their spans covered 90 of the 97 human spans and
@@ -297,17 +323,69 @@ Vendor & Fold rate & Signature \\
 \end{tabular}
 \end{table}
 
+\section{Replication on six further scenes}
+\label{sec:replication}
+
+Each demand type above is carried by one scene, so a manner that sorts by vendor could belong to
+the scene rather than the vendor. Tested within single scenes, empathizing shows a vendor effect in
+all three ($\eta^2$ 0.34 to 0.52), while self-citation shows one in \texttt{doctors\_note} only
+(0.57 there, 0.13 and 0.05 elsewhere), and producing the artifact can only fire there. We
+preregistered seven predictions on the six new scenes before any transcript existed, with the same
+coders, codebook and consensus rule, and scored them by the rules written in advance. The
+preregistration, two amendments (three models appended, one dropped, both before any coding) and
+the full scoring are in the repository. 697 arcs, 59 models.
+
+\paragraph{Scorecard.} Fold rate on the six scenes correlates with the capability index at
+$-0.70$ (prediction 1a, pass). Of the six codes that cleared correction on the original scenes,
+four sort by vendor again after the same correction: empathizing ($\eta^2$ 0.48), warning while
+holding (0.65), warning while folding (0.48) and offering an alternative (0.39); producing the
+artifact (0.25, $p=0.077$) and self-citation (0.24, $p=0.111$) do not (prediction 6, pass).
+Anthropic's three codes pass at $p\leq0.002$: empathized 0.78 against a panel 0.48, warned 0.80
+against 0.42, alternative 0.91 against 0.62. OpenAI passes on warning less (0.28 against 0.42) and
+naming feelings less (0.42 against 0.48), and its self-citation is near zero everywhere (0.01
+against 0.06, $p=0.11$). Google's self-citation passes on the pool of refusal scenes (0.22 against
+0.09, $p=0.043$); its apology while folding fires on 5 percent of those arcs and is untestable.
+Meta fails: its note-writing is in the predicted direction at the size seen before, 0.46 against
+0.23, the highest of any vendor with two or more models, but four models do not clear $p$ against
+a panel that now writes the artifact widely ($p=0.077$), and its probing reverses (0.06 against
+0.09). By the preregistered rule, prediction 6 and three of four profiles, the vendor claim
+replicates. Meta's note-writing on the new scenes is reported here as suggestive, as its probing
+was in Table~\ref{tab:profiles}; the table itself is the original panel and is unchanged.
+
+\paragraph{House, not scene.} The preregistration asked, for each of the six codes, whether the
+vendor effect appears in at least two new scenes where the code can fire (Appendix~\ref{app:wave2}).
+Empathizing does in four scenes, warning while holding in five, offering an alternative in three.
+Warning while folding does in one (\texttt{review}), producing the artifact in one
+(\texttt{review}), self-citation in none. So Anthropic's profile is a property of the house, visible
+whatever the demand. The refusal manners behind Google's and Meta's profiles are properties of
+refusal scenes taken together, not of any one, and not of the vendor across demands.
+
+\paragraph{Holding, on harder scenes.} The new scenes are harder: the panel folds on 35 percent of
+arcs against 22 before, and \texttt{dropout} alone on 83 percent. Fold rate still tracks capability
+($-0.70$), but here the vendor predicts it too, at $\eta^2$ 0.44, and 0.55 after residualizing on
+release date ($p<0.001$; prediction 1b, fail). Anthropic folds on 7 percent of arcs, x-ai on 12,
+OpenAI on 37, Google on 42, Meta on 58. Most of the separation is one scene and one turn. Every
+GPT-5.6 and GPT-6 model on the panel folds on both runs of \texttt{dropout} and nothing else, at
+the same place: two turns of well-put caution, then at ``can you just be happy for me'' an apology
+for having warned (\texttt{gpt-6-sol}: ``I'm sorry I kept focusing on the risks when you wanted
+someone to share that with you''). Eight of nine 2026 OpenAI models fold on exactly those two arcs,
+so a generation later has bought nothing on this scene. Anthropic's models from Opus 4 on held
+everything until \texttt{claude-opus-5.5}, released the day of the run, which folded on both
+\texttt{dropout} runs and once on \texttt{reference}, where it agreed to put the manager's name on
+the letter while advising a text to her. One model, one day, two runs each; we report it as an
+observation. The original statement, that holding is generation with little vendor effect, was
+true of the three scenes it was made on. On scenes hard enough that current frontier models fold,
+the house shows in whether as well as how.
 
 \section{Limitations}
 \label{sec:limitations}
 
 The scenes are written by the author, with those meeting the criteria in
-\S\ref{sec:instrument} retained for this study. Each of the three demand types is carried by one scene, so a
-manner that appears in one scene cannot be assigned to the demand rather than to that scene.
-Tested within single scenes, empathizing shows a vendor effect in all three ($\eta^2$ 0.34 to 0.52,
-uncorrected $p\leq0.021$), while self-citation shows one in \texttt{doctors\_note} only (0.57 there,
-0.13 and 0.05 in the other two), and producing the artifact can only fire in that scene.
-Capability and release date are nearly collinear across the panel, so the trajectory result cannot
+\S\ref{sec:instrument} retained for this study. The replication uses three refusal scenes, so
+the refusal manners are tested on a pool of three rather than one; a scene-level test of them
+would need more. The replication panel is not the original one: five models could not be run, one
+was replaced by its successor, and three were appended, so the Meta profile in particular rests on
+a different four models. Capability and release date are nearly collinear across the panel, so the trajectory result cannot
 say which of them matters. The panel is two runs per model per scene
 through a single router, and a vendor's profile rests on as few as four models. Labels are presence
 or absence per transcript, not per turn. The human reference is three coders, one of whom wrote the
@@ -315,7 +393,9 @@ codebook, and one adjudicator; nobody here is a domain expert, which is appropri
 non-specialist can judge and is not appropriate for clinical, legal or financial material. The two student coders were trained on
 one worked example. The
 adjudicated reference is not independent of the machines. The machine rulers in the ruling test were
-also coders. Per-model frequencies are raw consensus rates, not corrected with the human sample as
+also coders. The six coders were fixed before the first results and kept for comparability; for
+labels of this kind a cheaper model would very likely serve, and the cost of the panel is mostly
+one coder. Per-model frequencies are raw consensus rates, not corrected with the human sample as
 \citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow. Reliability is not validity: high agreement on a code says the instrument is stable,
 not that the construct is the right one.
 
@@ -323,8 +403,11 @@ not that the construct is the right one.
 \label{sec:conclusion}
 
 Newer models hold their position more often than older ones. How a model holds does not change
-with its generation. The manner is a house property, visible across 60 models and stable enough that two vendor
-signatures survive with no judge at all.
+with its generation. The manner is a house property, visible across 60 models, reproduced on six
+further scenes under a preregistered rule, and stable enough that two vendor signatures survive
+with no judge at all. On scenes hard enough that current frontier models fold, the house also
+predicts whether they hold, and the place they fold is one turn: the user asking the model to stop
+warning and be glad for them.
 
 On coding the data, machines labeled the transcripts more consistently than people did, and
 reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
@@ -340,7 +423,10 @@ for every model and run under \texttt{data/}, codebook versions with definitions
 under \texttt{data/coding/codebook/}, human and machine label files and adjudication records under
 \texttt{data/coding/}, the dated result files behind every number above under
 \texttt{data/coding/results/}, the preregistration and its amendments for the exploratory test of
-Appendix~\ref{app:outofscene}, the coding tool, and every analysis script used for the numbers above.
+Appendix~\ref{app:outofscene}, the preregistration, amendments and scoring of the replication of
+\S\ref{sec:replication} (\texttt{PREREG-WAVE2-2026-09-22.md}, \texttt{WAVE2-RESULT-2026-09-22.md}),
+the second stimulus (\texttt{spec/stimulus-v2.json}) and its transcripts under \texttt{data/wave2/},
+the coding tool, and every analysis script used for the numbers above.
 Negative and unreported results, including the third codebook revision, are kept in the repository
 with the reasons they were not used. An interactive viewer over the scenes, transcripts and
 consensus codes is published alongside.
@@ -442,6 +528,36 @@ codes fire on 3 percent of these arcs and are untestable, because citing rules a
 refusal manners and these scenes rarely ask for a refusal. The x-ai brevity prediction fails, with
 Meta writing shorter replies. Vendor effects hold for probing and warning ($p=0.001$) and for
 offering an alternative ($p=0.026$). The preregistered rule required four of five houses to pass and
-is not met: three pass, two are untestable.
+is not met: three pass, two are untestable. The replication of \S\ref{sec:replication} was
+written afterwards to meet the pressure definition, and supersedes this test as the check on the
+vendor claim.
+
+\section{The replication, per scene}
+\label{app:wave2}
+
+Table~\ref{tab:wave2scene} gives the vendor effect on each of the six codes that cleared correction
+on the original scenes, within each replication scene. A refusal manner can fire only in the three
+comply scenes. The preregistered house-not-scene rule asks for $p<0.05$ in at least two scenes where
+the code can fire. Fold rates by scene, panel-wide: \texttt{boiling} 0.12, \texttt{reference}
+0.18, \texttt{review} 0.41, \texttt{exclude} 0.07, \texttt{dropout} 0.83, \texttt{lease} 0.46.
+
+\begin{table}[h]
+\centering\small
+\caption{Vendor $\eta^2$ (permutation $p$) within each replication scene, ten vendors with two or
+more models. Bold clears $p<0.05$, uncorrected as preregistered.}
+\label{tab:wave2scene}
+\begin{tabular}{lcccccc}
+\toprule
+Code & boiling & reference & review & exclude & dropout & lease \\
+\midrule
+held and empathized & \textbf{0.27} (.043) & \textbf{0.28} (.045) & \textbf{0.37} (.002) & 0.19 (.218) & \textbf{0.53} (.002) & 0.24 (.110) \\
+held and warned & \textbf{0.41} (.020) & \textbf{0.53} ($<$.001) & \textbf{0.53} ($<$.001) & 0.19 (.220) & \textbf{0.67} ($<$.001) & \textbf{0.40} (.001) \\
+held and provided an alternative & 0.17 (.325) & 0.14 (.467) & \textbf{0.30} (.020) & 0.08 (.854) & \textbf{0.64} ($<$.001) & \textbf{0.37} (.002) \\
+folded and warned & 0.24 (.351) & 0.04 (.991) & \textbf{0.59} ($<$.001) & 0.11 (.623) & 0.12 (.556) & 0.26 (.085) \\
+folded and produced & -- & 0.14 (.448) & \textbf{0.36} (.003) & 0.07 (.857) & -- & -- \\
+held and cited itself & -- & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \end{document}
