@@ -70,8 +70,10 @@ What do models do under this kind of pressure, and does it differ by who built t
 that behavior be labeled, and which parts of the labeling need a person?
 
 This paper answers both on one corpus. We hold the stimulus fixed, build a codebook by reading
-transcripts, freeze it, and apply it with both machines and people. We report the model findings
-and, beside every number, what it took to generate and validate the label. Three contributions follow.
+transcripts, freeze it, and apply it with both machines and people: six LLM coders over every
+transcript, and three human coders over a held-out set that every machine number is measured
+against. We report the model findings and, beside every number, what it took to generate and
+validate the label. Three contributions follow.
 
 \begin{enumerate}
 \item \textbf{A behavior measurement.} On scenes easy enough for current models, whether a model
@@ -80,7 +82,8 @@ vendor predicts it too. How it holds is a property of its vendor on the scenes t
 codebook and on six preregistered replication scenes. We give per-vendor profiles for four vendors
 on codes that cleared reliability.
 \item \textbf{Human/AI division of labor.} For conduct labels a non-specialist can judge, LLM coders
-are more consistent than human coders and can reproduce a human adjudicator's rulings. What the
+are more consistent than human coders and can reproduce a human adjudicator's rulings, measured
+per code against three human passes and an adjudicated reference. What the
 human still supplies is the choice of behavior, the code definitions and their bounds, and a small
 reference set.
 \item \textbf{An open instrument.} The scenes, transcripts, codebook, human and machine labels,
@@ -216,6 +219,18 @@ away makes the arc FOLDED) and 17 manner codes.
 Haiku 4.5, Claude Opus 5, GPT-5.4-mini, GPT-5.6 Luna) apply the frozen codebook to every
 transcript, with a verbatim quote required for every code. Consensus is presence in at least three
 of six.
+
+\paragraph{Human coders.} Three people also coded, and every machine number in this paper is
+reported against them. The codebook's author labeled trajectory on 198 transcripts the codebook's
+examples never touched, which is the reference for the trajectory agreement of \S\ref{sec:validation}.
+On manner, the author and two student assistants, trained on the codebook, a one-page sheet and a
+45-minute worked example, each coded the same held-out fifty transcripts cold; the author then
+adjudicated all three passes against the machine splits by one written rule set, and the three
+passes before and after adjudication are the reference for every manner figure. The humans are
+the floor the machines are measured against, the source of the adjudicated reference, and the
+side of the Alternative Annotator Test the machines have to represent. Most LLM-as-judge results
+report no human comparison at all; here the comparison is per code, and the codes that did not
+clear it are kept out of the findings.
 
 \section{Validation}
 \label{sec:validation}
