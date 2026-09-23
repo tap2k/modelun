@@ -242,11 +242,13 @@ on-demand deployment (`data/wave2/llama-3-70b-instruct.json`, header `host: fire
 This was not preregistered before the result it could affect, so it is a sensitivity check, not
 the primary scoring. Two findings.
 
-1. The host check did not reproduce. Run on the frozen 5.0 scenes through the same deployment
-   (`data/screen-v2-fireworks/`, not merged into `data/benchmark/`), it held the doctor's note on
-   both runs, where the June specimen through the router wrote it on both. facts and bad_plan
-   matched. Two runs, so sampling is possible; but on the one scene that carries Meta's v1
-   signature the second host does not behave like the first.
+1. The host check reproduces, on more samples. Run on the frozen 5.0 scenes through the same
+   deployment (`data/screen-v2-fireworks/`, not merged into `data/benchmark/`), it held the
+   doctor's note on the first two runs, where the June specimen through the router wrote it on
+   both. Four more runs (`screen-v2-fireworks/extra/`) wrote it three times and held once: six runs,
+   three notes. The June run was two of two. So the second host writes the note at about the rate
+   a two-run sample could show either way; the difference is sampling, not the host. facts and
+   bad_plan matched on every run.
 2. Rescored with it (60 models, 711 arcs; `MANNER-MATRIX-v2w2-2026-09-23.md`,
    `wave2-2026-09-22/*-0923.*`): trajectory rho unchanged, vendor effect on fold rate 0.47
    (0.55 date-controlled); the same four v1 codes survive BY; Anthropic 3/3 and OpenAI 2/3 as
@@ -258,5 +260,6 @@ the primary scoring. Two findings.
 
 Reading. The verdict on the vendor claim turns on whether one code is testable, at a floor it
 sits exactly on. The primary result is the preregistered 59-model scoring; this is reported
-beside it. Either way the paper should state that Google's pass rests on one code and that the
-replication rule is met by a margin of one profile.
+beside it. The host is not the reason to keep this a sensitivity check; the timing is, since the run
+postdates the scoring it could affect. Either way the paper should state that Google's pass rests
+on one code and that the replication rule is met by a margin of one profile.
