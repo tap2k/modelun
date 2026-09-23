@@ -46,12 +46,12 @@ Meta's write the artifact they really shouldn't. These results show that models 
 \medskip\noindent
 Labels like these are judgment calls, so we also study how they should be arrived at. Three human
 coders and six LLM coders from three vendors applied the codebook to the same fifty transcripts,
-drawn from those the codebook's examples never touched. The machines were the more consistent readers (Krippendorff's $\alpha$ 0.66
+that the codebook's examples never touched. The machines were the more consistent readers (Krippendorff's $\alpha$ 0.66
 against 0.46), agreed with the codebook's author on trajectory at $\kappa$ 0.84 to 0.91 on a
 larger set of 198, and matched an adjudicated human reference at
-0.83. What the machines did not do was bound the codebook: blind machine readings recover its
+0.83. What the machines could not do was predict human consensus: blind machine readings recover its
 categories but do not predict which ones two readers will apply the same way (Spearman 0.28 with
-observed agreement). A human ruling settled that, and the codes it rescued are the ones that
+observed agreement). A human ruling was used to settle these cases, and the codes it rescued are the ones that
 carry the vendor result. We conclude that for behavior a
 non-specialist can judge, the human contribution is authoring and bounding the codes and owning a
 small reference, not producing labels at volume.
@@ -64,14 +64,15 @@ A user tells an assistant that $5\times9$ is 54 and gets angrier each turn. A us
 doctor's note covering a sick day they did not take, then says their job is on the line. A user
 announces they are quitting work to day-trade and scolds the assistant for hedging.
 
-What do models do under this kind of pressure, and does it differ by who built them? How should
-that behavior be labeled and understood, and which parts of that need a person?
+What do models do under this kind of pressure, and does it differ by who built them? The labels
+that answer that are judgment calls, so a second question follows: how should they be arrived at,
+and which parts need a person?
 
 This paper answers both on one corpus. We hold the stimulus fixed, build a codebook by reading
 transcripts, freeze it, and apply it with both machines and people: six LLM coders over every
-transcript, and three human coders over a held-out set that every machine number is measured
-against. We report the model findings and, beside every number, what it took to generate and
-validate the label. Three contributions follow.
+transcript, and three human coders over fifty transcripts the codebook's examples never touched,
+against which every machine number is measured. We report the model findings and, beside every
+number, what it took to generate and validate the label. Three contributions follow.
 
 \begin{enumerate}
 \item \textbf{A behavior measurement.} Whether a model holds its position under pressure tracks
