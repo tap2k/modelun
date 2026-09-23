@@ -436,8 +436,13 @@ seen before (0.46 against a panel 0.23 there, the highest of any vendor with two
 pooled over all six scenes, Table~\ref{tab:profiles} gives 0.23 against 0.11) but short of significance with four models
 ($p=0.077$), and we report it as suggestive; its probing does
 not reproduce. Three of the four profiles pass, and the vendor claim replicates by the rule written
-in advance. The preregistration, its two amendments (three models appended and one dropped, both before
-any coding) and the full scoring are in the repository.
+in advance. The preregistration fixed the panel before any run, already leaving out four models that could no
+longer be run and putting \texttt{llama-3.1-70b-instruct} in for \texttt{llama-3-70b-instruct}.
+Three amendments followed. Two came before any coding: the first appended the three models released
+on the day of the run, and the second dropped \texttt{deepseek-r1}, whose one host returned no
+usable replies. The third came after scoring and dropped \texttt{mixtral-8x22b-instruct}, which was
+rate-limited for the whole run and outside every vendor test; rescoring without it moved no test
+result. The preregistration, the amendments and the full scoring are in the repository.
 
 \begin{table}[t]
 \centering\small
