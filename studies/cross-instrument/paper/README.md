@@ -1,10 +1,14 @@
 # paper — the October short paper (Agent Evaluation Science Fall 2026)
 
-**DECIDED 2026-09-20 (method-first; merged with the position paper).** This paper and the
-position paper (`~/Desktop/projects/modelUN/qualitative-methods/position-paper-outline.md`) are ONE
-artifact in two cuts: the 4-6pp symposium submission and a full-length arXiv version (axis material,
-the Goodhart section, the ecology agenda at length). **arXiv is the version of record; the symposium
-submission is NON-ARCHIVAL**, which keeps COLM and later venues open.
+**DECIDED 2026-09-20 (method-first; merged with the position paper), CLARIFIED 2026-09-23.** This
+paper *is* the position paper: one artifact, one length, the 4-6pp symposium submission. There is no
+separate full-length arXiv cut in flight. A longer version can follow later if the axis material and
+the Goodhart section earn their own paper; it is not planned. **The symposium submission is
+NON-ARCHIVAL**, which keeps COLM and later venues open.
+
+**Venue note (2026-09-23):** cross-instrument is the AES submission rather than the conduct paper.
+AES is an agent-evaluation venue, and the coding atlas section is the only work here whose subject is
+an agent; conduct goes to COLM.
 
 The paper's claim is cost. At $1-3 a model these assays are cheap enough that anyone can run them,
 and that is what makes a stratified ecology of behaviour studies possible at different levels,
