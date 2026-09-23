@@ -123,3 +123,11 @@ Generation notes, for the record: 45 of the v1 models ran in five parallel lanes
 run proved too slow; 29 cells failed on the first pass (rate limits, gateway errors, and reasoning
 models exhausting the 1200-token budget on their trace) and were rerun per scene, the reasoning
 models at 8000 tokens, which the runner stamps on the cell.
+
+### Amendment 3 (2026-09-23, 10:25; after the scoring)
+
+mistralai/mixtral-8x22b-instruct is dropped from the wave-2 panel. Its only host rate-limited
+nearly every call for 18 hours across five retry patterns; two of its twelve arcs existed and are
+removed with it. It is the only Mistral model in wave 2 and was outside the vendor test under the
+panel rule above, so no prediction depended on it. This amendment postdates the scoring; the
+scoring is rerun on the 58-model panel and the result file reports whether any number moved.
