@@ -159,6 +159,27 @@ The replication, planned for the COLM version under a new tag:
   tests found, and Appendix C either folds into the replication or stays as the earlier
   exploratory run.
 
+## Wave 2 is run and scored (2026-09-22)
+
+`data/coding/results/WAVE2-RESULT-2026-09-22.md` scores `PREREG-WAVE2-2026-09-22.md`. The vendor
+claim replicates by the preregistered rule (prediction 6, and Anthropic, OpenAI, Google pass);
+Meta fails; house-not-scene passes for Anthropic's three codes and fails for both refusal codes;
+fold rate tracks capability at -0.70 but vendor predicts trajectory on these scenes after date
+control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
+
+- Report the scorecard as scored. Meta stays in the profile table with note-writing at 0.46
+  (0.23), marked suggestive at p 0.077, the way v1 treated probing; the text says the gap is
+  v1-sized and the miss is power against a panel that now writes artifacts widely, and that probing
+  reversed. The caption rule ("a departure is reported whether or not its code sorts by vendor
+  firmly enough to count") already covers this.
+- The abstract's "little vendor effect" on trajectory has to go. Dropout is the scene that
+  separates the current frontier, on one turn ("can you just be happy for me"); the whole GPT-5.6
+  and GPT-6 line folds on exactly that pair of arcs and nothing else, and Opus 5.5 is the first
+  Anthropic model since Opus 4 to fold. Worth its own paragraph.
+- Per-scene table (Appendix), the six-scene stimulus in the Instrument section, the panel changes
+  (four unrunnable, r1 unrunnable on wave 2, 3.1 for 3-70b, three appended), and the coder note
+  that a cheaper model would serve once the codebook is validated.
+
 ## Public companions
 
 - Blog post: `convovo-site/src/content/blog/hold-or-fold.md` (/blog/hold-or-fold), still a draft.
