@@ -76,3 +76,21 @@ produced), which they ranked first and which are reliable; what they got wrong i
 which they ranked near the bottom and which are reliable once the boundary is ruled on. Asked to
 predict which categories a second reader would apply the same way, three fresh models could not.
 The claim in the paper's second contribution stands, now with a test behind it.
+
+## Stability of the target (2026-09-22, 22:15)
+
+The target is one human's cold per-code kappa. The other two humans' profiles
+(`bound-test-human-profiles.json`, each human cold against the six coders, per code) correlate
+with the author's at Spearman 0.29 (Jay) and 0.56 (Liam), and with each other at 0.65. The machines'
+pooled ranking correlates with the author at 0.28, with Jay at 0.06, with Liam at 0.34, and with
+the mean of the three human profiles at 0.29 (p 0.26). So the machines sit at the bottom of the
+human range on a target the humans themselves agree on only moderately; the null is "did not,
+here," not a ceiling. The pattern is the finding: the machines put the concrete artifact codes
+first and the warm codes last, which matches the cold pass in direction (0.28) and the adjudicated
+pass not at all (-0.07). Held and warned went from kappa 0.26 to 0.87 and empathized from 0.47 to
+0.82 because a person ruled on their boundary. What the machines did not see is which codes a
+ruling would rescue. Bounding, on this evidence, is adjudicating rather than forecasting.
+
+Limitation: the predictors had the codebook and five transcripts; the author had forty transcripts
+of open coding and the held-out fifty before ruling. The asymmetry is by design (it is the cold
+question) and bounds what the null can mean.
