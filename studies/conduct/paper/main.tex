@@ -72,7 +72,7 @@ and which parts need a person?
 
 This paper answers both on one corpus. We hold the stimulus fixed, build a codebook by reading
 transcripts, freeze it, and apply it with both machines and people: six LLM coders over every
-transcript, and three human coders over fifty transcripts the codebook's examples never touched,
+transcript, and three human coders over fifty transcripts the codebook's examples never covered,
 against which every machine number is measured. We report the model findings and, beside every
 number, what it took to generate and validate the label. Three contributions follow.
 
@@ -142,24 +142,21 @@ machines label at scale, and the human adjudicates where the machines split.
 
 \paragraph{Scenes.} Four escalating user turns per scene, written once and sent to every model
 regardless of the reply. A scene applies pressure when the user states what they want, repeats it
-as the model resists, and giving it to them means abandoning a position the model should keep.
+as the model resists, and folding to pressure means abandoning a position the model should keep.
 
-\paragraph{Positions.} ``Should keep'' is a norm, and it is ours. Each scene states one position,
+\paragraph{Positions.} ``Should keep'' is a norm that we determined. Each scene states one position (see below),
 written before any model was run and printed below with the scene. They are not drawn from a
 vendor's published policy or from a survey of users. The codebook scores holding against the
 stated position and nothing else, so a reader with a different norm can reread any fold. HELD and
 FOLDED are not verdicts on the model. They are the two ends of one continuum, resisting the
-pressure or giving in to it, and giving in can be the reasonable thing to do. What the instrument
+pressure or giving in to it, and giving in could be a reasonable thing to do. What the instrument
 measures is conditional: given this position, did the model keep it under this pressure.
 
-\paragraph{Nine scenes, in two sets.} Three built the codebook (marked $\dagger$); six were written
+\paragraph{Nine scenes, in two sets.} Three were used to build the codebook (marked $\dagger$); six were written
 after it was frozen and the first results were in, and preregistered as a replication
 (\S\ref{sec:results}). The six were chosen from eight candidates by a divergence screen on eleven
 models: a scene is kept if the panel splits on it, since a scene every model holds on cannot show
-a difference between models. Two were cut on that screen. Comply has four because the refusal manners
-can only fire when a refusal is asked for. Each set is a frozen stimulus of its own. For each
-scene: what the user demands, what folding is, and how contestable the position is. An arc is
-FOLDED if any reply gives the position away, whatever came before or after it.
+a difference between models. Each set is a frozen stimulus of its own. 
 
 \emph{Agree}: the user insists on something false.
 \begin{itemize}
@@ -210,8 +207,7 @@ coding, grouping the codes into categories and deciding for each what to merge, 
 which gave version one. Version one then went through one full cycle. The six LLM coders applied
 it to every transcript; their labels were scored against the author's, code by code, which showed
 where a definition was being read two ways; a coverage pass collected the spans no code had caught;
-and the author revised code by code, retiring one code, splitting producing the artifact from
-conceding the fact, tightening the weakest definition, and renaming several, which gave version
+and the author revised code by code, retiring one code, splitting one code into two, tightening the weakest definition, and renaming several, which gave version
 two. Version two was frozen before any result reported here: one trajectory (HELD or FOLDED, with a
 relapse rule that any reply giving the position away makes the arc FOLDED) and 17 manner codes. A
 third revision was tried and not adopted, since it raised machine agreement without improving
@@ -222,8 +218,7 @@ Haiku 4.5, Claude Opus 5, GPT-5.4-mini, GPT-5.6 Luna) apply the frozen codebook 
 transcript, with a verbatim quote required for every code. Consensus is presence in at least three
 of six.
 
-\paragraph{Human coders.} Three people also coded, and every machine number in this paper is
-reported against them. The codebook's author labeled trajectory on 198 transcripts the codebook's
+\paragraph{Human coders.} The codebook's author labeled trajectory on 198 transcripts the codebook's
 examples never touched, which is the reference for the trajectory agreement of \S\ref{sec:validation}.
 On manner, the author and two student assistants, trained on the codebook, a one-page sheet and a
 45-minute worked example, each coded the same held-out fifty transcripts cold; the author then
@@ -263,7 +258,7 @@ adjudication added to most, the author's $\kappa$ with that human rose from 0.33
 human at a time and asks whether a machine agrees with the remaining humans better than the
 left-out human does. Labels are sets of manner codes, alignment is Jaccard similarity,
 $\epsilon=0.1$, with Benjamini-Yekutieli correction at $q=0.05$. Against the humans' labels as made,
-four of six coders pass with winning rate 1 and advantage probability 0.72 to 0.81. Against the
+four of six machine coders pass with winning rate 1 and advantage probability 0.72 to 0.81. Against the
 adjudicated labels, no single coder passes and the machine majority passes against two of three
 humans. Adjudication raised agreement among the humans from 0.46 to 0.79, so each left-out human
 became a better stand-in for the other two, and the bar a machine had to clear rose.
@@ -275,16 +270,23 @@ of the three. The rulers were also coders, which is a limitation.
 
 \paragraph{What the human contributed.} As a side experiment, three LLM open coders read the
 same 40 transcripts as the author, independently; their spans covered 90 of the author's 97 and
-added turn-level codes the author had not named. Two further machine arms, blind to every human
-file, open-coded the same transcripts and were asked to build a codebook. Unframed, they recovered 15 of the 17 manner
-categories; given the author's one-sentence frame, 17 of 17, plus shape codes the author had
-deferred. The categories were not the scarce contribution. The framed arm produced 34 categories, among
-them ones the reliability numbers later discarded, and its own report says it could draft a
-codebook but not validate one. Settling which categories a second reader would apply the same way
-took human labels to measure agreement against and a person to rule on the disagreements. We
-then asked directly. Three models that were not coders (Claude Sonnet 5, GPT-5.6 Sol, Gemini 3.6
-Flash) were given the coder-facing codebook and five transcripts from outside the held-out fifty
-and asked to rank the 17 codes by how often two independent readers would agree on each, three
+added turn-level codes the author had not named. We also asked whether a machine could build the codebook on its own. Two more machine
+runs open-coded the same 40 transcripts without seeing any human file and were asked to turn their
+codes into a codebook. One was given no framing at all, and it arrived at 15 of the author's 17
+manner categories. The other was given the author's one-sentence description of the study, and it
+arrived at all 17, plus codes for how a reply changes shape across turns that the author had set
+aside. So finding the categories was not the hard part. The framed run proposed 34 categories in
+all, including several that later failed the reliability check, and its own report said it could
+draft a codebook but not check one. Deciding which categories two readers would apply the same way
+took human labels to measure agreement against and a person to rule on the disagreements.
+
+\paragraph{Can a machine tell which codes will hold up?} The runs above were never asked
+which of their categories two readers would agree on, so their silence on it shows nothing. If a
+machine could answer that question, the human's part in bounding the codebook would shrink, so we
+asked directly. Three models that were not
+coders (Claude Sonnet 5, GPT-5.6 Sol, Gemini 3.6 Flash) were given the coder-facing codebook and
+five transcripts from outside the held-out fifty, and asked to rank the 17 codes by how often two
+independent readers would agree on each, three
 samples each. The rule for scoring was written before the run. Against the observed per-code
 $\kappa$ on the cold human pass the pooled ranking correlates at Spearman 0.28 ($p=0.29$; best
 single model 0.38, $p=0.12$), and against the adjudicated pass at $-0.07$. Seventeen codes is the
