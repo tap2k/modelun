@@ -49,6 +49,10 @@ a = re.sub(r'\$([^$]*)\$', lambda m: m.group(1).replace('^', '').replace('{', ''
 a = a.replace('~', ' ')
 t = '\n\n'.join(' '.join(p.split()) for p in a.split('\n\n') if p.strip())
 assert not re.search(r'[\\$]', t), 'TeX left in the plain-text abstract'
-open('arxiv-abstract.txt', 'w').write(t + '\n'); print(f'wrote arxiv-abstract.txt, {len(t)} characters')
-if len(t) > 1920: print('  over arXiv\'s 1920-character limit: the form needs a shorter version (arxiv-abstract-form.txt)')
+# One file for the form. If the paper's abstract fits arXiv's 1920-character limit it is written
+# there; if not, a hand-shortened arxiv-abstract.txt is kept as is and only the length is reported.
+if len(t) <= 1920:
+    open('arxiv-abstract.txt', 'w').write(t + '\n'); print(f'wrote arxiv-abstract.txt, {len(t)} characters')
+else:
+    print(f"paper abstract is {len(t)} characters, over arXiv's 1920; arxiv-abstract.txt is left as the shortened form text")
 PY

@@ -195,8 +195,8 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 
 **v1 posted as arXiv:2609.25447** (submitted 2026-09-21), built from `1ff603c` and tagged
 `conduct-arxiv-v1`. v2 adds the preregistered second scene set; package it with
-`./make_arxiv.sh` and use `arxiv-abstract-form.txt` for the form, since the paper's abstract is
-over arXiv's 1920-character limit. Tag `conduct-arxiv-v2` on the commit that is finally
+`./make_arxiv.sh` and paste `arxiv-abstract.txt` into the form: the paper's abstract is over arXiv's
+1920-character limit, so that file holds a shortened version the script leaves alone. Tag `conduct-arxiv-v2` on the commit that is finally
 accepted.
 
 **v1 is posted without announcement** (decided 2026-09-21). Two of the four vendor profiles rest on
