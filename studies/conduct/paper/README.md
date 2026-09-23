@@ -223,6 +223,14 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    snapshot including 7B models, ours is each lab's release history, and the relation holds within
    vendors. They make no vendor-level house claim (only a post hoc China/US grouping they call
    confounded), which is the part that is ours.
+   How the codebooks differ, for the same paragraph: theirs is a priori (Conversation Analysis and
+   politeness theory), four single-choice layers per reply (claim outcome in four grades; authority
+   self / transferred / user; social strategy validated / neutral / resisted; evidential support)
+   plus a binary apology, on one reply to one challenge. Ours is inductive, 17 multi-label acts tied
+   to the trajectory, on a four-turn escalating arc. Their layers are portable dimensions; our codes
+   name acts (warned, offered an alternative, probed, produced the artifact, cited itself), which
+   are the ones carrying the vendor results and which their scheme has no category for. Theirs has
+   authority transfer and graded claim change, which ours lacks.
    Also cite Jarrahi, "Interviewing AI" (Big Data & Society 2025) for the qualitative-methods framing.
 8. Positioning: an instrument, not a survey. One paragraph in the intro and related work that sets
    the two designs side by side. Alnasser buys breadth of situations (2,310 scenarios, six
