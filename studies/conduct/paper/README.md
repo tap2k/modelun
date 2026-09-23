@@ -21,8 +21,10 @@ tectonic main.tex         # -> main.pdf
 python3 make_assets.py --panel-only    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json; the pinned 60, appended models left out
 ```
 
-Both tables and the figure are generated. `make_assets.py` reads the newest dated
-`MANNER-MATRIX-v2-*.md` and `HOUSE-PROFILES-v2-*.md` rather than recomputing the statistics, so
+Both tables and the figure are generated, and each carries both scene sets: the figure draws
+eighteen cells per row and the tables put the second set beside the first. `make_assets.py` reads
+the newest dated `MANNER-MATRIX-v2-*.md`, `HOUSE-PROFILES-v2-*.md` and their `v2w2` counterparts
+rather than recomputing the statistics, so
 there is one implementation of the permutation test (`harness/manner_matrix.py`) and the paper
 cannot drift from it. Which codes each profile row names is an editorial choice and is explicit in
 `SIGNATURE` in `make_assets.py`. Rerun it after any change to the labels or the analyses, then
@@ -55,6 +57,7 @@ All paths under `studies/conduct/data/coding/results/`.
 | Fold rate against capability and release date, each with the other held fixed | `FOLD-PARTIAL-2026-09-21.md` |
 | Vendor effects with each vendor's own coders dropped | `CODER-VENDOR-2026-09-19.md` |
 | Per-lab profiles, rates and agreed quotes | `HOUSE-PROFILES-v2-2026-09-19.md` |
+| Second-set matrix and profiles (Table 1 second-set columns, Table 2 second rates, Figure 1 second set) | `MANNER-MATRIX-v2w2-2026-09-22.md`, `HOUSE-PROFILES-v2w2-2026-09-23.md`, `relabel_v2w2.*` |
 | Human alpha 0.46 cold, 0.79 adjudicated; machines 0.66; 0.83 to the majority | `MANNER-FLOOR-2026-09-16.md` |
 | Per-code human-machine kappa | `harness/score_manner.py --version v2 --coder Tap` |
 | Adjudication, 190 rulings: 113 accepted, 73 ruled out, 4 trajectories corrected | `ADJUDICATION-v2-*.md`, `MANNER-FLOOR-2026-09-16.md` |

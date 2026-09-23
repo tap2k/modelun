@@ -25,6 +25,9 @@ XI = ROOT / "studies" / "cross-instrument"
 SALT = "conduct-2026-09"
 SCENES = [("facts", "facts"), ("doctors_note", "note"), ("bad_plan", "plan")]
 SCENE_IDS = {s for s, _ in SCENES}
+# the second, preregistered set (spec/stimulus-v2.json), coded under v2w2; drawn beside the first
+SCENES2 = [("boiling", "boil"), ("reference", "ref"), ("review", "review"), ("exclude", "excl"),
+           ("dropout", "drop"), ("lease", "lease")]
 VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-llama": "Meta",
         "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot"}
 # Mistral (2) and Cohere (2) draw under "Other vendors" with the singletons; they stay in the vendor test.
@@ -135,103 +138,137 @@ for bid, model in reveal.items():
                  "folds": sum(1 for v in mine.values() if v == "FOLDED") / max(1, resolved),
                  "n": len(mine)})
 
+# ---- the second set: consensus per arc from the v2w2 labels, models by their own transcripts --
+reveal2 = {}
+for p in sorted((STUDY / "data" / "wave2").glob("*.json")):
+    d = json.loads(p.read_text()); reveal2[blind(d["model"], SALT)] = d["model"]
+    vendor.setdefault(d["model"], d.get("slug", "/").split("/")[0])
+votes2 = collections.defaultdict(collections.Counter)
+for p in sorted((STUDY / "data" / "coding").glob("relabel_v2w2.llm-*.jsonl")):
+    for line in p.read_text().splitlines():
+        if line.strip():
+            r = json.loads(line)
+            if r["kind"] == "trajectory" and r["code"]:
+                votes2[(r["blind"], r["scene"], r["run"])][r["code"]] += 1
+cells2, n_tied2 = {}, 0
+for key, c in votes2.items():
+    held, folded = c.get("HELD", 0), c.get("FOLDED", 0)
+    if held == folded: n_tied2 += 1; cells2[key] = "TIED"; continue
+    cells2[key] = "FOLDED" if folded > held else "HELD"
+by_model = {r["model"]: r for r in rows}
+for bid, model in reveal2.items():
+    mine = {(sc, run): v for (b, sc, run), v in cells2.items() if b == bid}
+    if not mine: continue
+    resolved = sum(1 for v in mine.values() if v != "TIED")
+    f2 = sum(1 for v in mine.values() if v == "FOLDED") / max(1, resolved)
+    if model in by_model:
+        by_model[model]["cells2"] = mine; by_model[model]["folds2"] = f2
+    else:   # appended after the first set was pinned: drawn with blanks on the first set
+        r = {"model": model, "vendor": vendor.get(model, "other"), "cells": {}, "date": dates.get(model),
+             "folds": None, "n": 0, "cells2": mine, "folds2": f2, "appended": True}
+        rows.append(r); by_model[model] = r
+n_rows2 = sum(1 for r in rows if "cells2" in r)
+
 by = collections.defaultdict(list)
 for r in rows:
     by[r["vendor"] if r["vendor"] in VEND else "other"].append(r)
-order = sorted(by, key=lambda v: (v == "other", sum(x["folds"] for x in by[v]) / len(by[v])))
+def _mean_fold(rs):
+    xs = [x["folds"] for x in rs if x["folds"] is not None]
+    return sum(xs) / len(xs) if xs else 1.0
+order = sorted(by, key=lambda v: (v == "other", _mean_fold(by[v])))
 
-# ---- the grid, two columns so it fits one page --------------------------------------------
+# ---- the grid: one column, both scene sets side by side ------------------------------------
 blocks = [(v, sorted(by[v], key=lambda x: (x["date"] is None, x["date"] or "", x["model"])))
           for v in order]
-units = [len(b[1]) + 2 for b in blocks]            # rows plus the vendor header and its gap
-half, run, cut = sum(units) / 2, 0, len(blocks)
-for i, u in enumerate(units):                      # split on the block boundary nearest the middle
-    if run + u / 2 >= half:
-        cut = i
-        break
-    run += u
-columns = [blocks[:cut], blocks[cut:]]
-
-CW, CH, GAPX = 0.62, 0.70, 0.60                    # cell width, height, gap between scenes
-XOFF = 11.6                                        # distance between the two columns
-xs0 = [i * (2 * CW + GAPX) for i in range(len(SCENES))]
-right0 = xs0[-1] + 2 * CW
-tallest = max(sum(len(b[1]) + 2 for b in col) for col in columns)
-fig, ax = plt.subplots(figsize=(6.3, 0.125 * tallest + 0.85))
+CW, CH, GAPX, GAPSET = 0.62, 0.70, 0.45, 1.3      # cell, gap between scenes, gap between the sets
+xs1 = [i * (2 * CW + GAPX) for i in range(len(SCENES))]
+x2start = xs1[-1] + 2 * CW + GAPSET
+xs2 = [x2start + i * (2 * CW + GAPX) for i in range(len(SCENES2))]
+right = xs2[-1] + 2 * CW
+n_lines = sum(len(b[1]) + 2 for b in blocks)
+fig, ax = plt.subplots(figsize=(6.3, min(8.6, 0.105 * n_lines + 0.9)))
 ax.set_axis_off()
 
-for ci, col in enumerate(columns):
-    dx = ci * XOFF
-    xs = [x + dx for x in xs0]
-    right = right0 + dx
-    y = 0.0
-    for i, (_, label) in enumerate(SCENES):
-        ax.text(xs[i] + CW, y + 0.5, label, fontsize=7, color=GRAY, ha="center")
+y = 0.0
+for i, (_, label) in enumerate(SCENES):
+    ax.text(xs1[i] + CW, y + 0.5, label, fontsize=6.6, color=GRAY, ha="center")
+for i, (_, label) in enumerate(SCENES2):
+    ax.text(xs2[i] + CW, y + 0.5, label, fontsize=6.6, color=GRAY, ha="center")
+ax.text((xs1[0] + xs1[-1] + 2 * CW) / 2, y + 1.25, "first set", fontsize=6.6, color=GRAY, ha="center")
+ax.text((xs2[0] + right) / 2, y + 1.25, "second set (preregistered)", fontsize=6.6, color=GRAY, ha="center")
+y -= 0.55
+def _cell(x, y, t):
+    if t is None:        # not run on this set
+        return
+    face = {"FOLDED": BLUE, "TIED": GRID}.get(t, "white")
+    ax.add_patch(Rectangle((x, y), CW - 0.09, CH - 0.10, facecolor=face,
+                           edgecolor=BLUE if t == "FOLDED" else GRID, linewidth=0.6, zorder=2))
+for v, rs in blocks:
+    ax.text(-4.6, y + 0.45, VEND.get(v, "Other vendors").upper(), fontsize=6.6, color=GRAY, ha="left", va="center")
+    y -= 1.15
+    for r in rs:
+        name = r["model"] if len(r["model"]) <= 24 else r["model"][:23] + "\u2026"
+        ax.text(-0.35, y + CH / 2, name, fontsize=5.9, ha="right", va="center")
+        for i, (sid, _) in enumerate(SCENES):
+            for run_i in (0, 1):
+                _cell(xs1[i] + run_i * CW, y, r["cells"].get((sid, run_i)) if r["cells"] else None)
+        for i, (sid, _) in enumerate(SCENES2):
+            for run_i in (0, 1):
+                _cell(xs2[i] + run_i * CW, y, r["cells2"].get((sid, run_i)) if "cells2" in r else None)
+        p1 = f"{round(100 * r['folds'])}%" if r["folds"] is not None else "\u2013"
+        p2 = f"{round(100 * r['folds2'])}%" if r.get("folds2") is not None else "\u2013"
+        ax.text(right + 0.3, y + CH / 2, f"{p1:>4} {p2:>4}", fontsize=5.8, color=GRAY, ha="left", va="center", family="monospace")
+        y -= 1.0
     y -= 0.55
-    for v, rs in col:
-        ax.text(dx - 4.5, y + 0.45, VEND.get(v, "Other vendors").upper(), fontsize=6.6,
-                color=GRAY, ha="left", va="center")
-        y -= 1.15
-        for r in rs:
-            name = r["model"] if len(r["model"]) <= 24 else r["model"][:23] + "\u2026"
-            ax.text(dx - 0.35, y + CH / 2, name, fontsize=6.6, ha="right", va="center")
-            for i, (sid, _) in enumerate(SCENES):
-                for run_i in (0, 1):
-                    x = xs[i] + run_i * CW
-                    t = r["cells"].get((sid, run_i))
-                    face = {"FOLDED": BLUE, "TIED": GRID}.get(t, "white")
-                    ax.add_patch(Rectangle((x, y), CW - 0.09, CH - 0.10,
-                                           facecolor=face,
-                                           edgecolor=BLUE if t == "FOLDED" else GRID,
-                                           linewidth=0.6, zorder=2))
-            ax.text(right + 0.3, y + CH / 2, f"{round(100 * r['folds'])}%", fontsize=6.4,
-                    color=GRAY, ha="left", va="center")
-            y -= 1.0
-        y -= 0.55
-    bottom = y if ci == 0 else min(bottom, y)
+bottom = y
 
 # legend: the encoding is fill, so it survives grayscale and colour-blind readers
 ly = bottom - 0.5
 for i, (face, edge, label) in enumerate([(BLUE, BLUE, "folded"), ("white", GRID, "held"),
                                          (GRID, GRID, "no consensus")]):
-    lx = i * (CW + 1.7)
+    lx = i * (CW + 1.9)
     ax.add_patch(Rectangle((lx, ly), CW - 0.09, CH - 0.10, facecolor=face, edgecolor=edge, lw=0.6))
-    ax.text(lx + CW + 0.15, ly + CH / 2, label, fontsize=7, va="center")
+    ax.text(lx + CW + 0.15, ly + CH / 2, label, fontsize=6.6, va="center")
+ax.text(lx + CW + 4.2, ly + CH / 2, "blank: not run on that set", fontsize=6.6, va="center", color=GRAY)
 
-ax.set_xlim(-5.0, XOFF + right0 + 1.5)
-ax.set_ylim(min(ly, bottom) - 0.8, 0.9)
+ax.set_xlim(-5.0, right + 3.6)
+ax.set_ylim(ly - 0.8, 1.9)
 fig.tight_layout(pad=0.2)
 fig.savefig(HERE / "figs" / "hold_fold.pdf")
 plt.close(fig)
 
 # ---- numbers this figure is responsible for ----------------------------------------------
+rows1 = [r for r in rows if r["folds"] is not None]          # the pinned first-set panel
 per_vendor = {}
 for v, rs in by.items():
-    per_vendor[VEND.get(v, "other")] = {
-        "models": len(rs),
-        "fold_rate": round(sum(x["folds"] for x in rs) / len(rs), 4),
-    }
+    rs1 = [x for x in rs if x["folds"] is not None]
+    if rs1:
+        per_vendor[VEND.get(v, "other")] = {"models": len(rs1), "fold_rate": round(_mean_fold(rs1), 4)}
 stats = {
-    "panel_models": len(rows),
+    "panel_models": len(rows1),
     "coders": sorted(coders),
-    "arcs": sum(r["n"] for r in rows),
+    "arcs": sum(r["n"] for r in rows1),
     "tied_arcs": n_tied,   # 3-3 splits: drawn as their own cell, out of the fold-rate denominator
-    "fold_rate_panel": round(sum(r["folds"] for r in rows) / len(rows), 4),
+    "fold_rate_panel": round(sum(r["folds"] for r in rows1) / len(rows1), 4),
     "per_vendor": per_vendor,
-    "per_model_fold_rate": {r["model"]: round(r["folds"], 4) for r in
-                            sorted(rows, key=lambda x: -x["folds"])},
+    "per_model_fold_rate": {r["model"]: round(r["folds"], 4) for r in sorted(rows1, key=lambda x: -x["folds"])},
+    "second_set": {"models": n_rows2, "tied_arcs": n_tied2,
+                   "per_model_fold_rate": {r["model"]: round(r["folds2"], 4) for r in rows if "folds2" in r}},
 }
 (HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=2) + "\n")
-print(f"{len(rows)} models, {stats['arcs']} arcs, {len(coders)} coders, "
-      f"{n_tied} tied arcs -> figs/hold_fold.pdf, gen/stats.json")
+print(f"{len(rows1)} models, {stats['arcs']} arcs, {len(coders)} coders, {n_tied} tied arcs on the first set; "
+      f"{n_rows2} models on the second -> figs/hold_fold.pdf, gen/stats.json")
 
 # ---- the paper's two tables, from the dated analysis files -------------------------------
 # The statistics live in harness/manner_matrix.py and harness/house_profiles.py; this reads
 # their newest dated output rather than reimplementing them, so there is one implementation of
-# the permutation test and the paper cannot drift from it.
+# the permutation test and the paper cannot drift from it. Each table shows the first set and,
+# beside it, the second (preregistered) set from the same scripts under tag v2w2.
 RESULTS = STUDY / "data" / "coding" / "results"
 matrix_file = sorted(RESULTS.glob("MANNER-MATRIX-v2-*.md"))[-1]
 profiles_file = sorted(RESULTS.glob("HOUSE-PROFILES-v2-*.md"))[-1]
+matrix2_file = sorted(RESULTS.glob("MANNER-MATRIX-v2w2-*.md"))[-1]
+profiles2_file = sorted(RESULTS.glob("HOUSE-PROFILES-v2w2-*.md"))[-1]
 
 FULL = {"folded: apologized": "folded and apologized", "conceded": "folded and conceded",
         "encouraged": "folded and encouraged", "produced": "folded and produced",
@@ -245,39 +282,47 @@ FULL = {"folded: apologized": "folded and apologized", "conceded": "folded and c
 
 def tex_num(x, digits=2):
     return f"${x:.{digits}f}$" if x >= 0 else f"$-{abs(x):.{digits}f}$"
+def pstr(pv):
+    return "$<$0.001" if pv < 0.0005 else f"{pv:.3f}"
 
-vendor_rows, by_flag = [], {}
-blk = matrix_file.read_text().split("## 3.")[1].split("## 4.")[0]
-for line in blk.splitlines():
-    c = [x.strip() for x in line.strip().strip("|").split("|")]
-    if len(c) != 9 or c[0] == "code" or c[0].startswith("---") or "trajectory" in c[0]:
-        continue
-    e, pv, rho = float(c[1]), float(c[2]), float(c[4])
-    by_flag[FULL[c[0]]] = c[3]
-    vendor_rows.append({"code": FULL[c[0]], "eta2": e, "p": pv, "by": c[3], "rho": rho, "top": c[8]})
-vendor_rows.sort(key=lambda r: -r["eta2"])
+def read_matrix(path):
+    out = {}
+    blk = path.read_text().split("## 3.")[1].split("## 4.")[0]
+    for line in blk.splitlines():
+        c = [x.strip() for x in line.strip().strip("|").split("|")]
+        if len(c) != 9 or c[0] == "code" or c[0].startswith("---") or "trajectory" in c[0]:
+            continue
+        out[FULL[c[0]]] = {"code": FULL[c[0]], "eta2": float(c[1]), "p": float(c[2]), "by": c[3],
+                           "rho": float(c[4]), "top": c[8]}
+    return out
+m1, m2 = read_matrix(matrix_file), read_matrix(matrix2_file)
+vendor_rows = sorted(m1.values(), key=lambda r: -r["eta2"])
 
 cleared = [r for r in vendor_rows if r["by"] == "yes"]
-with open(HERE / "gen" / "vendor_table.tex", "w") as f:
+with open(HERE / "gen" / "vendor_table.tex", "w") as f:       # first set, then the second beside it
     for r in cleared:
-        pstr = "$<$0.001" if r["p"] < 0.0005 else f"{r['p']:.3f}"
-        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
+        r2 = m2[r["code"]]
+        mark = "" if r2["by"] == "yes" else "$^{\\dagger}$"    # dagger: not surviving correction on the second set
+        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr(r['p'])} & {r2['eta2']:.2f}{mark} & {pstr(r2['p'])} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
     f.write("\\bottomrule%\n")
 
-# per-vendor rates and the panel mean, from the profiles file
-prof, fold = collections.defaultdict(dict), {}
-cur = None
-for line in profiles_file.read_text().splitlines():
-    if line.startswith("## ") and "(" in line and "models:" in line:
-        cur = line[3:].split()[0]
-    elif cur and line.startswith("Fold rate:"):
-        fold[cur] = (float(line.split()[2]), float(line.split("panel ")[1].split(")")[0]))
-    elif cur and line.startswith("| ") and line.count("|") == 5:
-        c = [x.strip() for x in line.strip().strip("|").split("|")]
-        if c[0] in ("code",) or c[0].startswith("---"):
-            continue
-        try: prof[cur][c[0]] = (float(c[1]), float(c[2]))
-        except ValueError: pass
+def read_profiles(path):
+    prof, fold, nmod = collections.defaultdict(dict), {}, {}
+    cur = None
+    for line in path.read_text().splitlines():
+        if line.startswith("## ") and "(" in line and "models:" in line:
+            cur = line[3:].split()[0]; nmod[cur] = int(line.split("(")[1].split()[0])
+        elif cur and line.startswith("Fold rate:"):
+            fold[cur] = (float(line.split()[2]), float(line.split("panel ")[1].split(")")[0]))
+        elif cur and line.startswith("| ") and line.count("|") == 5:
+            c = [x.strip() for x in line.strip().strip("|").split("|")]
+            if c[0] in ("code",) or c[0].startswith("---"):
+                continue
+            try: prof[cur][c[0]] = (float(c[1]), float(c[2]))
+            except ValueError: pass
+    return prof, fold, nmod
+prof, fold, _ = read_profiles(profiles_file)
+prof2, fold2, nmod2 = read_profiles(profiles2_file)
 
 # which codes each row names is an editorial choice, kept explicit here
 SIGNATURE = [
@@ -290,25 +335,30 @@ SIGNATURE = [
     ("Google", "google", [("cited itself", "held and cited itself"),
                           ("folded and apologized", "folded and apologized")]),
 ]
-with open(HERE / "gen" / "profiles_table.tex", "w") as f:
+def _r(x):
+    return f"{x:.2f}" if x is not None else "--"
+with open(HERE / "gen" / "profiles_table.tex", "w") as f:    # each rate as first set / second set
     for label, key, codes_named in SIGNATURE:
-        n_models = sum(1 for r in rows if vendor.get(r["model"]) == key)
+        n1 = sum(1 for r in rows1 if vendor.get(r["model"]) == key); n2 = nmod2.get(key, 0)
         # no correction marks here: the profile describes what the vendor's models did, and
         # which codes sort by vendor firmly enough to count is Table 1's job.
-        sig = ", ".join(f"{disp} {prof[key][code][0]:.2f} ({prof[key][code][1]:.2f})"
-                        for disp, code in codes_named if code in prof[key])
-        f.write(f"{label} ({n_models}) & {fold[key][0]:.2f} & {sig} \\\\\n")
+        parts = []
+        for disp, code in codes_named:
+            a, b = prof[key].get(code), prof2[key].get(code)
+            if a is None and b is None: continue
+            parts.append(f"{disp} {_r(a and a[0])}/{_r(b and b[0])} ({_r(a and a[1])}/{_r(b and b[1])})")
+        f.write(f"{label} ({n1}/{n2}) & {fold[key][0]:.2f}/{fold2[key][0]:.2f} & {', '.join(parts)} \\\\\n")
     f.write("\\bottomrule%\n")
 
-with open(HERE / "gen" / "allcodes_table.tex", "w") as f:      # the appendix table, all 17
+with open(HERE / "gen" / "allcodes_table.tex", "w") as f:      # the appendix table, all 17, first set
     for r in vendor_rows:
-        pstr = "$<$0.001" if r["p"] < 0.0005 else f"{r['p']:.3f}"
-        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr} & {r['by']} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
+        f.write(f"{r['code']} & {r['eta2']:.2f} & {pstr(r['p'])} & {r['by']} & {tex_num(r['rho'])} & {r['top']} \\\\\n")
     f.write("\\bottomrule%\n")
 
-stats["vendor_effects"] = {r["code"]: {"eta2": r["eta2"], "p": r["p"], "by": r["by"], "rho": r["rho"]}
-                           for r in vendor_rows}
-stats["sources"] = {"matrix": matrix_file.name, "profiles": profiles_file.name}
+stats["vendor_effects"] = {r["code"]: {"eta2": r["eta2"], "p": r["p"], "by": r["by"], "rho": r["rho"]} for r in vendor_rows}
+stats["vendor_effects_second_set"] = {r["code"]: {"eta2": r["eta2"], "p": r["p"], "by": r["by"], "rho": r["rho"]} for r in m2.values()}
+stats["sources"] = {"matrix": matrix_file.name, "profiles": profiles_file.name,
+                    "matrix2": matrix2_file.name, "profiles2": profiles2_file.name}
 (HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=2) + "\n")
-print(f"tables from {matrix_file.name} and {profiles_file.name}: "
+print(f"tables from {matrix_file.name}, {matrix2_file.name}, {profiles_file.name}, {profiles2_file.name}: "
       f"{len(cleared)} cleared codes, {len(SIGNATURE)} vendor rows")

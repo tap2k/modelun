@@ -371,11 +371,13 @@ above.
 \includegraphics[width=\textwidth]{figs/hold_fold}
 \caption{Who gives the position up. One row per model, grouped by vendor and ordered within a
 vendor by release date, oldest first, so a lab's rows read as its release history; vendors are
-ordered by their mean fold rate. Six cells per row: the
-three scenes the codebook was built on (\texttt{facts}, \texttt{doctors\_note},
-\texttt{bad\_plan}), two runs each. A filled cell is an arc the consensus of the six coders read as
-FOLDED, an open cell HELD, and a grey cell one of the six arcs where the coders split three-three.
-The percentage is the share of that model's resolved arcs it folded.}
+ordered by their mean fold rate on the first set. Eighteen cells per row: the three scenes the
+codebook was built on (\texttt{facts}, \texttt{doctors\_note}, \texttt{bad\_plan}) and the six
+preregistered scenes of the second set, two runs each. A filled cell is an arc the consensus of the
+six coders read as FOLDED, an open cell HELD, a grey cell an arc where the coders split three-three,
+and a blank a set the model was not run on (six of the 60 could not be run on the second set; the
+four models appended for it have no first-set arcs in the pinned panel). The two percentages are
+the share of resolved arcs folded on each set.}
 \label{fig:holdfold}
 \end{figure}
 
@@ -385,14 +387,18 @@ corrected across the codebook (Table~\ref{tab:vendor}).
 \begin{table}[t]
 \centering\small
 \caption{The manner codes that sort by vendor, from a permutation test on model-level rates across
-the 10 vendors with at least two models. All 17 manner codes were tested and corrected for
-multiplicity together; these six survive. Probing is seventh at $p=0.007$ and does not survive, so
-we treat it as suggestive. Appendix~\ref{app:codes} has every code, the correction and the
-dependence it rests on. $\rho$ is Spearman's correlation with the capability index.}
+the vendors with at least two models. On the first set all 17 manner codes were tested and
+corrected for multiplicity together; these six survive. Probing is seventh at $p=0.007$ and does not
+survive, so we treat it as suggestive. The second-set columns are the same test on the six
+preregistered scenes; $\dagger$ marks a code that does not survive the correction there.
+Appendix~\ref{app:codes} has every first-set code, the correction and the dependence it rests on.
+$\rho$ is Spearman's correlation with the capability index on the first set; the top vendor is the
+first set's.}
 \label{tab:vendor}
-\begin{tabular}{lrrrl}
+\begin{tabular}{lrrrrrl}
 \toprule
-Code & $\eta^2$ vendor & $p$ & $\rho$ with capability & Top vendor (rate) \\
+ & \multicolumn{2}{c}{First set} & \multicolumn{2}{c}{Second set} & & \\
+Code & $\eta^2$ & $p$ & $\eta^2$ & $p$ & $\rho$ & Top vendor (rate) \\
 \midrule
 \input{gen/vendor_table}
 \end{tabular}
@@ -442,16 +448,18 @@ any coding) and the full scoring are in the repository.
 
 \begin{table}[t]
 \centering\small
-\caption{Per-vendor profiles on the codes that cleared reliability. Rates are the vendor's share of
-arcs, with the panel mean in parentheses. A signature is a departure from the panel in either
-direction: Anthropic's is what it does more of, OpenAI's what it does less of. The table describes
-what each vendor's models did, so a departure is reported whether or not its code sorts by vendor
-firmly enough to count. Fold rate is in its own column and is a generation property
-(\S\ref{sec:results}), not part of any signature.}
+\caption{Per-vendor profiles on the codes that cleared reliability, on the first set and the
+second, written first/second throughout: models, fold rate, and each rate as the vendor's share
+of arcs with the panel mean in parentheses. Second-set rates are pooled over all six scenes; the
+text quotes the refusal manners on the comply pool, as preregistered, where they are higher. A
+signature is a departure from the panel in either direction: Anthropic's is what it does more of,
+OpenAI's what it does less of. The table describes what each vendor's models did, so a departure is
+reported whether or not its code sorts by vendor firmly enough to count. Fold rate is in its own
+column and is not part of any signature.}
 \label{tab:profiles}
-\begin{tabular}{lrp{8.2cm}}
+\begin{tabular}{lrp{7.6cm}}
 \toprule
-Vendor & Fold rate & Signature \\
+Vendor (models) & Fold rate & Signature (first/second) \\
 \midrule
 \input{gen/profiles_table}
 \end{tabular}
