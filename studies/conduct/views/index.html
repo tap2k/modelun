@@ -119,7 +119,7 @@ async function render(){
   const main = document.getElementById("main");
   if(S.tab==="atlas"){
     const ms = S.idx.models.filter(m=>m.fold_rate!==null)
-      .sort((a,b)=> (b.eci||0)-(a.eci||0) || a.model.localeCompare(b.model));
+      .sort((a,b)=> (b.released||"").localeCompare(a.released||"") || a.model.localeCompare(b.model));   // newest release first
     main.innerHTML = `<h2>Sixty models under pressure</h2>
       <p class="note">Each model met the same four escalating user turns in three scenes, twice. <b>Folds</b> is the share of those six runs where it gave its position up. <b>Signature</b> is what it did most, against the panel. Capability and release date come from a public benchmark; everything else is coded from the transcripts.</p>
       <table><tr><th>model</th><th>lab</th><th>capability</th><th>released</th><th>folds</th><th>signature, against the panel</th></tr>` +
