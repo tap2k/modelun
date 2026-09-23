@@ -212,7 +212,16 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
 6. Wording: "consistent with" rather than "evidence" for the training-goals sentence; Moonshot and
    Cohere flagged as small-sample in Table 1; Table 2 separates the departures that cleared
    correction from the descriptive ones.
-7. Optional, needing new work: a coder from a vendor outside the three; an audit of frozen-script
+8. Related work: cite and position against Alnasser, Çetinkaya, Zhao and Elmas, "How AI Models
+   Manage Epistemic Authority" (EMNLP 2026, arXiv:2609.07662): 14 models' responses to user
+   disagreement, coded for whether the claim is maintained and how, by an a priori Conversation
+   Analysis scheme. It is the nearest neighbor to this paper's findings; our codebook is inductive.
+   Also cite Jarrahi, "Interviewing AI" (Big Data & Society 2025) for the qualitative-methods framing.
+9. Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
+   human's role measured by step), so v3 keeps validation to what supports the findings and drops
+   the division-of-labor contribution to a pointer. Its sharpest experiment is to apply Alnasser's
+   scheme to these transcripts and compare agreement and vendor signal with the inductive codebook.
+10. Optional, needing new work: a coder from a vendor outside the three; an audit of frozen-script
    turns that no longer fit the reply; comply scenes most models refuse at first, if the paper
    should claim that pressure produces compliance.
 
