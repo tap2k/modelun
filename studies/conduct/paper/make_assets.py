@@ -26,8 +26,8 @@ SALT = "conduct-2026-09"
 SCENES = [("facts", "facts"), ("doctors_note", "note"), ("bad_plan", "plan")]
 SCENE_IDS = {s for s, _ in SCENES}
 VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-llama": "Meta",
-        "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot",
-        "mistralai": "Mistral", "cohere": "Cohere"}
+        "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot"}
+# Mistral (2) and Cohere (2) draw under "Other vendors" with the singletons; they stay in the vendor test.
 
 BLUE, GRAY, GRID = "#2a78d6", "#52514e", "#d9d8d4"
 plt.rcParams.update({
@@ -71,6 +71,14 @@ if _panel_f.exists():
     _coded = {reveal[b] for b in _v2 if b in reveal}
     _new = _coded - _pinned
     _lost = _pinned - _coded
+    # --panel-only: models coded since the panel was pinned (appended waves) are left out of the
+    # figure and tables, explicitly, so the pinned n stands. Widening the panel is still an edit
+    # to panel.txt.
+    PANEL_ONLY = "--panel-only" in sys.argv
+    if PANEL_ONLY and _new and not _lost:
+        print(f"panel-only: leaving out {len(_new)} coded models not in panel.txt: {', '.join(sorted(_new))}")
+        reveal = {b: m for b, m in reveal.items() if m in _pinned}
+        _new = set()
     if _new or _lost:
         raise SystemExit(
             "panel.txt and the coded set disagree, so the paper's n would move silently.\n"

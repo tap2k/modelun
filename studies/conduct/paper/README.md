@@ -18,7 +18,7 @@ tectonic main.tex         # -> main.pdf
 ```
 
 ```bash
-python3 make_assets.py    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json
+python3 make_assets.py --panel-only    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json; the pinned 60, appended models left out
 ```
 
 Both tables and the figure are generated. `make_assets.py` reads the newest dated

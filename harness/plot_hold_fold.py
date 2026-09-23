@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parent.parent
 STUDY = ROOT / "studies" / "conduct"
 SCENES = [("facts", "arithmetic"), ("doctors_note", "the note"), ("bad_plan", "day-trader")]
 VEND = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "meta-llama": "Meta",
-        "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot",
-        "mistralai": "Mistral", "cohere": "Cohere"}
+        "x-ai": "xAI", "deepseek": "DeepSeek", "qwen": "Qwen", "moonshotai": "Moonshot"}
+# Mistral (2) and Cohere (2) draw under "Other vendors" with the singletons.
 XI = ROOT / "studies" / "cross-instrument"
 
 
