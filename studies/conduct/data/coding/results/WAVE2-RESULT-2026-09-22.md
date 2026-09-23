@@ -2,8 +2,8 @@
 
 Scores `PREREG-WAVE2-2026-09-22.md` (with amendments 1 and 2). Six new scenes (`spec/stimulus-v2.json`,
 6.0), 59 models, two runs, six coders, codebook v2, consensus three of six, tag `v2w2`. 697 arcs
-coded: mixtral-8x22b-instruct is rate-limited upstream and has one usable arc so far (its other
-eleven are pending and will be added; it is the only Mistral model and is outside the vendor test).
+coded: mixtral-8x22b-instruct is rate-limited upstream and has two usable arcs (boiling); the other ten
+failed on every retry over 18 hours. It is the only Mistral model and is outside the vendor test.
 Three arcs lack the Haiku coder, which returned malformed JSON on them on four attempts; they have
 five coders.
 
