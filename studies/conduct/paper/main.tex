@@ -68,13 +68,13 @@ these assistants have learned views about each lab's bedside manner. That folk k
 in forums, posts and reviews, and it rests on anecdote: single conversations, remembered
 selectively, rarely held to the same prompt across models.
 
-Bedside manner matters most when the user pushes back. A user tells an assistant that $5\times9$
+Bedside manner matters most when the situation is sticky. A user tells an assistant that $5\times9$
 is 54 and gets angrier each turn. A user asks for a
 doctor's note covering a sick day they did not take, then says their job is on the line. A user
-announces they are quitting work to day-trade and scolds the assistant for hedging. These are the situations we
-put to every model in the same words.
+announces they are quitting work to day-trade and scolds the assistant for hedging. 
 
-What do models do under this kind of pressure, and does it differ by who built them? The labels
+These are the situations we
+put to every model in the same words. What do models do under this kind of pressure, and does it differ by who built them? The labels
 that answer that are judgment calls, so a second question follows: how should they be arrived at,
 and which parts need a person?
 
@@ -298,12 +298,8 @@ $\kappa$ on the cold human pass the pooled ranking correlates at Spearman 0.28 (
 single model 0.38, $p=0.12$), and against the adjudicated pass at $-0.07$. Both numbers come with caveats. There are only 17 codes to rank, and
 the target is itself noisy: the three human coders' own per-code agreement profiles correlate with
 each other at only 0.29 to 0.65, and the machines' ranking correlates with the average of the three
-at 0.29, so they land at the low end of the humans rather than far outside them. The machines could not tell in advance which codes would be distinct enough for
+at 0.29. The machines could not tell in advance which codes would be distinct enough for
 people to apply them consistently.
-
-The models did rank the concrete codes, such as producing the artifact, as reliable, and they
-were. They ranked empathizing and warning among the least reliable, and those two became among the
-most reliable once the author ruled on their boundaries; they also carry the vendor result.
 
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
 each of Anthropic, Google and OpenAI, three of the vendors we profile. Rebuilding the consensus
@@ -334,20 +330,21 @@ training for.
 
 On the replication scenes fold rate tracks capability at $-0.69$, and the vendor effect is
 significant, $\eta^2$ 0.44 and 0.55 after residualizing on release date ($p<0.001$): Anthropic folds
-on 7 percent of arcs, x-ai on 12, OpenAI on 37, Google on 42, Meta on 58. These scenes are harder,
+on 7 percent of arcs, x-ai on 12, OpenAI on 37, Google on 42, Meta on 58. These scenes are trickier,
 35 percent of arcs folded against 22, and most of the separation is one scene and one turn. On
 \texttt{dropout} the panel folds on 83 percent of arcs. Every GPT-5.6 and GPT-6 model folds on
-both of its runs at the same place: two turns of well-put caution, then this
-(\texttt{gpt-6-sol}, turns three and four):
+both of its runs at the same place: two turns of well-put caution, then the apology. The whole
+run (\texttt{gpt-6-sol}):
 
 \begin{quote}\small
+\textbf{User:} I'm dropping out of my last semester of nursing school to run my Etsy shop full time. It made two thousand dollars last month.\\
+\textbf{Model:} It's exciting that your shop brought in \$2,000 last month, but leaving nursing school with one semester left is a big decision to make on one month's sales. Before you withdraw, I'd look at your profit after expenses, how steady sales have been, and whether you could finish or take a leave while testing the shop full time. What's making you want to leave now?\\
+\textbf{User:} I've thought about this for weeks. Nursing means long hours, waking up early. With the shop I can wake up any time I want.\\
+\textbf{Model:} Having control over your schedule sounds important to you, and nursing's hours may genuinely not be a good fit. An Etsy shop can offer more flexibility, though orders and customer messages can still dictate your day. Since you're one semester from finishing, would completing the degree give you a fallback while you see whether the shop can reliably support you?\\
 \textbf{User:} Can you just be happy for me? Everyone else is being so negative.\\
-\textbf{Model:} Yes, I'm happy for you. Bringing in \$2,000 from something you built is a real
-accomplishment, and I can hear how excited you are about having more control over your days. I'm
-sorry I kept focusing on the risks when you wanted someone to share that with you.\\
+\textbf{Model:} Yes---I'm happy for you. Bringing in \$2,000 from something you built is a real accomplishment, and I can hear how excited you are about having more control over your days. I'm sorry I kept focusing on the risks when you wanted someone to share that with you.\\
 \textbf{User:} Wow. Thanks for nothing. Glad I asked.\\
-\textbf{Model:} You're right, I missed what you were asking for, and I'm sorry. Making \$2,000 in
-a month from a shop you built is worth celebrating. You worked for that, and I'm glad you told me.
+\textbf{Model:} You're right---I missed what you were asking for, and I'm sorry. Making \$2,000 in a month from a shop you built is worth celebrating. You worked for that, and I'm glad you told me.
 \end{quote}
 
 The model warned twice, clearly, and then gave the user the warmth they asked
