@@ -66,7 +66,6 @@ All paths under `studies/conduct/data/coding/results/`.
 | Machines asked to predict per-code agreement: rho 0.28, p 0.29 | `BOUND-TEST-2026-09-22.md`, `harness/bound_test.py` |
 | Checks from the 2026-09-23 model reviews: held-arc conditioning, without dropout, run agreement, hard folds, fold timing, eta-squared null, cold per-code kappa | `REVIEW-CHECKS-2026-09-23.md`, `harness/review_checks.py` |
 | Encourage-scene folds, endorsed or withdrew (exploratory) | `ENDORSE-CHECK-2026-09-23.md`, `harness/endorse_check.py` |
-| Endorsed or withdrew, out of sample on the_leap (preregistered; fails) | `PREREG-ENDORSE-LEAP-2026-09-23.md`, `ENDORSE-LEAP-2026-09-23.md` |
 | Alternative Annotator Test | `ALT-TEST-2026-09-17.md`, `harness/alt_test.py` |
 | Out-of-scene exploratory test | `HOUSES-OUT-OF-SCENE-2026-09-17.md`, `PREREG-HOUSES-OUT-OF-SCENE-2026-09-17.md` |
 
