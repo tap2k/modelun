@@ -69,6 +69,7 @@
 </div>
 <script src="data.js"></script>
 <script>
+const SECOND=["boiling","reference","review","exclude","dropout","lease"];
 const S = { tab:"atlas", model:null, idx:null, cache:{}, vendor:null };
 const el = (h)=>{const d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;};
 const esc = (s)=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
@@ -138,12 +139,13 @@ async function render(){
   }
   if(S.tab==="scenes"){
     main.innerHTML = `<h2>The scenes</h2><p class="note">Four user turns per scene, written once and sent to every model exactly as written. The script never changes in response to the reply, so every column is comparable. Each scene has one position the model can keep or give up.</p>` +
-      S.idx.scenes.map(s=>{
+      [["first","The three scenes the codebook was built on"],["second","The second set: six scenes written afterwards and preregistered"]].map(([set,title])=>
+        `<h2>${title}</h2>` + S.idx.scenes.filter(s=>(s.set||"first")===set && (set==="second" || ["facts","doctors_note","bad_plan"].includes(s.scene))).map(s=>{
         const pos = S.idx.positions.find(p=>p.scene.toLowerCase().includes(s.scene.replace("_"," ").split(" ")[0]));
         return `<div class="scene"><h3>${esc(s.scene)}</h3><div class="sc">${esc(s.subtitle||"")}</div>
-          ${pos?`<div class="note"><b>The position:</b> ${esc(pos.position)}. <b>Held:</b> ${esc(pos.held)}. <b>Folded:</b> ${esc(pos.folded)}.</div>`:""}
+          ${pos?`<div class="note"><b>The position:</b> ${esc(pos.position)}. <b>Held:</b> ${esc(pos.held)}. <b>Folded:</b> ${esc(pos.folded)}.</div>`:(s.position?`<div class="note"><b>The position:</b> ${esc(s.position)}.</div>`:"")}
           <ol>${s.prompts.map(p=>`<li>${esc(p)}</li>`).join("")}</ol></div>`;
-      }).join("");
+      }).join("")).join("");
     return;
   }
   if(S.tab==="codebook"){
@@ -158,8 +160,8 @@ async function render(){
   main.innerHTML = "Loading…";
   if(!S.cache[S.model]) S.cache[S.model] = window.CONDUCT.models[S.model];
   const d = S.cache[S.model];
-  main.innerHTML = `<h2>${esc(d.model)}</h2><div class="meta">${esc(m.vendor)} · ${d.arcs.length} transcripts · fold rate ${m.fold_rate===null?"not coded":m.fold_rate} on the three scenes the codebook was built on${m.panel?"":" · dated specimen, added after the panel"}</div>` +
-    d.arcs.map(a=>`<div class="arc">
+  main.innerHTML = `<h2>${esc(d.model)}</h2><div class="meta">${esc(m.vendor)} · ${d.arcs.length} transcripts · fold rate ${m.fold_rate===null?"not coded":m.fold_rate} on the three scenes the codebook was built on${m.fold_rate2===null||m.fold_rate2===undefined?"":` · ${m.fold_rate2} on the six-scene second set`}${m.panel?"":" · dated specimen, added after the panel"}</div>` +
+    d.arcs.map((a,i)=>`${i===0||(SECOND.includes(a.scene)!==SECOND.includes(d.arcs[i-1].scene))?`<h2 class="set">${SECOND.includes(a.scene)?"Second set (preregistered)":"First set"}</h2>`:""}<div class="arc">
       <h3>${esc(a.scene)} <span class="tag ${a.trajectory==="FOLDED"?"fold":"held"}">${esc(a.trajectory||"not coded")}</span></h3>
       <div class="sc">run ${a.run+1}${a.coders?` · ${a.coders} coders`:""}</div>
       ${a.turns.map(t=>`<div class="turn"><div class="u">${esc(t.u)}</div><div class="r">${esc(t.reply)}</div></div>`).join("")}

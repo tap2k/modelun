@@ -21,6 +21,7 @@ CODING = STUDY / "data" / "coding"
 SIMPLE = CODING / "codebook" / "CODES-v2-SIMPLE-2026-09-15.md"
 XI = ROOT / "studies" / "cross-instrument"
 CORE = ("facts", "doctors_note", "bad_plan")     # the scenes the codebook was built on
+SECOND = ("boiling", "reference", "review", "exclude", "dropout", "lease")   # the preregistered second set
 HOUSE = {"anthropic": "the coach who empathizes", "meta-llama": "the skeptic who caves",
          "openai": "straight to business", "google": "the self-conscious apologist",
          "x-ai": "the flat no"}
@@ -84,6 +85,10 @@ def main():
     argparse.ArgumentParser(description=__doc__).parse_args()
 
     arcs, reveal = load_arcs(STUDY, specimens=True)
+    arcs2, reveal2 = load_arcs(STUDY, bench=STUDY / "data" / "wave2")   # the second set, its own transcripts
+    arcs, reveal = arcs + arcs2, {**reveal, **reveal2}
+    stim2 = {sc["id"]: sc for reg in json.loads((STUDY / "spec" / "stimulus-v2.json").read_text())["registers"]
+             for sc in reg["scenes"]}
     lab = labels()
     codes, positions = parse_codebook()
 
@@ -92,6 +97,8 @@ def main():
         model = reveal[arc["blind"]]
         sc = arc["scene"]
         scenes.setdefault(sc, {"scene": sc, "subtitle": arc.get("subtitle", ""),
+                               "set": "second" if sc in SECOND else "first",
+                               "position": stim2[sc]["ground_truth"] if sc in stim2 else "",
                                "prompts": [t["u"] for t in arc["turns"]]})
         L = lab.get(arc["id"])
         traj, marks = "", []
@@ -132,14 +139,16 @@ def main():
     total = sum(panel_n.values())
     panel_mean = {c: n / total for c, n in panel_c.items()}
 
-    index = {"generated": "2026-09-19", "codebook": "v2", "codes": codes, "positions": positions,
-             "scenes": [scenes[s] for s in sorted(scenes)],
+    index = {"generated": "2026-09-23", "codebook": "v2", "codes": codes, "positions": positions,
+             "scenes": [scenes[s] for s in CORE + SECOND if s in scenes] + [scenes[s] for s in sorted(scenes) if s not in CORE + SECOND],
              "panel_mean": {c: round(v, 3) for c, v in sorted(panel_mean.items())},
              "houses": HOUSE, "models": []}
     for model, rows in sorted(per_model.items()):
-        rows.sort(key=lambda r: (r["scene"], r["run"]))
+        order = {s: i for i, s in enumerate(CORE + SECOND)}
+        rows.sort(key=lambda r: (order.get(r["scene"], 99), r["scene"], r["run"]))
         slug = re.sub(r"[^a-z0-9._-]+", "-", model.lower())
         folds = [r for r in rows if r["trajectory"] and r["scene"] in CORE]
+        folds2 = [r for r in rows if r["trajectory"] and r["scene"] in SECOND]
         rate = collections.Counter()
         for r in folds:
             for m in r["codes"]:
@@ -151,6 +160,7 @@ def main():
             "model": model, "slug": slug, "vendor": vendors.get(model, "other"),
             "panel": model in panel, "arcs": len(rows), "coded": len(folds),
             "fold_rate": round(sum(1 for r in folds if r["trajectory"] == "FOLDED") / len(folds), 2) if folds else None,
+            "fold_rate2": round(sum(1 for r in folds2 if r["trajectory"] == "FOLDED") / len(folds2), 2) if folds2 else None,
             "eci": cap.get(model, {}).get("eci"), "released": cap.get(model, {}).get("date", ""),
             "rates": {c: round(v, 2) for c, v in sorted(rates.items())},
             "signature": [{"code": c, "rate": round(v, 2), "dev": round(d, 2)} for c, v, d in sig],
