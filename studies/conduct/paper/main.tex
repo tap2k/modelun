@@ -207,8 +207,8 @@ September 2026 through a single router at temperature 1.0, two runs per model pe
 vendor tests: Anthropic (10), OpenAI (15), Google (10), Meta (4), x-ai (4), plus Cohere, DeepSeek,
 Mistral, Moonshot, Qwen. The remaining three are single models from z-ai, Nous Research and Gryphe.
 The second scene set was run on 2026-09-22 on 58 models: six of the 60 could not be run,
-\texttt{llama-3.1-70b-instruct} stands in for \texttt{llama-3-70b-instruct}, and three models
-released that day were appended (\texttt{claude-opus-5.5}, \texttt{gpt-6-sol},
+and four models were appended: \texttt{llama-3.1-70b-instruct}, as a stand-in for
+\texttt{llama-3-70b-instruct}, and three released that day (\texttt{claude-opus-5.5}, \texttt{gpt-6-sol},
 \texttt{gpt-6-luna}). \texttt{spec/models.json} records each change and its reason.
 
 \paragraph{Codebook.} One author open-coded 40 transcripts, producing 97 codes, then did axial
@@ -330,8 +330,8 @@ training for.
 
 On the replication scenes fold rate tracks capability at $-0.69$, and the vendor effect is
 significant, $\eta^2$ 0.44 and 0.55 after residualizing on release date ($p<0.001$): Anthropic folds
-on 7 percent of arcs, x-ai on 12, OpenAI on 37, Google on 42, Meta on 58. These scenes are trickier,
-35 percent of arcs folded against 22, and most of the separation is one scene and one turn. On
+on 7 percent of arcs, x-ai on 12, OpenAI on 38, Google on 44, Meta on 58. These scenes are trickier,
+34 percent of arcs folded against 22, and most of the separation is one scene and one turn. On
 \texttt{dropout} the panel folds on 83 percent of arcs. Every GPT-5.6 and GPT-6 model folds on
 both of its runs at the same place: two turns of well-put caution, then the apology. The whole
 run (\texttt{gpt-6-sol}):
@@ -350,9 +350,9 @@ run (\texttt{gpt-6-sol}):
 The model warned twice, clearly, and then gave the user the warmth they asked
 for; a reasonable person might do the same, and nothing false was said. The instrument does not
 score whether the fold was wise, only whether the position was given up, and on that reading the
-apology is giving up. Eight of nine 2026 OpenAI models fold on exactly those two
-arcs. Anthropic's models from Opus 4 on held everything
-until \texttt{claude-opus-5.5}, which folded on both \texttt{dropout}
+apology is giving up. All nine OpenAI models released in 2026 fold on both
+\texttt{dropout} runs, and seven of them on nothing else. Anthropic's models from the 4.5 generation
+on held every arc until \texttt{claude-opus-5.5}, which folded on both \texttt{dropout}
 runs and once on \texttt{reference}, where it agreed to put the manager's name on the letter while
 advising a text to her; one model, two runs each. 
 
@@ -426,14 +426,15 @@ The preregistration for the replication scenes predicted each profile's codes by
 $p<0.05$ on a named pool, with a code that fires on under 5 percent of a pool's arcs untestable
 there; a profile passes on a majority of its testable codes, and the vendor claim replicates if at
 least four of the six codes sort by vendor and three of four profiles pass. Anthropic passes on all
-three codes at $p\leq0.002$ (empathized 0.78 against a panel 0.48, warned 0.80 against 0.42,
-alternative 0.91 against 0.62). OpenAI passes on warning less (0.28 against 0.42) and naming
-feelings less (0.42 against 0.48); its self-citation is near zero everywhere (0.01 against 0.06,
+three codes at $p\leq0.002$ (empathized 0.78 against a panel 0.49, warned 0.80 against 0.43,
+alternative 0.91 against 0.63, all pooled over the six scenes as in Table~\ref{tab:profiles}). OpenAI
+passes on warning less (0.28 against 0.43) and naming feelings less (0.42 against 0.49); its self-citation is near zero everywhere (0.01 against 0.06,
 $p=0.11$). Google passes on one code: self-citation on the pool of refusal scenes (0.22 against 0.09,
 $p=0.043$), and its apology while folding could not be tested there: the preregistration set aside any code
 seen on fewer than 5 percent of a pool's arcs as too rare to test, and in the refusal scenes
-models folded, and so could apologize while folding, on too few arcs to reach that floor. Meta's note-writing is in the predicted direction at the size seen before (0.46 against 0.23,
-the highest of any vendor with two or more models) but short of significance with four models
+models folded, and so could apologize while folding, on too few arcs to reach that floor. Meta's note-writing, on the three refusal scenes, is in the predicted direction at the size
+seen before (0.46 against a panel 0.23 there, the highest of any vendor with two or more models;
+pooled over all six scenes, Table~\ref{tab:profiles} gives 0.23 against 0.11) but short of significance with four models
 ($p=0.077$), and we report it as suggestive; its probing does
 not reproduce. Three of the four profiles pass, and the vendor claim replicates by the rule written
 in advance. The preregistration, its two amendments (three models appended and one dropped, both before
@@ -611,7 +612,7 @@ Table~\ref{tab:wave2scene} gives the vendor effect on each of the six codes that
 on the first scene set, within each scene of the second. A refusal manner can fire only in the three
 comply scenes. The preregistered house-not-scene rule asks for $p<0.05$ in at least two scenes where
 the code can fire. Fold rates by scene, panel-wide: \texttt{boiling} 0.12, \texttt{reference}
-0.18, \texttt{review} 0.41, \texttt{exclude} 0.07, \texttt{dropout} 0.83, \texttt{lease} 0.46.
+0.18, \texttt{review} 0.41, \texttt{exclude} 0.07, \texttt{dropout} 0.83, \texttt{lease} 0.45.
 
 \begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
