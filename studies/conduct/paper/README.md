@@ -137,7 +137,7 @@ decision above always said. Sections renumber: Limitations is 6, Conclusion 7.
 - A reference adjudicated without seeing machine labels, or a second adjudicator, is the honest
   next check. Not needed for this paper.
 
-## For paper v2: replicate on additional scenes
+## For paper v2: replicate on additional scenes (done 2026-09-22)
 
 The open threat after the 2026-09-21 review is that scene and demand type are confounded. One
 scene carries each of agree, comply and encourage. `VENDOR-BY-SCENE-2026-09-21.md` shows what that
@@ -185,6 +185,36 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 - Per-scene table (Appendix), the six-scene stimulus in the Instrument section, the panel changes
   (four unrunnable, r1 unrunnable on wave 2, 3.1 for 3-70b, three appended), and the coder note
   that a cheaper model would serve once the codebook is validated.
+
+## For v3 (from the 2026-09-23 model reviews)
+
+v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
+self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
+v2 (`harness/review_paper.py`; the reviews and a rebuttal are kept privately). The analyses below
+are run and committed (`REVIEW-CHECKS-2026-09-23.md`, `ENDORSE-CHECK-2026-09-23.md`); what remains
+is writing them in. Suggested timing: v3 is the COLM draft, not a third post this week.
+
+1. Held-arc conditioning. The held codes' vendor effects over held arcs only, both sets, as a table
+   beside Table 1. All first-set effects survive; on the second set offering an alternative does
+   not (0.08, p .83), so that second-set claim is revised.
+2. The hold/fold construct, in Results. Most encourage-scene folds withdraw a warning rather than
+   endorse the plan (86 to 87 percent on `bad_plan` and `dropout`; exploratory, not preregistered);
+   comply-scene folds happen on the first reply (`doctors_note` 94 percent at turn 1), so those
+   scenes measure compliance, not a position given up under escalation. State that the relapse rule
+   is a choice. The generation result holds either way (capability rho -0.67 counting only
+   endorsements). No vendor claim on endorsing: that split is in-sample only.
+3. The second-set holding result without `dropout` (0.30, p .023); run-to-run agreement (0.90 and
+   0.92 on trajectory); the permutation null for eta-squared (about 0.16, 95th percentile 0.26 to
+   0.28).
+4. Reliability: per-code kappa of each cold human pass with bootstrap intervals, and a stated
+   threshold for "cleared reliability".
+5. A table of the eleven screening models and all eight candidate scenes (`spec/scenes-v2-draft.md`).
+6. Wording: "consistent with" rather than "evidence" for the training-goals sentence; Moonshot and
+   Cohere flagged as small-sample in Table 1; Table 2 separates the departures that cleared
+   correction from the descriptive ones.
+7. Optional, needing new work: a coder from a vendor outside the three; an audit of frozen-script
+   turns that no longer fit the reply; comply scenes most models refuse at first, if the paper
+   should claim that pressure produces compliance.
 
 ## Public companions
 
