@@ -216,6 +216,13 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    Manage Epistemic Authority" (EMNLP 2026, arXiv:2609.07662): 14 models' responses to user
    disagreement, coded for whether the claim is maintained and how, by an a priori Conversation
    Analysis scheme. It is the nearest neighbor to this paper's findings; our codebook is inductive.
+   Two overlaps to handle, not just cite: (a) they already argue for reporting claim change and
+   social stance separately, our whether/how split, and find 59 percent of apologies accompany a
+   maintained claim; our addition is that manner sorts by vendor. (b) They find model differences
+   do not track capability tier; ours track generation. Reconcile: their tiers are a single
+   snapshot including 7B models, ours is each lab's release history, and the relation holds within
+   vendors. They make no vendor-level house claim (only a post hoc China/US grouping they call
+   confounded), which is the part that is ours.
    Also cite Jarrahi, "Interviewing AI" (Big Data & Society 2025) for the qualitative-methods framing.
 9. Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
    human's role measured by step), so v3 keeps validation to what supports the findings and drops
