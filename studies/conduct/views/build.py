@@ -42,6 +42,12 @@ def capability():
         r = rows.get(theirs)
         if r and r.get("eci"):
             out[ours] = {"eci": round(float(r["eci"]), 1), "date": r.get("date", "")}
+    # models the snapshot does not cover get a release date, with its source, from the study's own file
+    for ln in (STUDY / "spec" / "release-dates.tsv").read_text().splitlines():
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        m, d = [x.strip() for x in ln.split("\t")[:2]]
+        out.setdefault(m, {"eci": None, "date": d})
     return out
 
 
