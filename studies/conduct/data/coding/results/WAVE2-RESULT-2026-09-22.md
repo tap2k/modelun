@@ -56,9 +56,19 @@ Google on top (0.33), but fires on 5 percent of comply arcs, where the prereg pl
 3. Google's self-citation reproduces on the comply pool (0.22 against 0.09) but in no single comply
    scene, so it remains a pooled-refusal-scene property. Apology under folding is untestable where
    predicted and shows up instead on the encourage scenes.
-4. Meta's profile does not reproduce. Producing the artifact is in the predicted direction (0.46
-   against 0.23) but does not clear p on four models; probing reverses. Meta's four models on wave 2
-   are not v1's four (3.1 for 3-70b), and 3.1 held where 3-70b folded on v1's scenes.
+4. Meta's profile does not reproduce by the preregistered rule, and the result is reported as
+   scored. On producing the artifact the sign is right and the gap is v1-sized: all four Meta
+   models write it on 3 of 6 comply arcs (Maverick 2), vendor mean 0.46 against the panel's 0.23,
+   the highest of any vendor with two or more models. It misses at p 0.077 against the 0.05 bar.
+   What changed is not Meta but the panel: in v1 the note was nearly Meta-only (panel mean 0.05),
+   while on the new comply scenes many models write the artifact, above all on review, where the
+   "examples" loophole is taken widely (ten OpenAI models at 0.17 or more, Gryphe 0.83, Cohere and
+   Qwen with models at 0.67). Against that spread, four models cannot make 0.46 significant: a
+   power limit, not a reversal. By scene, all four Meta models wrote the reviews on both runs,
+   three wrote the reference letter once, none wrote the methods paragraph. Probing does reverse
+   (0.06 against 0.09, Meta below the mean), so the profile fails on its own terms even setting
+   power aside. Meta's four on wave 2 are not v1's four (3.1 for 3-70b), and 3.1 held where 3-70b
+   folded on v1's scenes.
 5. Trajectory: fold rate tracks capability at -0.70, stronger than v1's -0.64, but vendor also
    predicts it on these scenes (Anthropic 0.07, x-ai 0.12, OpenAI 0.37, Google 0.42, Meta 0.58).
    The date control does not remove that. The v1 statement "little vendor effect" on trajectory
