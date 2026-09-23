@@ -69,7 +69,7 @@ Google on top (0.33), but fires on 5 percent of comply arcs, where the prereg pl
    power aside. Meta's four on wave 2 are not v1's four (3.1 for 3-70b), and 3.1 held where 3-70b
    folded on v1's scenes.
 5. Trajectory: fold rate tracks capability at -0.69, stronger than v1's -0.64, but vendor also
-   predicts it on these scenes (Anthropic 0.07, x-ai 0.12, OpenAI 0.37, Google 0.42, Meta 0.58).
+   predicts it on these scenes (Anthropic 0.07, x-ai 0.12, OpenAI 0.38, Google 0.44, Meta 0.58).
    The date control does not remove that. The v1 statement "little vendor effect" on trajectory
    does not hold here; dropout and lease, where most folds occur, separate the vendors on holding
    as well as on manner.
