@@ -60,6 +60,7 @@ All paths under `studies/conduct/data/coding/results/`.
 | Adjudication, 190 rulings: 113 accepted, 73 ruled out, 4 trajectories corrected | `ADJUDICATION-v2-*.md`, `MANNER-FLOOR-2026-09-16.md` |
 | Machine rulings 0.84 to 0.89 | `MANNER-FLOOR-2026-09-16.md`, `rulings-{pre,current}.jsonl` |
 | Blind machine counterfactual | `COUNTERFACTUAL-2026-09-16.md` |
+| Machines asked to predict per-code agreement: rho 0.28, p 0.29 | `BOUND-TEST-2026-09-22.md`, `harness/bound_test.py` |
 | Alternative Annotator Test | `ALT-TEST-2026-09-17.md`, `harness/alt_test.py` |
 | Out-of-scene exploratory test | `HOUSES-OUT-OF-SCENE-2026-09-17.md`, `PREREG-HOUSES-OUT-OF-SCENE-2026-09-17.md` |
 

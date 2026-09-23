@@ -50,9 +50,9 @@ over scenes that ask for a refusal.
 We also ask which parts of the labeling need a person. Six LLM coders from three vendors apply the codebook more consistently than three human coders do (Krippendorff's $\alpha$ 0.66
 against 0.46), agree with the codebook's author on trajectory at $\kappa$ 0.84 to 0.91 on transcripts the
 codebook's examples never touched, and match an adjudicated human reference at 0.83. Blind machine
-readings recover the codebook's categories; which of them a second reader would apply the same
-way was settled with human labels and a human ruling, and the machines were not asked to predict
-it. We conclude that for behavior a
+readings recover the codebook's categories, and, asked to predict which of them a second reader
+would apply the same way, cannot (Spearman 0.28 against the observed per-code agreement, $p=0.29$);
+that was settled with human labels and a human ruling. We conclude that for behavior a
 non-specialist can judge, the human contribution is authoring and bounding the codes and owning a
 small reference, not producing labels at volume.
 \end{abstract}
@@ -277,8 +277,15 @@ categories; given the author's one-sentence frame, 17 of 17, plus shape codes th
 deferred. The categories were not the scarce contribution. The framed arm produced 34 categories, among
 them ones the reliability numbers later discarded, and its own report says it could draft a
 codebook but not validate one. Settling which categories a second reader would apply the same way
-took human labels to measure agreement against and a person to rule on the disagreements. Whether
-a machine could have predicted that outcome was not tested; the arms were not asked to.
+took human labels to measure agreement against and a person to rule on the disagreements. We
+then asked directly. Three models that were not coders (Claude Sonnet 5, GPT-5.6 Sol, Gemini 3.6
+Flash) were given the coder-facing codebook and five transcripts from outside the held-out fifty
+and asked to rank the 17 codes by how often two independent readers would agree on each, three
+samples each. Against the observed per-code $\kappa$ on the cold human pass the pooled ranking
+correlates at Spearman 0.28 ($p=0.29$; best single model 0.38, $p=0.12$), and against the
+adjudicated pass at $-0.07$. The rule for this test was written before it ran, and this is its
+``did not bound'' branch. The models ranked the concrete artifact codes first, correctly, and the
+warm codes near the bottom, where the human ruling had made them reliable.
 
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
 each of Anthropic, Google and OpenAI, three of the vendors we profile. Rebuilding the consensus
@@ -475,8 +482,8 @@ them.
 
 On coding the data, machines labeled the transcripts more consistently than people did, and
 reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
-or decide which codes were reliable enough to report. On this corpus, that is what the human was
-for.
+or decide which codes were reliable enough to report, and asked to predict which would be, they
+could not. On this corpus, that is what the human was for.
 
 \section*{Data and code availability}
 \begingroup\sloppy\emergencystretch=3em
