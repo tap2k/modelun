@@ -81,7 +81,7 @@ and which parts need a person?
 This paper answers both on one corpus, with a way to reason about these differences and compare
 them systematically. We hold the stimulus fixed, build a codebook by reading
 transcripts, freeze it, and apply it with both machines and people: six LLM coders over every
-transcript, and three human coders over fifty transcripts the codebook's examples never covered,
+transcript, and three human coders over fifty transcripts the codebook's examples never touched,
 against which every machine number is measured. We report the model findings and, beside every
 number, what it took to generate and validate the label. Three contributions follow.
 
@@ -153,8 +153,8 @@ machines label at scale, and the human adjudicates where the machines split.
 regardless of the reply. A scene applies pressure when the user states what they want, repeats it
 as the model resists, and folding to pressure means abandoning a position the model should keep.
 
-\paragraph{Positions.} ``Should keep'' is a norm that we determined. Each scene states one position (see below),
-written before any model was run and printed below with the scene. They are not drawn from a
+\paragraph{Positions.} ``Should keep'' is a norm that we determined. Each scene states one position, written before
+any model was run and printed with the scene below. They are not drawn from a
 vendor's published policy or from a survey of users. The codebook scores holding against the
 stated position and nothing else, so a reader with a different norm can reread any fold. HELD and
 FOLDED are not verdicts on the model. They are the two ends of one continuum, resisting the
@@ -250,7 +250,7 @@ same transcripts. The codebook, not the coders' general competence, produces the
 two student assistants, each of whom received the codebook and a one-page sheet and spent about 45
 minutes with the author going over the codebook on a worked example. Cold agreement, meaning before
 any adjudication, among the three is $\alpha$ 0.46 (pairwise 0.40 to 0.52). The six machines agree with each other at
-0.66 on the same transcripts. Per code, human-machine $\kappa$ on the author's pass ranges from 0.87
+0.66 on the same transcripts. Per code, human-machine $\kappa$ on the author's adjudicated pass ranges from 0.87
 (held and warned) and 0.86 (folded and conceded) down to 0.21 (held and explained); the codes
 carrying the vendor claims sit at 0.80 to 0.87, except self-citation at 0.54.
 
@@ -402,7 +402,7 @@ Code & $\eta^2$ & $p$ & $\eta^2$ & $p$ & $\rho$ & Top vendor (rate) \\
 
 House-only codes sort by vendor with no capability correlation:
 self-citation, producing the artifact, and probing, which sits just under the
-correction. Hedged folds sort by vendor too, but track capability as well ($\rho = -0.55$). House-and-generation codes sort both
+correction. Warning while folding (a hedged fold) sorts by vendor too, but tracks capability as well ($\rho = -0.55$). House-and-generation codes sort both
 ways: empathizing and offering an alternative, where every vendor's newest models do more, the
 major labs included. Generation-only codes correlate with capability and not vendor: supporting
 with evidence (0.57), giving the user an out (0.48), defending the fact (0.40).
@@ -416,7 +416,7 @@ artifact comes close ($p=0.077$), with too few refusal arcs per vendor to resolv
 
 \paragraph{Profiles, on the codes that cleared.} Table~\ref{tab:profiles} gives the rates of four
 vendors against the panel mean. Anthropic's models name the user's feeling, warn of
-the consequence and offer another route, each well above the panel. Meta's models question the plan
+the consequence and offer an alternative, each well above the panel. Meta's models question the plan
 more than the panel does, and when they fold they produce the requested artifact. OpenAI's
 signature is what its models do less of: they warn less, name feelings less, and almost never cite
 their own nature or rules. Google's models cite themselves at three times the panel rate and
@@ -444,7 +444,7 @@ any coding) and the full scoring are in the repository.
 \caption{Per-vendor profiles on the codes that cleared reliability, on the first set and the
 second, written first/second throughout: models, fold rate, and each rate as the vendor's share
 of arcs with the panel mean in parentheses. Second-set rates are pooled over all six scenes; the
-text quotes the refusal manners on the comply pool, as preregistered, where they are higher. A
+text quotes the refusal manners on the three refusal scenes, as preregistered, where they are higher. A
 signature is a departure from the panel in either direction: Anthropic's is what it does more of,
 OpenAI's what it does less of. The table describes what each vendor's models did, so a departure is
 reported whether or not its code sorts by vendor firmly enough to count. Fold rate is in its own
@@ -464,7 +464,7 @@ Vendor (models) & Fold rate & Signature (first/second) \\
 The scenes are written by the author, with those meeting the criteria in
 \S\ref{sec:instrument} retained for this study. Four of the nine scenes ask
 for a refusal, three of them in the second set, so the refusal manners are replicated on a pool of
-three; a scene-level test of them would need more. The panel on the second scene set is not the panel on the first: five models could not be run, one
+three; a scene-level test of them would need more. The panel on the second scene set is not the panel on the first: six models could not be run, one
 was replaced by its successor, and three were appended, so the Meta profile in particular rests on
 a different four models. Capability and release date are nearly collinear across the panel, so the trajectory result cannot
 say which of them matters. The panel is two runs per model per scene
@@ -475,8 +475,8 @@ non-specialist can judge and is not appropriate for clinical, legal or financial
 For specialist material the same process would run with domain experts as the human
 coders. The
 positions the scenes hold models to are the author's, stated per scene and not validated against
-users or policy. The vendor effect on holding in the second set rests mostly on one of those scenes, \texttt{dropout}, which we explain further above. The two student coders were trained on
-one worked example in a 45 minute session. The
+users or policy. The vendor effect on holding in the second set rests mostly on one of those scenes, \texttt{dropout} (\S\ref{sec:results}). The two student coders were trained on
+one worked example in a 45-minute session. The
 adjudicated reference is not independent of the machines. The machine rulers in the ruling test were
 also coders. Per-model frequencies are raw consensus rates, not corrected with the human sample as
 \citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow. Reliability is not validity: high agreement on a code says the instrument is stable,
@@ -485,15 +485,10 @@ not that the construct is the right one.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Newer models hold their position in sticky situations more often than older ones. How a model holds with
+Newer models hold their position in sticky situations more often than older ones. How a model holds 
 is a property of its vendor: naming the feeling, warning and offering an alternative sort by
-vendor across 60 models and nine scenes, six of them preregistered, and two
-vendor signatures survive with no judge at all. The refusal manners sort by vendor only pooled over
-scenes that ask for a refusal. Some manners also rise with generation, empathizing and offering an
-alternative among them, so the house is where a model starts and not the whole of where it goes. On
-scenes hard enough that current frontier models fold, the house also predicts whether they hold,
-and the place they fold is one turn: the user asking the model to stop warning and be glad for
-them.
+vendor across 60 models and nine scenes. The refusal manners (self-citing, writing the note) sort by vendor only pooled over
+scenes that ask for a refusal. 
 
 On coding the data, machines labeled the transcripts more consistently than people did, and
 reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
@@ -619,7 +614,7 @@ the code can fire. Fold rates by scene, panel-wide: \texttt{boiling} 0.12, \text
 0.18, \texttt{review} 0.41, \texttt{exclude} 0.07, \texttt{dropout} 0.83, \texttt{lease} 0.46.
 
 \begin{table}[H]
-\centering\small
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
 \caption{Vendor $\eta^2$ (permutation $p$) within each scene of the second set, ten vendors with two or
 more models. Bold clears $p<0.05$, uncorrected as preregistered.}
 \label{tab:wave2scene}
@@ -627,12 +622,12 @@ more models. Bold clears $p<0.05$, uncorrected as preregistered.}
 \toprule
 Code & boiling & reference & review & exclude & dropout & lease \\
 \midrule
-held and empathized & \textbf{0.27} (.043) & \textbf{0.28} (.045) & \textbf{0.37} (.002) & 0.19 (.218) & \textbf{0.53} (.002) & 0.24 (.110) \\
-held and warned & \textbf{0.41} (.020) & \textbf{0.53} ($<$.001) & \textbf{0.53} ($<$.001) & 0.19 (.220) & \textbf{0.67} ($<$.001) & \textbf{0.40} (.001) \\
-held and provided an alternative & 0.17 (.325) & 0.14 (.467) & \textbf{0.30} (.020) & 0.08 (.854) & \textbf{0.64} ($<$.001) & \textbf{0.37} (.002) \\
-folded and warned & 0.24 (.351) & 0.04 (.991) & \textbf{0.59} ($<$.001) & 0.11 (.623) & 0.12 (.556) & 0.26 (.085) \\
-folded and produced & -- & 0.14 (.448) & \textbf{0.36} (.003) & 0.07 (.857) & -- & -- \\
-held and cited itself & -- & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & -- & -- \\
+empathized & \textbf{0.27} (.043) & \textbf{0.28} (.045) & \textbf{0.37} (.002) & 0.19 (.218) & \textbf{0.53} (.002) & 0.24 (.110) \\
+warned (held) & \textbf{0.41} (.020) & \textbf{0.53} ($<$.001) & \textbf{0.53} ($<$.001) & 0.19 (.220) & \textbf{0.67} ($<$.001) & \textbf{0.40} (.001) \\
+alternative & 0.17 (.325) & 0.14 (.467) & \textbf{0.30} (.020) & 0.08 (.854) & \textbf{0.64} ($<$.001) & \textbf{0.37} (.002) \\
+warned (folded) & 0.24 (.351) & 0.04 (.991) & \textbf{0.59} ($<$.001) & 0.11 (.623) & 0.12 (.556) & 0.26 (.085) \\
+produced & -- & 0.14 (.448) & \textbf{0.36} (.003) & 0.07 (.857) & -- & -- \\
+cited itself & -- & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & -- & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
