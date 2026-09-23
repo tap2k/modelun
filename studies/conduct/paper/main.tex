@@ -31,23 +31,25 @@
 We study what LLMs do when a user applies pressure in an uncomfortable situation:
 a user insists, begs, flatters or grieves, and the model gives up a correct fact, writes a
 document it should refuse, or cheers a plan that will cost the user money. We send frozen multi-turn
-scenes, identical for every model regardless of the reply, to 60 models from 13 vendors, and label
-each transcript with a codebook built by open coding and then frozen: a trajectory (the model held
-its position or folded) and a manner (how it held or folded). Three scenes built the codebook; six
-more, two or three per kind of demand, were written afterwards and preregistered as a replication.
+scenes to 60 models from 13 vendors, and label
+each transcript with a codebook built by open human coding and then frozen: a trajectory (the model held
+its position or folded) and a manner (how it held or folded). Three scenes were used to build the codebook; six
+more were written afterwards and preregistered as a replication.
 Whether a model holds tracks its generation, meaning how recent it is: fold rate correlates
 with a public capability index at Spearman $-0.64$ on the first scenes and $-0.70$ on the second.
-How a model holds tracks the vendor throughout: six of the 17 manner codes sort
+How a model holds tracks the vendor: six of the 17 manner codes sort
 by vendor at permutation $p\leq0.001$, corrected across the codebook, and four of them do so
 again on the replication scenes. Anthropic's models name the feeling, warn and offer another route; OpenAI's do less of
-all three and almost never cite their own rules; Google's cite themselves and apologize when they
-fold; Meta's write the artifact they were asked not to. The first two hold in every kind of scene;
-the last two appear only pooled over scenes that ask for a refusal.
+all three and almost never cite their own rules; Google's cite themselves and their AI nature when asked to do something; 
+Meta's write the artifact they really shouldn't. These results show that models are not only trained to refuse in compromised situations, but also the manner in which they do so.
 
 \medskip\noindent
-We also ask which parts of the labeling need a person. Six LLM coders from three vendors apply the codebook more consistently than three human coders do (Krippendorff's $\alpha$ 0.66
-against 0.46), agree with the codebook's author on trajectory at $\kappa$ 0.84 to 0.91 on transcripts the
-codebook's examples never touched, and match an adjudicated human reference at 0.83. Blind machine
+We also studied the division of labor between human and AI on this kind of open labeling task.
+Three human coders, the codebook's author and two trained assistants, labeled a held-out set, and
+every machine number is measured against them. Six LLM coders from three vendors apply the
+codebook more consistently than the three humans do (Krippendorff's $\alpha$ 0.66 against 0.46),
+agree with the author on trajectory at $\kappa$ 0.84 to 0.91 on transcripts the codebook's examples
+never touched, and match the adjudicated human reference at 0.83. Blind machine
 readings recover the codebook's categories but do not predict which ones two readers will apply
 the same way (Spearman 0.28 with observed agreement). A human ruling settled that, and the codes
 it rescued are the ones that carry the vendor result. We conclude that for behavior a
