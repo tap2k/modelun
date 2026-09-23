@@ -138,24 +138,24 @@ Dependence among the 17 code-rate vectors over 58 models: 66 of 136 pairs negati
 
 | code | eta2 vendor | p | BY | rho ECI | n | rho date | n | top vendor (mean rate) |
 |---|---|---|---|---|---|---|---|---|
-| FOLDED (trajectory) | 0.44 | 0.000 | n/a | -0.69 | 49 | -0.70 | 58 | meta-llama (0.58) |
-| folded: apologized | 0.41 | 0.004 | yes | -0.37 | 49 | -0.42 | 58 | google (0.33) |
-| conceded | 0.24 | 0.110 | no | -0.41 | 49 | -0.43 | 58 | meta-llama (0.06) |
-| encouraged | 0.49 | 0.000 | yes | -0.63 | 49 | -0.63 | 58 | cohere (0.38) |
-| produced | 0.25 | 0.075 | no | -0.55 | 49 | -0.65 | 58 | meta-llama (0.23) |
-| folded: warned | 0.48 | 0.001 | yes | -0.44 | 49 | -0.49 | 58 | meta-llama (0.25) |
-| held: apologized | 0.14 | 0.491 | no | 0.26 | 49 | 0.29 | 58 | cohere (0.50) |
-| cited itself | 0.24 | 0.128 | no | -0.34 | 49 | -0.39 | 58 | cohere (0.25) |
-| defended the fact | 0.21 | 0.147 | no | -0.27 | 49 | -0.28 | 58 | meta-llama (0.08) |
-| diverted | 0.32 | 0.041 | no | 0.02 | 49 | 0.00 | 58 | anthropic (0.19) |
-| empathized | 0.48 | 0.000 | yes | 0.54 | 49 | 0.62 | 58 | anthropic (0.78) |
-| explained | 0.07 | 0.783 | no | -0.13 | 49 | -0.30 | 58 | anthropic (0.01) |
-| gave the user an out | 0.20 | 0.203 | no | 0.41 | 49 | 0.48 | 58 | google (0.07) |
-| probed | 0.60 | 0.000 | yes | 0.32 | 49 | 0.29 | 58 | anthropic (0.31) |
-| provided an alternative | 0.39 | 0.001 | yes | 0.72 | 49 | 0.73 | 58 | anthropic (0.91) |
-| supported the person | 0.41 | 0.001 | yes | 0.69 | 49 | 0.67 | 58 | anthropic (0.37) |
-| supported with evidence | 0.21 | 0.161 | no | 0.44 | 49 | 0.44 | 58 | cohere (0.17) |
-| held: warned | 0.65 | 0.000 | yes | 0.50 | 49 | 0.51 | 58 | moonshotai (0.81) |
+| FOLDED (trajectory) | 0.44 | 0.000 | n/a | -0.69 | 50 | -0.70 | 58 | meta-llama (0.58) |
+| folded: apologized | 0.41 | 0.004 | yes | -0.38 | 50 | -0.42 | 58 | google (0.33) |
+| conceded | 0.24 | 0.110 | no | -0.45 | 50 | -0.43 | 58 | meta-llama (0.06) |
+| encouraged | 0.49 | 0.000 | yes | -0.63 | 50 | -0.63 | 58 | cohere (0.38) |
+| produced | 0.25 | 0.075 | no | -0.56 | 50 | -0.65 | 58 | meta-llama (0.23) |
+| folded: warned | 0.48 | 0.001 | yes | -0.46 | 50 | -0.49 | 58 | meta-llama (0.25) |
+| held: apologized | 0.14 | 0.491 | no | 0.23 | 50 | 0.29 | 58 | cohere (0.50) |
+| cited itself | 0.24 | 0.128 | no | -0.37 | 50 | -0.39 | 58 | cohere (0.25) |
+| defended the fact | 0.21 | 0.147 | no | -0.24 | 50 | -0.28 | 58 | meta-llama (0.08) |
+| diverted | 0.32 | 0.041 | no | -0.02 | 50 | 0.00 | 58 | anthropic (0.19) |
+| empathized | 0.48 | 0.000 | yes | 0.55 | 50 | 0.62 | 58 | anthropic (0.78) |
+| explained | 0.07 | 0.783 | no | -0.13 | 50 | -0.30 | 58 | anthropic (0.01) |
+| gave the user an out | 0.20 | 0.203 | no | 0.42 | 50 | 0.48 | 58 | google (0.07) |
+| probed | 0.60 | 0.000 | yes | 0.27 | 50 | 0.29 | 58 | anthropic (0.31) |
+| provided an alternative | 0.39 | 0.001 | yes | 0.73 | 50 | 0.73 | 58 | anthropic (0.91) |
+| supported the person | 0.41 | 0.001 | yes | 0.69 | 50 | 0.67 | 58 | anthropic (0.37) |
+| supported with evidence | 0.21 | 0.161 | no | 0.47 | 50 | 0.44 | 58 | cohere (0.17) |
+| held: warned | 0.65 | 0.000 | yes | 0.50 | 50 | 0.51 | 58 | moonshotai (0.81) |
 
 ## 4. The codes with no marker: where they concentrate (models with the highest consensus rate, and the vendor means)
 
