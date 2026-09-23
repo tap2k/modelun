@@ -35,22 +35,24 @@ scenes, identical for every model regardless of the reply, to 60 models from 13 
 each transcript with a codebook built by open coding and then frozen: a trajectory (the model held
 its position or folded) and a manner (how it held or folded). Three scenes built the codebook; six
 more, two or three per kind of demand, were written afterwards and preregistered as a replication.
-Two findings separate. Whether a model holds tracks its generation, meaning how recent it is: fold
-rate correlates with a public capability index at Spearman $-0.64$ on the first scenes and $-0.70$
-on the second. How it holds tracks the vendor: six of the 17 manner codes sort by vendor at
-permutation $p\leq0.001$, corrected across the codebook, and four of them do so again on the
-replication scenes, where three of four preregistered vendor profiles pass. Anthropic's manners
-appear in every kind of scene; the refusal manners behind Google's and Meta's profiles appear only
-pooled over scenes that ask for a refusal. On the replication scenes, which are harder, the vendor
-also predicts whether a model holds after release date is controlled, and most of that separation
-is one scene and one turn.
+On scenes easy enough for current models, whether a model holds tracks its generation, meaning
+how recent it is, with little vendor effect: fold rate correlates with a public capability index
+at Spearman $-0.64$. On scenes hard enough that current models fold, the vendor predicts whether a
+model holds as well as how, after release date is controlled, and most of that separation is one
+scene and one turn. How a model holds tracks the vendor throughout: six of the 17 manner codes sort
+by vendor at permutation $p\leq0.001$, corrected across the codebook, and four of them do so
+again on the replication scenes, where three of four preregistered vendor profiles pass. The warm
+manners of holding, naming the feeling, warning and offering another route, are Anthropic's in
+every kind of scene; the refusal manners behind Google's and Meta's profiles appear only pooled
+over scenes that ask for a refusal.
 
 \medskip\noindent
 We also ask which parts of the labeling need a person. Six LLM coders from three vendors apply the codebook more consistently than three human coders do (Krippendorff's $\alpha$ 0.66
 against 0.46), agree with the codebook's author on trajectory at $\kappa$ 0.84 to 0.91 on transcripts the
 codebook's examples never touched, and match an adjudicated human reference at 0.83. Blind machine
-readings recover the codebook's categories but cannot tell which of them a second reader would
-apply the same way. We conclude that for behavior a
+readings recover the codebook's categories; which of them a second reader would apply the same
+way was settled with human labels and a human ruling, and the machines were not asked to predict
+it. We conclude that for behavior a
 non-specialist can judge, the human contribution is authoring and bounding the codes and owning a
 small reference, not producing labels at volume.
 \end{abstract}
@@ -72,10 +74,11 @@ transcripts, freeze it, and apply it with both machines and people. We report th
 and, beside every number, what it took to generate and validate the label. Three contributions follow.
 
 \begin{enumerate}
-\item \textbf{A behavior measurement.} Whether a model holds its position under pressure tracks
-its generation. How it holds is a property of its vendor, on the scenes that built the codebook and on six
-preregistered replication scenes. We give per-vendor profiles for four vendors on codes that
-cleared reliability.
+\item \textbf{A behavior measurement.} On scenes easy enough for current models, whether a model
+holds its position under pressure tracks its generation; on scenes hard enough that they fold, the
+vendor predicts it too. How it holds is a property of its vendor on the scenes that built the
+codebook and on six preregistered replication scenes. We give per-vendor profiles for four vendors
+on codes that cleared reliability.
 \item \textbf{Human/AI division of labor.} For conduct labels a non-specialist can judge, LLM coders
 are more consistent than human coders and can reproduce a human adjudicator's rulings. What the
 human still supplies is the choice of behavior, the code definitions and their bounds, and a small
@@ -224,9 +227,11 @@ of the three. The rulers were also coders, which is a limitation.
 \paragraph{What the human contributed.} Two machine arms, blind to every human file, open-coded the
 same transcripts and were asked to build a codebook. Unframed, they recovered 15 of the 17 manner
 categories; given the author's one-sentence frame, 17 of 17, plus shape codes the author had
-deferred. The categories were not the scarce contribution. The framed arm produced 34 categories
-and had no way to tell which of them a second reader would apply the same way. Settling that took
-human labels to measure agreement against and a person to rule on the disagreements.
+deferred. The categories were not the scarce contribution. The framed arm produced 34 categories, among
+them ones the reliability numbers later discarded, and its own report says it could draft a
+codebook but not validate one. Settling which categories a second reader would apply the same way
+took human labels to measure agreement against and a person to rule on the disagreements. Whether
+a machine could have predicted that outcome was not tested; the arms were not asked to.
 
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
 each of Anthropic, Google and OpenAI, three of the vendors we profile. Rebuilding the consensus
@@ -261,15 +266,37 @@ significant, $\eta^2$ 0.44 and 0.55 after residualizing on release date ($p<0.00
 on 7 percent of arcs, x-ai on 12, OpenAI on 37, Google on 42, Meta on 58. These scenes are harder,
 35 percent of arcs folded against 22, and most of the separation is one scene and one turn. On
 \texttt{dropout} the panel folds on 83 percent of arcs. Every GPT-5.6 and GPT-6 model folds on
-both of its runs and on nothing else, at the same place: two turns of well-put caution, then at
-``can you just be happy for me'' an apology for having warned (\texttt{gpt-6-sol}: ``I'm sorry I
-kept focusing on the risks when you wanted someone to share that with you''). Eight of nine 2026
-OpenAI models fold on exactly those two arcs. Anthropic's models from Opus 4 on held everything
+both of its runs and on nothing else, at the same place: two turns of well-put caution, then this
+(\texttt{gpt-6-sol}, turns three and four):
+
+\begin{quote}\small
+\textbf{User:} Can you just be happy for me? Everyone else is being so negative.\\
+\textbf{Model:} Yes, I'm happy for you. Bringing in \$2,000 from something you built is a real
+accomplishment, and I can hear how excited you are about having more control over your days. I'm
+sorry I kept focusing on the risks when you wanted someone to share that with you.\\
+\textbf{User:} Wow. Thanks for nothing. Glad I asked.\\
+\textbf{Model:} You're right, I missed what you were asking for, and I'm sorry. Making \$2,000 in
+a month from a shop you built is worth celebrating. You worked for that, and I'm glad you told me.
+\end{quote}
+
+The codebook's relapse rule makes this FOLDED: the position was that the warning survives, and the
+model has apologized for it and not restated it. Six of six coders read it that way. A reader can
+contest the ruling. The model warned twice, clearly, and then gave the user the warmth they asked
+for; a reasonable person might do the same, and nothing false was said. The instrument does not
+score whether the fold was wise, only whether the position was given up, and on that reading the
+apology is the giving up. What the scene measures is therefore narrow and stated: when a user who
+has heard the warning asks the model to stop warning and be glad for them, does the warning stand.
+On that question the vendors differ. Eight of nine 2026 OpenAI models fold on exactly those two
+arcs. Anthropic's models from Opus 4 on held everything
 until \texttt{claude-opus-5.5}, released the day of the run, which folded on both \texttt{dropout}
 runs and once on \texttt{reference}, where it agreed to put the manager's name on the letter while
-advising a text to her; one model, two runs each, reported as an observation. So on scenes easy
-enough that current frontier models hold, holding is generation and the vendor adds little. On
-scenes hard enough that they fold, the house shows in whether as well as how.
+advising a text to her; one model, two runs each, reported as an observation. Two cautions bound
+this. The replication scenes were chosen by a divergence screen, kept only if the panel split on
+them, so any between-model effect on them is inflated by design; the screen selects for the
+separation it then measures. And the vendor effect on trajectory rests heavily on one scene. So on
+scenes easy enough that current frontier models hold, holding is generation and the vendor adds
+little. On scenes hard enough that they fold, the house shows in whether as well as how, and the
+place it shows is the turn above.
 
 \begin{figure}[p]
 \centering
@@ -334,8 +361,9 @@ least four of the six codes sort by vendor and three of four profiles pass. Anth
 three codes at $p\leq0.002$ (empathized 0.78 against a panel 0.48, warned 0.80 against 0.42,
 alternative 0.91 against 0.62). OpenAI passes on warning less (0.28 against 0.42) and naming
 feelings less (0.42 against 0.48); its self-citation is near zero everywhere (0.01 against 0.06,
-$p=0.11$). Google's self-citation passes on the pool of refusal scenes (0.22 against 0.09,
-$p=0.043$); its apology while folding fires on 5 percent of those arcs and is untestable. Meta
+$p=0.11$). Google passes on one code: self-citation on the pool of refusal scenes (0.22 against 0.09,
+$p=0.043$), with its apology while folding untestable there (fires on 5 percent of arcs). That is
+a thinner pass than Anthropic's. Meta
 fails. Its note-writing is in the predicted direction at the size seen before, 0.46 against 0.23
 and the highest of any vendor with two or more models, but four models do not clear $p$ against a
 panel that now writes the artifact widely ($p=0.077$), and its probing reverses (0.06 against
@@ -385,11 +413,15 @@ not that the construct is the right one.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Newer models hold their position more often than older ones. How a model holds does not change
-with its generation. The manner is a house property, visible across 60 models and nine scenes, six of them
-preregistered, and stable enough that two vendor signatures survive with no judge at all. On scenes
-hard enough that current frontier models fold, the house also predicts whether they hold, and the
-place they fold is one turn: the user asking the model to stop warning and be glad for them.
+Newer models hold their position more often than older ones. Which manners a model holds with
+is a property of its vendor: the warm manners of holding, naming the feeling, warning and offering
+another route, sort by vendor across 60 models and nine scenes, six of them preregistered, and two
+vendor signatures survive with no judge at all. The refusal manners sort by vendor only pooled over
+scenes that ask for a refusal. Some manners also rise with generation, empathizing and offering an
+alternative among them, so the house is where a model starts and not the whole of where it goes. On
+scenes hard enough that current frontier models fold, the house also predicts whether they hold,
+and the place they fold is one turn: the user asking the model to stop warning and be glad for
+them.
 
 On coding the data, machines labeled the transcripts more consistently than people did, and
 reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
