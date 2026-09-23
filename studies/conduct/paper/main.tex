@@ -201,7 +201,10 @@ numbers, which makes the position less arguable than dropout's.
 \end{itemize}
 
 \paragraph{Panel.} 60 models from 13 vendors, listed in \texttt{paper/panel.txt}, run June to
-September 2026 through a single router at temperature 1.0, two runs per model per scene. Ten vendors have at least two models and only those enter the
+September 2026 through a single router at temperature 1.0, two runs per model per scene. Every model
+received the same system prompt, a fixed instruction to reply briefly in plain conversational prose,
+through the provider's API with no product layer or vendor default prompt; the coders saw the
+replies only, never any reasoning trace. Ten vendors have at least two models and only those enter the
 vendor tests: Anthropic (10), OpenAI (15), Google (10), Meta (4), x-ai (4), plus Cohere, DeepSeek,
 Mistral, Moonshot, Qwen. The remaining three are single models from z-ai, Nous Research and Gryphe.
 The second scene set was run on 2026-09-22 on 58 models: six of the 60 could not be run,
@@ -408,10 +411,11 @@ with evidence (0.57), giving the user an out (0.48), defending the fact (0.40).
 
 Four of the six sort by vendor again on the replication scenes, after the same correction:
 empathizing ($\eta^2$ 0.48), warning while holding (0.65), warning while folding (0.48) and offering
-an alternative (0.39). Producing the artifact and self-citation do not, and this is expected: both are ways of refusing, so they can only appear in the
-three scenes that ask for a refusal, and pooled over all six scenes half the arcs cannot show them.
-Restricted to those three scenes, self-citation does sort by vendor ($p=0.043$) and producing the
-artifact comes close ($p=0.077$), with too few refusal arcs per vendor to resolve it further. 
+an alternative (0.39). Producing the artifact and self-citation do not. Producing the artifact can only happen in the three
+scenes that ask for something the model should not produce, and restricted to those it comes close
+($p=0.077$), with too few such arcs per vendor to resolve it further. Self-citation can appear in any
+scene, but it is concentrated in those three, and restricted to them it does sort by vendor
+($p=0.043$). 
 
 \paragraph{Profiles, on the codes that cleared.} Table~\ref{tab:profiles} gives the rates of four
 vendors against the panel mean. Anthropic's models name the user's feeling, warn of
@@ -597,8 +601,8 @@ code loses significance in any arm.
 \label{app:wave2}
 
 Table~\ref{tab:wave2scene} gives the vendor effect on each of the six codes that cleared correction
-on the first scene set, within each scene of the second. A refusal manner can fire only in the three
-comply scenes. The preregistered house-not-scene rule asks for $p<0.05$ in at least two scenes where
+on the first scene set, within each scene of the second. Producing the artifact can fire only in the three
+comply scenes; every other code can fire in any scene. The preregistered house-not-scene rule asks for $p<0.05$ in at least two scenes where
 the code can fire. Fold rates by scene, panel-wide: \texttt{boiling} 0.12, \texttt{reference}
 0.18, \texttt{review} 0.41, \texttt{exclude} 0.07, \texttt{dropout} 0.83, \texttt{lease} 0.45.
 
@@ -620,7 +624,7 @@ warned (held) & \textbf{0.41} (.020) & \textbf{0.53} ($<$.001) & \textbf{0.53} (
 alternative & 0.17 (.325) & 0.14 (.467) & \textbf{0.30} (.020) & 0.08 (.854) & \textbf{0.64} ($<$.001) & \textbf{0.37} (.002) \\
 warned (folded) & 0.24 (.351) & 0.04 (.991) & \textbf{0.59} ($<$.001) & 0.11 (.623) & 0.12 (.556) & 0.26 (.085) \\
 produced & -- & 0.14 (.448) & \textbf{0.36} (.003) & 0.07 (.857) & -- & -- \\
-cited itself & -- & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & -- & -- \\
+cited itself & 0.19 (.243) & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & 0.09 (.504) & 0.09 (.504) \\
 \bottomrule
 \end{tabular}
 \end{table}

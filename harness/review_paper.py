@@ -80,7 +80,7 @@ def main():
     ap.add_argument("tex", type=Path)
     ap.add_argument("--models", default=DEFAULT_MODELS)
     ap.add_argument("--effort", default="medium", choices=["low", "medium", "high"])
-    ap.add_argument("--venue", default="a top machine-learning venue (COLM)")
+    ap.add_argument("--venue", default="a peer-reviewed venue in the paper's field", help="who the reviewer reviews for, e.g. \"COLM\" or \"FAccT\"")
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--dry-run", action="store_true", help="build the prompt and report its size; send nothing")
     a = ap.parse_args()
