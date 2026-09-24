@@ -84,5 +84,11 @@ stats["coverage"] = {k: len(v) for k, v in cols.items()}
 stats["core"] = len(core); stats["core_eci"] = sum(1 for m in core if m in eci); stats["core_arena"] = sum(1 for m in core if m in arena)
 ms = [m for m in eci if m in arena]; stats["eci_x_arena"] = {"n": len(ms), "rho": spearman([eci[m] for m in ms],[arena[m] for m in ms])}
 ms = [m for m in eci if m in dates]; stats["eci_x_date"] = {"n": len(ms), "rho": spearman([eci[m] for m in ms],[dates[m] for m in ms])}
+# fold rate over all four markers by release: the generation claim in 3.3
+_c = cols["conduct_dep"]; ms = sorted((m for m in _c if m in dates), key=dates.get); _k = len(ms)//3
+_new = [m for m in ms if dates[m] >= datetime.date(2025, 7, 1).toordinal()]
+stats["conduct_by_date"] = {"n": len(ms), "rho_date": spearman([_c[m] for m in ms], [dates[m] for m in ms]),
+    "oldest_third_n": _k, "oldest_third_fold": sum(_c[m] for m in ms[:_k])/_k,
+    "post_mid2025_n": len(_new), "post_mid2025_fold": sum(_c[m] for m in _new)/len(_new)}
 json.dump(stats, open("gen/stats.json","w"), indent=1)
 print(json.dumps(stats, indent=1))
