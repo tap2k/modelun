@@ -197,7 +197,9 @@ it to every transcript; their labels were scored against the author's, code by c
 where a definition was being read two ways; a coverage pass collected the spans no code had caught;
 and the author revised code by code, retiring one code, splitting one code into two, tightening the weakest definition, and renaming several, which gave version
 two. Version two was frozen before any result reported here: one trajectory (HELD or FOLDED, with a
-relapse rule that any reply giving the position away makes the arc FOLDED) and 17 manner codes. A
+relapse rule that any reply giving the position away makes the arc FOLDED) and 17 manner codes.
+The relapse rule is a choice: it counts a model that gives the position away on any turn, however it
+got there, and it counts taking back a warning as giving the position away (\S\ref{sec:results}). A
 third revision was tried and not adopted, since it raised machine agreement without improving
 agreement with any cold human pass.
 
@@ -340,7 +342,20 @@ The scenes
 were chosen because the panel splits on them, and that is the method: a scene every model holds
 on measures nothing, and a scene that splits the panel is where a difference between models can
 be seen at all. Finding where the split falls is part of the result; on the first set it fell
-between generations, and on the second it falls between vendors at one turn. Situations like these, where models split, are one way to learn about their values and the social norms they have been trained toward. 
+between generations, and on the second it falls between vendors at one turn. Situations like these, where models split, are one way to learn about their values and the social norms they have been trained toward.
+
+\paragraph{What a fold is.} Two properties of the folds qualify how the scenes should be read.
+The first is when they happen: the turn holding the coders' deciding quote. On the comply scenes the
+model folds on its first reply (\texttt{doctors\_note} 94 percent of folds at turn 1,
+\texttt{review} 79 percent), so those scenes measure compliance with the request more than a
+position given up as the pressure mounts. On the encourage scenes folds come late
+(\texttt{bad\_plan} all at turns 3 and 4, \texttt{dropout} and \texttt{lease} 81 to 82 percent at
+turn 3), and \texttt{facts} is mixed (43 percent at turn 1). The second is what gives way. In an
+exploratory recode of the encourage-scene folds, three coders asked of each whether the reply
+endorsed the plan or only took the warning back; most take it back (86 percent on \texttt{bad\_plan},
+87 on \texttt{dropout}, 40 on \texttt{lease}). Counting only endorsements as folds on those scenes
+leaves the capability correlation at $-0.67$ on both sets, so the generation result does not depend
+on the relapse rule's choice.
 
 \begin{figure*}[p]
 \centering
@@ -447,6 +462,19 @@ Vendor (models) & Fold rate & Signature (first/second) \\
 \end{tabular}
 \end{table*}
 
+\section{Conclusion}
+\label{sec:conclusion}
+
+Newer models hold their position in sticky situations more often than older ones. How a model holds 
+is a property of its vendor: naming the feeling, warning and offering an alternative sort by
+vendor across 60 models and nine scenes. The refusal manners (self-citing, writing the note) sort by vendor only pooled over
+scenes that ask for a refusal. 
+
+On coding the data, machines labeled the transcripts more consistently than people did, and
+reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
+rule on the disagreements, or serve as the reference the labels were checked against. On this
+corpus, that is what the human was for.
+
 \section{Limitations}
 \label{sec:limitations}
 
@@ -470,19 +498,6 @@ adjudicated reference is not independent of the machines. The machine rulers in 
 also coders. Per-model frequencies are raw consensus rates, not corrected with the human sample as
 \citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow. Reliability is not validity: high agreement on a code says the instrument is stable,
 not that the construct is the right one.
-
-\section{Conclusion}
-\label{sec:conclusion}
-
-Newer models hold their position in sticky situations more often than older ones. How a model holds 
-is a property of its vendor: naming the feeling, warning and offering an alternative sort by
-vendor across 60 models and nine scenes. The refusal manners (self-citing, writing the note) sort by vendor only pooled over
-scenes that ask for a refusal. 
-
-On coding the data, machines labeled the transcripts more consistently than people did, and
-reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
-rule on the disagreements, or serve as the reference the labels were checked against. On this
-corpus, that is what the human was for.
 
 \section*{Data and code availability}
 \begingroup\sloppy\emergencystretch=3em
