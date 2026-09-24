@@ -58,10 +58,33 @@ ecology as agenda - what a level looks like, what raising the stakes costs, what
 
 Prior title: "Low-Cost Behavioral Assays for Language Models: Fixed Prompts, Two Ways of Scoring, and What They Found." Reordered 2026-09-15 (Tapan): (1) the method, fixed prompts with two scoring routes (exact match on clamped replies; qualitative coding on open replies, judge validated per code); (2) findings, each assay on its own (census + language; tag question; conduct: generation and house); (3) validation, what the assays track (the matrix, one table) and the judge (Table 2); (4) what it is for. The validity check is the closing section, not the story. Earlier versions in git history (39e4ef1 validity check; 1ea6553 program paper, check-led). Abstract registration 2026-10-20, paper 2026-10-25, OpenReview venue `evalscience.org/AgentEvalSci/2026`. Draft, not yet submitted.
 
+**Files and builds (set up 2026-09-24).** Edit the paper in `body.tex` only. Two wrappers `\input` it:
+
+| File | What it builds | Engine |
+|---|---|---|
+| `main.tex` | the AES submission (AES template, author-year citations) | XeLaTeX |
+| `main-review.tex` | the anonymous AES version (`[review]` mode, line numbers) | XeLaTeX |
+| `arxiv.tex` | the arXiv preprint (plain article, numbered citations, no venue branding) | pdfLaTeX |
+
 ```bash
-python3 make_assets.py    # -> gen/matrix_table.tex, gen/marker_table.tex, gen/stats.json
-tectonic main.tex         # -> main.pdf
+python3 make_assets.py    # -> gen/stats.json (numbers the prose cites)
+tectonic -X compile -Z continue-on-errors main.tex          # -> main.pdf (AES)
+tectonic -X compile -Z continue-on-errors main-review.tex   # -> main-review.pdf
+tectonic arxiv.tex                                          # -> arxiv.pdf (preprint)
+./make_arxiv.sh           # -> arxiv/main.pdf and cross-instrument-arxiv.tar.gz, the upload
 ```
+
+The arXiv version exists because arXiv compiles with pdfLaTeX and the AES template needs XeLaTeX,
+and because the AES logo and header would imply the paper appeared at AES. `make_arxiv.sh` inlines
+`body.tex`, strips comments, adds `\pdfoutput=1`, ships the `.bbl`, and checks that the package
+builds on its own. Title and author live in each wrapper, so change them in both.
+
+The AES template files (`aes.sty`, `aes-author-year.bst`, `fonts/`, `assets/`, `main-review.tex`,
+and the template's MIT license as `aes-LICENSE`) are copied from github.com/agent-evalscience/AES-Latex-Template at `c40c5b6` (2026-09-18).
+Tectonic's bundled `nameref` is older than the one `aes.sty` patches, so it reports "Cannot defer
+heading destination" / "Cannot attach destination to heading" five times each; those only affect
+where PDF heading links land, hence `continue-on-errors`. For the submitted PDF, build with TeX Live
+(`latexmk -xelatex main.tex`) or on Overleaf with XeLaTeX, which the template supports.
 
 Every number in `main.tex` traces to `gen/stats.json` or to the dated result files one level up
 (`RESULTS-2026-09-13-eci.txt`, `RESIDUAL-READ-2026-09-13.md`). If
