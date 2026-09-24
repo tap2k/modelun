@@ -4,13 +4,20 @@
 `main.tex` is the paper. arXiv first; COLM after (dates TBD). Nothing is held back for double-blind review;
 the repository, the preprint and the blog post are public when ready.
 
-`main.tex` is the only source. The markdown draft it was ported from on 2026-09-19 was removed the
-same day; it is in git at `875a010` if a passage needs recovering.
+The paper's text is `body.tex`, shared by every build. The wrappers hold only the template, the
+author block and the bibliography style: `main.tex` is the arXiv build (plain article, named),
+`main-acl.tex` the ACL build (named), `main-acl-review.tex` the ACL build for ACL Rolling Review
+(anonymous). Each wrapper sets `\ifanon`, which `body.tex` uses for the few passages that identify
+the author (for now, the repository link). `acl.sty` and `acl_natbib.bst` are the official ACL style
+files. Edit `body.tex`; never fork the text per venue. Submitted and posted versions are pinned by
+tag, not by branch.
 
 ## Build
 
 ```bash
-tectonic main.tex         # -> main.pdf
+tectonic main.tex               # -> main.pdf, the arXiv build
+tectonic main-acl-review.tex    # -> the anonymous ACL build for ACL Rolling Review
+tectonic main-acl.tex           # -> the named ACL build
 ```
 
 ```bash
