@@ -62,31 +62,32 @@ Prior title: "Low-Cost Behavioral Assays for Language Models: Fixed Prompts, Two
 
 | File | What it builds | Engine |
 |---|---|---|
-| `main.tex` | the AES submission (AES template, author-year citations) | XeLaTeX |
-| `main-review.tex` | the anonymous AES version (`[review]` mode, line numbers) | XeLaTeX |
-| `arxiv.tex` | the arXiv preprint (plain article, numbered citations, no venue branding) | pdfLaTeX |
+| `main.tex` | the paper and arXiv preprint (plain article, numbered citations); `main.pdf` is tracked | pdfLaTeX |
+| `main-aes.tex` | the AES submission (AES template, author-year citations) | XeLaTeX |
+| `main-aes-review.tex` | the anonymous AES version (`[review]` mode, line numbers) | XeLaTeX |
 
 ```bash
 python3 make_assets.py    # -> gen/stats.json (numbers the prose cites)
-tectonic -X compile -Z continue-on-errors main.tex          # -> main.pdf (AES)
-tectonic -X compile -Z continue-on-errors main-review.tex   # -> main-review.pdf
-tectonic arxiv.tex                                          # -> arxiv.pdf (preprint)
+tectonic main.tex                                               # -> main.pdf (the paper)
+tectonic -X compile -Z continue-on-errors main-aes.tex          # -> main-aes.pdf (AES)
+tectonic -X compile -Z continue-on-errors main-aes-review.tex   # -> main-aes-review.pdf
 ./make_arxiv.sh           # -> arxiv/main.pdf and cross-instrument-arxiv.tar.gz, the upload
 ```
 
-The arXiv version exists because arXiv compiles with pdfLaTeX and the AES template needs XeLaTeX,
-and because the AES logo and header would imply the paper appeared at AES. `make_arxiv.sh` inlines
+`main.tex` is the paper, in the plain format the other studies' papers use, and it is what goes to
+arXiv: arXiv compiles with pdfLaTeX and the AES template needs XeLaTeX, and the AES logo and header
+would imply the paper appeared at AES. `make_arxiv.sh` inlines
 `body.tex`, strips comments, adds `\pdfoutput=1`, ships the `.bbl`, and checks that the package
 builds on its own. Title and author live in each wrapper, so change them in both.
 
-The AES template files (`aes.sty`, `aes-author-year.bst`, `fonts/`, `assets/`, `main-review.tex`,
+The AES template files (`aes.sty`, `aes-author-year.bst`, `fonts/`, `assets/`, `main-aes-review.tex`,
 and the template's MIT license as `aes-LICENSE`) are copied from github.com/agent-evalscience/AES-Latex-Template at `c40c5b6` (2026-09-18).
 Tectonic's bundled `nameref` is older than the one `aes.sty` patches, so it reports "Cannot defer
 heading destination" / "Cannot attach destination to heading" five times each; those only affect
 where PDF heading links land, hence `continue-on-errors`. For the submitted PDF, build with TeX Live
-(`latexmk -xelatex main.tex`) or on Overleaf with XeLaTeX, which the template supports.
+(`latexmk -xelatex main-aes.tex`) or on Overleaf with XeLaTeX, which the template supports.
 
-Every number in `main.tex` traces to `gen/stats.json` or to the dated result files one level up
+Every number in `body.tex` traces to `gen/stats.json` or to the dated result files one level up
 (`RESULTS-2026-09-13-eci.txt`, `RESIDUAL-READ-2026-09-13.md`). If
 `build_matrix.py` or the ECI mapping changes, rerun `make_assets.py` and re-check the prose.
 

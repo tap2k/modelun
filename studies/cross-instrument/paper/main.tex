@@ -1,20 +1,30 @@
-% !TeX program = xelatex
-% The AES submission wrapper. The paper text is in body.tex; arxiv.tex is the preprint wrapper.
-% Build and template notes are in README.md. Every number comes from gen/stats.json
-% (make_assets.py) or from the cited study papers.
-\documentclass[11pt,a4paper]{article}
-\usepackage{aes} % Public. For anonymous review, compile main-review.tex.
+% The paper (arXiv preprint): body.tex in a plain article layout, built with pdfLaTeX.
+% main-aes.tex wraps the same body in the AES template.
+% Edit the paper in body.tex. Package for arXiv with ./make_arxiv.sh.
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
 
-\title[Low-Cost Assays for Measuring Model Behavior]{Low-Cost Assays for Measuring Model Behavior Across Vendors and Releases}
-\aesauthor[affil={1},corresponding]{Tapan Parikh}
-\aesaffiliation{1}{Cornell Tech}
-\aesemails{\aesemail{tsp53@cornell.edu}}
+\title{\textbf{Low-Cost Assays for Measuring Model Behavior\\Across Vendors and Releases}}
+\author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
+\date{}
 
 \begin{document}
 \maketitle
 
 \input{body}
 
+\bibliographystyle{plainnat}
 \bibliography{references}
 \end{document}

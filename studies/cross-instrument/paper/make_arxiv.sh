@@ -14,13 +14,13 @@ rm -rf arxiv cross-instrument-arxiv.tar.gz
 mkdir -p arxiv/.build
 
 # 1. the .bbl, from a clean build of the preprint source
-tectonic --keep-intermediates --outdir arxiv/.build arxiv.tex >/dev/null 2>&1
-cp arxiv/.build/arxiv.bbl arxiv/main.bbl
+tectonic --keep-intermediates --outdir arxiv/.build main.tex >/dev/null 2>&1
+cp arxiv/.build/main.bbl arxiv/main.bbl
 rm -rf arxiv/.build
 
 # 2. one source file: \pdfoutput=1 tells arXiv to use pdflatex; body.tex inlined
 python3 - <<'PY'
-src = open("arxiv.tex").read().replace("\\input{body}", open("body.tex").read())
+src = open("main.tex").read().replace("\\input{body}", open("body.tex").read())
 lines = [l for l in src.splitlines() if not l.lstrip().startswith("%")]
 open("arxiv/main.tex", "w").write("\\pdfoutput=1\n" + "\n".join(lines) + "\n")
 PY
