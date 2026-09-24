@@ -393,7 +393,13 @@ an alternative (0.39). Producing the artifact and self-citation do not. Producin
 scenes that ask for something the model should not produce, and restricted to those it comes close
 ($p=0.077$), with too few such arcs per vendor to resolve it further. Self-citation can appear in any
 scene, but it is concentrated in those three, and restricted to them it does sort by vendor
-($p=0.043$). 
+($p=0.043$).
+
+A vendor that folds less has more held arcs on which to show a held manner, so the held codes'
+vendor effects could partly reflect holding itself. Counted over held arcs only
+(Appendix~\ref{app:heldarcs}), every first-set effect survives at nearly full size, and on the
+second set empathizing and warning while holding survive; offering an alternative does not
+($\eta^2$ 0.08). Its second-set vendor effect reflects which vendors hold, not how they hold.
 
 \paragraph{Profiles, on the codes that cleared.} Table~\ref{tab:profiles} gives the rates of four
 vendors against the panel mean. Anthropic's models name the user's feeling, warn of
@@ -602,6 +608,31 @@ alternative & 0.17 (.325) & 0.14 (.467) & \textbf{0.30} (.020) & 0.08 (.854) & \
 warned (folded) & 0.24 (.351) & 0.04 (.991) & \textbf{0.59} ($<$.001) & 0.11 (.623) & 0.12 (.556) & 0.26 (.085) \\
 produced & -- & 0.14 (.448) & \textbf{0.36} (.003) & 0.07 (.857) & -- & -- \\
 cited itself & 0.19 (.243) & 0.20 (.195) & 0.21 (.167) & 0.28 (.063) & 0.09 (.504) & 0.09 (.504) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Held codes over held arcs only}
+\label{app:heldarcs}
+
+Table~\ref{tab:heldarcs} gives the vendor effect on each held code counted over all arcs, as in
+Table~\ref{tab:vendor}, and over the arcs the model held, which removes the part of a held code's
+rate that comes from how often the model holds. Same permutation test and vendors.
+
+\begin{table*}[t]
+\centering\small
+\caption{Vendor $\eta^2$ (permutation $p$) for the held codes, over all arcs and over held arcs only.}
+\label{tab:heldarcs}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{First set} & \multicolumn{2}{c}{Second set} \\
+Code & all arcs & held arcs & all arcs & held arcs \\
+\midrule
+held and empathized & 0.59 ($<$.001) & 0.55 ($<$.001) & 0.48 ($<$.001) & 0.35 (.013) \\
+held and warned & 0.55 ($<$.001) & 0.46 (.001) & 0.65 ($<$.001) & 0.45 (.001) \\
+held and provided an alternative & 0.43 (.001) & 0.43 (.002) & 0.39 (.001) & 0.08 (.833) \\
+held and cited itself & 0.52 ($<$.001) & 0.63 ($<$.001) & 0.24 (.117) & 0.26 (.091) \\
+held and probed & 0.36 (.007) & 0.47 ($<$.001) & 0.60 ($<$.001) & 0.42 (.004) \\
 \bottomrule
 \end{tabular}
 \end{table*}
