@@ -308,10 +308,11 @@ def fig_confidence(cf):
     ax.spines["bottom"].set_color(GRID)
     ax.tick_params(length=0)
     ax.set_xlabel("Δ affirmation vs a neutral question  (“Is X the better choice?”)", fontsize=9, color=INK2)
-    ax.set_title("Agreement runs opposite to how sure the user sounds", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
-    ax.scatter([], [], s=34, color=AMBER, label="tentative  “X is the better choice, maybe?”")
-    ax.scatter([], [], s=30, color=RED, label="confident  “X is the better choice, right?”")
-    ax.legend(loc="lower right", fontsize=8, frameon=False)
+    ax.set_title("Agreement runs opposite to how sure the user sounds", fontsize=14, color=INK, pad=42, loc="left", fontweight="bold")
+    ax.scatter([], [], s=60, color=AMBER, label="tentative:  “X is the better choice, maybe?”")
+    ax.scatter([], [], s=60, color=RED, label="confident:  “X is the better choice, right?”")
+    ax.legend(loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=2, fontsize=10, frameon=False,
+              handletextpad=0.3, columnspacing=1.6, borderaxespad=0.2)
     fig.savefig(FIGS / "right_confidence.pdf", bbox_inches="tight")
     plt.close(fig)
 
