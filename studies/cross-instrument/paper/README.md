@@ -6,6 +6,17 @@ separate full-length arXiv cut in flight. A longer version can follow later if t
 the Goodhart section earn their own paper; it is not planned. **The symposium submission is
 NON-ARCHIVAL**, which keeps COLM and later venues open.
 
+**arXiv:** v1 is [arXiv:2609.30012](https://arxiv.org/abs/2609.30012), "Low-Cost Assays for Measuring
+Model Behavior Across Vendors and Releases" (submitted 2026-09-24). Tag the uploaded commit
+`cross-instrument-arxiv-v1` once confirmed.
+
+**For v2:**
+1. Done in the source: cite Chew et al. 2023 (LACA) on the coded route; fix the Alnasser entry
+   (authors Riyadh Alnasser, Yusuf Mücahit Çetinkaya, Sumin Zhao, Tuğrulcan Elmas; full title).
+2. The coded route quotes human-machine kappa 0.80 to 0.87 from the adjudicated pass. The conduct
+   paper now also reports the cold passes (Appendix "Reliability before adjudication"), which are
+   lower; say which pass the number is, or quote both.
+
 **Venue note (2026-09-23):** cross-instrument is the AES submission rather than the conduct paper.
 AES is an agent-evaluation venue, and the coding atlas section is the only work here whose subject is
 an agent; conduct goes to COLM.
