@@ -204,10 +204,12 @@ and a figure for the house claim. Four model reviews scored that draft 5/10 with
 on the validity of the manner labels, which wording cannot fix. On 2026-09-25 the paper went back to
 the v2-plus-items-1-to-7 text (5f89504) as a single `main.tex`, and the suggestibility paper was
 weighed for ARR instead. The whole ACL draft is at `108bbaa`; any of its edits can be taken back from
-there. Two are corrections rather than venue choices and belong in v3 whatever the venue: the
-within-vendor capability relation (the paper says -0.57 with no result file behind it; check 8 in
-`REVIEW-CHECKS-2026-09-25.md` gives -0.58, and Meta's four models run the other way), and the
-house-not-scene rule, prediction 7, which the text should state as scored.
+there. Two were corrections rather than venue choices and are in `main.tex` as of 2026-09-25: the
+within-vendor capability relation (the paper said -0.57 with no result file behind it; check 8 in
+`REVIEW-CHECKS-2026-09-25.md` gives -0.58 on the first set, -0.83 on the second, and Meta's four
+first-set models run the other way), and the house-not-scene rule, prediction 7, now stated as
+scored. v3 is to be posted on arXiv the week of 2026-09-28 with items 1 to 7 and these two; the
+abstract is over arXiv's form limit, so `arxiv-abstract.txt` needs a v3 shortened version.
 
 v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
 self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
