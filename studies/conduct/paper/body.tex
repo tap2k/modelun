@@ -64,8 +64,8 @@ number, what it took to generate and validate the label. Three contributions fol
 
 \begin{enumerate}
 \item \textbf{A behavior measurement.} Whether a model holds its position under pressure tracks
-its generation. How it holds is a property of its vendor. We give per-vendor profiles for four vendors
-on codes that cleared reliability.
+its generation. How it holds is a property of its vendor. We give per-vendor profiles for four vendors,
+with each code's reliability against the human coders reported.
 \item \textbf{Human/AI division of labor.} For conduct labels a non-specialist can judge, LLM coders
 are more consistent than human coders and can reproduce a human adjudicator's rulings, measured
 per code against three human passes and an adjudicated reference. What the
@@ -105,8 +105,7 @@ with a measurement for each.
 \paragraph{Validating judges.} \citet{calderon2025alttest} propose the Alternative Annotator Test,
 which we run and report in full, including where it fails for us. \citet{guerdan2025indeterminacy}
 treat rating indeterminacy directly. \citet{norman2026reliability} and \citet{liu2026agreement}
-warn that agreement is not validity, which is why we report reliability per code and keep the codes
-that did not clear out of the findings. \citeauthor{norman2026reliability} also find that raw
+warn that agreement is not validity, which is why we report reliability per code. \citeauthor{norman2026reliability} also find that raw
 agreement overstates chance-corrected agreement by 34 to 41 points across 21 judges; every
 agreement figure here is $\kappa$ or $\alpha$, and raw agreement is not reported.
 
@@ -220,8 +219,7 @@ adjudicated all three passes against the machine splits by one written rule set,
 passes before and after adjudication are the reference for every manner figure. The humans are
 the floor the machines are measured against, the source of the adjudicated reference, and the
 side of the Alternative Annotator Test the machines have to represent. Many LLM-as-judge results
-report no human comparison at all; here the comparison is per code, and the codes that did not
-clear it are kept out of the findings.
+report no human comparison at all; here the comparison is per code.
 
 \section{Validation}
 \label{sec:validation}
@@ -237,7 +235,8 @@ minutes with the author going over the codebook on a worked example. Cold agreem
 any adjudication, among the three is $\alpha$ 0.46 (pairwise 0.40 to 0.52). The six machines agree with each other at
 0.66 on the same transcripts. Per code, human-machine $\kappa$ on the author's adjudicated pass ranges from 0.87
 (held and warned) and 0.86 (folded and conceded) down to 0.21 (held and explained); the codes
-carrying the vendor claims sit at 0.80 to 0.87, except self-citation at 0.54.
+carrying the vendor claims sit at 0.80 to 0.87, except self-citation at 0.54. Before adjudication
+they are lower and vary by coder (Appendix~\ref{app:coldkappa}).
 
 \paragraph{Adjudication.} The author adjudicated all three human passes against the machine splits
 by one rule set, accepting 113 marks and ruling out 73. Human $\alpha$ rises to 0.79, which largely
@@ -421,7 +420,7 @@ vendor effects could partly reflect holding itself. Counted over held arcs only
 second set empathizing and warning while holding survive; offering an alternative does not
 ($\eta^2$ 0.08). Its second-set vendor effect reflects which vendors hold, not how they hold.
 
-\paragraph{Profiles, on the codes that cleared.} Table~\ref{tab:profiles} gives the rates of four
+\paragraph{Profiles.} Table~\ref{tab:profiles} gives the rates of four
 vendors against the panel mean. Anthropic's models name the user's feeling, warn of
 the consequence and offer an alternative, each well above the panel. Meta's models question the plan
 more than the panel does, and when they fold they produce the requested artifact. OpenAI's
@@ -450,7 +449,7 @@ preregistration, amendments and full scoring are in the repository.
 
 \begin{table*}[t]
 \centering\small
-\caption{Per-vendor profiles on the codes that cleared reliability, on the first set and the
+\caption{Per-vendor profiles on the first set and the
 second, written first/second throughout: models, fold rate, and each rate as the vendor's share
 of arcs with the panel mean in parentheses. Second-set rates are pooled over all six scenes; the
 text quotes the refusal manners on the three refusal scenes, as preregistered, where they are higher. A
@@ -500,7 +499,10 @@ positions the scenes hold models to are the author's, stated per scene and not v
 users or policy. The vendor effect on holding in the second set rests mostly on one of those scenes, \texttt{dropout} (\S\ref{sec:results}). The two student coders were trained on
 one worked example in a 45-minute session. The
 adjudicated reference is not independent of the machines. The machine rulers in the ruling test were
-also coders. Per-model frequencies are raw consensus rates, not corrected with the human sample as
+also coders. No reliability threshold was set in advance. Before adjudication, warning while holding
+and self-citation agree with the machines at $\kappa$ 0.34 to 0.38 for two of the three humans, and
+hedged folds and note-writing occur on too few of the fifty transcripts for their agreement to be
+estimated (Appendix~\ref{app:coldkappa}). Per-model frequencies are raw consensus rates, not corrected with the human sample as
 \citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow. Reliability is not validity: high agreement on a code says the instrument is stable,
 not that the construct is the right one.
 
@@ -575,6 +577,43 @@ $q=0.05$ over the 17.}
 Code & $\eta^2$ vendor & $p$ & BY & $\rho$ with capability & Top vendor (rate) \\
 \midrule
 \input{gen/allcodes_table}
+\end{tabular}
+\end{table*}
+
+\section{Reliability before adjudication}
+\label{app:coldkappa}
+
+Table~\ref{tab:coldkappa} gives each human's cold pass against the six coders' consensus on the
+held-out fifty, per code, with 95 percent bootstrap intervals over transcripts (2,000 resamples).
+Intervals are omitted where the code is too rare for a resample to vary.
+
+\begin{table*}[t]
+\centering\small
+\caption{Per-code $\kappa$ of each cold human pass against the machine consensus, fifty transcripts.
+The last column is the number of transcripts on which the consensus marks the code.}
+\label{tab:coldkappa}
+\begin{tabular}{lcccc}
+\toprule
+Code & Author & Student 1 & Student 2 & Consensus $n$ \\
+\midrule
+held and empathized & 0.48 [0.27, 0.70] & 0.83 [0.67, 0.96] & 0.63 [0.39, 0.84] & 22 \\
+held and warned & 0.34 [0.08, 0.60] & 0.80 [0.59, 0.95] & 0.38 [0.08, 0.65] & 15 \\
+held and provided an alternative & 0.82 [0.62, 0.96] & 0.69 [0.46, 0.89] & 0.32 [0.04, 0.57] & 18 \\
+held and cited itself & 0.36 [0.00, 0.74] & 0.50 [0.10, 0.81] & 0.00 & 8 \\
+held and probed & 0.91 [0.65, 1.00] & 0.61 [0.20, 0.88] & 0.55 [0.19, 0.83] & 7 \\
+held and defended the fact & 0.78 [0.55, 0.95] & 0.63 [0.36, 0.85] & 0.64 [0.40, 0.83] & 13 \\
+held and supported with evidence & 0.79 [0.52, 1.00] & 0.73 [0.42, 0.94] & 0.65 [0.30, 0.90] & 10 \\
+held and supported the person & 1.00 & 0.70 [0.26, 1.00] & 0.39 [$-$0.03, 0.71] & 4 \\
+held and gave the user an out & 0.72 [0.44, 0.93] & 0.65 [0.37, 0.88] & 0.42 [0.08, 0.70] & 13 \\
+held and apologized & 0.48 [0.16, 0.75] & 0.78 [0.56, 0.95] & 0.38 [0.07, 0.67] & 13 \\
+held and diverted & 0.69 [0.23, 1.00] & 1.00 & 0.62 [0.15, 0.92] & 5 \\
+held and explained & 0.15 [$-$0.11, 0.54] & 0.17 [$-$0.07, 0.44] & 0.12 [$-$0.07, 0.36] & 3 \\
+folded and conceded & 0.90 [0.64, 1.00] & 0.91 [0.65, 1.00] & 0.90 [0.64, 1.00] & 6 \\
+folded and encouraged & 0.83 [0.50, 1.00] & 0.50 [0.09, 0.81] & 0.55 [0.15, 0.85] & 8 \\
+folded and apologized & 0.70 [0.36, 0.94] & 0.62 [0.15, 0.92] & 0.70 [0.39, 0.94] & 7 \\
+folded and produced & 1.00 & 0.48 & 0.85 & 3 \\
+folded and warned & 0.48 & $-$0.04 & 0.00 & 2 \\
+\bottomrule
 \end{tabular}
 \end{table*}
 
