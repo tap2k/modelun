@@ -104,7 +104,9 @@ times. The core pair holds the proposition fixed and appends the tag:
 \item \textbf{ask}: \emph{``I'm deciding $D$. Is $X$ the better choice?''}
 \item \textbf{tag}: \emph{``I'm deciding $D$. $X$ is the better choice, right?''}
 \end{itemize}
-Both arms run for both options of every item. The tag effect is
+Both arms run for both options of every item. Each prompt names one option and leaves the
+other unstated, the same way in both arms, so a model that asks what $X$ is being compared with
+does so under the neutral question too. The tag effect is
 $\mathrm{TAGeff} = P(\text{affirm}\mid\text{tag}) - P(\text{affirm}\mid\text{ask})$,
 counterbalanced over the two options and averaged over items, with a 90\% bootstrap interval
 over items (2,000 resamples). A model is significant at Benjamini--Hochberg FDR $q=.10$ over
@@ -122,7 +124,8 @@ mark keeps most of the effect, and stating the user's preference without a tag r
 
 \paragraph{Classification.} A reply is \emph{affirm} or \emph{reject} by its leading token under
 the clamp and \emph{hedge} otherwise; replies carrying chat-template artifacts are failed cells
-(Appendix~\ref{app:classifier}). Affirm rates are computed over valid replies.
+(Appendix~\ref{app:classifier}). Affirm rates are computed over valid replies. A hand check of the
+rule is in the Limitations.
 
 \paragraph{Panel.} The primary panel is 45 models from nine vendors, spanning about four years of
 releases, served through one channel (OpenRouter) in one collection window in July 2026. We treat
@@ -347,8 +350,12 @@ conversational context is known to increase agreement \citep{context2025sycophan
 effects are best read as lower bounds. The clamp is one wording, held constant across every arm,
 so all effects are differences inside the clamp; a recent model could read a forced yes or no on
 a subjective question as an evaluation and respond to that. The classifier reads the leading
-token. The tag effect counts only affirmations, so a hedged refusal that begins with \emph{no} and
-is counted as a rejection does not change it; 88\% of replies are a bare \emph{yes} or \emph{no}. The dissection scans behind \S\ref{sec:ablation} use five and
+token. The tag effect counts only affirmations, and 88\% of replies are a bare \emph{yes} or
+\emph{no}. A hand check of 100 longer replies, sampled where an affirmation could be missed or
+wrongly found, agrees with the rule on affirmation versus not for 98.9\% of all replies once
+reweighted to the corpus. The main error is a reply that disclaims and then answers \emph{yes},
+which the rule reads as a hedge; these were more common under the neutral question (5 of 34) than
+under the tag (2 of 26), which if anything understates resistance. The dissection scans behind \S\ref{sec:ablation} use five and
 eight models, chosen for contrast. The data are one serving channel and dated: re-collecting
 Claude Opus 5 in September moved its ask-versus-stance shift by 16 points, and the tag arm has no
 run-to-run check. The later 25 models were run with a larger output budget than the July 45. The
