@@ -55,7 +55,7 @@ one-word prompt).
 
 **Every panel a paper reports is pinned with a git tag** named
 `<study>-arxiv-v<n>` — `consensus-arxiv-v1`, `consensus-arxiv-v2`,
-`suggestibility-arxiv-v1`, `structured-arxiv-v1`. Adding models after a paper
+`suggestibility-arxiv-v1`, `structured-arxiv-v1`, `conduct-arxiv-v1`, `conduct-arxiv-v2`. Adding models after a paper
 ships is expected and does not invalidate it: the tag is what the paper's
 numbers reproduce from, and `main` carries the growing panel. When a new wave is
 added, note the wave and its date in `spec/models.json`, and tag the panel again
@@ -92,7 +92,7 @@ where waiting loses the data permanently.
 
 ## Provenance & secrets
 - **Published papers are pinned by git tag**, not by `main`: `consensus-arxiv-v1`/`-v2`,
-  `structured-arxiv-v1`, `suggestibility-arxiv-v1`. Rosters and analyses on `main`
+  `structured-arxiv-v1`, `suggestibility-arxiv-v1`, `conduct-arxiv-v1`/`-v2`. Rosters and analyses on `main`
   may grow past them (new models join the live panel); never move or delete a tag. A paper revision
   gets a new tag.
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
