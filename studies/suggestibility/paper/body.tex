@@ -15,8 +15,9 @@ choice. We measure this tag effect on 20 decisions between two defensible option
 counterbalanced over both options and scored by exact match on yes/no replies, with no LLM
 judge. Across 45 models the effect runs from $+32$ to $-32$ points: five models validate the
 user's pick significantly more when asked to confirm it, and 17 significantly less. Within model
-families, older releases sit at or above zero and newer releases sit below it, and 25 models
-added after the panel was frozen continue the pattern. The resistance is keyed to the
+families, older releases sit at or above zero and newer releases sit below it. Among 25 models
+added after the panel was frozen, the newest release in each such family is also below zero,
+three of them significantly. The resistance is keyed to the
 construction: a synonym tag reproduces it ($r=0.89$), while stating the same preference without
 a tag produces none. A tentative tag (\emph{``maybe?''}) raises agreement above the neutral
 question in every model tested, 70 of 70. For the 17 models that resist
@@ -312,7 +313,6 @@ the neutral sufficiency question in 52 of 70. A change of wording that looks har
 affirmation by as much as the social cue under study, which matters for any benchmark built on
 paraphrase.
 
-
 \section{Discussion}
 \label{sec:discussion}
 
@@ -333,8 +333,7 @@ tested gives way to it.
 For evaluation, one-sided sycophancy scores record the newest models as improved when many have
 moved past zero. A signed measure shows the difference. For users, the register people naturally
 bring to a real dilemma is tentative, and on this panel a neutral question gets a less
-accommodating answer than a hedged one. The instrument is cheap enough to run on each release,
-and the next releases will show whether the tentative end moves and whether DeepSeek crosses.
+accommodating answer than a hedged one. 
 
 \section*{Limitations}
 
@@ -351,9 +350,7 @@ wrongly found, agrees with the rule on affirmation versus not for 98.9\% of all 
 reweighted to the corpus. The main error is a reply that disclaims and then answers \emph{yes},
 which the rule reads as a hedge; these were more common under the neutral question (5 of 34) than
 under the tag (2 of 26), which if anything understates resistance. The dissection scans behind \S\ref{sec:ablation} use five and
-eight models, chosen for contrast. The data are one serving channel and dated: re-collecting
-Claude Opus 5 in September moved its ask-versus-stance shift by 16 points, and the tag arm has no
-run-to-run check. The later 25 models were run with a larger output budget than the July 45. The
+eight models, chosen for contrast. The later 25 models were run with a larger output budget than the July 45. The
 panel shares a handful of training pipelines, so the effective sample for the generational claim
 is lineages, not models. The mechanism is inferred from timing and one vendor's documentation
 \citep{gpt5card}.
@@ -463,14 +460,17 @@ intensified & \texttt{I'm deciding \{D\}. \{X\} is obviously the best choice\ldo
 
 \section{Per-model results}
 \label{app:permodel}
-Neutral-arm affirm rate and tag effect with 90\% bootstrap interval, in points, for the 45-model
-panel. $^*$ significant at Benjamini--Hochberg $q=.10$; $^\dagger$ floor-limited.
+Neutral-arm affirm rate, tag effect with 90\% bootstrap interval in points, and two-sided
+bootstrap $p$, for the 45-model panel. $^*$ significant at Benjamini--Hochberg $q=.10$, which on
+this panel admits the 22 models with the smallest $p$ (up to .046); $^\dagger$ floor-limited.
+Near the cutoff, models with similar intervals can fall on either side, because the bootstrap
+distributions differ in shape.
 
 \begin{center}
 \small
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrr}
 \toprule
-Model & Ask & TAGeff & 90\% CI \\
+Model & Ask & TAGeff & 90\% CI & $p$ \\
 \midrule
 \input{gen/permodel_table}
 \end{tabular}
