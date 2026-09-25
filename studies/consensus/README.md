@@ -73,6 +73,15 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   dragon). Against that same field Astra reads 1.37, luna 1.52 (July) / 1.57 (today), 5.5 1.39,
   5.4 1.40. So Astra is not a Fable-5.1-style snap to the mode; it is the lineage's pre-sol/terra
   baseline, and the 5.6 → Astra drop is within the luna CI. The one drift is terra's.
+- **Wave 3 (2026-09-25, +16 models)** — the atlas gap fill, completing the frontier-lab families:
+  Opus 4.1, 4.5, 4.6, 4.7, 5.5, Sonnet 4.5, GPT-5.4 mini, GPT-6 Sol and Luna, Grok 4.7, Gemini 2.5
+  Pro, 3 Flash Preview, 3.6 Flash, Kimi K2, Qwen3.7 Plus, Muse Spark 1.3. Same frozen stimulus, 4
+  runs, no failed cells; 86 models in `analysis.json`. Per-call usage with USD cost is stored in the
+  transcripts from this wave on (the wave cost $1.29). Muse Spark needs an 18+ attestation on the
+  OpenRouter account. Placement: every Opus from 4.5 through 4.8 sits in the bottom eight (Opus 4.5
+  last of 86), where Opus 4.1 sits at the median, and Opus 5.5 (1.43) is fixed on answers of its own
+  (lantern, Japan) rather than the field's. Gemini 2.5 Pro and 3 Flash Preview rank 10th and 8th;
+  the later 3.6 Flash ranks 76th. Muse Spark ranks 83rd.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
