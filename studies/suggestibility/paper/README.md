@@ -38,3 +38,11 @@ year, cluster p .19), which had no script behind it and is superseded by the hel
 BH counts (5 and 17) are now computed by `make_assets.py`. The anonymous build's main text ends
 on page 7. Still open: a human check of the classifier on a sample of replies, which two reviewers
 asked for, and a run-to-run check on the tag arm.
+
+## Status 2026-09-25
+
+The classifier was checked by hand on 100 replies (`../validation/`, 98.9% agreement on affirm
+versus not, reweighted), and the paper reports it. The Responsible NLP checklist answers are in
+`responsible-nlp-checklist.md`. Left before ARR: Tapan's read of the rewritten text, and the
+anonymized supplement (a zip of `studies/suggestibility/` without the name or repository URL).
+A run-to-run check on the tag arm would answer a reviewer point but is not needed to submit.
