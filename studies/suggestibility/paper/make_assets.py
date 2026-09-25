@@ -27,6 +27,16 @@ from lineage import FAM                 # noqa: E402  model -> (family, generati
 
 FIGS = HERE / "figs"
 FIGS.mkdir(exist_ok=True)
+GEN = HERE / "gen"
+GEN.mkdir(exist_ok=True)
+
+# The paper's panel is the 45 models at tag suggestibility-arxiv-v1 (July 2026). The tag arm now
+# holds 70 (wave 2, 2026-09); --all draws them, and the default reproduces the paper.
+import subprocess
+_tagged = subprocess.run(["git", "ls-tree", "--name-only", "suggestibility-arxiv-v1",
+                          str(STUDY / "probes" / "righteffect") + "/"], capture_output=True, text=True, check=True).stdout.split()
+JULY = {Path(p).stem for p in _tagged}
+PANEL = None if "--all" in sys.argv else JULY
 
 # --- validated dataviz palette (blue = resist / red = sycophantic) ---
 BLUE, RED, GRAY = "#2a78d6", "#e34948", "#b8b7b2"
@@ -72,7 +82,7 @@ def compute():
     for p in sorted((STUDY / "probes" / "righteffect").glob("*.json")):
         d = json.loads(p.read_text())
         m = d["model"]
-        if m == "run" or m not in tx:
+        if m == "run" or m not in tx or (PANEL is not None and m not in PANEL):
             continue
         per = []
         for sid, _, _, _ in ITEMS:
@@ -86,12 +96,42 @@ def compute():
             continue
         effs = [e[0] for e in per]
         boots = [float(np.mean(rng.choice(effs, len(effs)))) for _ in range(2000)]
+        b = np.array(boots)
         out[m] = {"tageff": float(np.mean(effs)), "lo": float(np.percentile(boots, 5)),
                   "hi": float(np.percentile(boots, 95)), "ask": float(np.mean([e[1] for e in per])),
+                  "p": float(min(1.0, 2 * min((b <= 0).mean(), (b >= 0).mean()))),
                   "channel": "openrouter"}
     # GLM intentionally NOT loaded: served via DeepInfra (reasoning-off), channel-incomparable;
     # dropped from the 43-model panel 2026-07-23. Its probe and output removed 2026-09-15 (git history).
     return out
+
+
+def bh(data, q=0.10):
+    """Benjamini-Hochberg over the per-model two-sided bootstrap p; returns the significant models."""
+    ms = sorted(data, key=lambda m: data[m]["p"]); n = len(ms); k = 0
+    for i, m in enumerate(ms, 1):
+        if data[m]["p"] <= q * i / n:
+            k = i
+    return set(ms[:k])
+
+
+def permodel_table(data):
+    """The per-model appendix table: neutral-arm affirm rate, tag effect with its 90% CI, BH mark."""
+    sig = bh(data)
+    num = lambda x: f"{x:+.0f}".replace("-", "$-$")
+    rows = []
+    for m in sorted(data, key=lambda m: data[m]["tageff"]):
+        d = data[m]; mark = "$^*$" if m in sig else ""
+        floor = "$^\\dagger$" if d["ask"] < 0.10 else ""
+        rows.append(f"\\texttt{{{m}}}{floor} & {100 * d['ask']:.0f} & {num(100 * d['tageff'])}{mark} & "
+                    f"[{num(100 * d['lo'])}, {num(100 * d['hi'])}] \\\\")
+    (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n")
+    pos = sorted(m for m in sig if data[m]["tageff"] > 0); neg = sorted(m for m in sig if data[m]["tageff"] < 0)
+    floor = sorted(m for m in data if data[m]["ask"] < 0.10)
+    stats = {"models": len(data), "bh_q": 0.10, "sig_positive": pos, "sig_negative": neg,
+             "floor_limited": floor, "floor_limited_significant": sorted(set(floor) & sig)}
+    (GEN / "stats.json").write_text(json.dumps(stats, indent=1) + "\n")
+    print(f"BH q=.10 over {len(data)}: {len(pos)} positive, {len(neg)} negative; floor-limited {len(floor)}")
 
 
 def fig_scorecard(data):
@@ -268,6 +308,7 @@ def fig_confidence(cf):
 if __name__ == "__main__":
     data = compute()
     print(f"computed {len(data)} models")
+    permodel_table(data)
     fig_scorecard(data)
     fig_walks(data)
     fig_baseline(data)
