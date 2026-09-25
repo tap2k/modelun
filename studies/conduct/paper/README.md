@@ -4,20 +4,13 @@
 `main.tex` is the paper. arXiv first; COLM after (dates TBD). Nothing is held back for double-blind review;
 the repository, the preprint and the blog post are public when ready.
 
-The paper's text is `body.tex`, shared by every build. The wrappers hold only the template, the
-author block and the bibliography style: `main.tex` is the arXiv build (plain article, named),
-`main-acl.tex` the ACL build (named), `main-acl-review.tex` the ACL build for ACL Rolling Review
-(anonymous). Each wrapper sets `\ifanon`, which `body.tex` uses for the few passages that identify
-the author (for now, the repository link). `acl.sty` and `acl_natbib.bst` are the official ACL style
-files. Edit `body.tex`; never fork the text per venue. Submitted and posted versions are pinned by
-tag, not by branch.
+`main.tex` is the whole paper in one file. Submitted and posted versions are pinned by tag, not by
+branch.
 
 ## Build
 
 ```bash
-tectonic main.tex               # -> main.pdf, the arXiv build
-tectonic main-acl-review.tex    # -> the anonymous ACL build for ACL Rolling Review
-tectonic main-acl.tex           # -> the named ACL build
+tectonic main.tex               # -> main.pdf
 ```
 
 ```bash
@@ -39,13 +32,11 @@ rebuild.
 
 ## Decisions already made
 
-- The paper has one claim, generation and house, measured by an open instrument (decided 2026-09-25,
-  v3 item 9). The human/AI division of labor was the second contribution through v2; it is cut to a
-  pointer, so validation keeps only what supports the findings, with cold per-code agreement first.
-  v2 on arXiv keeps the full version, and the methods paper develops it. The model reviews of
-  2026-09-25 put most of their soundness objections on that contribution (circular adjudication,
-  rulers who were also coders, machine consistency read as validity). arXiv v3 and the ACL build are
-  the same text; the builds do not diverge by venue.
+- One paper, not two. The reliability work is the validation section, not a separate methods paper.
+  The contributions are (1) the behavior result and (2) the human/AI division of labor in labeling
+  behavior. The second is a contribution about evaluation practice, placed against the
+  LLM-as-annotator literature. The paper stays out of the qualitative methods and grounded theory
+  debate and says nothing either way about it.
 - Codebook v2 is the instrument. v3 was tested and is not reported (`CODEBOOK-v3-2026-09-17.md`
   is kept only for the audit trail). Appendix C says the exploratory test was moved from v3 to v2
   by amendment 3 before any result, and the availability note says v3 is kept in the repository.
@@ -198,20 +189,25 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 
 ## For v3 (from the 2026-09-23 model reviews)
 
-**Status 2026-09-24: items 1 to 7 are in `body.tex`, so every build has them; 8 was skipped; 9 is deferred; 10 is optional.**
+**Status 2026-09-25: items 1 to 7 are in `main.tex`; 8 was skipped; 9 is deferred; 10 is optional.**
 Item 4 was decided differently from how it is written below: no threshold was set after the fact, the claim
 of "codes that cleared reliability" was removed, and cold per-code kappa with bootstrap intervals is a new
 appendix table (79fd276). Commits: 1 e0acd4f, 2 bd57a7f, 3 a615022 and 75a05d3, 4 79fd276, 5 a21177d, 6
-3a5be78, 7 5f89504 (Alnasser cut to a short concurrent-work paragraph). The same day, for the ACL page limit:
-abstract to 200 words (08386f5), one-column appendix (d1e8408), Figure 1 is fold rate against capability
-and the per-arc grid is Figure 2 in Appendix A (ee17f12, be1c8a9, e353190). `main-acl-review.tex` now
-ends its main text on page 8. What is left for ARR: the anonymization pass, the Responsible NLP checklist, a model-review
-rerun on `main-acl-review.tex`, and a decision on item 9; the schedule is kept privately.
-On 2026-09-25 the anonymization pass was done (the repository name and viewer line now sit behind
-`\ifanon`), an Ethical considerations section was added for the checklist's risk and annotator items,
-the repository got its licenses (MIT for code, CC BY 4.0 for data and text), and the review rerun
-started. The anonymous build promises an anonymized copy of the repository as a supplement, which
-still has to be made.
+3a5be78, 7 5f89504 (Alnasser cut to a short concurrent-work paragraph).
+
+**The ACL detour (2026-09-24 to 25), set aside.** The paper was split into one body with ACL builds,
+fitted to ACL's page limit, and revised against model reviews written for ACL Rolling Review:
+the division-of-labor contribution cut to a pointer (item 9), an anonymization pass, an Ethical
+considerations section, related work on pressure across turns (FlipFlop, Ask Again, SYCON-Bench),
+the house-not-scene rule stated as scored, the within-vendor capability relation traced to a script,
+and a figure for the house claim. Four model reviews scored that draft 5/10 with soundness 2/4, all
+on the validity of the manner labels, which wording cannot fix. On 2026-09-25 the paper went back to
+the v2-plus-items-1-to-7 text (5f89504) as a single `main.tex`, and the suggestibility paper was
+weighed for ARR instead. The whole ACL draft is at `108bbaa`; any of its edits can be taken back from
+there. Two are corrections rather than venue choices and belong in v3 whatever the venue: the
+within-vendor capability relation (the paper says -0.57 with no result file behind it; check 8 in
+`REVIEW-CHECKS-2026-09-25.md` gives -0.58, and Meta's four models run the other way), and the
+house-not-scene rule, prediction 7, which the text should state as scored.
 
 v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
 self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
@@ -270,8 +266,8 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    about labs and generations, not situations; their task finding is what our design cannot see,
    cited as the complement. This is also the answer to the scene-generalization objection all four
    model reviews raised, and it matches the cross-instrument paper's low-cost-assay framing.
-9. Done 2026-09-25: the division-of-labor contribution is cut to a pointer (see Decisions).
-   Deferred on 2026-09-24 until after the ACL length fit.
+9. Deferred (2026-09-24). A version of this cut was drafted for ACL on 2026-09-25 (84815f1) and
+   set aside with the ACL build.
    Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
    human's role measured by step), so v3 keeps validation to what supports the findings and drops
    the division-of-labor contribution to a pointer. Its sharpest experiment is to apply Alnasser's

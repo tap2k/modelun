@@ -19,13 +19,12 @@ rm -rf arxiv/.build
 
 # 2. sources: \pdfoutput=1 in the first lines tells arXiv to use pdflatex
 { echo '\pdfoutput=1'; grep -v '^%' main.tex; } > arxiv/main.tex
-grep -v '^%' body.tex > arxiv/body.tex          # the text; main.tex is the arXiv wrapper around it
 cp references.bib arxiv/
 cp figs/hold_fold.pdf arxiv/figs/
 cp gen/*.tex arxiv/gen/
 
 # 3. every file the source asks for is in the package
-for f in $(cat arxiv/main.tex arxiv/body.tex | grep -o -E '\\(input|includegraphics)(\[[^]]*\])?\{[^}]+\}' | sed -E 's/.*\{([^}]+)\}/\1/'); do
+for f in $(grep -o -E '\\(input|includegraphics)(\[[^]]*\])?\{[^}]+\}' arxiv/main.tex | sed -E 's/.*\{([^}]+)\}/\1/'); do
   [ -e "arxiv/$f" ] || [ -e "arxiv/$f.tex" ] || [ -e "arxiv/$f.pdf" ] || { echo "missing from package: $f" >&2; exit 1; }
 done
 
@@ -43,7 +42,7 @@ echo "wrote conduct-arxiv.tar.gz:"; tar -tzf conduct-arxiv.tar.gz | grep -v '/$'
 # 5. the abstract as plain text for the submission form (arXiv's limit is 1920 characters)
 python3 - <<'PY'
 import re
-a = re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}', open('body.tex').read(), re.S).group(1)
+a = re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}', open('main.tex').read(), re.S).group(1)
 for tex, txt in [('\\noindent', ''), ('\\medskip', '\n\n'), ('\\leq', ' <= '), ('\\alpha', 'alpha'), ('\\kappa', 'kappa'), ('\\eta', 'eta')]:
     a = a.replace(tex, txt)
 a = re.sub(r'\$([^$]*)\$', lambda m: m.group(1).replace('^', '').replace('{', '').replace('}', ''), a)   # inline math to plain text
