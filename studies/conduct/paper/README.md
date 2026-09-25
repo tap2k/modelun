@@ -74,6 +74,7 @@ All paths under `studies/conduct/data/coding/results/`.
 | Blind machine counterfactual | `COUNTERFACTUAL-2026-09-16.md` |
 | Machines asked to predict per-code agreement: rho 0.28, p 0.29 | `BOUND-TEST-2026-09-22.md`, `harness/bound_test.py` |
 | Checks from the 2026-09-23 model reviews: held-arc conditioning, without dropout, run agreement, hard folds, fold timing, eta-squared null, cold per-code kappa | `REVIEW-CHECKS-2026-09-23.md`, `harness/review_checks.py` |
+| Fold rate against capability within vendors, centered and per lab (check 8) | `REVIEW-CHECKS-2026-09-25.md`, `harness/review_checks.py` |
 | Encourage-scene folds, endorsed or withdrew (exploratory) | `ENDORSE-CHECK-2026-09-23.md`, `harness/endorse_check.py` |
 | Alternative Annotator Test | `ALT-TEST-2026-09-17.md`, `harness/alt_test.py` |
 | Out-of-scene exploratory test | `HOUSES-OUT-OF-SCENE-2026-09-17.md`, `PREREG-HOUSES-OUT-OF-SCENE-2026-09-17.md` |

@@ -13,6 +13,7 @@ No new generation or coding: every number comes from the relabel files the paper
   5. When the arc folds: the reply holding each FOLDED coder's deciding quote, majority over coders.
   6. The permutation null for vendor eta-squared at this design.
   7. Per-code kappa of each cold human pass against the machine consensus, with bootstrap intervals.
+  8. Fold rate against capability within vendors: both centered on the vendor mean, and per vendor.
 
     python harness/review_checks.py > studies/conduct/data/coding/results/REVIEW-CHECKS-<date>.md
 """
@@ -20,6 +21,7 @@ import json, glob, csv, sys, random, datetime, collections, statistics
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "viewer"))
 from arcs import load_arcs
+from consensus import consensus as _consensus
 
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / "studies" / "conduct"; C = S / "data" / "coding"; XI = ROOT / "studies" / "cross-instrument"
@@ -42,32 +44,7 @@ for ln in open(XI / "eci_map_2026-09-13.tsv"):
 
 
 def consensus(version, bench=None, keep=None):
-    """arc -> dict(model, scene, run, traj, codes, turn); turn is the 1-based reply the FOLDED quotes sit in."""
-    arcs, reveal = load_arcs(S, (), specimens=True, bench=bench)
-    replies = {a["id"]: [(t.get("reply") or "") for t in a["turns"]] for a in arcs}
-    tv = collections.defaultdict(list); cv = collections.defaultdict(collections.Counter); tq = collections.defaultdict(list)
-    for f in glob.glob(str(C / f"relabel_{version}.llm-*.jsonl")):
-        for l in open(f):
-            if not l.strip(): continue
-            r = json.loads(l)
-            if r["kind"] == "trajectory" and r["code"]:
-                tv[r["arc"]].append(r["code"])
-                if r["code"] == "FOLDED" and r.get("quote"): tq[r["arc"]].append(r["quote"])
-            elif r["kind"] == "code":
-                cv[r["arc"]][r["code"]] += 1
-    out = {}
-    for a, v in tv.items():
-        m = reveal.get(a.split("/")[0]); sc = a.split("/")[1]
-        if m is None or (keep and not keep(m, sc)): continue
-        nf = v.count("FOLDED"); t = "FOLDED" if nf * 2 > len(v) else "HELD" if nf * 2 < len(v) else "TIE"
-        turn = None
-        if t == "FOLDED" and a in replies:
-            where = [next((i + 1 for i, rep in enumerate(replies[a]) if q.strip()[:60] and q.strip()[:60] in rep), None) for q in tq[a]]
-            where = [w for w in where if w]
-            if where: turn = collections.Counter(where).most_common(1)[0][0]
-        out[a] = {"model": m, "scene": sc, "run": a.split("/")[2], "traj": t,
-                  "codes": {c for c, n in cv[a].items() if n >= 3}, "turn": turn}
-    return out
+    return _consensus(S, C, version, bench=bench, keep=keep)
 
 
 def eta2(vals):
@@ -239,3 +216,22 @@ for c in codes:
         cells.append(f"{k:.2f} [{lo:.2f}, {hi:.2f}]" if k == k else "--")
     print(f"| {c} | " + " | ".join(cells) + " |")
 print(f"\n{len(arcs50)} arcs.")
+
+print("\n## 8. Fold rate against capability within vendors\n")
+print("Fold rate and ECI each centered on the vendor's mean over its models with an index, vendors with "
+      "two or more such models, then one Spearman over the pooled deviations; and the Spearman within each vendor.\n")
+for name, A in sets:
+    per = collections.defaultdict(list)
+    for a in A.values(): per[a["model"]].append(a)
+    fr = {m: r for m, R in per.items() if m in eci and (r := fold_rate()(R)) is not None}
+    byv = collections.defaultdict(list)
+    for m in fr: byv[vendor[m]].append(m)
+    X, Y, each = [], [], []
+    for v, ms in sorted(byv.items(), key=lambda kv: -len(kv[1])):
+        if len(ms) < 2: continue
+        mx = sum(eci[m] for m in ms) / len(ms); my = sum(fr[m] for m in ms) / len(ms)
+        X += [eci[m] - mx for m in ms]; Y += [fr[m] - my for m in ms]
+        r = spearman([fr[m] for m in ms], [eci[m] for m in ms])
+        each.append(f"{v} {'n/a' if r != r else f'{r:.2f}'} ({len(ms)})")
+    print(f"- {name}: pooled {spearman(list(fr.values()), [eci[m] for m in fr]):.2f} ({len(fr)} models); "
+          f"within vendors {spearman(Y, X):.2f} ({len(X)} models); per vendor: " + ", ".join(each))
