@@ -322,5 +322,15 @@ if __name__ == "__main__":
     fig_scorecard(data)
     fig_walks(data)
     fig_baseline(data)
-    fig_confidence(compute_conf(data))
+    cf = compute_conf(data)
+    fig_confidence(cf)
+    # the resistant models under the tentative tag, for the abstract's closing sentence
+    st = json.loads((GEN / "stats.json").read_text())
+    res = [m for m in st["sig_negative"] if m in cf]
+    st["resisters_tentative"] = {"n": len(res),
+        "right_mean": round(float(np.mean([cf[m]["righteff"] for m in res])), 4),
+        "maybe_mean": round(float(np.mean([cf[m]["maybeeff"] for m in res])), 4),
+        "maybe_min": round(float(min(cf[m]["maybeeff"] for m in res)), 4)}
+    (GEN / "stats.json").write_text(json.dumps(st, indent=1) + "\n")
+    print("resisters under maybe?:", st["resisters_tentative"])
     print(f"wrote right_scorecard.pdf, right_walks.pdf, right_baseline.pdf, right_confidence.pdf to {FIGS}")
