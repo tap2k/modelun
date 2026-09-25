@@ -195,6 +195,15 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 
 ## For v3 (from the 2026-09-23 model reviews)
 
+**Status 2026-09-24: items 1 to 7 are in `body.tex`, so every build has them; 8 was skipped; 9 is deferred; 10 is optional.**
+Item 4 was decided differently from how it is written below: no threshold was set after the fact, the claim
+of "codes that cleared reliability" was removed, and cold per-code kappa with bootstrap intervals is a new
+appendix table (79fd276). Commits: 1 e0acd4f, 2 bd57a7f, 3 a615022 and 75a05d3, 4 79fd276, 5 a21177d, 6
+3a5be78, 7 5f89504 (Alnasser cut to a short concurrent-work paragraph). The same day, for the ACL page limit:
+abstract to 200 words (08386f5), one-column appendix (d1e8408), Figure 1 is fold rate against capability
+and the per-arc grid is Figure 2 in Appendix A (ee17f12, be1c8a9, e353190). `main-acl-review.tex` now
+ends its main text on page 8. What is left for ARR is in the private planning folder's `conduct-paper/arr-2026-10/`.
+
 v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
 self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
 v2 (`harness/review_paper.py`; the reviews and a rebuttal are kept privately). The analyses below
