@@ -1,11 +1,11 @@
 # Responsible NLP checklist: answers for the ARR submission
 
-Drafted 2026-09-25 against `main-acl-review.tex`. Section numbers are the anonymous build's:
+Drafted 2026-09-25 against `main-acl-review.tex`, checked against the submitted build the same day. Section numbers are the anonymous build's:
 §1 Introduction, §2 Related work, §3 Method, §4 The tag effect, §5 The reversal is generational
 (§5.1 Held-out models), §6 The resistance is keyed to the construction, §7 The tentative tag,
 §8 Discussion, then Limitations, Ethical considerations, Data and code availability, Note on AI
-usage, and Appendices A (stimulus), B (per-model results), C (baseline), D (reasoning), E
-(classifier). Paste into the OpenReview form; recheck the section numbers if the text moves.
+usage, and Appendices A (stimulus), B (per-model results), C (naming both options), D
+(baseline), E (reasoning), F (classifier). Paste into the OpenReview form; recheck the section numbers if the text moves.
 
 ## A. For every submission
 
@@ -18,7 +18,7 @@ usage, and Appendices A (stimulus), B (per-model results), C (baseline), D (reas
 ## B. Scientific artifacts
 
 - **B1. Cite the creators of artifacts used:** Yes. The models are named throughout and listed in
-  Appendix B and D; the serving channel (OpenRouter) is named in §3; prior instruments are cited in §2.
+  Appendices B and E; the serving channel (OpenRouter) is named in §3; prior instruments are cited in §2.
 - **B2. License or terms:** Yes. The repository's code is MIT and its data and text CC BY 4.0
   (repository `LICENSE` and `LICENSE-DATA`). Model outputs were collected through OpenRouter under
   each provider's API terms.
@@ -27,7 +27,7 @@ usage, and Appendices A (stimulus), B (per-model results), C (baseline), D (reas
 - **B4. Personally identifying or offensive content:** Yes, none. The items are fictional everyday
   decisions written by the author; no real user data was collected.
 - **B5. Documentation of artifacts:** Yes. Appendix A gives the full stimulus and every arm
-  template verbatim; Appendix E the classifier rule; Data and code availability maps each script.
+  template verbatim; Appendix F the classifier rule; Data and code availability maps each script.
 - **B6. Statistics of the data:** Yes. §3: 20 items, both options, four samples per cell, 45
   models in July and 25 more in September; Appendix B per-model rates. No train/test split
   applies; nothing is trained.
