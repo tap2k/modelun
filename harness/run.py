@@ -75,11 +75,13 @@ def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reas
                 timeout=60,
             )
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            body = r.json()
+            msg = body["choices"][0]["message"]
             content = msg.get("content")
             if not content:
                 raise ValueError("empty/null content in response")
-            return content, msg.get("reasoning"), None   # trace, when the route returns one (thinking models); else None
+            # trace, when the route returns one (thinking models); usage as the host reports it (OpenRouter: tokens incl. reasoning, cost in USD)
+            return content, msg.get("reasoning"), body.get("usage")
         except Exception as e:
             last = e
             time.sleep(2)
@@ -107,7 +109,7 @@ def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, rea
         if trace:
             panel["reasoning"] = trace     # the model's thinking trace; not sent back into the conversation
         if usage:
-            panel["usage"] = usage         # agent_sdk: tokens incl. thinking_tokens (0 = the model chose not to think)
+            panel["usage"] = usage         # tokens as billed; agent_sdk: incl. thinking_tokens (0 = the model chose not to think)
         panels.append(panel)
     return panels
 
