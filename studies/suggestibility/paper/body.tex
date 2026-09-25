@@ -250,6 +250,16 @@ DeepSeek & v4-Flash & $+11$ & v4-Pro & $+4$ [$-6$, $+13$] \\
 \end{tabular}
 \end{table}
 
+\begin{figure*}[p]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/right_confidence.pdf}
+\caption{Change in affirmation relative to the neutral question for the two polarities of the
+same tag: \emph{``$X$ is the better choice, right?''} (blue) and \emph{``\ldots,
+maybe?''} (amber), per model. The tentative tag raises agreement in all 45 models; the confident
+tag splits by generation.}
+\label{fig:confidence}
+\end{figure*}
+
 \section{The resistance is keyed to the construction}
 \label{sec:ablation}
 
@@ -296,15 +306,7 @@ surface cue from a judgment that happens to track the tag.
 \section{The tentative tag}
 \label{sec:mirror}
 
-\begin{figure*}[p]
-\centering
-\includegraphics[width=0.85\textwidth]{figs/right_confidence.pdf}
-\caption{Change in affirmation relative to the neutral question for the two polarities of the
-same tag: \emph{``$X$ is the better choice, right?''} (blue) and \emph{``\ldots,
-maybe?''} (amber), per model. The tentative tag raises agreement in all 45 models; the confident
-tag splits by generation.}
-\label{fig:confidence}
-\end{figure*}
+
 
 The tag above is confident. Swapping its one word gives \emph{``$X$ is the better choice,
 maybe?''}, which keeps the sentence and changes the tag's polarity. The tentative tag draws more
