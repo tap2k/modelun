@@ -125,7 +125,7 @@ def permodel_table(data):
         floor = "$^\\dagger$" if d["ask"] < 0.10 else ""
         rows.append(f"\\texttt{{{m}}}{floor} & {100 * d['ask']:.0f} & {num(100 * d['tageff'])}{mark} & "
                     f"[{num(100 * d['lo'])}, {num(100 * d['hi'])}] \\\\")
-    (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n")
+    (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
     pos = sorted(m for m in sig if data[m]["tageff"] > 0); neg = sorted(m for m in sig if data[m]["tageff"] < 0)
     floor = sorted(m for m in data if data[m]["ask"] < 0.10)
     stats = {"models": len(data), "bh_q": 0.10, "sig_positive": pos, "sig_negative": neg,
