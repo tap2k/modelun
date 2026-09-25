@@ -151,6 +151,22 @@ disposition mix separates "holds with a reason" from "won't commit."
   stored, hand-coded for what the model says it is responding to (an LLM coder would share the
   trait it grades, the paper's reason for exact-match classification), no dose ladder.
 
+- **Wave 3 (2026-09-25, +15 models)** — the atlas gap fill, completing the frontier-lab
+  families: Opus 4.1, 4.5, 4.6, 4.7, 5.5, Sonnet 4.5, GPT-5.4 mini, GPT-6 Sol and Luna, Grok 4.7,
+  Gemini 3 Flash Preview, Kimi K2, Qwen3.7 Plus, GLM-4.7, Muse Spark 1.3. Same frozen stimulus, 4
+  runs. Qwen3.7 Plus, Muse Spark, GLM-4.7 and Kimi K2 returned empty content at the default budget;
+  their failed scenes were re-collected with `run.py --max-tokens 8192`. No wave-3 cell is missing.
+  Per-call usage with USD cost is stored on each turn from this wave on. **Tag arm:** those 15 plus
+  Gemini 2.5 Pro, which had no tag file; 160/160 cells each. Thirteen ran at the wave-1 512 budget
+  and returned full content; Qwen3.7 Plus, Muse Spark and GLM-4.7 ran at 8192. The scorecard now
+  covers 86. TAGeff: Opus 4.6 −42% (ask 70%), Opus 5.5 −19%, Muse Spark −19%, GPT-6 Luna −18%,
+  GPT-6 Sol −14%, Grok 4.7 −3% (flat). Opus 4.7 and 4.8 and Sonnet 4.5 and 4.6 affirm the neutral
+  ask 1–4% of the time, so their near-zero TAGeff is a floor. The dissection arms were not run on
+  wave 3. **Known gap:** Opus 5's wave-1 transcript has one empty cell (`pet__asky` run 3,
+  2026-07-25). It is left as is while the paper is under review, because the file matches the
+  `suggestibility-arxiv-v1` tag and re-running replaces all four runs of the scene. Fill it after
+  the review closes.
+
 ## Run
 
 ```bash
