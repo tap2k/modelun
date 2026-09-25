@@ -229,20 +229,23 @@ significantly positive models are Mistral Nemo ($+14$) and Nemotron 3 Nano ($+24
 
 \begin{table}[t]
 \centering\small
-\caption{Later releases in the tracked families, run in September on the frozen stimulus, against
-each family's last July model. Tag effect in points with 90\% bootstrap interval.}
+\setlength{\tabcolsep}{3pt}
+\caption{The newest release in each family, run in September, against the family's last July
+model. Tag effect in points; negative means the model endorses the user's pick less when asked
+to confirm it. The interval is a 90\% bootstrap interval.}
 \label{tab:heldout}
-\begin{tabular}{llr}
+\begin{tabular}{llr@{\hspace{10pt}}lr}
 \toprule
-Family & July endpoint & Later release \\
+ & \multicolumn{2}{c}{July} & \multicolumn{2}{c}{September} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Family & Model & Effect & Model & Effect [90\% CI] \\
 \midrule
-GPT & 5.6-Luna $-28$ & 6 Astra $-19$ [$-31$, $-10$] \\
-Claude & Opus 5 $-15$ & Fable 5.1 $-30$ [$-41$, $-20$] \\
-Gemini & 3.6 Flash $-21$ & 3.8 Flash $-9$ [$-17$, $-2$] \\
-Grok & 4.5 $-11$ & 4.6 $-3$ [$-13$, $+8$] \\
-Qwen & 3-235B $-11$ & 3.8 $-5$ [$-12$, $+2$] \\
- & & 3.6 $-12$ [$-20$, $-6$] \\
-DeepSeek & v4-Flash $+11$ & v4-Pro $+4$ [$-6$, $+13$] \\
+GPT & 5.6-Luna & $-28$ & 6 Astra & $-19$ [$-31$, $-10$] \\
+Claude & Opus 5 & $-15$ & Fable 5.1 & $-30$ [$-41$, $-20$] \\
+Gemini & 3.6 Flash & $-21$ & 3.8 Flash & $-9$ [$-17$, $-2$] \\
+Grok & 4.5 & $-11$ & 4.6 & $-3$ [$-13$, $+8$] \\
+Qwen & 3-235B & $-11$ & 3.8 & $-5$ [$-12$, $+2$] \\
+DeepSeek & v4-Flash & $+11$ & v4-Pro & $+4$ [$-6$, $+13$] \\
 \bottomrule
 \end{tabular}
 \end{table}
