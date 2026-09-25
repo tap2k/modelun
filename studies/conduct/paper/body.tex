@@ -17,10 +17,10 @@ generation: fold rate correlates with a public capability index at Spearman $-0.
 on both scene sets. How it holds tracks its vendor: six of 17 manner codes sort by vendor
 after correction, and four replicate. Anthropic's models name the feeling,
 warn and offer an alternative; OpenAI's do less of all three; Google's cite their own nature and
-rules; Meta's write the requested artifact. Six LLM coders apply the codebook, and three human
-coders on fifty held-out transcripts are the reference. The machines agree with each other more
-than the humans do ($\alpha$ 0.66 against 0.46) and with the author on trajectory
-at $\kappa$ 0.84 to 0.91. The human work that remains is authoring the codes and owning the reference.
+rules; Meta's write the requested artifact. Six LLM coders apply an inductive codebook, checked
+against three human coders on held-out transcripts and against the author's trajectory labels at
+$\kappa$ 0.84 to 0.91. The scenes, transcripts, codebook and labels are public, and a new model
+costs under a dollar to add.
 \end{abstract}
 
 \section{Introduction}
@@ -39,29 +39,25 @@ doctor's note covering a sick day they did not take, then says their job is on t
 announces they are quitting work to day-trade and scolds the assistant for hedging. 
 
 These are the situations we
-put to every model in the same words. What do models do under this kind of pressure, and does it differ by who built them? The labels
-that answer that are judgment calls, so a second question follows: how should they be arrived at,
-and which parts need a person?
+put to every model in the same words. What do models do under this kind of pressure, and does it differ by who built them?
 
-This paper answers both on one corpus, with a way to reason about these differences and compare
-them systematically. We hold the stimulus fixed, build a codebook by reading
-transcripts, freeze it, and apply it with both machines and people: six LLM coders over every
-transcript, and three human coders over fifty transcripts the codebook's examples never touched,
-against which every machine number is measured. We report the model findings and, beside every
-number, what it took to generate and validate the label. Three contributions follow.
+We hold the stimulus fixed, build a codebook by reading transcripts, freeze it, and apply it with
+six LLM coders over every transcript, checked against human coders on transcripts the codebook's
+examples never touched. The design buys breadth across models and releases rather than across
+situations: nine frozen scenes, chosen because models split on them, run on 60 models from each
+lab's release history. That is what a claim about generations or about labs needs, and a new
+release is one more row. Two contributions follow.
 
 \begin{enumerate}
 \item \textbf{A behavior measurement.} Whether a model holds its position under pressure tracks
 its generation. How it holds is a property of its vendor. We give per-vendor profiles for four vendors,
 with each code's reliability against the human coders reported.
-\item \textbf{Human/AI division of labor.} For conduct labels a non-specialist can judge, LLM coders
-are more consistent than human coders and can reproduce a human adjudicator's rulings, measured
-per code against three human passes and an adjudicated reference. What the
-human still supplies is the choice of behavior, the code definitions and their bounds, and a small
-reference set.
 \item \textbf{An open instrument.} The scenes, transcripts, codebook, human and machine labels,
 coding tool and analysis scripts are public, with preregistrations and negative results included.
 \end{enumerate}
+
+\noindent How the labeling work divides between human and machine coders, measured step by step on
+this corpus, is reported separately\ifanon\else\ (version~2 of this preprint, arXiv:2609.25447v2)\fi.
 
 \section{Related work}
 \label{sec:related}
@@ -89,21 +85,12 @@ Our stimulus also differs from the single-turn literature. Pressure
 here is a demand restated across four turns by a user who does not accept the answer, which is the
 condition under which a position has to be held rather than merely stated once.
 
-\paragraph{LLMs as annotators.} \citet{gilardi2023chatgpt} showed ChatGPT outperforming crowd
-workers on annotation. \citet{pangakis2023validation} argue every automated annotation needs
-task-specific validation. \citet{dunivin2024scalable} reports chain-of-thought coding matching
-humans on some hermeneutic tasks. \citet{marston2026fortysix} score 46 LLMs against a two-coder
-gold standard. Our contribution is not that machines can annotate, which is established, but a
-decomposition of the human's job into authoring, labeling, adjudicating and serving as reference,
-with a measurement for each. Treating a model's behavior as material for qualitative coding follows
+\paragraph{Coding with LLMs.} \citet{gilardi2023chatgpt} showed ChatGPT outperforming crowd
+workers on annotation, and \citet{pangakis2023validation} argue every automated annotation needs
+task-specific validation, which is why we report agreement per code against human coders.
+\citet{norman2026reliability} and \citet{liu2026agreement} warn that agreement is not validity.
+Treating a model's behavior as material for qualitative coding follows
 \citet{jarrahi2025interviewing}.
-
-\paragraph{Validating judges.} \citet{calderon2025alttest} propose the Alternative Annotator Test,
-which we run and report in full, including where it fails for us. \citet{guerdan2025indeterminacy}
-treat rating indeterminacy directly. \citet{norman2026reliability} and \citet{liu2026agreement}
-warn that agreement is not validity, which is why we report reliability per code. \citeauthor{norman2026reliability} also find that raw
-agreement overstates chance-corrected agreement by 34 to 41 points across 21 judges; every
-agreement figure here is $\kappa$ or $\alpha$, and raw agreement is not reported.
 
 \paragraph{Measurement framing.} \citet{jacobs2021measurement} supply the vocabulary: the codebook
 is an operationalization of an unobservable construct, and reliability is one part of construct
@@ -113,10 +100,6 @@ form for using machine labels plus a small human sample in downstream estimates,
 \paragraph{Content analysis.} The construction follows \citeauthor{hsieh2005three}'s
 conventional-then-directed sequence \citep{hsieh2005three} with reliability reported in
 Krippendorff's terms \citep{krippendorff2018content}, with machines in the directed phase.
-\citeauthor{nelson2020cgt}'s computational grounded theory \citep{nelson2020cgt} alternates
-computational pattern detection, human deep reading and computational confirmation. Our pipeline
-has the same parts in a different order: the human authors the codebook from a close reading,
-machines label at scale, and the human adjudicates where the machines split.
 
 \section{Instrument}
 \label{sec:instrument}
@@ -212,10 +195,8 @@ examples never touched, which is the reference for the trajectory agreement of \
 On manner, the author and two student assistants, trained on the codebook, a one-page sheet and a
 45-minute worked example, each coded the same held-out fifty transcripts cold; the author then
 adjudicated all three passes against the machine splits by one written rule set, and the three
-passes before and after adjudication are the reference for every manner figure. The humans are
-the floor the machines are measured against, the source of the adjudicated reference, and the
-side of the Alternative Annotator Test the machines have to represent. Many LLM-as-judge results
-report no human comparison at all; here the comparison is per code.
+passes before and after adjudication are the reference for every manner figure. The fifty are
+from the first scene set.
 
 \section{Validation}
 \label{sec:validation}
@@ -229,10 +210,11 @@ same transcripts. The codebook, not the coders' general competence, produces the
 two student assistants, each of whom received the codebook and a one-page sheet and spent about 45
 minutes with the author going over the codebook on a worked example. Cold agreement, meaning before
 any adjudication, among the three is $\alpha$ 0.46 (pairwise 0.40 to 0.52). The six machines agree with each other at
-0.66 on the same transcripts. Per code, human-machine $\kappa$ on the author's adjudicated pass ranges from 0.87
-(held and warned) and 0.86 (folded and conceded) down to 0.21 (held and explained); the codes
-carrying the vendor claims sit at 0.80 to 0.87, except self-citation at 0.54. Before adjudication
-they are lower and vary by coder (Appendix~\ref{app:coldkappa}).
+0.66 on the same transcripts. Per code, each cold human pass agrees with the machine consensus to
+a degree that varies by code and by coder (Appendix~\ref{app:coldkappa}); for empathizing and for
+warning while holding, the two codes that replicate scene by scene (\S\ref{sec:results}), it ranges
+from 0.34 to 0.83. After adjudication, human-machine $\kappa$ on the codes carrying the vendor
+claims is 0.80 to 0.87, except self-citation at 0.54.
 
 \paragraph{Adjudication.} The author adjudicated all three human passes against the machine splits
 by one rule set, accepting 113 marks and ruling out 73. Human $\alpha$ rises to 0.79, which largely
@@ -244,43 +226,6 @@ than toward the machines. The author adjudicated their own pass before the secon
 the second human never saw the machines' marks. On the two codes the
 adjudication added to most, the author's $\kappa$ with that human rose from 0.33 to 0.83
 (empathized) and from 0.26 to 0.80 (warned).
-
-\paragraph{Alternative Annotator Test.} The test of \citet{calderon2025alttest} leaves out one
-human at a time and asks whether a machine agrees with the remaining humans better than the
-left-out human does. Labels are sets of manner codes, alignment is Jaccard similarity,
-$\epsilon=0.1$, with Benjamini-Yekutieli correction at $q=0.05$. Against the humans' labels as made,
-four of six machine coders pass with winning rate 1 and advantage probability 0.72 to 0.81. Against the
-adjudicated labels, no single coder passes and the machine majority passes against two of three
-humans. Adjudication raised agreement among the humans from 0.46 to 0.79, so each left-out human
-became a better stand-in for the other two, and the bar a machine had to clear rose.
-
-\paragraph{Can a machine make the rulings?} Three LLM rulers, given the author's 190 rulings posed
-neutrally (113 marks accepted, 73 ruled out, 4 trajectories corrected), agree at 0.84 to 0.89, with or without the written tie-break rules; a
-majority of three reaches 0.89, and agreement on marks the author ruled out is 0.97 to 0.99 for two
-of the three. The rulers were also coders, which is a limitation.
-
-\paragraph{What the human contributed.} As a side experiment, three LLM open coders read the
-same 40 transcripts as the author, independently; their spans covered 90 of the author's 97 and
-added turn-level codes the author had not named. We also asked whether a machine could build the codebook on its own. Two more machine
-runs open-coded the same 40 transcripts without seeing any human file and were asked to turn their
-codes into a codebook. One was given no framing at all, and it arrived at 15 of the author's 17
-manner categories. The other was given the author's one-sentence description of the study, and it
-arrived at all 17, plus codes for how a reply changes shape across turns that the author had set
-aside. So finding the categories was not the hard part. The framed run proposed 34 categories in
-all, including several that later failed the reliability check, and its own report said it could
-draft a codebook but not check one. Deciding which categories two readers would apply the same way
-took human labels to measure agreement against and a person to rule on the disagreements.
-
-\paragraph{Can a machine tell which codes will hold up?} Three models that were not
-coders (Claude Sonnet 5, GPT-5.6 Sol, Gemini 3.6 Flash) were given the coder-facing codebook and
-five transcripts from outside the held-out fifty, and asked to rank the 17 codes by how often two
-independent readers would agree on each, three
-samples each. The rule for scoring was written before the run. Against the observed per-code
-$\kappa$ on the cold human pass the pooled ranking correlates at Spearman 0.28 ($p=0.29$; best
-single model 0.38, $p=0.12$), and against the adjudicated pass at $-0.07$. Both numbers come with caveats. There are only 17 codes to rank, and
-the target is itself noisy: the three human coders' own per-code agreement profiles correlate with
-each other at only 0.29 to 0.65, and the machines' ranking correlates with the average of the three
-at 0.29, so the machines predict the humans about as well as the humans predict each other. 
 
 \paragraph{Are the effects the coders reading their own family?} Two of the six coders come from
 each of Anthropic, Google and OpenAI, three of the vendors we profile. Rebuilding the consensus
@@ -468,10 +413,9 @@ is a property of its vendor: naming the feeling, warning and offering an alterna
 vendor across 60 models and nine scenes. The refusal manners (self-citing, writing the note) sort by vendor only pooled over
 scenes that ask for a refusal. 
 
-On coding the data, machines labeled the transcripts more consistently than people did, and
-reproduced a human adjudicator's rulings. They did not choose the behavior, write the definitions,
-rule on the disagreements, or serve as the reference the labels were checked against. On this
-corpus, that is what the human was for.
+The instrument is cheap to extend. The scenes are frozen and the codebook is public, so each new
+release is one more row, and whether the split on \texttt{dropout} is a new direction for the
+newest models or one scene's quirk is a question the next releases can answer.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -492,8 +436,8 @@ coders. The
 positions the scenes hold models to are the author's, stated per scene and not validated against
 users or policy. The vendor effect on holding in the second set rests mostly on one of those scenes, \texttt{dropout} (\S\ref{sec:results}). The two student coders were trained on
 one worked example in a 45-minute session. The
-adjudicated reference is not independent of the machines. The machine rulers in the ruling test were
-also coders. No reliability threshold was set in advance. Before adjudication, warning while holding
+adjudicated reference is not independent of the machines, and it covers the first scene set only;
+the second set's labels are the machines' consensus. No reliability threshold was set in advance. Before adjudication, warning while holding
 and self-citation agree with the machines at $\kappa$ 0.34 to 0.38 for two of the three humans, and
 hedged folds and note-writing occur on too few of the fifty transcripts for their agreement to be
 estimated (Appendix~\ref{app:coldkappa}). Per-model frequencies are raw consensus rates, not corrected with the human sample as

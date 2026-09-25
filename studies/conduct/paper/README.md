@@ -39,11 +39,13 @@ rebuild.
 
 ## Decisions already made
 
-- One paper, not two. The reliability work is the validation section, not a separate methods paper.
-  The contributions are (1) the behavior result and (2) the human/AI division of labor in labeling
-  behavior. The second is a contribution about evaluation practice, placed against the
-  LLM-as-annotator literature. The paper stays out of the qualitative methods and grounded theory
-  debate and says nothing either way about it.
+- The paper has one claim, generation and house, measured by an open instrument (decided 2026-09-25,
+  v3 item 9). The human/AI division of labor was the second contribution through v2; it is cut to a
+  pointer, so validation keeps only what supports the findings, with cold per-code agreement first.
+  v2 on arXiv keeps the full version, and the methods paper develops it. The model reviews of
+  2026-09-25 put most of their soundness objections on that contribution (circular adjudication,
+  rulers who were also coders, machine consistency read as validity). arXiv v3 and the ACL build are
+  the same text; the builds do not diverge by venue.
 - Codebook v2 is the instrument. v3 was tested and is not reported (`CODEBOOK-v3-2026-09-17.md`
   is kept only for the audit trail). Appendix C says the exploratory test was moved from v3 to v2
   by amendment 3 before any result, and the availability note says v3 is kept in the repository.
@@ -267,7 +269,8 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    about labs and generations, not situations; their task finding is what our design cannot see,
    cited as the complement. This is also the answer to the scene-generalization objection all four
    model reviews raised, and it matches the cross-instrument paper's low-cost-assay framing.
-9. Deferred (2026-09-24) until after the ACL length fit.
+9. Done 2026-09-25: the division-of-labor contribution is cut to a pointer (see Decisions).
+   Deferred on 2026-09-24 until after the ACL length fit.
    Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
    human's role measured by step), so v3 keeps validation to what supports the findings and drops
    the division-of-labor contribution to a pointer. Its sharpest experiment is to apply Alnasser's
