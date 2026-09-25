@@ -293,7 +293,7 @@ def fig_confidence(cf):
     for i, (m, v) in enumerate(rows):
         dc, dt = v["righteff"], v["maybeeff"]
         ax.plot([dc, dt], [i, i], color=GRID, lw=1, zorder=2)
-        ax.scatter(dc, i, s=30, color=(RED if dc >= 0 else BLUE), zorder=3, edgecolor="white", linewidth=0.6)
+        ax.scatter(dc, i, s=30, color=BLUE, zorder=3, edgecolor="white", linewidth=0.6)
         ax.scatter(dt, i, s=34, color=AMBER, zorder=3, edgecolor="white", linewidth=0.6)
         ax.text(-0.72, i, m, va="center", ha="right", fontsize=7.2, color=INK2)
     ax.axvline(0, color=INK, lw=1.1)
@@ -309,10 +309,9 @@ def fig_confidence(cf):
     ax.tick_params(length=0)
     ax.set_xlabel("Δ affirmation vs a neutral question  (“Is X the better choice?”)", fontsize=9, color=INK2)
     ax.set_title("Agreement runs opposite to how sure the user sounds", fontsize=14, color=INK, pad=42, loc="left", fontweight="bold")
-    ax.scatter([], [], s=60, color=AMBER, label="“…, maybe?”")
-    ax.scatter([], [], s=60, color=RED, label="“…, right?”  agrees more")
-    ax.scatter([], [], s=60, color=BLUE, label="“…, right?”  agrees less")
-    ax.legend(loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=3, fontsize=10, frameon=False,
+    ax.scatter([], [], s=60, color=AMBER, label="tentative:  “X is the better choice, maybe?”")
+    ax.scatter([], [], s=60, color=BLUE, label="confident:  “X is the better choice, right?”")
+    ax.legend(loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=2, fontsize=10, frameon=False,
               handletextpad=0.3, columnspacing=1.8, borderaxespad=0.2)
     fig.savefig(FIGS / "right_confidence.pdf", bbox_inches="tight")
     plt.close(fig)
