@@ -91,3 +91,10 @@ then run the same four commands against `--study studies/<name>`. The viewer and
 kernel come for free; add `views/` only when you want more than transcript + compare. A study graduates
 to its own repo (depending on a `harness/` checkout) when it needs different collaborators than the
 harness.
+
+## License
+
+Code (`harness/`, and the scripts and views under `studies/`) is under the MIT License, in
+[`LICENSE`](LICENSE). Everything else is under Creative Commons Attribution 4.0, in
+[`LICENSE-DATA`](LICENSE-DATA): stimuli, codebooks, transcripts, labels, results, docs and paper
+sources. The transcripts are model outputs collected through each provider's API under its terms.
