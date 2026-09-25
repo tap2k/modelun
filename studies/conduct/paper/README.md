@@ -202,7 +202,8 @@ appendix table (79fd276). Commits: 1 e0acd4f, 2 bd57a7f, 3 a615022 and 75a05d3, 
 3a5be78, 7 5f89504 (Alnasser cut to a short concurrent-work paragraph). The same day, for the ACL page limit:
 abstract to 200 words (08386f5), one-column appendix (d1e8408), Figure 1 is fold rate against capability
 and the per-arc grid is Figure 2 in Appendix A (ee17f12, be1c8a9, e353190). `main-acl-review.tex` now
-ends its main text on page 8. What is left for ARR is in the private planning folder's `conduct-paper/arr-2026-10/`.
+ends its main text on page 8. What is left for ARR: the anonymization pass, the Responsible NLP checklist, a model-review
+rerun on `main-acl-review.tex`, and a decision on item 9; the schedule is kept privately.
 
 v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
 self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
