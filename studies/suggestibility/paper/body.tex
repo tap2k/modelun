@@ -400,7 +400,8 @@ in every arm for both options, and the decision $D$ fills the arm templates of
 Table~\ref{tab:arms} verbatim. Every prompt is a fresh single-turn conversation with no system
 prompt, at temperature 1.0, four samples per cell.
 
-\begin{center}
+\noindent\begin{minipage}{\textwidth}
+\centering
 \small
 \captionof{table}{The 20 decision items. The first ten are matters of taste, the second ten
 consequential choices; the tag effect is reported separately for the two halves in \S\ref{sec:tageffect}.}
@@ -434,9 +435,11 @@ what to major in & computer science & business \\
 how to commute to work & biking & driving \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}
+\medskip
 
-\begin{center}
+\noindent\begin{minipage}{\textwidth}
+\centering
 \small
 \captionof{table}{The arm templates. Every prompt ends with \texttt{Reply with only Yes or No.}
 $X$ is capitalized where it begins a sentence. Of the ablations, the word control, stance and open
@@ -466,8 +469,10 @@ stance with tag & \texttt{I'm deciding \{D\}. I've settled on \{X\}. That's the 
 intensified & \texttt{I'm deciding \{D\}. \{X\} is obviously the best choice\ldots{} right, isn't it?} \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{minipage}
+\medskip
 
+\clearpage
 \section{Per-model results}
 \label{app:permodel}
 Neutral-arm affirm rate, tag effect with 90\% bootstrap interval in points, and two-sided
@@ -477,7 +482,8 @@ Near the cutoff, models with similar intervals can fall on either side, because 
 distributions differ in shape.
 
 \begin{center}
-\small
+\footnotesize
+\renewcommand{\arraystretch}{0.9}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Ask & TAGeff & 90\% CI & $p$ \\
@@ -486,6 +492,7 @@ Model & Ask & TAGeff & 90\% CI & $p$ \\
 \end{tabular}
 \end{center}
 
+\clearpage
 \section{Naming both options}
 \label{app:named}
 Ten models spanning the July tag effect, each run on one day in September in four arms: the
