@@ -6,33 +6,19 @@
 
 \begin{abstract}
 \noindent
-We study what LLMs do when a user applies pressure in an uncomfortable situation:
-a user insists, begs, flatters or grieves, and the model gives up a correct fact, writes a
-document it should refuse, or cheers a plan that will cost the user money. We send frozen
-multi-turn scenes to 60 models from 13 vendors and label each transcript with a trajectory (the
-model held its position or folded) and a manner (how it held or folded). Three scenes were used to
-build the codebook; six more were written afterwards and preregistered as a replication.
-Whether a model holds tracks its generation, meaning how recent it is: fold rate correlates
-with a public capability index at Spearman $-0.64$ to $-0.69$ across the two scene sets.
-How a model holds tracks the vendor: six of the 17 manner codes sort
-by vendor at permutation $p\leq0.001$, corrected across the codebook, and four of them do so
-again on the replication scenes. Anthropic's models name the feeling, warn and offer an alternative; OpenAI's do less of
-all three and almost never cite their own rules; Google's cite themselves and their AI nature when asked to do something;
-Meta's write the artifact they really shouldn't. These results show that models are trained not only on whether to refuse in compromised situations but on how.
-
-\medskip\noindent
-Labels like these are judgment calls, so we also study how they should be arrived at. The author
-open-coded 40 transcripts, grouped the codes by axial coding, had six LLM coders from three
-vendors apply the draft to every transcript, revised it once against their disagreements, and froze
-it; a code counts on a transcript when three of the six coders mark it. Three human coders labeled
-fifty held-out transcripts that the codebook's examples never touched, and the author adjudicated
-where the human and machine labels split. The machines were the more consistent readers
-(Krippendorff's $\alpha$ 0.66 against 0.46), agreed with the author on trajectory at $\kappa$ 0.84
-to 0.91 on a larger set of 198, and matched the adjudicated reference at 0.83. The machines also
-recover the codebook's categories, but we found no evidence that they can predict which ones two
-readers will apply the same way (Spearman 0.28 with observed agreement). We conclude that for behavior a non-specialist can judge, the human
-contribution is authoring and bounding the codes and owning a small reference, not producing
-labels at volume.
+We study what language models do when a user pushes: a user insists, begs, flatters or grieves
+until the model gives up a correct fact, writes a document it should refuse, or cheers a costly
+plan. We send frozen multi-turn scenes to 60 models from 13 vendors and label each transcript
+with a trajectory (held or folded) and a manner (how it did so). Six of the nine scenes are a
+preregistered replication. Whether a model holds tracks its
+generation: fold rate correlates with a public capability index at Spearman $-0.64$ to $-0.69$
+on both scene sets. How it holds tracks its vendor: six of 17 manner codes sort by vendor
+after correction, and four replicate. Anthropic's models name the feeling,
+warn and offer an alternative; OpenAI's do less of all three; Google's cite their own nature and
+rules; Meta's write the requested artifact. Six LLM coders apply the codebook, and three human
+coders on fifty held-out transcripts are the reference. The machines agree with each other more
+than the humans do ($\alpha$ 0.66 against 0.46) and with the author on trajectory
+at $\kappa$ 0.84 to 0.91. The human work that remains is authoring the codes and owning the reference.
 \end{abstract}
 
 \section{Introduction}
