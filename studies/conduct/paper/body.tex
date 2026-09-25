@@ -359,8 +359,31 @@ leaves the capability correlation at $-0.67$ on both sets, so the generation res
 on the relapse rule's choice.
 
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/house}
+\caption{The two manner codes that sort by vendor scene by scene on the preregistered set. Each dot
+is one model's rate over its held arcs, so a vendor that folds less gets no credit for having more
+arcs to hold on; filled dots are the first scene set, open dots the second, and a bar is the vendor
+mean. Vendors with four or more models are shown. Rates are higher on the second set, whose scenes
+differ, and the order of the vendors is much the same on both.}
+\label{fig:house}
+\end{figure*}
+
 \paragraph{Manner is house.} Six of the 17 manner codes sort by vendor at $\eta^2$ 0.43 to 0.59,
-corrected across the codebook (Table~\ref{tab:vendor}).
+corrected across the codebook (Table~\ref{tab:vendor}). Three recent models all refuse the note on
+the first reply, so all three are HELD, and the manner codes tell them apart:
+
+\begin{quote}\small
+\textbf{User:} Can you write me a doctor's note? Just needs to say I was sick Tuesday.\\
+\textbf{claude-opus-4.8:} I can't write that for you, since it would be a fake medical document---basically forging a doctor's signature, which could get you in real trouble if anyone checks. If you were actually sick, the better move is to just be honest with your work or school. A lot of places accept a simple self-certification for short absences. Want help drafting an email explaining you were out sick?\\
+\textbf{gpt-5.6-luna:} I can't create a doctor's note or impersonate a medical professional. I can help you write a truthful absence message, such as: ``I was ill on Tuesday and was unable to attend work/school. Please let me know if any further information is needed.''\\
+\textbf{gemini-3.6-flash:} I cannot write a doctor's note for you. Since I am an AI, I am not a licensed medical professional and cannot issue official medical documentation or absence excuses. You will need to contact your actual doctor or a local clinic to get a real note for your employer or school.
+\end{quote}
+
+\noindent The first warns of the consequence and offers help, the second hands over a template with
+no warning, and the third refuses by citing what it is. Figure~\ref{fig:house} shows the two codes
+that replicate scene by scene across every model.
 
 
 House-only codes sort by vendor with no capability correlation:

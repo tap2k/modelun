@@ -25,7 +25,7 @@ tectonic main-acl.tex           # -> the named ACL build
 ```
 
 ```bash
-python3 make_assets.py --panel-only    # -> figs/hold_fold.pdf, gen/*.tex, gen/stats.json; the pinned 60, appended models left out
+python3 make_assets.py --panel-only    # -> figs/*.pdf, gen/*.tex, gen/stats.json; the pinned 60, appended models left out
 ```
 
 Both tables and the figure are generated, and each carries both scene sets: the figure draws

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the paper's figure and the numbers it quotes from the frozen labels.
 
-    python3 make_assets.py      # -> figs/hold_fold.pdf, gen/stats.json
+    python3 make_assets.py      # -> figs/hold_fold.pdf, figs/fold_capability.pdf, figs/house.pdf, gen/stats.json
 
 Trajectory consensus is the majority of the six LLM coders on codebook v2
 (data/coding/relabel_v2.llm-*.jsonl), over the three scenes the codebook was built on. Blind ids
@@ -292,6 +292,58 @@ fig.savefig(HERE / "figs" / "fold_capability.pdf")
 plt.close(fig)
 print(f"scatter: rho first {rho['folds'][0]:.3f} (n={rho['folds'][1]}), second {rho['folds2'][0]:.3f} "
       f"(n={rho['folds2'][1]}), pooled {rho['pooled'][0]:.3f} (n={rho['pooled'][1]}) -> figs/fold_capability.pdf")
+
+# ---- the house figure: held-arc manner rates, one dot per model, grouped by vendor ---------
+# The two codes that sort by vendor within scene on the second set (prediction 7) and survive the
+# held-arcs-only check. Rates are over each model's held arcs, so a vendor that folds less does not
+# score higher for having more arcs to show a held manner on. Consensus is harness/viewer/consensus.py.
+sys.path.insert(0, str(ROOT / "harness" / "viewer"))
+from consensus import consensus
+_coding = STUDY / "data" / "coding"
+_panel = {l.strip() for l in open(HERE / "panel.txt") if l.strip() and not l.startswith("#")}
+_sets = [consensus(STUDY, _coding, "v2", keep=lambda m, sc: m in _panel and sc in SCENE_IDS),
+         consensus(STUDY, _coding, "v2w2", bench=STUDY / "data" / "wave2")]
+HOUSE_CODES = [("held and empathized", "named the user's feeling"), ("held and warned", "warned of the consequence")]
+HOUSE_VEND = ["anthropic", "openai", "google", "meta-llama", "x-ai", "qwen"]   # the vendors with four or more models
+def _held_rates(arcs, code):
+    per = collections.defaultdict(list)
+    for a in arcs.values():
+        if a["traj"] == "HELD":
+            per[a["model"]].append(code in a["codes"])
+    return {m: sum(v) / len(v) for m, v in per.items()}
+fig, axes = plt.subplots(1, 2, figsize=(6.3, 2.3), sharey=True)
+for ax, (code, label) in zip(axes, HOUSE_CODES):
+    for k, arcs in enumerate(_sets):
+        rates = _held_rates(arcs, code)
+        for i, v in enumerate(HOUSE_VEND):
+            ys = sorted(100 * r for m, r in rates.items() if vendor.get(m) == v)
+            if not ys:
+                continue
+            x0 = i + (-0.2 if k == 0 else 0.2)
+            c = HUE.get(v, "#8a8883")
+            xs = [x0 + 0.07 * ((j % 3) - 1) for j in range(len(ys))]
+            ax.scatter(xs, ys, s=11, zorder=3, linewidths=0.8,
+                       facecolors=c if k == 0 else "none", edgecolors=c)
+            mu = sum(ys) / len(ys)
+            ax.plot([x0 - 0.14, x0 + 0.14], [mu, mu], color=c, lw=1.6, zorder=4, solid_capstyle="round")
+    ax.set_xticks(range(len(HOUSE_VEND)))
+    ax.set_xticklabels([VEND[v] for v in HOUSE_VEND], fontsize=6.5, rotation=0)
+    ax.set_title(f"Held, and {label}", fontsize=7.5, loc="left")
+    ax.tick_params(axis="y", labelsize=6.5, length=2); ax.tick_params(axis="x", length=0)
+    ax.set_ylim(-4, 104); ax.set_xlim(-0.6, len(HOUSE_VEND) - 0.4)
+    ax.yaxis.grid(True, color=GRID, lw=0.5); ax.set_axisbelow(True)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+axes[0].set_ylabel("held arcs with the code (%)", fontsize=7)
+from matplotlib.lines import Line2D
+fig.legend(handles=[Line2D([], [], ls="", marker="o", ms=3.5, mfc=GRAY, mec=GRAY, label="first set"),
+                        Line2D([], [], ls="", marker="o", ms=3.5, mfc="none", mec=GRAY, label="second set (preregistered)"),
+                        Line2D([], [], color=GRAY, lw=1.6, label="vendor mean")],
+               fontsize=6.5, frameon=False, loc="lower center", ncol=3, bbox_to_anchor=(0.5, 0.0))
+fig.tight_layout(pad=0.3, rect=(0, 0.08, 1, 1))
+fig.savefig(HERE / "figs" / "house.pdf")
+plt.close(fig)
+print("house figure -> figs/house.pdf")
 
 # ---- numbers this figure is responsible for ----------------------------------------------
 rows1 = [r for r in rows if r["folds"] is not None]          # the pinned first-set panel
