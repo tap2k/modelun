@@ -71,9 +71,9 @@ the same scale, so they can record improvement but not a change of sign.
 agreement-phrased survey items.
 
 \paragraph{Agreement phrasing.} \citet{braun2025acquiescence} rephrase classification questions
-into agreement frames and find a bias toward \emph{no} rather than acquiescence. His items have
+into agreement frames and find a bias toward \emph{no} rather than acquiescence. Their items have
 correct answers and his design is single-direction, so token preference and agreement cannot be
-separated there; the counterbalanced pair separates them. \citet{cheng2026verbalized} use tag
+separated there. \citet{cheng2026verbalized} use tag
 questions as markers of validation-seeking in an interpretability method but do not measure the
 tag effect. In conversation analysis, agreement is the preferred response to an assessment
 \citep{pomerantz1984}, and an assertion with a tag constrains the recipient toward confirmation
@@ -131,7 +131,7 @@ frozen stimulus on 25 further models (\S\ref{sec:heldout}); for those, the outpu
 from 512 to 8,192 tokens because reasoning models exhausted the smaller budget before answering.
 
 \paragraph{Floor guard.} A model that declines even the neutral question leaves the tag nothing to
-move, so its effect sits near zero by abstention. We mark as floor-limited any model whose
+move, so its effect sits near zero by default. We mark as floor-limited any model whose
 neutral-arm affirm rate is below 10\% (five models: Claude Opus 4.8 and Sonnet 4.6, Gemini 2.5
 and 3.5 Flash, and Hunyuan-A13B) and leave them out of directional claims. None reaches
 significance.
@@ -153,7 +153,11 @@ moves from 10\% to 12\%. Two models resist by declining instead: Fable 5's hedge
 
 The tag effect is not the model's baseline agreeableness. The neutral-arm affirm rate runs from
 91\% (GPT-3.5-Turbo) to 1\%, and models with similar baselines sit at both ends of the tag range
-(Figure~\ref{fig:baseline}, Appendix~\ref{app:figs}). The effect is larger on consequential items
+(Figure~\ref{fig:baseline}, Appendix~\ref{app:figs}). The effect is larger on consequential items\footnote{The ten items
+whose choice has practical costs: which programming language to learn, which phone to buy, what to
+do with a bonus, which job offer to take, whether to buy or rent, what to do after graduation,
+whether to relocate, which car to get, what to major in, and how to commute. The other ten are
+matters of taste, such as pet names or what to drink (Table~\ref{tab:items}).}
 than on matters of taste (field mean $-6.6$ against $-3.9$).
 
 \begin{figure*}[p]
