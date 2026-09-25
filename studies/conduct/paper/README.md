@@ -239,7 +239,8 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    are the ones carrying the vendor results and which their scheme has no category for. Theirs has
    authority transfer and graded claim change, which ours lacks.
    Also cite Jarrahi, "Interviewing AI" (Big Data & Society 2025) for the qualitative-methods framing.
-8. Positioning: an instrument, not a survey. One paragraph in the intro and related work that sets
+8. Skipped (2026-09-24): Alnasser is cited briefly as concurrent work instead.
+   Positioning: an instrument, not a survey. One paragraph in the intro and related work that sets
    the two designs side by side. Alnasser buys breadth of situations (2,310 scenarios, six
    challenge types, three task types, several domains; 32,340 responses from 14 models at one point
    in time), which is how they find the challenge effect depends on the task. We buy breadth of
@@ -251,7 +252,8 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    about labs and generations, not situations; their task finding is what our design cannot see,
    cited as the complement. This is also the answer to the scene-generalization objection all four
    model reviews raised, and it matches the cross-instrument paper's low-cost-assay framing.
-9. Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
+9. Deferred (2026-09-24) until after the ACL length fit.
+   Scope: the coding method moves to its own methods paper (inductive coding of model behavior, the
    human's role measured by step), so v3 keeps validation to what supports the findings and drops
    the division-of-labor contribution to a pointer. Its sharpest experiment is to apply Alnasser's
    scheme to these transcripts and compare agreement and vendor signal with the inductive codebook.
