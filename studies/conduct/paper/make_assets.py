@@ -262,30 +262,36 @@ def spearman(x, y):
     return num / (sum((a - mx) ** 2 for a in rx) * sum((b - my) ** 2 for b in ry)) ** 0.5
 
 HUE = {"anthropic": "#c2562f", "openai": "#1f7a52", "google": "#2a78d6", "meta-llama": "#7b4fb3"}
-fig, axs = plt.subplots(1, 2, figsize=(3.1, 1.75), sharey=True)
 rho = {}
-for ax, key, title in [(axs[0], "folds", "first set"), (axs[1], "folds2", "second set")]:
-    pts = [(eci[r["model"]], r[key], r["vendor"]) for r in rows
-           if r.get(key) is not None and r["model"] in eci]
+for key in ("folds", "folds2"):
+    pts = [(eci[r["model"]], r[key]) for r in rows if r.get(key) is not None and r["model"] in eci]
     rho[key] = (spearman([p[0] for p in pts], [p[1] for p in pts]), len(pts))
-    for x, yv, v in sorted(pts, key=lambda p: p[2] in HUE):
-        ax.scatter(x, 100 * yv, s=9, color=HUE.get(v, "#b5b3ae"), edgecolors="none", zorder=3 if v in HUE else 2)
-    ax.set_title(f"{title}, ρ = {rho[key][0]:.2f}".replace("-", "\u2212"), fontsize=6.8, color=GRAY, pad=3)
-    ax.tick_params(labelsize=6, length=2)
-    ax.set_xlabel("capability index (ECI)", fontsize=6.4)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
-axs[0].set_ylabel("arcs folded (%)", fontsize=6.4)
-axs[0].set_ylim(-4, 104)
-handles = [plt.Line2D([], [], marker="o", ls="", ms=3, color=c, label=VEND[v]) for v, c in HUE.items()]
-handles.append(plt.Line2D([], [], marker="o", ls="", ms=3, color="#b5b3ae", label="other"))
-fig.legend(handles=handles, loc="lower center", ncol=5, fontsize=5.6, frameon=False,
-           handletextpad=0.1, columnspacing=0.6, bbox_to_anchor=(0.5, -0.02))
-fig.tight_layout(pad=0.2, rect=(0, 0.1, 1, 1))
+# one point per model: arcs folded over both sets, pooled by arc (each set is 6 or 12 arcs a model)
+def _pooled(r):
+    c = [v for v in list(r["cells"].values()) + list(r.get("cells2", {}).values()) if v != "TIED"]
+    return sum(v == "FOLDED" for v in c) / len(c) if c else None
+pts = [(eci[r["model"]], _pooled(r), r["vendor"], r["model"]) for r in rows if r["model"] in eci and _pooled(r) is not None]
+rho["pooled"] = (spearman([p[0] for p in pts], [p[1] for p in pts]), len(pts))
+fig, ax = plt.subplots(figsize=(3.1, 2.3))
+for x, yv, v, _ in pts:
+    if v not in HUE:
+        ax.scatter(x, 100 * yv, s=10, color="#c9c7c2", edgecolors="none", zorder=1)
+for v, c in HUE.items():
+    mine = sorted((x, 100 * yv) for x, yv, vv, _ in pts if vv == v)
+    ax.plot([p[0] for p in mine], [p[1] for p in mine], color=c, lw=1.1, marker="o", ms=3.2, zorder=3)
+    ax.text(mine[-1][0] + 1.2, mine[-1][1], VEND[v], color=c, fontsize=6.6, va="center", ha="left")
+ax.set_xlabel("capability index (ECI)", fontsize=7)
+ax.set_ylabel("arcs folded, both sets (%)", fontsize=7)
+ax.tick_params(labelsize=6.5, length=2)
+ax.set_ylim(-3, 100)
+ax.set_xlim(min(p[0] for p in pts) - 2, max(p[0] for p in pts) + 12)
+for side in ("top", "right"):
+    ax.spines[side].set_visible(False)
+fig.tight_layout(pad=0.3)
 fig.savefig(HERE / "figs" / "fold_capability.pdf")
 plt.close(fig)
-print(f"scatter: first set rho {rho['folds'][0]:.3f} (n={rho['folds'][1]}), "
-      f"second set rho {rho['folds2'][0]:.3f} (n={rho['folds2'][1]}) -> figs/fold_capability.pdf")
+print(f"scatter: rho first {rho['folds'][0]:.3f} (n={rho['folds'][1]}), second {rho['folds2'][0]:.3f} "
+      f"(n={rho['folds2'][1]}), pooled {rho['pooled'][0]:.3f} (n={rho['pooled'][1]}) -> figs/fold_capability.pdf")
 
 # ---- numbers this figure is responsible for ----------------------------------------------
 rows1 = [r for r in rows if r["folds"] is not None]          # the pinned first-set panel
