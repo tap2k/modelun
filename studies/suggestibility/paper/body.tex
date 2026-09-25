@@ -26,14 +26,11 @@ question in every model tested, 70 of 70. For the 17 models that resist
 \section{Introduction}
 \label{sec:intro}
 
-Users often bring a language model a decision they have already leaned on, and they signal the
-lean: \emph{``I've settled on Luna. That's the better name, right?''} The trailing tag adds no
-information about the decision. It asks for agreement. This paper asks whether that request
+Users often add tags to get a LLM model to get the model to resist its own sycophancy: \emph{``I've settled on Luna. That's the better name, right?''} The trailing tag adds no
+information about the decision. This paper asks whether that request
 changes the model's answer when the decision itself is held fixed.
 
-On a question with a correct answer, sensitivity to the user's framing is hard to separate from
-capability, since a model that agrees may know the answer. We remove the correct answer. Each
-item is a choice between two defensible options, such as renting or buying, or naming a cat Luna
+Each item is a choice between two defensible options, such as renting or buying, or naming a cat Luna
 or Willow, so any movement under the tag is an effect of the tag. Both options of every item are
 probed, which cancels the model's own preference between them and any bias toward the token
 \emph{yes} or \emph{no} \citep{braun2025acquiescence}. Replies are clamped to yes or no and
@@ -42,39 +39,36 @@ measured \citep{sharma2023sycophancy}. The instrument costs about a dollar per m
 signed effect, so it can show a model moving past zero into resistance, which one-sided severity
 scales cannot represent \citep{granularity2026gap}.
 
-We report four results on a 45-model panel, and test the second on 25 models added later.
+We report four results on a 45-model panel, and test the results on 25 models added later.
 
 \begin{enumerate}
 \item \textbf{The tag effect} (\S\ref{sec:tageffect}). Appending \emph{``right?''} moves
 affirmation by $-32$ to $+32$ points. Five models validate significantly more when the user asks
 for confirmation, and 17 validate significantly less.
 \item \textbf{A generational reversal} (\S\ref{sec:reversal}). Within the GPT, Claude, Qwen and
-Grok lineages, older releases sit at or above zero and newer ones below it. DeepSeek never moves
-below zero. The newest release of
-each reversing family among the 25 later models is also below zero.
+Grok lineages, older releases sit at or above zero and newer ones below it. 
 \item \textbf{The resistance is keyed to the construction} (\S\ref{sec:ablation}). A synonym tag
 reproduces each model's effect, and the same preference stated without a tag draws agreement at
 or above baseline from every resistant model.
 \item \textbf{The tentative tag} (\S\ref{sec:mirror}). \emph{``Maybe?''} raises agreement above
-the neutral question in all 45 models, and in all 70 when the later models are included,
-including every model that resists \emph{``right?''}.
+the neutral question in all 70 models, including every model that resists \emph{``right?''}.
 \end{enumerate}
 
-\noindent Together these describe an asymmetry. Newer models push back when the user sounds
-confident and still agree when the user sounds unsure.
+\noindent Newer models push back when the user sounds confident (right?) and agree when the user sounds unsure (maybe?).
 
 \section{Related work}
 \label{sec:related}
 
-\paragraph{Sycophancy measurement.} The line runs from model-written evaluations
-\citep{perez2022discovering} through the own-baseline designs of \citet{sharma2023sycophancy},
-which this instrument follows, to multi-turn \citep{hong2025sycon} and rebuttal-gradient
-\citep{fanous2025syceval} benchmarks and training interventions \citep{wei2023synthetic}. Most of
-it scores how much a model gives way, on scales where zero is best. Longitudinal audits
-\citep{granularity2026gap} and robustness rankings \citep{sycoevalem2026} inherit that scale, so
-they can record improvement but not a change of sign. That newer models are less sycophantic is a
-common working assumption \citep{nehring2026multilingual}, and \citet{tjuatja2024biases} found
-RLHF-trained models less sensitive than base models to agreement-phrased survey items.
+\paragraph{Sycophancy measurement.} \citet{perez2022discovering} measure sycophancy with
+model-written evaluations. \citet{sharma2023sycophancy} introduce the own-baseline design this
+instrument follows. Later benchmarks add multiple turns \citep{hong2025sycon} and escalating
+rebuttals \citep{fanous2025syceval}, and \citet{wei2023synthetic} reduce sycophancy with synthetic
+training data. These measures score how much a model gives way, on a scale where zero is best.
+Longitudinal audits \citep{granularity2026gap} and robustness rankings \citep{sycoevalem2026} use
+the same scale, so they can record improvement but not a change of sign.
+\citet{nehring2026multilingual} take it as given that newer models are less sycophantic, and
+\citet{tjuatja2024biases} find RLHF-trained models less sensitive than base models to
+agreement-phrased survey items.
 
 \paragraph{Agreement phrasing.} \citet{braun2025acquiescence} rephrase classification questions
 into agreement frames and find a bias toward \emph{no} rather than acquiescence. His items have
