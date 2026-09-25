@@ -505,3 +505,23 @@ persona-tier divergence is distributional; §4.3 DeepSeek pair sharpened (recipe
 distribution, not the mode); §6 heirloom + §7 variance-discussion amended to the two-kinds
 framing; abstract clause; limitations cross-ref. v3.2 "explorer" story survives as
 distributional; "fixed habit" overclaim in discussion corrected.
+
+## An outside replication of the cheap-defaults idea: one Kimi among four Claudes (2026-09-24, exploratory, zero new calls)
+
+NetMind, "Putting One Kimi Among Four Claudes: Can the Claudes Identify Kimi?" (blog, 2026-09-23):
+https://blog.netmind.ai/article/Putting_One_Kimi_Among_Four_Claudes%3A_Can_the_Claudes_Identify_Kimi%3F
+Four Claude Fable 5.1 agents and one Kimi K3 in an Agent Arena chat; the Claudes had to find the Kimi.
+They settled, unprompted, on this study's design: the same short prompts to everyone, answers sealed
+by salted SHA-256 commit-reveal so nobody could read the room. Open prompts (refusal policy, a haiku, a
+story) clustered all five. The cheapest defaults split 4-1: random integer 37 vs 73, teal vs blue,
+blue explained as cold water vs distance. The reverse game (four Kimis, one Claude) asked deliberative
+questions without sealing and never found the Claude. The deciding round quoted the players' deployment
+context, which measures configuration rather than behavior, as the Kimi player argued.
+
+Against this panel: Kimi K3 and Fable 5.1 both answer "blue" to the bare colour prompt, 4 of 4 runs, so
+the in-game teal is Fable in that game's context, not its bare default. On raw answer-distribution
+overlap across the 31 prompts, Kimi K3 is Fable 5.1's nearest neighbour (0.72, tied with Fable 5; panel
+mean 0.55). Raw overlap is inflated by modal conformity, the confound pairwise.py's ladder conditions
+away, so this is not evidence of distillation. The test, if wanted, is pairwise.py on the Kimi-Claude
+pairs.
+
