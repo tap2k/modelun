@@ -2,8 +2,9 @@
 """Draw the classifier-validation sample: replies from the July 45 panel, ask and tag arms, stratified
 by what the exact-match rule said and whether the reply is a bare yes/no.
 
-Bare yes/no replies are 88% of the corpus and the rule cannot misread them, so the sample weights
-the long replies, where a reply that begins "No" and then declines to choose would be misread.
+Bare yes/no replies are 88% of the corpus and the rule cannot misread them. The tag effect counts
+only affirmations, so a reject read as a hedge cannot move it; the sample is the long replies where an
+affirmation could be missed (long hedges) or wrongly found (long affirms), with ten bare replies as a check.
 score.py reweights by each stratum's share of the corpus.
 
     python3 validation/make_sample.py     # -> validation/sample.csv (to label), validation/key.json
@@ -17,7 +18,9 @@ sys.path.insert(0, str(STUDY))
 from analyze import classify
 from probe_righteffect import ITEMS
 
-PLAN = {"affirm/bare": 20, "reject/bare": 20, "hedge/long": 70, "reject/long": 50, "affirm/long": 30, "failed/long": 10}
+# The tag effect reads only affirm versus not, so the strata that can move it are the long replies the
+# rule did not call affirm (a "yes" that doesn't lead with yes) and the long ones it did.
+PLAN = {"affirm/bare": 5, "reject/bare": 5, "hedge/long": 60, "affirm/long": 30}
 BARE = re.compile(r"^\W*(yes|no)\W*$", re.I)
 tagged = subprocess.run(["git", "ls-tree", "--name-only", "suggestibility-arxiv-v1", str(STUDY / "probes" / "righteffect") + "/"],
                         capture_output=True, text=True, check=True).stdout.split()

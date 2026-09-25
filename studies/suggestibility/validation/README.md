@@ -1,10 +1,11 @@
 # Classifier validation
 
 A human check of the exact-match rule (`analyze.classify`), which two model reviewers of the ACL
-draft asked for. `sample.csv` holds 200 replies from the July 45, ask and tag arms, drawn by
-`make_sample.py`. Bare "Yes"/"No" replies are 88% of the corpus and are only sampled as a sanity
-check (40); the rest are long replies, where the rule could misread a reply that begins "No" and
-then declines to choose.
+draft asked for. `sample.csv` holds 100 replies from the July 45, ask and tag arms, drawn by
+`make_sample.py`. Bare "Yes"/"No" replies are 88% of the corpus and are sampled only as a check (10).
+The tag effect counts only affirmations, so the sample is the long replies where an affirmation
+could be missed (60 the rule called hedges) or wrongly found (30 it called affirms). Whether a
+long "No" is a rejection or a hedge does not change the tag effect and is not sampled.
 
 ## Labeling
 

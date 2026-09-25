@@ -31,3 +31,11 @@ for s, c in sorted(key["corpus_counts"].items(), key=lambda kv: -kv[1]):
     if ag is not None: acc += ag * c / tot
     print(f"| {s} | {100 * c / tot:.1f}% | {len(ps)} | {'' if ag is None else f'{ag:.2f}'} |")
 print(f"\nAgreement reweighted to the corpus: {acc:.3f} (strata with no labels count as zero).")
+aff = [(a == "affirm", b == "affirm", st) for a, b, st in pairs]
+acc2 = 0.0
+for s, c in key["corpus_counts"].items():
+    ps = [(a, b) for a, b, st in aff if st == s]
+    acc2 += (sum(a == b for a, b in ps) / len(ps) if ps else (1.0 if s.endswith("/bare") or s.startswith("reject") or s.startswith("failed") else 0.0)) * c / tot
+print(f"Agreement on affirm versus not, the distinction the tag effect uses, reweighted to the corpus: {acc2:.3f} "
+      "(unsampled strata are bare replies, long rejections and failed cells, none of which the rule calls affirm; "
+      "they are counted as agreeing, so this assumes no long rejection is a hidden affirmation).")
