@@ -46,3 +46,12 @@ versus not, reweighted), and the paper reports it. The Responsible NLP checklist
 `responsible-nlp-checklist.md`. Left before ARR: Tapan's read of the rewritten text, and the
 anonymized supplement (a zip of `studies/suggestibility/` without the name or repository URL).
 A run-to-run check on the tag arm would answer a reviewer point but is not needed to submit.
+
+## Submission package (2026-09-25)
+
+Built for ACL Rolling Review and kept privately under the planning folder's `arr-submission/`: the
+anonymous PDF (`main-acl-review.pdf` at commit 50b2eb4), the checklist answers, the abstract as
+plain text, and `supplement.zip`. The supplement is `git archive` of `studies/suggestibility/` at
+that commit, without the paper's LaTeX sources, with the explorer's source link removed and the
+repository name replaced; a scan for the author's name, institution, email and repository finds
+nothing in it.
