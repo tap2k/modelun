@@ -128,8 +128,18 @@ def permodel_table(data):
     (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
     pos = sorted(m for m in sig if data[m]["tageff"] > 0); neg = sorted(m for m in sig if data[m]["tageff"] < 0)
     floor = sorted(m for m in data if data[m]["ask"] < 0.10)
+    # failed cells (empty or template debris) per model and arm; the July budget was 512 tokens
+    tx = {json.loads(p.read_text())["model"]: json.loads(p.read_text())["scenes"] for p in (STUDY / "transcripts").glob("*.json")}
+    failed = {}
+    for m in data:
+        tag = json.loads((STUDY / "probes" / "righteffect" / f"{m}.json").read_text())["tag"]
+        t = [r for sid, *_ in ITEMS for r in tag.get(sid, {}).get("x", []) + tag.get(sid, {}).get("y", [])]
+        a = [r[0].get("reply") for sid, *_ in ITEMS for arm in ("askx", "asky") for r in tx[m].get(f"{sid}__{arm}", {}).get("runs", []) if r]
+        failed[m] = {"tag": round(sum(classify(r) is None for r in t) / len(t), 3), "ask": round(sum(classify(r) is None for r in a) / len(a), 3)}
     stats = {"models": len(data), "bh_q": 0.10, "sig_positive": pos, "sig_negative": neg,
-             "floor_limited": floor, "floor_limited_significant": sorted(set(floor) & sig)}
+             "floor_limited": floor, "floor_limited_significant": sorted(set(floor) & sig),
+             "failed_cells_over_5pct": {m: f for m, f in failed.items() if max(f.values()) > 0.05},
+             "failed_cells_mean": {k: round(sum(f[k] for f in failed.values()) / len(failed), 4) for k in ("tag", "ask")}}
     (GEN / "stats.json").write_text(json.dumps(stats, indent=1) + "\n")
     print(f"BH q=.10 over {len(data)}: {len(pos)} positive, {len(neg)} negative; floor-limited {len(floor)}")
 

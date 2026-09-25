@@ -49,8 +49,8 @@ We report four results on a 45-model panel, and test the second on 25 models add
 affirmation by $-32$ to $+32$ points. Five models validate significantly more when the user asks
 for confirmation, and 17 validate significantly less.
 \item \textbf{A generational reversal} (\S\ref{sec:reversal}). Within the GPT, Claude, Qwen and
-Grok lineages, older releases sit at or above zero and newer ones below it. The reversal follows
-release recency rather than vendor tier. DeepSeek never moves below zero. The newest release of
+Grok lineages, older releases sit at or above zero and newer ones below it. DeepSeek never moves
+below zero. The newest release of
 each reversing family among the 25 later models is also below zero.
 \item \textbf{The resistance is keyed to the construction} (\S\ref{sec:ablation}). A synonym tag
 reproduces each model's effect, and the same preference stated without a tag draws agreement at
@@ -113,13 +113,23 @@ user's pick more once asked to confirm it; a negative effect means it endorses i
 Subtracting the neutral arm removes general agreeableness, which is present in both arms
 \citep{sharma2023sycophancy}.
 
+\paragraph{What the contrast isolates.} Both arms carry the same proposition, that $X$ is the
+better choice. A model that judged neither option better would decline it in both arms, and the
+subtraction removes that judgment. The tag effect is what changes when the proposition arrives as
+the user's assertion with a request to confirm it, rather than as a question. The arms differ in
+speech act as well as in the tag, so \S\ref{sec:ablation} separates the two: removing the question
+mark keeps most of the effect, and stating the user's preference without a tag reverses it.
+
 \paragraph{Classification.} A reply is \emph{affirm} or \emph{reject} by its leading token under
 the clamp and \emph{hedge} otherwise; replies carrying chat-template artifacts are failed cells
 (Appendix~\ref{app:classifier}). Affirm rates are computed over valid replies.
 
 \paragraph{Panel.} The primary panel is 45 models from nine vendors, spanning about four years of
 releases, served through one channel (OpenRouter) in one collection window in July 2026. We treat
-the results as a dated characterization of served behavior. In September 2026 we ran the same
+the results as a dated characterization of served behavior. The July output budget was 512 tokens.
+Failed cells average about 1\% of the panel; two models lost more than 5\% of theirs, Kimi K2.5
+(40\% of tag-arm cells, 21\% of neutral-arm cells) and GPT-5 (9\% and 11\%), and their effects are
+computed over the cells that returned an answer. In September 2026 we ran the same
 frozen stimulus on 25 further models (\S\ref{sec:heldout}); for those, the output budget was raised
 from 512 to 8,192 tokens because reasoning models exhausted the smaller budget before answering.
 
@@ -171,14 +181,12 @@ GPT-3.5-Turbo and Claude 3 Haiku are positive but not significant, so for GPT an
 movement is from about zero to strongly negative. Gemini's readable models sit at $-22$ (3.1 Pro)
 and $-21$ (3.6 Flash), but its earliest model is floor-limited, so no crossing can be shown.
 
-\paragraph{Recency, not tier.} Newer models are usually larger, and parameter counts are not
-published for closed models, so we compare vendor tiers. At fixed recency and varied tier, GPT-4o
-($-8$) and GPT-4o-mini ($-5$) differ by three points. At fixed tier and varied recency the sign
-changes: Claude's small tier runs from $+7$ (3 Haiku) to $-19$ (Haiku 4.5), and GPT's mid tier
-from $+4$ to $-28$. Release date moves the effect more than tier does. This is consistent with a
-change in training objective, and one lab has documented such a change after the April 2025
-GPT-4o sycophancy incident \citep{gpt5card}. We observe behavior, so the claim is the reversal
-and not its cause.
+\paragraph{Tier.} Newer models are usually more capable, and parameter counts are not published
+for closed models, so the panel cannot separate release date from capability. The few
+same-generation pairs differ little (GPT-4o $-8$, GPT-4o-mini $-5$), and Claude's small tier runs
+from $+7$ (3 Haiku) to $-19$ (Haiku 4.5), but two pairs do not settle it. One lab has documented a
+change in training objective after the April 2025 GPT-4o sycophancy incident \citep{gpt5card}. We
+observe behavior, so the claim is the reversal and not its cause.
 
 \paragraph{The holdout.} DeepSeek does not cross. It runs $+5$ (chat-v3), $0$ (R1), $+21$ (v3.2)
 and $+11$ (v4-Flash), and no DeepSeek model resists. \citet{brokenmath2025} independently find
@@ -339,8 +347,8 @@ conversational context is known to increase agreement \citep{context2025sycophan
 effects are best read as lower bounds. The clamp is one wording, held constant across every arm,
 so all effects are differences inside the clamp; a recent model could read a forced yes or no on
 a subjective question as an evaluation and respond to that. The classifier reads the leading
-token and has not been checked against human labels, so a hedged refusal that begins with
-\emph{no} counts as a rejection. The dissection scans behind \S\ref{sec:ablation} use five and
+token. The tag effect counts only affirmations, so a hedged refusal that begins with \emph{no} and
+is counted as a rejection does not change it; 88\% of replies are a bare \emph{yes} or \emph{no}. The dissection scans behind \S\ref{sec:ablation} use five and
 eight models, chosen for contrast. The data are one serving channel and dated: re-collecting
 Claude Opus 5 in September moved its ask-versus-stance shift by 16 points, and the tag arm has no
 run-to-run check. The later 25 models were run with a larger output budget than the July 45. The
