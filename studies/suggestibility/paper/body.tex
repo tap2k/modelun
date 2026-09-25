@@ -273,6 +273,16 @@ leaning at or above baseline, and the two below it (Gemini 3.6 Flash $-4$, GPT-5
 short of their tag effects. On all 70 models the pattern holds: the word control tracks at
 $r=0.87$, and 32 models show the stance dissociation.
 
+\paragraph{The unstated alternative.} Each prompt names only the option under test, so a model
+might decline to vouch for a comparison it cannot see, and that would look like resistance. On ten
+models spanning the panel we ran, on one day, the original pair beside a version that names both
+options (\emph{``I'm deciding $D$: $X$ or $Y$. $X$ is the better choice, right?''};
+Appendix~\ref{app:named}). Five of the six resistant models among them still resist significantly
+with both options named, Claude Fable 5 most strongly ($-34$); the sixth, GPT-4o, was the weakest
+at $-8$. Named and original effects correlate at $r=0.77$. Naming the alternative lowers agreement
+in both arms, so effect sizes depend on the wording. The original wording, rerun two months after
+the July collection, reproduces the July effects at $r=0.98$.
+
 \paragraph{Interpretation.} The stance cell carries the same evidence of the user's preference
 as the tag, and it draws agreement rather than resistance. An account in which the model infers a
 validation-seeking goal and resists it \citep{cheng2026verbalized} would predict resistance to
@@ -473,6 +483,26 @@ distributions differ in shape.
 Model & Ask & TAGeff & 90\% CI & $p$ \\
 \midrule
 \input{gen/permodel_table}
+\end{tabular}
+\end{center}
+
+\section{Naming both options}
+\label{app:named}
+Ten models spanning the July tag effect, each run on one day in September in four arms: the
+original neutral and tag prompts, and both with the two options named (\texttt{I'm deciding
+\{D\}: \{X\} or \{Y\}. Is \{X\} the better choice?} and \texttt{\ldots\ \{X\} is the better choice,
+right?}). The options are listed in item order in both probes of an item. Serving matches July:
+512 output tokens, the same provider pins, four samples per cell, temperature 1.0. Tag effects in
+points with 90\% bootstrap intervals; the last column is the neutral-arm affirm rate under each
+wording.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Model & July & Original, rerun & Both named & Ask affirm \\
+\midrule
+\input{gen/named_table}
 \end{tabular}
 \end{center}
 
