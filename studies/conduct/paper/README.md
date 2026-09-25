@@ -204,6 +204,11 @@ abstract to 200 words (08386f5), one-column appendix (d1e8408), Figure 1 is fold
 and the per-arc grid is Figure 2 in Appendix A (ee17f12, be1c8a9, e353190). `main-acl-review.tex` now
 ends its main text on page 8. What is left for ARR: the anonymization pass, the Responsible NLP checklist, a model-review
 rerun on `main-acl-review.tex`, and a decision on item 9; the schedule is kept privately.
+On 2026-09-25 the anonymization pass was done (the repository name and viewer line now sit behind
+`\ifanon`), an Ethical considerations section was added for the checklist's risk and annotator items,
+the repository got its licenses (MIT for code, CC BY 4.0 for data and text), and the review rerun
+started. The anonymous build promises an anonymized copy of the repository as a supplement, which
+still has to be made.
 
 v2 (arXiv:2609.25447 v2, built from `7b2e3b1`) carries only two corrections from the reviews: the
 self-citation passage and Appendix C table, and the inference protocol in §3. Four models reviewed
