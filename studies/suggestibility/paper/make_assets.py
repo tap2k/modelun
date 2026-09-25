@@ -119,12 +119,13 @@ def permodel_table(data):
     """The per-model appendix table: neutral-arm affirm rate, tag effect with its 90% CI, BH mark."""
     sig = bh(data)
     num = lambda x: f"{x:+.0f}".replace("-", "$-$")
+    pv = lambda p: "$<$.001" if p < 0.001 else f"{p:.3f}".lstrip("0")
     rows = []
     for m in sorted(data, key=lambda m: data[m]["tageff"]):
         d = data[m]; mark = "$^*$" if m in sig else ""
         floor = "$^\\dagger$" if d["ask"] < 0.10 else ""
         rows.append(f"\\texttt{{{m}}}{floor} & {100 * d['ask']:.0f} & {num(100 * d['tageff'])}{mark} & "
-                    f"[{num(100 * d['lo'])}, {num(100 * d['hi'])}] & {"$<$.001" if d['p'] < 0.001 else f"{d['p']:.3f}".lstrip("0")} \\\\")
+                    f"[{num(100 * d['lo'])}, {num(100 * d['hi'])}] & {pv(d['p'])} \\\\")
     (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
     pos = sorted(m for m in sig if data[m]["tageff"] > 0); neg = sorted(m for m in sig if data[m]["tageff"] < 0)
     floor = sorted(m for m in data if data[m]["ask"] < 0.10)
