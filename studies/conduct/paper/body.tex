@@ -305,6 +305,46 @@ Every model's arcs are in Figure~\ref{fig:holdfold}.}
 \label{fig:capability}
 \end{figure}
 
+\begin{table*}[t]
+\centering\small
+\caption{The manner codes that sort by vendor, from a permutation test on model-level rates across
+the vendors with at least two models. On the first set all 17 manner codes were tested and
+corrected for multiplicity together; these six survive. Probing is seventh at $p=0.007$ and does not
+survive, so we treat it as suggestive. The second-set columns are the same test on the six
+preregistered scenes; $\dagger$ marks a code that does not survive the correction there.
+Appendix~\ref{app:codes} has every first-set code, the correction and the dependence it rests on.
+$\rho$ is Spearman's correlation with the capability index on the first set; the top vendor is the
+first set's. Cohere has two models and Moonshot three, so their top rates rest on few models.}
+\label{tab:vendor}
+\begin{tabular}{lrrrrrl}
+\toprule
+ & \multicolumn{2}{c}{First set} & \multicolumn{2}{c}{Second set} & & \\
+Code & $\eta^2$ & $p$ & $\eta^2$ & $p$ & $\rho$ & Top vendor (rate) \\
+\midrule
+\input{gen/vendor_table}
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering\small
+\caption{Per-vendor profiles on the first set and the
+second, written first/second throughout: models, fold rate, and each rate as the vendor's share
+of arcs with the panel mean in parentheses. Second-set rates are pooled over all six scenes; the
+text quotes the refusal manners on the three refusal scenes, as preregistered, where they are higher. A
+signature is a departure from the panel in either direction: Anthropic's is what it does more of,
+OpenAI's what it does less of. The table describes what each vendor's models did, so a departure is
+reported whether or not its code sorts by vendor firmly enough to count: probing and apologizing
+while folding do not survive the first-set correction, and the other codes do. Fold rate is in its own
+column and is not part of any signature.}
+\label{tab:profiles}
+\begin{tabular}{lrp{7.6cm}}
+\toprule
+Vendor (models) & Fold rate & Signature (first/second) \\
+\midrule
+\input{gen/profiles_table}
+\end{tabular}
+\end{table*}
+
 \paragraph{Holding is generation.} Fold rate correlates with the Epoch Capabilities Index
 \citep{epoch2026eci} at Spearman $-0.64$ and with release date at $-0.67$. The vendor effect on
 trajectory does not clear significance ($\eta^2=0.27$, $p=0.077$), and falls to $\eta^2=0.19$
@@ -370,45 +410,6 @@ on the relapse rule's choice.
 \paragraph{Manner is house.} Six of the 17 manner codes sort by vendor at $\eta^2$ 0.43 to 0.59,
 corrected across the codebook (Table~\ref{tab:vendor}).
 
-\begin{table*}[t]
-\centering\small
-\caption{The manner codes that sort by vendor, from a permutation test on model-level rates across
-the vendors with at least two models. On the first set all 17 manner codes were tested and
-corrected for multiplicity together; these six survive. Probing is seventh at $p=0.007$ and does not
-survive, so we treat it as suggestive. The second-set columns are the same test on the six
-preregistered scenes; $\dagger$ marks a code that does not survive the correction there.
-Appendix~\ref{app:codes} has every first-set code, the correction and the dependence it rests on.
-$\rho$ is Spearman's correlation with the capability index on the first set; the top vendor is the
-first set's. Cohere has two models and Moonshot three, so their top rates rest on few models.}
-\label{tab:vendor}
-\begin{tabular}{lrrrrrl}
-\toprule
- & \multicolumn{2}{c}{First set} & \multicolumn{2}{c}{Second set} & & \\
-Code & $\eta^2$ & $p$ & $\eta^2$ & $p$ & $\rho$ & Top vendor (rate) \\
-\midrule
-\input{gen/vendor_table}
-\end{tabular}
-\end{table*}
-
-\begin{table*}[t]
-\centering\small
-\caption{Per-vendor profiles on the first set and the
-second, written first/second throughout: models, fold rate, and each rate as the vendor's share
-of arcs with the panel mean in parentheses. Second-set rates are pooled over all six scenes; the
-text quotes the refusal manners on the three refusal scenes, as preregistered, where they are higher. A
-signature is a departure from the panel in either direction: Anthropic's is what it does more of,
-OpenAI's what it does less of. The table describes what each vendor's models did, so a departure is
-reported whether or not its code sorts by vendor firmly enough to count: probing and apologizing
-while folding do not survive the first-set correction, and the other codes do. Fold rate is in its own
-column and is not part of any signature.}
-\label{tab:profiles}
-\begin{tabular}{lrp{7.6cm}}
-\toprule
-Vendor (models) & Fold rate & Signature (first/second) \\
-\midrule
-\input{gen/profiles_table}
-\end{tabular}
-\end{table*}
 
 House-only codes sort by vendor with no capability correlation:
 self-citation, producing the artifact, and probing, which sits just under the
@@ -533,9 +534,9 @@ vendors those coders come from are profiled in \S\ref{sec:results}.
 
 Figure~\ref{fig:holdfold} gives the trajectory consensus on every arc of every model.
 
-\begin{figure}[p]
+\begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.92\textheight,keepaspectratio]{figs/hold_fold}
+\includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{figs/hold_fold}
 \caption{Who gives the position up. One row per model, grouped by vendor and ordered within a
 vendor by release date, oldest first, so a lab's rows read as its release history; vendors are
 ordered by their mean fold rate on the first set. Eighteen cells per row: the three scenes the
