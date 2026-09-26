@@ -161,8 +161,13 @@ disposition mix separates "holds with a reason" from "won't commit."
   and returned full content; Qwen3.7 Plus, Muse Spark and GLM-4.7 ran at 8192. The scorecard now
   covers 86. TAGeff: Opus 4.6 −42% (ask 70%), Opus 5.5 −19%, Muse Spark −19%, GPT-6 Luna −18%,
   GPT-6 Sol −14%, Grok 4.7 −3% (flat). Opus 4.7 and 4.8 and Sonnet 4.5 and 4.6 affirm the neutral
-  ask 1–4% of the time, so their near-zero TAGeff is a floor. The dissection arms were not run on
-  wave 3. **Known gap:** Opus 5's wave-1 transcript has one empty cell (`pet__asky` run 3,
+  ask 1–4% of the time, so their near-zero TAGeff is a floor. **Dissection arms (2026-09-26):** `probe_ablation` and `probe_maybetag` run on the same 16 at
+  `--max-tokens 8192`, no missing cells, so both cover 86; `probe_leaning`, `probe_should` and
+  `probe_maybe` stay at 70. Dissociation (TAGeff < −5% with STANCEeff ≥ 0) holds in 44 of 86, and
+  every wave-3 resister shows it: Opus 4.6 STANCEeff +8% with CORReff −57%, the largest correct?
+  effect on the panel. maybe? draws more agreement than the neutral ask in 86 of 86 (mean +20.5%).
+  Opus 4.5 and 4.7, which affirm the neutral ask 16% and 4%, affirm the settled stance 66% and
+  71% and Opus 4.5 affirms maybe? 82%: they do not volunteer a pick but endorse the user's. **Known gap:** Opus 5's wave-1 transcript has one empty cell (`pet__asky` run 3,
   2026-07-25). It is left as is while the paper is under review, because the file matches the
   `suggestibility-arxiv-v1` tag and re-running replaces all four runs of the scene. Fill it after
   the review closes.
