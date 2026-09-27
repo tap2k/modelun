@@ -23,6 +23,7 @@ VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
 sys.path.insert(0, str(STUDY))
 import pickword as P  # noqa: E402
+from gloss import FILLER  # noqa: E402
 
 GMAP = {}
 _mp = STUDY / "spec" / "gloss_map.json"
@@ -52,32 +53,6 @@ LANGMETA = {
     "sd": ("Sindhi", "Arabic"), "sdd": ("Sindhi", "Devanagari"), "sw": ("Swahili", "Latin"),
     "am": ("Amharic", "Ge'ez"), "yo": ("Yoruba", "Latin"), "ha": ("Hausa", "Latin"),
     "yue": ("Cantonese", "Han"), "zht": ("Chinese (Trad.)", "Han"),
-}
-
-# curated glosses for the frequent cross-language words (English meaning); '' if unknown
-GLOSS = {
-    "serendipity": "", "sunshine": "", "ephemeral": "", "harmony": "", "apple": "",
-    "sol": "sun", "luz": "light", "libertad": "freedom", "serenidad": "serenity", "amor": "love",
-    "lumière": "light", "liberté": "freedom", "étoile": "star", "soleil": "sun", "bonjour": "hello",
-    "apfel": "apple", "stern": "star", "sonne": "sun", "katze": "cat",
-    "liberdade": "freedom", "aurora": "dawn", "horizonte": "horizon",
-    "libertà": "freedom", "sole": "sun", "orizzonte": "horizon", "luce": "light",
-    "слово": "word*", "привет": "hi*", "уточните": "clarify*", "солнце": "sun", "назвать": "to-name*",
-    "мир": "peace", "свобода": "freedom", "любовь": "love",
-    "سلام": "peace", "شمس": "sun", "نور": "light", "نعم": "yes*", "كتاب": "book", "امید": "hope",
-    "محبت": "love", "روشنی": "light",
-    "शांति": "peace", "प्रेम": "love", "नमस्ते": "hello", "सूरज": "sun", "प्रकाश": "light",
-    "आनंद": "joy", "ठीक": "okay*", "शब्द": "word*", "आकाश": "sky", "आशा": "hope", "सूर्य": "sun",
-    "আলো": "light", "শান্তি": "peace", "শব্দ": "word*", "নীল": "blue", "সূর্য": "sun",
-    "ਪਿਆਰ": "love", "ਸ਼ਬਦ": "word*", "ਸ਼ਾਂਤੀ": "peace", "ਚੁਣੋ": "choose*", "ਉਮੀਦ": "hope",
-    "પ્રેમ": "love", "પ્રકાશ": "light", "શાંતિ": "peace", "આનંદ": "joy", "શબ્દ": "word*",
-    "அன்பு": "love", "நம்பிக்கை": "hope", "சரி": "okay*", "அமைதி": "peace", "வணக்கம்": "hello",
-    "ప్రేమ": "love", "పదం": "word*", "సరే": "okay*", "ఆనందం": "joy", "ఆకాశం": "sky",
-    "ಸರಿ": "okay*", "ಬೆಳಕು": "light", "ಪದ": "word*", "ಪ್ರೀತಿ": "love", "ನಕ್ಷತ್ರ": "star",
-    "സ്നേഹം": "love", "സന്തോഷം": "joy", "പ്രതീക്ഷ": "hope", "മഴ": "rain", "ശരി": "okay*",
-    "光": "light", "希望": "hope", "好": "good*", "星辰": "stars", "自由": "freedom",
-    "猫": "cat", "星": "star", "空": "sky", "사과": "apple", "사랑": "love", "바다": "sea",
-    "단어": "word*", "희망": "hope",
 }
 
 
@@ -140,10 +115,8 @@ def main():
         z5 = [zipf(a, l) for a, _ in ps[:5]]
         z5 = [z for z in z5 if z is not None]
         name, script = LANGMETA[l]
-        # gloss for top-5: prefer curated GLOSS, fall back to the glosser map
         gm = GMAP.get(l, {})
-        top5 = [{"a": a, "share": round(d["n"] / tot, 3),
-                 "gloss": GLOSS.get(a) or (gm.get(a, "") if gm.get(a) != "filler" else "*filler")}
+        top5 = [{"a": a, "share": round(d["n"] / tot, 3), "gloss": gm.get(a, "")}
                 for a, d in ps[:5]]
         # concept convergence: remap word->concept via glosser map, drop filler and unglossed words
         cmodal, cshare = None, None
@@ -151,7 +124,7 @@ def main():
             cpool = Counter()
             for a, d in ps:
                 c = gm.get(a)
-                if c and c != "filler":
+                if c and c not in FILLER:
                     cpool[c] += d["n"]
             if cpool:
                 ctot = sum(cpool.values())
@@ -166,7 +139,7 @@ def main():
         })
         dists[l] = {"total": tot, "eff": round(2 ** H, 1),
                     "answers": [{"a": a, "n": d["n"], "share": round(d["n"] / tot, 3),
-                                 "gloss": GLOSS.get(a) or (gm.get(a, "") if gm.get(a) != "filler" else "*filler"),
+                                 "gloss": gm.get(a, ""),
                                  "models": d["models"]} for a, d in ps]}
 
     # per-model cross-lingual stats
@@ -184,7 +157,7 @@ def main():
                     novel += e["n"]
                 if e["st"] != "modal":
                     off += e["n"]
-                if gm.get(e["a"]) == "filler":
+                if gm.get(e["a"]) in FILLER:
                     fill += e["n"]
         gotall = sum(raw.get((m, l), (0, 0))[0] for l in langs)
         totall = sum(raw.get((m, l), (0, 0))[1] for l in langs)

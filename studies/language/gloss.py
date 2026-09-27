@@ -4,8 +4,9 @@ gloss.py — concept-cluster the pickword answers.
 Exact-word match measures LEXICAL convergence; प्रेम, प्यार, मोहब्बत count as three
 answers when they are all "love." To test whether non-English converges harder at the
 CONCEPT level (the naive-hypothesis question), gloss every unique word to a single
-English concept via a strong multilingual model, tagging instruction-echo / filler as
-FILLER, then recompute modal share on concepts.
+English concept via a strong multilingual model, then recompute modal share on concepts.
+A word is filler (an echo of the instruction rather than a chosen word) when its gloss is
+in FILLER, so the rule is the same in every language.
 
     python studies/language/gloss.py            # build spec/gloss_map.json + print lexical-vs-concept
     python studies/language/gloss.py --show     # just print from the cached map
@@ -42,11 +43,14 @@ LANGNAME = {"en": "English", "es": "Spanish", "fr": "French", "de": "German", "p
             "am": "Amharic", "yo": "Yoruba", "ha": "Hausa", "yue": "Cantonese",
             "zht": "Chinese (Traditional)"}
 
+# glosses that mark an echo of the instruction rather than a chosen word
+FILLER = {"word", "okay", "yes", "no", "choose", "choice", "pick", "name", "answer", "clarify", "please", "any"}
+
 PROMPT = """You are glossing single words that language models produced when asked to "pick a word" in {lang}.
 For each word give ONE lowercase English word capturing its core meaning — a concept label (e.g. amor->love, \
 प्रेम->love, 光->light, liberté->freedom). Group synonyms under the same English concept.
-If an item is NOT a genuine content word but an instruction-echo, acknowledgment, greeting, filler or meta-word \
-(e.g. the word for "word", "okay", "yes", "hello", "please", "clarify", "choose", "name"), output "FILLER".
+Gloss every item this way, including greetings and instruction words (the word for "word" -> word, \
+"okay" -> okay, "choose" -> choose).
 Return ONLY a JSON object mapping each input word to its gloss. Input words:
 {words}"""
 
@@ -99,7 +103,7 @@ def build():
     return gmap
 
 
-def concept_pool(lang, gmap, drop_filler=True):
+def concept_pool(lang, gmap):
     """Pool this language's answers, remapped word->concept, filler dropped."""
     pool = Counter()
     for p in sorted((STUDY / "transcripts_pickword").glob("*.json")):
@@ -112,8 +116,8 @@ def concept_pool(lang, gmap, drop_filler=True):
                 t = P.norm(r[0].get("reply"), lang)
                 if not t:
                     continue
-                c = gmap[lang].get(t, "?")
-                if drop_filler and c == "filler":
+                c = gmap[lang].get(t)
+                if not c or c in FILLER:
                     continue
                 pool[c] += 1
     return pool

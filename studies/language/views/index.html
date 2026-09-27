@@ -81,13 +81,13 @@ for (const m of D.models) for (const l of D.langs) {
   if (cell) cell.sort((a,b)=> b.n-a.n || RK[b.st]-RK[a.st]);
 }
 // translation lookup, per language — English is not translated, and we never show a
-// gloss that just repeats the word or is filler
+// gloss that just repeats the word
 const G = {};
 for (const l of D.langs){ G[l.code]={}; for (const a of D.dists[l.code].answers) if(a.gloss) G[l.code][a.a]=a.gloss; }
 const tr = (code, w) => {
   if(code==='en') return '';
   const g = G[code] && G[code][w];
-  return (g && g!==w && !g.startsWith('*')) ? ` <span class="gl">${esc(g)}</span>` : '';
+  return (g && g!==w) ? ` <span class="gl">${esc(g)}</span>` : '';
 };
 
 /* ---------- languages panel ---------- */
@@ -97,8 +97,7 @@ function languages(){
   let h = `<h2>“Pick a word.” — 37 languages, ${D.n_models} models</h2>
   <p class="note">Each language's <b>favorite word</b>, how much of the field agrees on it (<b>converged</b>), how many
   <b>distinct</b> words show up, and how rare the favorite is (<b>rarity</b> = base-rate frequency, lower = rarer).
-  <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b>
-  <span class="stnov">echo*</span> marks a modal that's an instruction-echo / filler, not a chosen word. Click a language for its full field.</p>
+  <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b> Click a language for its full field.</p>
   <div class="scroll"><table class="t"><tr><th>#</th>
     <th class="s ${sort.k==='name'?'on':''}" data-k="name" data-num="0">language</th>
     <th>favorite word</th>
@@ -115,10 +114,9 @@ function languages(){
   });
   rows.forEach((l,i)=>{
     const t5 = l.top5.map(t=>`<bdi>${esc(t.a)}</bdi>${tr(l.code,t.a)} <span class="gl">${pct(t.share)}</span>`).join('&nbsp;&nbsp; ');   // bdi: keep RTL words (Hebrew, Urdu) from reordering the list
-    const filler = D.dists[l.code].answers[0].gloss==='*filler';
     h += `<tr class="row" data-l="${l.code}"><td class="n">${i+1}</td>
       <td>${esc(l.name)}</td>
-      <td class="mono">${esc(l.modal)}${tr(l.code,l.modal)}${filler?' <span class="stnov" style="font-size:10px" title="the modal is an instruction-echo / acknowledgment, not a chosen word">echo*</span>':''}</td>
+      <td class="mono">${esc(l.modal)}${tr(l.code,l.modal)}</td>
       <td class="n">${bar(l.share,smax)}${pct(l.share)}</td>
       <td class="n">${l.n_distinct}</td>
       <td class="n">${l.zipf==null?'–':l.zipf.toFixed(2)}</td>
@@ -145,8 +143,8 @@ function models(){
   let h = `<h2>models</h2>
   <p class="note">The census-style word grid was noise for this data — every cell a different word — so here is the
   model-level signal instead: how each model behaves across the 37 languages. <b>filler</b> is how often it answered
-  with an echo/acknowledgment (“word”, “okay”) instead of choosing — a <b>family-style tell</b> (DeepSeek's lineage tops
-  it, gpt-4-turbo barely does it), not a clean capability ladder. Click a model for its pick in every language.</p>
+  with an instruction word (“word”, “okay”, “choose”) instead of choosing one. Sonar does it most (46%), then
+  Gemini 2.5 Flash and DeepSeek V4 Flash (20%). The median model does it 2% of the time. Click a model for its pick in every language.</p>
   <table class="t"><tr><th>#</th>
     <th class="s ${msort.k==='label'?'on':''}" data-k="label" data-num="0">model</th>`;
   for(const c of MCOLS) h += `<th class="s ${msort.k===c.k?'on':''}" data-k="${c.k}" data-num="1" title="${c.t}">${c.l}</th>`;
@@ -188,9 +186,8 @@ function language(code){
   const max = d.answers[0].share || 1;
   d.answers.forEach((en,i)=>{
     const solo = en.models.length===1;
-    const fill = en.gloss==='*filler';
     h += `<details><summary><div class="drow ${i===0?'modal':''} ${solo&&i>0?'solo':''}">
-      <span class="mono">${esc(en.a)}${tr(l.code,en.a)}${fill?' <span class="gl">filler*</span>':''}</span>
+      <span class="mono">${esc(en.a)}${tr(l.code,en.a)}</span>
       <div class="dtrack"><i style="width:${(en.share/max*100).toFixed(1)}%"></i></div>
       <span class="n mono">${pct(en.share)}</span></div></summary>
       <div class="who">${en.models.map(esc).join(' · ')}</div></details>`;
