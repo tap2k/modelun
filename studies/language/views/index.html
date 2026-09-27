@@ -48,6 +48,17 @@
   .drow.modal .dtrack i{background:var(--mut)} .drow.solo .dtrack i{background:var(--nov)}
   .who{grid-column:2/4;color:var(--mut);font-size:11.5px;margin:-2px 0 6px}
   details{margin:0} details summary{cursor:pointer;list-style:none} details summary::-webkit-details-marker{display:none}
+  /* order + provider controls */
+  .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px;font-size:12px}
+  .ctl .lab{color:var(--mut);width:64px;text-transform:uppercase;font-size:10.5px;letter-spacing:.4px}
+  .ctl a{color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:3px 10px}
+  .ctl a span{opacity:.6;margin-left:3px}
+  .ctl a.on{color:var(--fg);border-color:var(--mut);background:var(--panel2)}
+  .ctl a:hover{text-decoration:none;color:var(--fg)}
+  .ctls{margin:0 0 16px}
+  table.g tr.grp th{background:var(--bg);text-align:left;padding:14px 6px 4px;font-size:12.5px;font-weight:650;cursor:default;border:0}
+  table.g tr.grp .gl{position:sticky;left:6px;color:var(--fg);margin-left:0}
+  table.g tr.grp th span span{color:var(--mut);font-weight:400;margin-left:6px}
   /* grid view: the page does not scroll; the grid fills the window below the note and is the one
      scroll area. On phones the page scrolls and the grid only scrolls sideways. */
   .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto}
@@ -193,14 +204,39 @@ function models(){
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
 }
 
+/* ---------- order + provider filter (state lives in the hash query: #grid?o=release&p=Anthropic,Google) ---------- */
+const VCOUNT = {}; D.models.forEach(m=>VCOUNT[m.vendor]=(VCOUNT[m.vendor]||0)+1);
+const VENDORS = Object.keys(VCOUNT).sort((a,b)=>VCOUNT[b]-VCOUNT[a]||a.localeCompare(b));
+let Q = {o:'provider', p:[]};
+const parseQ = q => { const u=new URLSearchParams(q||''); return {o:u.get('o')||'provider', p:(u.get('p')||'').split(',').filter(Boolean)}; };
+const qs = (o,p) => { const u=[]; if(o!=='provider') u.push('o='+o); if(p.length) u.push('p='+p.map(encodeURIComponent).join(',')); return u.length?'?'+u.join('&'):''; };
+const byDate = (a,b) => (a.released||'9999').localeCompare(b.released||'9999') || a.label.localeCompare(b.label);
+function ordered(){   // -> [{g:vendor,n}|{m:model}]
+  const ms = D.models.filter(m=>!Q.p.length || Q.p.includes(m.vendor));
+  if(Q.o==='off-modal') return [...ms].sort((a,b)=>a.modal_avoid-b.modal_avoid).map(m=>({m}));
+  if(Q.o==='release'){   // undated models go under their own heading, never at the end as if newest
+    const dated = ms.filter(m=>m.released).sort(byDate).map(m=>({m})), und = ms.filter(m=>!m.released);
+    return und.length ? [...dated, {g:'release date unknown', n:und.length}, ...und.map(m=>({m}))] : dated;
+  }
+  const out = [];
+  for(const v of VENDORS){ const g = ms.filter(m=>m.vendor===v).sort(byDate); if(g.length){ out.push({g:v, n:g.length}); g.forEach(m=>out.push({m})); } }
+  return out;
+}
+function controls(view){
+  const o = k => `<a class="${Q.o===k?'on':''}" href="#${view}${qs(k,Q.p)}">${k}</a>`;
+  const chip = v => { const on=Q.p.includes(v), p=on?Q.p.filter(x=>x!==v):[...Q.p,v];
+    return `<a class="${on?'on':''}" href="#${view}${qs(Q.o,p)}">${esc(v)}<span>${VCOUNT[v]}</span></a>`; };
+  return `<div class="ctls"><div class="ctl"><span class="lab">order</span>${o('provider')}${o('off-modal')}${o('release')}</div>
+  <div class="ctl"><span class="lab">provider</span><a class="${Q.p.length?'':'on'}" href="#${view}${qs(Q.o,[])}">all</a>${VENDORS.map(chip).join('')}</div></div>`;
+}
+
 /* ---------- grid ---------- */
 const gloss = (code, w) => { const g = code!=='en' && G[code] && G[code][w]; return g && g!==w ? `<div class="tg">${esc(g)}</div>` : ''; };
 function grid(){
   const langs = [...D.langs].sort((a,b)=>b.share-a.share);
-  const models = [...D.models].sort((a,b)=>a.label.localeCompare(b.label));
   let h = `<h2>models &times; languages</h2>
   <p class="note"><b>Unhighlighted cells are the language's favorite word; color is a model breaking from it.</b>
-  Columns are most-converged first. Dashes appear only when a model's 4 runs disagree — one dash per run, same
+  Rows follow the order below (off-modal puts the models closest to each language's favorite first); columns are most-converged first. Dashes appear only when a model's 4 runs disagree — one dash per run, same
   colors. Hover for the words and their translations; click a model or language to drill down.</p>
   <div class="legend">
     <span class="k"><span class="dot m"></span>favorite word</span>
@@ -208,10 +244,13 @@ function grid(){
     <span class="k"><span class="dot v"></span><b>novel</b> — no other model said it</span>
     <button class="tog" id="dv">divergences only</button>
   </div>
+  ${controls('grid')}
   <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
   for(const l of langs) h += `<th data-l="${l.code}"><div class="cat">${esc(l.name)}</div><div class="cm mono"><bdi>${esc(l.modal)}</bdi>${tr(l.code,l.modal)} ${pct(l.share)}</div></th>`;
   h += '</tr></thead><tbody>';
-  models.forEach(m=>{
+  for(const r of ordered()){
+    if(r.g){ h += `<tr class="grp"><th colspan="${langs.length+1}"><span class="gl">${esc(r.g)}<span>${r.n}</span></span></th></tr>`; continue; }
+    const m = r.m;
     h += `<tr><th data-m="${esc(m.label)}"><span class="mono">${esc(m.label)}</span></th>`;
     for(const l of langs){
       const cell = D.grid[m.label][l.code];
@@ -226,7 +265,7 @@ function grid(){
       h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-m="${esc(m.label)}" data-l="${l.code}">${esc(p.a)}${gloss(l.code,p.a)}${runs}</td>`;
     }
     h += '</tr>';
-  });
+  }
   main.innerHTML = h + '</tbody></table></div>';
   document.getElementById('dv').addEventListener('click',e=>{document.body.classList.toggle('dv');e.target.classList.toggle('on');});
   main.querySelectorAll('tbody th[data-m]').forEach(t=>t.addEventListener('click',()=>location.hash='#m/'+encodeURIComponent(t.dataset.m)));
@@ -296,7 +335,9 @@ function route(){
   const hsh = location.hash || '#langs';
   document.body.classList.remove('dv');
   tip.style.display='none';
-  const [v, arg] = hsh.slice(1).split('/');
+  const [path, q] = hsh.slice(1).split('?');
+  Q = parseQ(q);
+  const [v, arg] = path.split('/');
   main.classList.toggle('wide', v==='grid');
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='l'&&a.dataset.v==='langs') || (v==='m'&&a.dataset.v==='models')));
   if(v==='l' && arg) language(decodeURIComponent(arg));

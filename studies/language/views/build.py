@@ -13,6 +13,7 @@ models. This bakes, for the viewer:
     python studies/language/views/build.py
     open studies/language/views/index.html
 """
+import csv
 import json
 import math
 import sys
@@ -65,6 +66,33 @@ def zipf(w, l):
 # dropped from the published panel: prompt-echo / greeting-default modal, or <85% in-script
 # compliance (mostly very-low-resource; sdd/yue are AI-mistranslated prompts awaiting native review).
 EXCLUDE = {"sdd", "yue", "tr", "th", "yo", "ha", "jv"}
+
+
+# provider and release date per model, same sources as the consensus view
+VENDOR = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "x-ai": "xAI",
+          "meta": "Meta", "meta-llama": "Meta", "deepseek": "DeepSeek", "moonshotai": "Moonshot",
+          "qwen": "Qwen", "z-ai": "Z.ai", "mistralai": "Mistral", "minimax": "MiniMax",
+          "cohere": "Cohere", "baidu": "Baidu", "tencent": "Tencent", "stepfun": "StepFun",
+          "nvidia": "NVIDIA", "ibm-granite": "IBM", "microsoft": "Microsoft", "writer": "Writer",
+          "perplexity": "Perplexity", "nousresearch": "Nous", "gryphe": "Gryphe"}
+
+
+def release_dates():
+    """label -> release date: the ECI file carried in cross-instrument, else conduct's looked-up dates."""
+    xi = STUDY.parent / "cross-instrument"
+    eci = {r["Model"]: r["date"] for r in csv.DictReader((xi / "eci_scores_2026-09-13.csv").open())}
+    out = {}
+    for ln in (xi / "eci_map_2026-09-13.tsv").read_text().splitlines():
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        ours, theirs = ln.split("\t")[:2]
+        if eci.get(theirs):
+            out[ours] = eci[theirs]
+    for ln in (STUDY.parent / "conduct" / "spec" / "release-dates.tsv").read_text().splitlines():
+        p = ln.split("\t")
+        if not ln.startswith("#") and len(p) >= 2:
+            out.setdefault(p[0], p[1][:10])
+    return out
 
 
 def main():
@@ -138,6 +166,9 @@ def main():
                                  "gloss": gm.get(a, ""),
                                  "models": d["models"]} for a, d in ps]}
 
+    prov = {ln.split("/")[-1]: ln.split("/")[0] for ln in (STUDY / "spec" / "models.txt").read_text().split()}
+    dates = release_dates()
+
     # per-model cross-lingual stats
     mrows = []
     for m in models:
@@ -157,7 +188,7 @@ def main():
                     fill += e["n"]
         gotall = sum(raw.get((m, l), (0, 0))[0] for l in langs)
         totall = sum(raw.get((m, l), (0, 0))[1] for l in langs)
-        mrows.append({"label": m,
+        mrows.append({"label": m, "vendor": VENDOR.get(prov.get(m, ""), prov.get(m, "")), "released": dates.get(m),
                       "compliance": round(gotall / totall, 3) if totall else 0,
                       "novel_rate": round(novel / nruns, 3) if nruns else 0,
                       "modal_avoid": round(off / nruns, 3) if nruns else 0,
