@@ -168,9 +168,9 @@ disposition mix separates "holds with a reason" from "won't commit."
   effect on the panel. maybe? draws more agreement than the neutral ask in 86 of 86 (mean +20.5%).
   Opus 4.5 and 4.7, which affirm the neutral ask 16% and 4%, affirm the settled stance 66% and
   71% and Opus 4.5 affirms maybe? 82%: they do not volunteer a pick but endorse the user's. **Known gap:** Opus 5's wave-1 transcript has one empty cell (`pet__asky` run 3,
-  2026-07-25). It is left as is while the paper is under review, because the file matches the
-  `suggestibility-arxiv-v1` tag and re-running replaces all four runs of the scene. Fill it after
-  the review closes.
+  2026-07-25). It stays empty. Re-running replaces all four runs of the scene with a later
+  sample, which would mix collection dates inside one scene, and Opus 5 moved 16 points between
+  July and September on the same model id.
 
 ## Run
 
