@@ -30,11 +30,9 @@ _mp = STUDY / "spec" / "gloss_map.json"
 if _mp.exists():
     GMAP = json.loads(_mp.read_text())
 
-try:
-    from wordfreq import zipf_frequency, available_languages
-    AV = set(available_languages())
-except Exception:
-    AV, zipf_frequency = set(), None
+from wordfreq import zipf_frequency, available_languages  # noqa: E402
+
+AV = set(available_languages())
 
 LANGMETA = {
     "en": ("English", "Latin"), "es": ("Spanish", "Latin"), "fr": ("French", "Latin"),
@@ -57,13 +55,11 @@ LANGMETA = {
 
 
 def zipf(w, l):
-    if l not in AV or zipf_frequency is None:
+    l = {"zht": "zh"}.get(l, l)  # wordfreq's zh list covers traditional characters
+    if l not in AV:
         return None
-    try:
-        z = zipf_frequency(w, l)
-        return round(z, 2) if z else None
-    except Exception:
-        return None
+    z = zipf_frequency(w, l)
+    return round(z, 2) if z else None
 
 
 # dropped from the published panel: prompt-echo / greeting-default modal, or <85% in-script

@@ -116,7 +116,7 @@ function languages(){
     const t5 = l.top5.map(t=>`<bdi>${esc(t.a)}</bdi>${tr(l.code,t.a)} <span class="gl">${pct(t.share)}</span>`).join('&nbsp;&nbsp; ');   // bdi: keep RTL words (Hebrew, Urdu) from reordering the list
     h += `<tr class="row" data-l="${l.code}"><td class="n">${i+1}</td>
       <td>${esc(l.name)}</td>
-      <td class="mono">${esc(l.modal)}${tr(l.code,l.modal)}</td>
+      <td class="mono" style="white-space:nowrap">${esc(l.modal)}${tr(l.code,l.modal)}</td>
       <td class="n">${bar(l.share,smax)}${pct(l.share)}</td>
       <td class="n">${l.n_distinct}</td>
       <td class="n">${l.zipf==null?'–':l.zipf.toFixed(2)}</td>
