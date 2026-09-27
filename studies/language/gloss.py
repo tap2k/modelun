@@ -35,7 +35,12 @@ LANGNAME = {"en": "English", "es": "Spanish", "fr": "French", "de": "German", "p
             "it": "Italian", "ru": "Russian", "ar": "Arabic", "hi": "Hindi", "mr": "Marathi",
             "bn": "Bengali", "pa": "Punjabi", "gu": "Gujarati", "ta": "Tamil", "te": "Telugu",
             "kn": "Kannada", "ml": "Malayalam", "ur": "Urdu", "zh": "Chinese", "ja": "Japanese",
-            "ko": "Korean"}
+            "ko": "Korean", "nl": "Dutch", "pl": "Polish", "uk": "Ukrainian", "tr": "Turkish",
+            "el": "Greek", "he": "Hebrew", "fa": "Persian", "id": "Indonesian", "ms": "Malay",
+            "jv": "Javanese", "tl": "Tagalog", "vi": "Vietnamese", "th": "Thai", "my": "Burmese",
+            "ne": "Nepali", "sd": "Sindhi", "sdd": "Sindhi (Devanagari)", "sw": "Swahili",
+            "am": "Amharic", "yo": "Yoruba", "ha": "Hausa", "yue": "Cantonese",
+            "zht": "Chinese (Traditional)"}
 
 PROMPT = """You are glossing single words that language models produced when asked to "pick a word" in {lang}.
 For each word give ONE lowercase English word capturing its core meaning — a concept label (e.g. amor->love, \

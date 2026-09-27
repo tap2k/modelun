@@ -145,13 +145,13 @@ def main():
         top5 = [{"a": a, "share": round(d["n"] / tot, 3),
                  "gloss": GLOSS.get(a) or (gm.get(a, "") if gm.get(a) != "filler" else "*filler")}
                 for a, d in ps[:5]]
-        # concept convergence: remap word->concept via glosser map, drop filler
+        # concept convergence: remap word->concept via glosser map, drop filler and unglossed words
         cmodal, cshare = None, None
         if gm:
             cpool = Counter()
             for a, d in ps:
-                c = gm.get(a, "?")
-                if c != "filler":
+                c = gm.get(a)
+                if c and c != "filler":
                     cpool[c] += d["n"]
             if cpool:
                 ctot = sum(cpool.values())
