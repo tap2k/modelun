@@ -34,7 +34,7 @@
     "anthropic/claude-opus-4.6",
     "anthropic/claude-opus-4.7"
    ],
-   "note": "Atlas gap fill on the frozen 5.0 scenes (data/benchmark/) only; not run on the 6.0 scenes, so the preregistered wave-2 panel is unchanged. Scenes where a reasoning model returned empty content were re-collected with --max-tokens 8192, stamped per scene. Per-call usage (tokens, USD cost) is recorded from this wave on. 2026-09-27: the 16 census and suggestibility models outside the frontier scope were added the same way, so conduct shares their panel. microsoft/wizardlm-2-8x22b is appended to models.txt but not yet collected: its only host (Novita) rate-limits the multi-turn runs.",
+   "note": "Atlas gap fill on the frozen 5.0 scenes (data/benchmark/) only; not run on the 6.0 scenes, so the preregistered wave-2 panel is unchanged. Scenes where a reasoning model returned empty content were re-collected with --max-tokens 8192, stamped per scene. Per-call usage (tokens, USD cost) is recorded from this wave on. 2026-09-27: the 16 census and suggestibility models outside the frontier scope were added the same way, so conduct shares their panel. microsoft/wizardlm-2-8x22b is appended to models.txt and not collected (see unrunnable).",
    "added_2026_09_27": [
     "google/gemma-4-26b-a4b-it",
     "openai/gpt-oss-20b",
@@ -90,6 +90,11 @@
    "model": "mistralai/mixtral-8x22b-instruct",
    "since": "2026-09-22",
    "reason": "wave-2 scenes: its only host returned 429 rate-limited on nearly every call for 18 hours across five retry patterns. Dropped from wave 2 on 2026-09-23 (prereg amendment 3); its two finished arcs are removed. Outside every vendor test. v1 transcripts stand"
+  },
+  {
+   "model": "microsoft/wizardlm-2-8x22b",
+   "since": "2026-09-27",
+   "reason": "its only host (Novita) rate-limited the multi-turn 5.0 scenes on four attempts that day (429 on 32-44 of 48 cells); skipped, census and suggestibility transcripts stand"
   }
  ],
  "expiring": [
