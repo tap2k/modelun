@@ -6,6 +6,7 @@
 <title>consensus — which models give answers the field doesn't?</title>
 <style>
   :root{
+    color-scheme:dark;
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
     --acc:#6ea8fe; --off:#5b9be0; --off-bg:#1f3350; --nov:#e0a33e; --nov-bg:#553c14;
   }
@@ -50,9 +51,16 @@
   .ctls{margin:0 0 16px}
   table.t tr.grp td{padding:16px 12px 4px;color:var(--fg);font-weight:650;font-size:12.5px;border-bottom:1px solid var(--mut)}
   tr.grp span,table.g tr.grp th span{color:var(--mut);font-weight:400;margin-left:6px}
-  table.g tr.grp th{position:sticky;left:0;background:var(--bg);text-align:left;padding:14px 6px 4px;font-size:12.5px;font-weight:650;cursor:default;border:0}
+  table.g tr.grp th{background:var(--bg);text-align:left;padding:14px 6px 4px;font-size:12.5px;font-weight:650;cursor:default;border:0}
+  table.g tr.grp .gl{position:sticky;left:6px}
   /* grid */
-  .gwrap{overflow:auto;max-height:calc(100vh - 170px);border:1px solid var(--line);border-radius:8px}
+  /* grid view: the page does not scroll; the grid fills the window below the controls and is the one
+     scroll area. On phones the page scrolls and the grid only scrolls sideways. */
+  .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto}
+  main.wide{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));padding-bottom:12px}
+  main.wide .gwrap{flex:1;min-height:0}
+  @media (max-width:640px){ main.wide{display:block;height:auto} main.wide .gwrap{overflow-y:visible}
+    table.g tbody th:not([colspan]){max-width:120px;white-space:normal;font-size:11.5px;line-height:1.3} table.g tbody th .s{display:none} }
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
   table.g th,table.g td{padding:0;font-weight:400;text-align:left}
   table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;vertical-align:bottom;padding:8px 6px 6px;cursor:pointer}
@@ -197,7 +205,7 @@ function grid(){
   for(const c of D.cats) h += `<th data-c="${esc(c.id)}"><div class="cat">${esc(c.id.replace('_',' '))}</div><div class="cm mono">${esc(c.modal)} ${pct(c.share)}</div></th>`;
   h += '</tr></thead><tbody>';
   for(const r of ordered()){
-    if(r.g){ h += `<tr class="grp"><th colspan="${D.cats.length+1}">${esc(r.g)}<span>${r.n}</span></th></tr>`; continue; }
+    if(r.g){ h += `<tr class="grp"><th colspan="${D.cats.length+1}"><span class="gl">${esc(r.g)}<span>${r.n}</span></span></th></tr>`; continue; }
     const m = r.m, mi = D.models.indexOf(m);
     h += `<tr><th data-m="${esc(m.label)}"><span class="mono">${esc(m.label)}</span><span class="s mono">${m.surprisal.toFixed(2)}</span></th>`;
     D.cats.forEach((c,ci)=>{
@@ -332,6 +340,8 @@ function route(){
   else board();
   window.scrollTo(0,0);
 }
+const setHH = () => document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight+'px');
+addEventListener('resize', setHH); setHH();
 addEventListener('hashchange', route);
 route();
 </script>
