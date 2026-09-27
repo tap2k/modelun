@@ -131,7 +131,10 @@ const byDate = (a,b) => (a.released||'9999').localeCompare(b.released||'9999') |
 function ordered(){   // -> [{g:vendor,n}|{m:model}]
   const ms = D.models.filter(m=>!Q.p.length || Q.p.includes(m.vendor));
   if(Q.o==='surprisal') return ms.map(m=>({m}));
-  if(Q.o==='release') return [...ms].sort(byDate).map(m=>({m}));
+  if(Q.o==='release'){   // undated models go under their own heading, never at the end as if newest
+    const dated = ms.filter(m=>m.released).sort(byDate).map(m=>({m})), und = ms.filter(m=>!m.released);
+    return und.length ? [...dated, {g:'release date unknown', n:und.length}, ...und.map(m=>({m}))] : dated;
+  }
   const out = [];
   for(const v of VENDORS){ const g = ms.filter(m=>m.vendor===v).sort(byDate); if(g.length){ out.push({g:v, n:g.length}); g.forEach(m=>out.push({m})); } }
   return out;
