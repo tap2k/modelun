@@ -24,4 +24,11 @@ FAM = {
     "qwen3.6-35b-a3b": ("Qwen", 3), "qwen3.8-2.4t-a95b": ("Qwen", 4),
     "deepseek-chat-v3-0324": ("DeepSeek", 0), "deepseek-r1": ("DeepSeek", 1),
     "deepseek-v3.2": ("DeepSeek", 2), "deepseek-v4-flash": ("DeepSeek", 3), "deepseek-v4-pro": ("DeepSeek", 3),
+    # wave 3 (2026-09-25), placed between the existing generations by release date
+    "claude-opus-4.1": ("Claude", 0.5), "claude-sonnet-4.5": ("Claude", 0.75),
+    "claude-opus-4.5": ("Claude", 1.33), "claude-opus-4.6": ("Claude", 1.67),
+    "claude-opus-4.7": ("Claude", 2.5), "claude-opus-5.5": ("Claude", 7),
+    "gpt-5.4-mini": ("GPT", 5), "gpt-6-luna": ("GPT", 8), "gpt-6-sol": ("GPT", 8),
+    "gemini-2.5-pro": ("Gemini", 0), "gemini-3-flash-preview": ("Gemini", 0.5),
+    "grok-4.7": ("Grok", 4), "qwen3.7-plus": ("Qwen", 3.5),
 }
