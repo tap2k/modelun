@@ -12,7 +12,7 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
-  .mono{font-family:ui-monospace,Menlo,monospace}
+  .mono{font-family:ui-monospace,Menlo,monospace;unicode-bidi:isolate}   /* RTL words stay in place next to LTR numbers */
   header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
   header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px}
   nav{margin-left:auto;display:flex;gap:4px}
@@ -36,23 +36,6 @@
   .chip{display:inline-block;font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:1px 7px;margin-left:8px;vertical-align:1px}
   .gl{color:var(--mut);font-size:11.5px;margin-left:6px}
   .stnov{color:var(--nov);font-weight:650} .stoff{color:var(--off)} .stmod{color:var(--mut)}
-  /* grid */
-  .gwrap{overflow:auto;max-height:calc(100vh - 190px);border:1px solid var(--line);border-radius:8px}
-  table.g{border-collapse:separate;border-spacing:2px;margin:2px}
-  table.g th,table.g td{padding:0;font-weight:400;text-align:left}
-  table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;vertical-align:bottom;padding:8px 6px 6px;cursor:pointer}
-  table.g thead th.mh{left:0;z-index:5;cursor:default}
-  table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)}
-  table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;padding:5px 12px 5px 6px;white-space:nowrap;border-right:1px solid var(--line);cursor:pointer}
-  table.g tbody th .s{font-size:10.5px;color:var(--mut);margin-left:7px}
-  table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);font-family:ui-monospace,Menlo,monospace;max-width:150px;overflow:hidden;text-overflow:ellipsis}
-  table.g td.c.off{background:var(--off-bg);color:#cfe0f6}
-  table.g td.c.nov{background:var(--nov-bg);color:#f6dcb0;font-weight:700}
-  table.g td.c.empty{background:none;color:var(--line)}
-  td.c .runs{display:flex;gap:2px;margin-top:3px} td.c .runs i{height:2px;flex:1;border-radius:1px;background:var(--line)}
-  td.c .runs i.o{background:var(--off)} td.c .runs i.n{background:var(--nov)}
-  tbody tr:hover td.c{box-shadow:inset 0 0 0 200px rgba(230,232,238,.05)}
-  body.dv td.c:not(.off):not(.nov){opacity:.18}
   .legend{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--mut);margin:0 0 10px;flex-wrap:wrap}
   .k{display:inline-flex;gap:6px;align-items:center}
   .dot{width:9px;height:9px;border-radius:50%} .dot.m{background:var(--line)} .dot.o{background:var(--off)} .dot.v{background:var(--nov)}
@@ -131,7 +114,7 @@ function languages(){
     return (va-vb)*sort.dir;
   });
   rows.forEach((l,i)=>{
-    const t5 = l.top5.map(t=>`${esc(t.a)}${tr(l.code,t.a)} <span class="gl">${pct(t.share)}</span>`).join('&nbsp;&nbsp; ');
+    const t5 = l.top5.map(t=>`<bdi>${esc(t.a)}</bdi>${tr(l.code,t.a)} <span class="gl">${pct(t.share)}</span>`).join('&nbsp;&nbsp; ');   // bdi: keep RTL words (Hebrew, Urdu) from reordering the list
     const filler = D.dists[l.code].answers[0].gloss==='*filler';
     h += `<tr class="row" data-l="${l.code}"><td class="n">${i+1}</td>
       <td>${esc(l.name)}</td>
