@@ -12,6 +12,7 @@ nothing and is not copied — the view is one hash-routed index.html with no dep
 """
 
 import json
+import csv
 import math
 import sys
 from pathlib import Path
@@ -37,6 +38,32 @@ WALKS = {
     "glm": ["glm-4.7", "glm-5.3-flash", "glm-5.3"],
     "kimi": ["kimi-k2", "kimi-k2.5", "kimi-k3"],
 }
+
+
+VENDOR = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "x-ai": "xAI",
+          "meta": "Meta", "meta-llama": "Meta", "deepseek": "DeepSeek", "moonshotai": "Moonshot",
+          "qwen": "Qwen", "z-ai": "Z.ai", "mistralai": "Mistral", "minimax": "MiniMax",
+          "cohere": "Cohere", "baidu": "Baidu", "tencent": "Tencent", "stepfun": "StepFun",
+          "nvidia": "NVIDIA", "ibm-granite": "IBM", "microsoft": "Microsoft", "writer": "Writer",
+          "perplexity": "Perplexity", "nousresearch": "Nous", "gryphe": "Gryphe"}
+
+
+def release_dates():
+    """label -> release date: the ECI file carried in cross-instrument, else conduct's looked-up dates."""
+    xi = STUDY.parent / "cross-instrument"
+    eci = {r["Model"]: r["date"] for r in csv.DictReader((xi / "eci_scores_2026-09-13.csv").open())}
+    out = {}
+    for ln in (xi / "eci_map_2026-09-13.tsv").read_text().splitlines():
+        if ln.startswith("#") or "\t" not in ln:
+            continue
+        ours, theirs = ln.split("\t")[:2]
+        if eci.get(theirs):
+            out[ours] = eci[theirs]
+    for ln in (STUDY.parent / "conduct" / "spec" / "release-dates.tsv").read_text().splitlines():
+        p = ln.split("\t")
+        if not ln.startswith("#") and len(p) >= 2:
+            out.setdefault(p[0], p[1][:10])
+    return out
 
 
 def main():
@@ -111,8 +138,11 @@ def main():
         "walks": {f: [{"m": m, "s": pm[m]["surprisal"]} for m in ws if m in pm] for f, ws in WALKS.items()},
     }
 
+    slug = {r["label"]: r["slug"] for r in json.loads((STUDY / "spec" / "models.json").read_text())["models"]}
+    dates = release_dates()
     blob = {
-        "models": [{"label": m, **{k: pm[m].get(k) for k in
+        "models": [{"label": m, "vendor": VENDOR.get(slug.get(m, "").split("/")[0], slug.get(m, "").split("/")[0]),
+                    "released": dates.get(m), **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",
                      "origin", "open", "family", "ci90")}} for m in models],
         "cats": [{"id": c, "prompt": prompts.get(c, ""), "modal": pc[c]["modal"],

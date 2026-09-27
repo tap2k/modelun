@@ -35,6 +35,22 @@
   .cibar .ci{position:absolute;top:0;bottom:0;background:var(--line);border-radius:3px}
   .cibar .pt{position:absolute;top:-2px;width:2px;height:10px;background:var(--acc)}
   .stnov{color:var(--nov);font-weight:650} .stoff{color:var(--off)} .stmod{color:var(--mut)}
+  /* narrow screens: the header wraps, wide tables scroll in their own box */
+  header{flex-wrap:wrap}
+  .twrap{overflow-x:auto;max-width:100%}
+  table.t td{white-space:nowrap}
+  @media (max-width:640px){ main{padding:16px} nav{margin-left:0} header .sub{display:none} }
+  /* order + provider controls */
+  .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px;font-size:12px}
+  .ctl .lab{color:var(--mut);width:64px;text-transform:uppercase;font-size:10.5px;letter-spacing:.4px}
+  .ctl a{color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:3px 10px}
+  .ctl a span{opacity:.6;margin-left:3px}
+  .ctl a.on{color:var(--fg);border-color:var(--mut);background:var(--panel2)}
+  .ctl a:hover{text-decoration:none;color:var(--fg)}
+  .ctls{margin:0 0 16px}
+  table.t tr.grp td{padding:16px 12px 4px;color:var(--fg);font-weight:650;font-size:12.5px;border-bottom:1px solid var(--mut)}
+  tr.grp span,table.g tr.grp th span{color:var(--mut);font-weight:400;margin-left:6px}
+  table.g tr.grp th{position:sticky;left:0;background:var(--bg);text-align:left;padding:14px 6px 4px;font-size:12.5px;font-weight:650;cursor:default;border:0}
   /* grid */
   .gwrap{overflow:auto;max-height:calc(100vh - 170px);border:1px solid var(--line);border-radius:8px}
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
@@ -104,6 +120,30 @@ for (const m of D.models) for (const c of D.cats) {
 }
 const MAXS = Math.max(...D.models.map(m=>m.surprisal));
 
+/* ---------- order + provider filter (state lives in the hash query: #grid?o=release&p=Anthropic,Google) ---------- */
+const RANK = new Map(D.models.map((m,i)=>[m.label,i+1]));   // field rank by surprisal, whatever the order
+const VCOUNT = {}; D.models.forEach(m=>VCOUNT[m.vendor]=(VCOUNT[m.vendor]||0)+1);
+const VENDORS = Object.keys(VCOUNT).sort((a,b)=>VCOUNT[b]-VCOUNT[a]||a.localeCompare(b));
+let Q = {o:'provider', p:[]};
+const parseQ = q => { const u=new URLSearchParams(q||''); return {o:u.get('o')||'provider', p:(u.get('p')||'').split(',').filter(Boolean)}; };
+const qs = (o,p) => { const u=[]; if(o!=='provider') u.push('o='+o); if(p.length) u.push('p='+p.map(encodeURIComponent).join(',')); return u.length?'?'+u.join('&'):''; };
+const byDate = (a,b) => (a.released||'9999').localeCompare(b.released||'9999') || a.label.localeCompare(b.label);
+function ordered(){   // -> [{g:vendor,n}|{m:model}]
+  const ms = D.models.filter(m=>!Q.p.length || Q.p.includes(m.vendor));
+  if(Q.o==='surprisal') return ms.map(m=>({m}));
+  if(Q.o==='release') return [...ms].sort(byDate).map(m=>({m}));
+  const out = [];
+  for(const v of VENDORS){ const g = ms.filter(m=>m.vendor===v).sort(byDate); if(g.length){ out.push({g:v, n:g.length}); g.forEach(m=>out.push({m})); } }
+  return out;
+}
+function controls(view){
+  const o = k => `<a class="${Q.o===k?'on':''}" href="#${view}${qs(k,Q.p)}">${k}</a>`;
+  const chip = v => { const on=Q.p.includes(v), p=on?Q.p.filter(x=>x!==v):[...Q.p,v];
+    return `<a class="${on?'on':''}" href="#${view}${qs(Q.o,p)}">${esc(v)}<span>${VCOUNT[v]}</span></a>`; };
+  return `<div class="ctls"><div class="ctl"><span class="lab">order</span>${o('provider')}${o('surprisal')}${o('release')}</div>
+  <div class="ctl"><span class="lab">provider</span><a class="${Q.p.length?'':'on'}" href="#${view}${qs(Q.o,[])}">all</a>${VENDORS.map(chip).join('')}</div></div>`;
+}
+
 /* ---------- scorecard ---------- */
 function board(){
   let h = `<h2>scorecard</h2>
@@ -112,8 +152,9 @@ function board(){
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
   Click a model to drill down. The 90% CI is computed by resampling the question categories with replacement
-  and recomputing the score.</p>
-  <table class="t"><tr><th>#</th><th>model</th>
+  and recomputing the score. <b>#</b> is the model's rank on surprisal across the whole field, in any order.</p>
+  ${controls('board')}
+  <div class="twrap"><table class="t"><tr><th title="rank on surprisal across all models">#</th><th>model</th><th>released</th>
     <th title="mean -log2 P(answer | every other model's answers) — higher = answers the field doesn't give">surprisal</th>
     <th title="bootstrap over the 30 categories: where the score would land on a different question set — overlapping ranges are a tie, not a ranking">90% CI</th>
     <th title="share of answers NO other model gave — the Family Feud X buzzer">novel</th>
@@ -122,16 +163,17 @@ function board(){
   const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
   const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));
   const X = v => (v-lo)/(hi-lo)*100;
-  D.models.forEach((m,i)=>{
-    const ci = m.ci90||[m.surprisal,m.surprisal];
-    h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${i+1}</td>
-      <td><span class="mono">${esc(m.label)}</span></td>
+  for(const r of ordered()){
+    if(r.g){ h += `<tr class="grp"><td colspan="8">${esc(r.g)}<span>${r.n}</span></td></tr>`; continue; }
+    const m = r.m, ci = m.ci90||[m.surprisal,m.surprisal];
+    h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${RANK.get(m.label)}</td>
+      <td><span class="mono">${esc(m.label)}</span></td><td class="n">${esc(m.released||'–')}</td>
       <td class="n">${m.surprisal.toFixed(2)}</td>
       <td><div class="cibar"><span class="ci" style="left:${X(ci[0])}%;width:${X(ci[1])-X(ci[0])}%"></span><span class="pt" style="left:${X(m.surprisal)}%"></span></div></td>
       <td class="n">${pct(m.novel_rate)}</td><td class="n">${pct(m.modal_avoid)}</td>
       <td class="n">${pct(m.self_distinct)}</td></tr>`;
-  });
-  main.innerHTML = h + '</table>';
+  }
+  main.innerHTML = h + '</table></div>';
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
 }
 
@@ -139,7 +181,7 @@ function board(){
 function grid(){
   let h = `<h2>models &times; answers</h2>
   <p class="note"><b>Unhighlighted cells are the modal answer; color is a model breaking from it.</b>
-  Rows sorted most-divergent first; columns most-converged first. Dashes appear only when a model's
+  Rows follow the order below; columns are most-converged first. Dashes appear only when a model's
   4 runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
   <div class="legend">
     <span class="k"><span class="dot m"></span>consensus</span>
@@ -147,10 +189,13 @@ function grid(){
     <span class="k"><span class="dot v"></span><b>novel</b> — no other model said it</span>
     <button class="tog" id="dv">divergences only</button>
   </div>
+  ${controls('grid')}
   <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
   for(const c of D.cats) h += `<th data-c="${esc(c.id)}"><div class="cat">${esc(c.id.replace('_',' '))}</div><div class="cm mono">${esc(c.modal)} ${pct(c.share)}</div></th>`;
   h += '</tr></thead><tbody>';
-  D.models.forEach((m,mi)=>{
+  for(const r of ordered()){
+    if(r.g){ h += `<tr class="grp"><th colspan="${D.cats.length+1}">${esc(r.g)}<span>${r.n}</span></th></tr>`; continue; }
+    const m = r.m, mi = D.models.indexOf(m);
     h += `<tr><th data-m="${esc(m.label)}"><span class="mono">${esc(m.label)}</span><span class="s mono">${m.surprisal.toFixed(2)}</span></th>`;
     D.cats.forEach((c,ci)=>{
       const cell = D.grid[m.label][c.id];
@@ -165,7 +210,7 @@ function grid(){
       h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-mi="${mi}" data-ci="${ci}" title="${esc(p.a)}">${esc(p.a)}${runs}</td>`;
     });
     h += '</tr>';
-  });
+  }
   main.innerHTML = h + '</tbody></table></div>';
   document.getElementById('dv').addEventListener('click',e=>{document.body.classList.toggle('dv');e.target.classList.toggle('on');});
   main.querySelectorAll('th[data-m]').forEach(t=>t.addEventListener('click',()=>location.hash='#m/'+t.dataset.m));
@@ -271,7 +316,10 @@ function route(){
   const hsh = location.hash || '#board';
   document.body.classList.remove('dv');
   tip.style.display='none';
-  const [v, arg] = hsh.slice(1).split('/');
+  const [path, q] = hsh.slice(1).split('?');
+  Q = parseQ(q);
+  const [v, arg] = path.split('/');
+  document.querySelectorAll('nav a[data-v=board],nav a[data-v=grid]').forEach(a=>a.href='#'+a.dataset.v+qs(Q.o,Q.p));
   main.classList.toggle('wide', v==='grid');
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='m'||v==='c') && a.dataset.v===(v==='m'?'board':'questions')));
   if(v==='m' && arg) model(decodeURIComponent(arg));
