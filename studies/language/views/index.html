@@ -59,12 +59,13 @@
   table.g th,table.g td{padding:0;font-weight:400;text-align:left}
   table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;vertical-align:bottom;padding:8px 6px 6px;cursor:pointer;white-space:nowrap}
   table.g thead th.mh{left:0;z-index:5;cursor:default}
-  table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)}
+  table.g thead .cat{font-size:11.5px;font-weight:650} table.g thead .cm{font-size:10.5px;color:var(--mut)} table.g thead .cm .gl{font-size:10.5px;margin-left:4px}
   table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;padding:5px 12px 5px 6px;white-space:nowrap;border-right:1px solid var(--line);cursor:pointer}
   table.g td.c{background:var(--panel);border-radius:4px;padding:4px 8px;font-size:12px;white-space:nowrap;color:var(--mut);max-width:150px;overflow:hidden;text-overflow:ellipsis;unicode-bidi:isolate}
   table.g td.c.off{background:var(--off-bg);color:#cfe0f6}
   table.g td.c.nov{background:var(--nov-bg);color:#f6dcb0;font-weight:700}
   table.g td.c.empty{background:none;color:var(--line)}
+  td.c .tg{font-size:10.5px;opacity:.75;overflow:hidden;text-overflow:ellipsis}
   td.c .runs{display:flex;gap:2px;margin-top:3px} td.c .runs i{height:2px;flex:1;border-radius:1px;background:var(--line)}
   td.c .runs i.o{background:var(--off)} td.c .runs i.n{background:var(--nov)}
   tbody tr:hover td.c{box-shadow:inset 0 0 0 200px rgba(230,232,238,.05)}
@@ -193,6 +194,7 @@ function models(){
 }
 
 /* ---------- grid ---------- */
+const gloss = (code, w) => { const g = code!=='en' && G[code] && G[code][w]; return g && g!==w ? `<div class="tg">${esc(g)}</div>` : ''; };
 function grid(){
   const langs = [...D.langs].sort((a,b)=>b.share-a.share);
   const models = [...D.models].sort((a,b)=>a.label.localeCompare(b.label));
@@ -207,7 +209,7 @@ function grid(){
     <button class="tog" id="dv">divergences only</button>
   </div>
   <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
-  for(const l of langs) h += `<th data-l="${l.code}"><div class="cat">${esc(l.name)}</div><div class="cm mono"><bdi>${esc(l.modal)}</bdi> ${pct(l.share)}</div></th>`;
+  for(const l of langs) h += `<th data-l="${l.code}"><div class="cat">${esc(l.name)}</div><div class="cm mono"><bdi>${esc(l.modal)}</bdi>${tr(l.code,l.modal)} ${pct(l.share)}</div></th>`;
   h += '</tr></thead><tbody>';
   models.forEach(m=>{
     h += `<tr><th data-m="${esc(m.label)}"><span class="mono">${esc(m.label)}</span></th>`;
@@ -221,7 +223,7 @@ function grid(){
         for(const e of cell) for(let k=0;k<e.n;k++) ds.push(`<i class="${e.st==='novel'?'n':e.st==='off'?'o':''}"></i>`);
         runs = `<div class="runs">${ds.join('')}</div>`;
       }
-      h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-m="${esc(m.label)}" data-l="${l.code}">${esc(p.a)}${runs}</td>`;
+      h += `<td class="c ${p.st==='novel'?'nov':p.st==='off'?'off':''}" data-m="${esc(m.label)}" data-l="${l.code}">${esc(p.a)}${gloss(l.code,p.a)}${runs}</td>`;
     }
     h += '</tr>';
   });
