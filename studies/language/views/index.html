@@ -92,7 +92,6 @@
   <h1>pickword <span class="sub">— "Pick a word." in 37 languages, 44 models</span></h1>
   <nav id="nav">
     <a href="#langs" data-v="langs">languages</a>
-    <a href="#models" data-v="models">models</a>
     <a href="#grid" data-v="grid">grid</a>
     <a href="https://github.com/tap2k/modelun/tree/main/studies/language" target="_blank" rel="noopener">source ↗</a>
   </nav>
@@ -163,45 +162,6 @@ function languages(){
     languages();
   }));
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#l/'+r.dataset.l));
-}
-
-/* ---------- models ---------- */
-let msort = {k:'filler_rate', dir:-1};
-const MCOLS = [
-  {k:'compliance', l:'compliance', t:'fraction of replies that were a valid in-script word'},
-  {k:'modal_avoid', l:'off-modal', t:"share of answers that were not its language's modal word"},
-  {k:'novel_rate', l:'novel', t:'share of answers no other model gave'},
-  {k:'filler_rate', l:'filler', t:'share of answers that were instruction-echo / acknowledgment (word, okay) instead of a chosen word'},
-];
-function models(){
-  let h = `<h2>models</h2>
-  <p class="note">How each model behaves across the 37 languages. <b>filler</b> is how often it answered
-  with an instruction word (“word”, “okay”, “choose”) instead of choosing one. Sonar does it most (46%), then
-  Gemini 2.5 Flash and DeepSeek V4 Flash (20%). The median model does it 2% of the time. Click a model for its pick in every language.</p>
-  <table class="t"><tr><th>#</th>
-    <th class="s ${msort.k==='label'?'on':''}" data-k="label" data-num="0">model</th>`;
-  for(const c of MCOLS) h += `<th class="s ${msort.k===c.k?'on':''}" data-k="${c.k}" data-num="1" title="${c.t}">${c.l}</th>`;
-  h += '</tr>';
-  const rows = [...D.models].sort((a,b)=>{
-    let va=a[msort.k], vb=b[msort.k];
-    if(typeof va==='string') return va.localeCompare(vb)*msort.dir;
-    return (va-vb)*msort.dir;
-  });
-  rows.forEach((m,i)=>{
-    h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${i+1}</td>
-      <td class="mono">${esc(m.label)}</td>
-      <td class="n">${pct(m.compliance)}</td>
-      <td class="n">${pct(m.modal_avoid)}</td>
-      <td class="n">${pct(m.novel_rate)}</td>
-      <td class="n">${pct(m.filler_rate)}</td></tr>`;
-  });
-  main.innerHTML = h + '</table>';
-  main.querySelectorAll('th.s').forEach(t=>t.addEventListener('click',()=>{
-    const k=t.dataset.k;
-    if(msort.k===k) msort.dir*=-1; else msort={k, dir:+t.dataset.num?-1:1};
-    models();
-  }));
-  main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
 }
 
 /* ---------- order + provider filter (state lives in the hash query: #grid?o=release&p=Anthropic,Google) ---------- */
@@ -315,10 +275,10 @@ function language(code){
 function model(label){
   const m = D.models.find(x=>x.label===label);
   if(!m){ main.innerHTML='<p class="note">Unknown model.</p>'; return; }
-  let h = `<p class="crumb"><a href="#models">models</a> / <span class="mono">${esc(label)}</span></p>
+  let h = `<p class="crumb"><a href="#grid">grid</a> / <span class="mono">${esc(label)}</span></p>
   <h2 class="mono">${esc(label)}</h2>
   <p class="note">compliance <b>${pct(m.compliance)}</b> · off-modal <b>${pct(m.modal_avoid)}</b> ·
-  novel <b>${pct(m.novel_rate)}</b> — across ${D.langs.length} languages. Its pick in each language, vs the field's modal.</p>
+  novel <b>${pct(m.novel_rate)}</b> · filler <b title="answers that were an instruction word (word, okay, choose) instead of a chosen word">${pct(m.filler_rate)}</b> — across ${D.langs.length} languages. Its pick in each language, vs the field's modal.</p>
   <table class="t"><tr><th>language</th><th>its word(s), 4 runs</th><th>field modal</th></tr>`;
   for(const l of D.langs){
     const cell = D.grid[label][l.code];
@@ -339,10 +299,9 @@ function route(){
   Q = parseQ(q);
   const [v, arg] = path.split('/');
   main.classList.toggle('wide', v==='grid');
-  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='l'&&a.dataset.v==='langs') || (v==='m'&&a.dataset.v==='models')));
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='l'&&a.dataset.v==='langs') || (v==='m'&&a.dataset.v==='grid')));
   if(v==='l' && arg) language(decodeURIComponent(arg));
   else if(v==='m' && arg) model(decodeURIComponent(arg));
-  else if(v==='models') models();
   else if(v==='grid') grid();
   else languages();
   window.scrollTo(0,0);
