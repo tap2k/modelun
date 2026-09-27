@@ -1,19 +1,21 @@
-# paper — the suggestibility preprint (arXiv v1, then TMLR)
+# paper — the suggestibility preprint (arXiv v1, then ACL Rolling Review)
 
 "Tag Questions and the Generational Reversal of Sycophancy Across 45 Language Models."
-arXiv:2607.23976, pinned by tag `suggestibility-arxiv-v1`. Submitted to TMLR (decided
-2026-09-25).
+arXiv:2607.23976, pinned by tag `suggestibility-arxiv-v1`. Going to ACL Rolling Review for the
+October 2026 cycle (deadline 2026-10-12), through the review lottery: no designated service
+contributor.
 
-The paper's text is `body.tex`, shared by both builds. `main.tex` is the arXiv build (plain
-article, named); `main-tmlr.tex` is the anonymous TMLR submission. Each wrapper sets `\ifanon`,
-which `body.tex` uses for the passages that identify the author. `tmlr.sty`, `tmlr.bst` and
-`fancyhdr.sty` are the official TMLR style files (github.com/JmlrOrg/tmlr-style-file at 7bf90ef,
-license in `tmlr-LICENSE`). Edit `body.tex`; never fork the text per venue.
+The paper's text is `body.tex`, shared by every build. `main.tex` is the arXiv build (plain
+article, named), `main-acl.tex` the ACL build (named), `main-acl-review.tex` the anonymous ACL
+build for ARR. Each wrapper sets `\ifanon`, which `body.tex` uses for the passages that identify
+the author. `acl.sty` and `acl_natbib.bst` are the official ACL style files. Edit `body.tex`;
+never fork the text per venue. `responsible-nlp-checklist.md` holds the ARR checklist answers.
 
 ```bash
-tectonic main.tex         # -> main.pdf, the arXiv build
-tectonic main-tmlr.tex    # -> main-tmlr.pdf, the anonymous TMLR submission
-python3 make_assets.py    # -> figs/, gen/ (the July 45 by default; --all for the 70)
+tectonic main.tex               # -> main.pdf, the arXiv build
+tectonic main-acl-review.tex    # -> the anonymous ACL build for ARR
+tectonic main-acl.tex           # -> the named ACL build
+python3 make_assets.py          # -> figs/, gen/ (the July 45 by default; --all for the 70)
 ```
 
 ## The 2026-09-25 rewrite
@@ -28,14 +30,13 @@ models (`../heldout_wave2.py`), the 70-model ablation numbers, the unstated-alte
 untraced release-date slope. Every number traces to `make_assets.py`, `gen/`, or a dated result
 file one level up.
 
-The rewrite was first fitted to ACL Rolling Review (ACL builds, Responsible NLP checklist). ARR's
-October 2026 sustainable-reviewing policy requires a qualified service contributor per submission
-or a lottery for review, so the paper went to TMLR instead, which has no service requirement and
-accepts on whether claims are supported by evidence. The ACL builds and checklist are at `fbdbe6a`.
+The venue went ACL Rolling Review, then TMLR (2026-09-25, because ARR's October policy requires a
+qualified service contributor or a lottery), then back to ARR after TMLR desk-rejected it on
+2026-09-27. The TMLR build is at `f046b0f`.
 
 ## Submission package
 
-Kept privately under the planning folder's `tmlr-submission/`: the anonymous PDF, the abstract as
-plain text, and `supplement.zip` (`git archive` of `studies/suggestibility/` without the paper's
+Kept privately under the planning folder's `arr-submission/`: the anonymous PDF, the checklist
+answers, the abstract as plain text, and `supplement.zip` (`git archive` of `studies/suggestibility/` without the paper's
 LaTeX sources, with the explorer's source link removed and the repository name replaced; a scan for
 the author's name, institution, email and repository finds nothing in it).
