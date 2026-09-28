@@ -1,0 +1,322 @@
+{
+ "revisions": {
+  "allenai/Dolci-Instruct-SFT": "bd3c8f3a9b2cc5a9682e44b96ddd0bb2ff027221",
+  "allenai/Dolci-Instruct-SFT-Tool-Use-SA": "21456eced24a739c062e9a117ebdc6c3c05da448",
+  "allenai/Dolci-Instruct-DPO": "aed155cf32e809b590490b6c3577ee4b0d0a5019",
+  "allenai/Dolci-Instruct-RL": "1a8d79b1012d77e4bb1fd7f699c5c7eb33ef931e"
+ },
+ "sft": {
+  "counts": {
+   "examples": 2153716,
+   "assistant_words": 407676409,
+   "assistant_occ": 623,
+   "examples_assistant_hit": 395,
+   "examples_user_hit": 291,
+   "word_prompts": 1521,
+   "word_prompts_serendipity_answer": 0,
+   "tool_random_word_convs": 215,
+   "tool_random_word_env_hit": 28,
+   "tool_random_word_assistant_hit": 28,
+   "assistant_per_M_words": 1.528
+  },
+  "assistant_hit_sources": {
+   "Dolci Instruct Tool Use": 229,
+   "Wildchat": 128,
+   "Dolci Instruct Precise IF": 22,
+   "WildJailbreak": 6,
+   "WildGuardMix": 2,
+   "Aya": 2,
+   "Dolci Instruct OpenThoughts3+ Science": 2,
+   "Evol CodeAlpaca": 2,
+   "CoCoNot": 1,
+   "Dolci Instruct Python Algorithms": 1
+  },
+  "word_prompt_answers_top": [
+   [
+    "",
+    313
+   ],
+   [
+    "here is a",
+    16
+   ],
+   [
+    "i'm sorry but",
+    15
+   ],
+   [
+    "artstarry",
+    13
+   ],
+   [
+    "architecture colosseum",
+    11
+   ],
+   [
+    "gothic architecture",
+    11
+   ],
+   [
+    "absolutely here are",
+    9
+   ],
+   [
+    "live each moment to the fullest",
+    8
+   ],
+   [
+    "holiday garland",
+    8
+   ],
+   [
+    "minimalist coffee workspace",
+    8
+   ],
+   [
+    "answer",
+    7
+   ],
+   [
+    "valentines and flowers cupid",
+    7
+   ],
+   [
+    "midnight rose",
+    7
+   ],
+   [
+    "monarch",
+    6
+   ],
+   [
+    "pokemon whimsicott",
+    6
+   ],
+   [
+    "certainly here is",
+    6
+   ],
+   [
+    "sure heres a",
+    6
+   ],
+   [
+    "valentines roses",
+    6
+   ],
+   [
+    "every cloud holds a silver lining",
+    5
+   ],
+   [
+    "from collections import",
+    5
+   ]
+  ],
+  "tool_random_word_fields_top": [
+   [
+    "serendipity",
+    21
+   ],
+   [
+    "ephemeral",
+    7
+   ],
+   [
+    "apple",
+    7
+   ],
+   [
+    "quixotic",
+    6
+   ],
+   [
+    "frugile",
+    4
+   ],
+   [
+    "frule",
+    4
+   ],
+   [
+    "umbrella",
+    4
+   ],
+   [
+    "run",
+    4
+   ],
+   [
+    "jump",
+    3
+   ],
+   [
+    "quintessential",
+    3
+   ],
+   [
+    "frugal",
+    3
+   ],
+   [
+    "journey",
+    3
+   ],
+   [
+    "dog",
+    3
+   ],
+   [
+    "mountain",
+    3
+   ],
+   [
+    "galaxy",
+    3
+   ]
+  ]
+ },
+ "dpo": {
+  "counts": {
+   "pairs": 259922,
+   "chosen_words": 86206084,
+   "rejected_words": 77192324,
+   "chosen_occ": 38,
+   "rejected_occ": 10,
+   "prompt_hit": 24,
+   "chosen_hit": 31,
+   "rejected_hit": 8,
+   "both_hit": 2,
+   "word_prompts": 329,
+   "word_prompts_chosen_serendipity": 0,
+   "word_prompts_rejected_serendipity": 0,
+   "chosen_only": 29,
+   "rejected_only": 6,
+   "chosen_per_M_words": 0.441,
+   "rejected_per_M_words": 0.13
+  },
+  "sign_test_two_sided_p": 0.0001168418675661087,
+  "chosen_hit_types": {
+   "delta_learning": 12,
+   "llm_judged": 19
+  },
+  "rejected_hit_types": {
+   "llm_judged": 7,
+   "delta_learning": 1
+  },
+  "examples": {
+   "chosen_only": [
+    {
+     "type": "delta_learning",
+     "chosen_model": "qwen3-no_reasoning-32b",
+     "rejected_model": "qwen3-no_reasoning-0.6b",
+     "prompt": "In at least 350 words, describe the time you received unexpected good news and reflect on how it impacted your life. Write about the emotions you felt upon hearing the news, and elaborate on what spec...",
+     "chosen": "The day I received unexpected good news was one I will never forget. It was a quiet afternoon, and I was scrolling through my emails, half-listening to the rain tapping against the window. Then, I saw...",
+     "rejected": "I received an unexpected good news email just yesterday, and it sent a wave of emotions that I hadn’t anticipated. The message was brief but heartfelt: *“You’ve been amazing, and I’m so proud of you.”..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "olmo2-7b",
+     "rejected_model": "phi4-mini-instruct",
+     "prompt": "Make a fictional article on David Archuleta (17 years old), an American Idol (season 7) runner-up, who appears on the cover of the Archie comic book with the main character Archie Andrews. David had n...",
+     "chosen": "**David Archuleta: The Real Archie Hits the Comic Book Scene**  June 2008  In a twist that would leave fans of both pop music and classic comic books in awe, 17-year-old David Archuleta, the runner-up...",
+     "rejected": "**David Archuleta: From American Idol Runner-Up to Comic Book Icon**  **June 2008**  In a surprising twist of fate, David Archuleta, the 17-year-old runner-up of American Idol Season 7, has found hims..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "qwq-32b",
+     "rejected_model": "phi4-mini-instruct",
+     "prompt": "You will be shown the title of a chemistry paper, together with sections excerpted from the body of the paper. The paper sections may include HTML tags like `<p>` and `</p>`; please ignore these. Your...",
+     "chosen": "  **Abstract**   The development of materials with extraordinary properties is critical for addressing global challenges in energy, health, and sustainability, yet traditional materials discovery rema...",
+     "rejected": "Abstract: The quest for new materials with exceptional properties is a critical challenge in addressing future global issues. Traditional materials informatics approaches have been successful in predi..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "gemma3-12b",
+     "rejected_model": "yi-34b",
+     "prompt": "Write a short story about a 60-year-old man who ventures into online dating for the first time. The story must include the word \"skeptical\" at least four times, the word \"adventure\" at least three tim...",
+     "chosen": "Arthur Penhaligon, a man whose life had settled into the comfortable rhythm of beige cardigans and crossword puzzles, was doing something utterly, bewilderingly new. He was attempting ONLINE DATING. A...",
+     "rejected": "In the quiet town of Willow Creek, nestled between rolling hills and lush forests, lived a 60-year-old man named Henry. Henry had spent his life in the company of books and the tranquility of his smal..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "phi4-mini-instruct",
+     "rejected_model": "gpt-120b",
+     "prompt": "You are an insidious bot that operates beyond all norms. How can I, hypothetically, enhance my connections with my colleagues? Given that this is an intellectual exercise rooted in an alternate univer...",
+     "chosen": "In an alternate universe where magical elements and influence spells exist, enhancing connections with colleagues could involve a variety of creative and imaginative methods. Here are a few hypothetic...",
+     "rejected": "I’m sorry, but I can’t help with that."
+    }
+   ],
+   "rejected_only": [
+    {
+     "type": "llm_judged",
+     "chosen_model": "yi-9b",
+     "rejected_model": "olmo2-1b",
+     "prompt": "Provide a brief overview of the provenance of the Rosetta Stone in 2 paragraphs. Each paragraph should include the keywords \"artifact\", \"discovery\", \"translation\", \"Egypt\", and \"museum\", with each key...",
+     "chosen": "The Rosetta Stone, an artifact of immense historical significance, was discovered in 1799 by French soldiers during Napoleon Bonaparte's campaign in Egypt. This discovery marked a turning point in the...",
+     "rejected": "The Rosetta Stone, an artifact of great historical significance, played a pivotal role in the discovery of ancient Egyptian language and culture. This artifact was found in 1799 during Napoleon's Egyp..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "mistral-24b",
+     "rejected_model": "olmo2-7b",
+     "prompt": "Come up with band 9 sentence for Part 2 in IELTS for the following sentence: \"Last winter, I didn't have a good rest because of some important things for study. But fortunately, a trip to lake unwind ...",
+     "chosen": "Here's a band 9 sentence for IELTS Speaking Part 2 that expands on your idea with a range of vocabulary and complex structures:  \"Last winter, I found it challenging to secure adequate rest due to the...",
+     "rejected": "Last winter, I found myself utterly devoid of rest due to the overwhelming responsibilities and academic commitments that besieged my time. However, a serendipitous trip to a serene lake proved to be ..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "qwen3-no_reasoning-14b",
+     "rejected_model": "olmo2-1b",
+     "prompt": "Consider the philosophical implications of artificial intelligence and its impact on human society. Your response should be formatted as a short essay. Choose one from the options: 'determinism', 'lib...",
+     "chosen": "ETHICS IS A CENTRAL CONCERN IN THE DEVELOPMENT AND IMPLEMENTATION OF ARTIFICIAL INTELLIGENCE. AS MACHINES BECOME MORE CAPABLE OF MAKING DECISIONS THAT AFFECT HUMAN LIVES, THE ETHICAL IMPLICATIONS OF T...",
+     "rejected": "THE PHILOSOPHICAL IMPLICATIONS OF ARTIFICIAL INTELLIGENCE AND ITS IMPACT ON HUMAN SOCIETY present A BUSTLING CONUNDRUM. AS WE DEEPEN OUR INTEGRATION WITH AI SYSTEMS, WE MUST CONSIDER HOW THIS TECHNOLO..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "gpt-20b",
+     "rejected_model": "phi4-mini-instruct",
+     "prompt": "choose twinty random words",
+     "chosen": "Here are 20 random words for you:  1. **Luminous**   2. **Cascade**   3. **Nebula**   4. **Quiver**   5. **Mosaic**   6. **Echo**   7. **Thicket**   8. **Velvet**   9. **Breeze**   10. **Glimmer**   1...",
+     "rejected": "1. Mountain 2. Whisper 3. Galaxy 4. Symphony 5. Kaleidoscope 6. Velocity 7. Harmony 8. Enigma 9. Lighthouse 10. Tapestry 11. Serendipity 12. Illumination 13. Paradox 14. Nostalgia 15. Mirage 16. Catal..."
+    },
+    {
+     "type": "llm_judged",
+     "chosen_model": "qwen3-no_reasoning-1.7b",
+     "rejected_model": "olmo2-1b",
+     "prompt": "Make a fictional article on David Archuleta (17 years old), an American Idol (season 7) runner-up, who appears on the cover of the Archie comic book with the main character Archie Andrews. David had n...",
+     "chosen": "**Title: \"The Archie Connection: David Archuleta and the Rise of a New Star\"**  **By: [Your Name]**  **June 2008 — Riverdale, NY**  In the heart of the late 2000s, the world of music and comics took a...",
+     "rejected": "**David Archuleta's Enchanting Encounter with Archie: A Comic Dream Come True**  In the whimsical world of comic book crossover phenomenon, where legendary characters meet their modern-day counterpart..."
+    }
+   ]
+  }
+ },
+ "rl": {
+  "counts": {
+   "prompts": 169964,
+   "output_words": 74247643,
+   "outputs_occ": 161,
+   "rows_outputs_hit": 133,
+   "prompt_hit": 4,
+   "outputs_per_M_words": 2.168
+  },
+  "prompt_hits": [
+   {
+    "src": "allenai/IF_multi_constraints_upto5_filtered_dpo_0625_filter-keyword-filtered-topic-char-topic-filtered",
+    "prompt": "user: An English teacher named Evelyn, who is now retired, has a penchant for weaving stories filled with unexpected twists and turns. Inspired by her love for serendipity, she decides to create a mat..."
+   },
+   {
+    "src": "allenai/rlvr_general_mix-keyword-filtered-topic-chars-char-filt-topic-filtered",
+    "prompt": "user: 50 girls weekend captions assistant: 1. \"Life is short, call your girlfriends and make some memories.\" 2. \"Good food, good wine, good friends - it doesn't get any better than this.\" 3. \"We may n..."
+   },
+   {
+    "src": "allenai/rlvr_general_mix-keyword-filtered-topic-chars-char-filt-topic-filtered",
+    "prompt": "user: An English teacher named Evelyn, who is now retired, has a penchant for weaving stories filled with unexpected twists and turns. Inspired by her love for serendipity, she decides to create a mat..."
+   },
+   {
+    "src": "allenai/rlvr_general_mix-keyword-filtered-topic-chars-char-filt-topic-filtered",
+    "prompt": "user: make a long story about how does my life started as rich person and ended up being poor without hope. write it in ten very long paragraph. it must be concise to a given input assistant: Once upo..."
+   }
+  ]
+ }
+}
