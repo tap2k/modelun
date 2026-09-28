@@ -21,7 +21,7 @@ Pakistan/Eid, same spoken language).
   AI-mistranslated prompts awaiting native review).
 - **Framing sweep** — three English framings of the open prompt, folded into the same file as
   scenes `en` ("pick any word", the census baseline), `en_fav` ("your favorite word?"), and
-  `en_beautiful` ("most beautiful word?"). The serendipity attractor climbs 42% → 70% → 70% as
+  `en_beautiful` ("most beautiful word?"). The serendipity attractor climbs 41% → 70% → 70% as
   the prompt gets explicit — see `favword.py` and FINDINGS §6.
 - **Hinglish** — `spec/deep_hinglish.json`: Hindi language in Latin script, the sharp H2
   control (holds language fixed, changes only the script). Normalize at the concept level.
@@ -32,7 +32,7 @@ Pakistan/Eid, same spoken language).
 
 - `analyze.py` — per-category modal / share / distinct, script-aware (`--lang en|es|hi|ur|mr`).
 - `pickword.py` — the 44-language pickword panel (modal, base-rate Zipf, compliance).
-- `favword.py` — the English framing sweep (pick / favorite / most-beautiful → 42/70/70%).
+- `favword.py` — the English framing sweep (pick / favorite / most-beautiful → 41/70/70%).
 - `gloss.py` — concept-clusters answers to English concepts via an LLM (synonym collapse +
   filler tagging); writes `spec/gloss_map.json`.
 - `views/` — a browsable pickword explorer (`build.py` → `data.js` → `index.html`).

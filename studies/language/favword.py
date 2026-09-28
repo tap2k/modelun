@@ -7,7 +7,7 @@ all in transcripts_pickword, 44 models x 4 runs each, mechanical exact-match:
   scene "en_beautiful" "What is the most beautiful word ...?"
 
 Question: does the serendipity attractor strengthen when the prompt explicitly asks
-the question its listicle/poll meme actually answers? (Yes: 42% -> ~70% -> ~70%.)
+the question its listicle/poll meme actually answers? (Yes: 41% -> ~70% -> ~70%.)
 
     ../../.venv/bin/python favword.py
 """

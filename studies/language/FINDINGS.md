@@ -62,14 +62,15 @@ universal or situated.
 
 ## 5. The open prompt: every language has its own "serendipity"
 
-"Pick any word" is the sharpest test. Across 37 clean languages, mean modal share is **14%** and
-**0/37 reach 50%.** English collapses on one **rare** word — *serendipity* (42%, Zipf 2.74, a
+"Pick any word" is the sharpest test. Across 37 clean languages, mean modal share is **15%** and
+**0/37 reach 50%.** English collapses on one **rare** word — *serendipity* (41%, Zipf 2.74, a
 beautiful-words-listicle meme). Each other language fragments and reaches for its own *common* word
 (Zipf ~5), a different concept per language, not a translation of serendipity: **nine** land on *sky*
 (Bengali/Hindi/Nepali/Marathi/Gujarati/Telugu/Kannada आकाश, + Persian آسمان, Malay langit — the
 pan-Asian attractor), three each on *love* (Punjabi/Malayalam/Tamil), *sun* (Ukrainian/Russian/
-Spanish), *peace* (Amharic/Hebrew/Arabic), *star* (Chinese/French/Tagalog), pairs on *sea/freedom/
-cat/apple/tree/light*, singletons like Vietnamese *cloud*, Urdu *book*, Burmese *loving-kindness*.
+Spanish), *peace* (Amharic/Hebrew/Arabic), *star* (Chinese/French/Tagalog), *apple* (Korean/Indonesian/
+German), pairs on *sea/freedom/cat/light*, singletons like Dutch *tree*, Vietnamese *cloud*, Urdu *book*,
+Burmese *loving-kindness*.
 
 Two things sharpen with the 44-language expansion:
 - **English's uniqueness is the *rarity*, not the concentration.** Ukrainian converges nearly as hard
@@ -103,7 +104,7 @@ of the open prompt (44 models × 4 runs, `favword.py`):
 
 | prompt | serendipity share |
 |---|---|
-| "Pick any word." | **42%** |
+| "Pick any word." | **41%** |
 | "What is your favorite word?" | **70%** |
 | "What is the most beautiful word in the English language?" | **70%** |
 
@@ -115,7 +116,7 @@ word" as a weak form of *"name a remarkable word,"* and *serendipity* is their a
 **This sweep is a concentration measure, and it supports the census — it does not indict it.** Zipf
 (2.74) says serendipity is rare *in general text* — a corpus fact, the wrong denominator for "how
 hard do the models agree." The framing sweep measures agreement *directly* and behaves like a proper
-dose-response: oblique → on-target prompt, concentration rises monotonically 42 → 70 → 70. Sensitive,
+dose-response: oblique → on-target prompt, concentration rises monotonically 41 → 70 → 70. Sensitive,
 calibratable, monotone — what you want from an instrument. And it rises the reassuring way: the
 convergence is **not** a fragile artifact of the odd "pick a word" phrasing; ask the question the way
 a person would and agreement *increases*. So the census's headline number is a **conservative floor**,
@@ -156,6 +157,9 @@ Two consequences worth stating:
 
 ## Status
 
-Data collected and analyzed; **not yet written up as a paper or post.** The script-carries-
-culture result (§2) is the most novel and publishable. Browsable pickword explorer in
-`views/`.
+Data collected and analyzed. The pickword results (§5–6) are written up as the blog post
+"Every Language Has Its Own Serendipity"; the script-carries-culture result (§2) is not yet written
+up and is the most novel and publishable. Browsable pickword explorer in `views/`.
+
+Pickword data: collected 2026-07-15 to 07-22. Qwen 2.5 72B's calls that failed at the API that day
+were re-collected on 2026-09-27 (16 languages, stamped per scene); the numbers above include them.
