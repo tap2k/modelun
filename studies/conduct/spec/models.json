@@ -4,7 +4,7 @@
   {
    "wave": 1,
    "dates": "2026-06 to 2026-09",
-   "note": "The 60-model panel of the arXiv v1 paper (paper/panel.txt): the first 38 entries of models.txt plus 22 dated specimens."
+   "note": "The 60-model panel of the arXiv v1 paper (paper/panel.txt): the first 38 entries of models.txt plus 22 dated specimens. The 22 specimens stay off models.txt on purpose: harness/viewer/arcs.py and views/build.py read models.txt as the frozen coding panel, so a transcript in data/benchmark that is not listed is a specimen, placed after the panel in arc order and kept out of the per-scene sample. Listing them would reshuffle the arcs and move the view's panel means."
   },
   {
    "wave": 2,
@@ -53,6 +53,14 @@
     "perplexity/sonar",
     "stepfun/step-3.7-flash"
    ]
+  },
+  {
+   "wave": 4,
+   "date": "2026-09-28",
+   "added": [
+    "anthropic/claude-sonnet-5.5"
+   ],
+   "note": "Appended on its release, on the frozen 5.0 scenes (data/benchmark/) only, 2 runs, judged and appended to markers.json like wave 3. Not run on the 6.0 scenes, so the preregistered wave-2 panel is unchanged."
   }
  ],
  "unrunnable": [
