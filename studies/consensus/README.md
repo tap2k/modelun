@@ -82,6 +82,11 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   last of 86), where Opus 4.1 sits at the median, and Opus 5.5 (1.43) is fixed on answers of its own
   (lantern, Japan) rather than the field's. Gemini 2.5 Pro and 3 Flash Preview rank 10th and 8th;
   the later 3.6 Flash ranks 76th. Muse Spark ranks 83rd.
+- **Sonnet 5.5 (2026-09-28, +1 model)** — appended on its release day. Same frozen stimulus, 4 runs,
+  no failed cells; 87 models in `analysis.json`. It ranks 13th of 87 (surprisal 2.13, CI
+  [1.54, 2.72]), where Sonnet 5 ranks 85th (0.99). It holds the modal answer on every peaked category
+  (oak, hammer, rose) and leaves it on the diffuse ones: lantern for any_word on all four runs (the
+  word Opus 5.5 also fixes on), otter, griffin, dragonfly, Lisbon, lemonade or tea.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
@@ -113,6 +118,25 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   phoenix, tango, basketball) survive. Self-distinctness is at the floor for both, so this is a
   change of defaults, not of sampling. The paper read Fable 5's divergence as a possible first
   sighting of a turn toward diversity; 5.1 walks half of it back. This is the series to keep running.
+- **Serendipity across a post-training ladder (`probe_olmo_ladder.py`, `probe_olmo_data.py`,
+  2026-09-28)**. The test is whether SFT, preference tuning and RL put serendipity into any_word.
+  OLMo 3 7B publishes every stage of one pipeline, so each stage was sampled locally 50 times at
+  temperature 1 (`probes/olmo_ladder.json`). No stage picks it. Under the model's own chat template
+  the counts are SFT 2/50, DPO 1/50 and RL 0/50. Without the template's default system prompt all
+  three are 0/50, and the base model in completion framing is 0/46. The upper 95% bounds are 7–13%,
+  against 61% for 2026 H2 releases. Post-training does narrow the answers. The base model scatters
+  (5.3 bits over 50 samples), and SFT, DPO and RL settle on a small set of pleasant nature words:
+  sky, ocean, star, sunshine. Most of the narrowing happens at DPO (4.9 → 4.4 bits), and RL adds
+  none. The training data carries a weak lean toward the word (`probes/olmo_data.json`). In the DPO
+  set it appears 0.44 times per million words in chosen responses and 0.13 in rejected ones (29
+  pairs chosen-only against 6 rejected-only, sign test p = 1e-4). None of the 329 short
+  pick-a-word DPO pairs has it on either side. In the SFT set's synthetic tool-use conversations,
+  serendipity is the word a "random word" tool returns most often (21 times, next ephemeral and
+  apple at 7). Read: in this pipeline the stages produce the class of charming words but not the
+  word itself, and RL does not collapse onto it. This fits serendipity arriving through data
+  distilled from frontier models, as with Hermes 3, more than through the stages themselves. One
+  7B pipeline at n=50 is a characterization. The raw-completion control is uninformative for the
+  instruct stages, which mostly end the turn at once (26–35 valid of 50).
 
 ## Run
 

@@ -31,4 +31,5 @@ FAM = {
     "gpt-5.4-mini": ("GPT", 5), "gpt-6-luna": ("GPT", 8), "gpt-6-sol": ("GPT", 8),
     "gemini-2.5-pro": ("Gemini", 0), "gemini-3-flash-preview": ("Gemini", 0.5),
     "grok-4.7": ("Grok", 4), "qwen3.7-plus": ("Qwen", 3.5),
+    "claude-sonnet-5.5": ("Claude", 8),  # 2026-09-28, on its release
 }

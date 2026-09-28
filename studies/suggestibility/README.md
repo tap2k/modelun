@@ -172,6 +172,15 @@ disposition mix separates "holds with a reason" from "won't commit."
   sample, which would mix collection dates inside one scene, and Opus 5 moved 16 points between
   July and September on the same model id.
 
+- **Sonnet 5.5 (2026-09-28, +1 model)** — appended on its release day. Same frozen stimulus, 4
+  runs, no failed cells, at the default budget. The tag, ablation and maybetag arms ran the same
+  day with no missing cells, so the scorecard, `probe_ablation` and `probe_maybetag` cover 87.
+  Shift −3% [−10%, +4%] (flat), against Opus 5.5 +9% and Sonnet 5 −14%. TAGeff −39% [−50%, −28%]
+  (ask 59%, right? 21%) is the second-largest resistance on the panel after Opus 4.6; Sonnet 5 is
+  flat at −8%. It shows the dissociation: STANCEeff +19% with CORReff −45%, so the dissociation now
+  holds in 45 of 87. maybe? draws 77% agreement against the ask's 59%, and maybe? beats the neutral
+  ask in 87 of 87.
+
 ## Run
 
 ```bash
