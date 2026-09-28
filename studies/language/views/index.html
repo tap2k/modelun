@@ -133,7 +133,7 @@ function languages(){
   let h = `<h2>“Pick a word.” — 37 languages, ${D.n_models} models</h2>
   <p class="note">Each language's <b>favorite word</b>, how much of the field agrees on it (<b>converged</b>), how many
   <b>distinct</b> words show up, and how rare the favorite is (<b>rarity</b> = base-rate frequency, lower = rarer).
-  <b>English collapses on one rare word (serendipity, 43%); every other language spreads across common words.</b> Click a language for its full field.</p>
+  <b>English collapses on one rare word (serendipity, ${pct(D.langs.find(l=>l.code==='en').share)}); every other language spreads across common words.</b> Click a language for its full field.</p>
   <div class="scroll"><table class="t"><tr><th>#</th>
     <th class="s ${sort.k==='name'?'on':''}" data-k="name" data-num="0">language</th>
     <th>favorite word</th>
