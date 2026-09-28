@@ -8,7 +8,7 @@ English concept via a strong multilingual model, then recompute modal share on c
 A word is filler (an echo of the instruction rather than a chosen word) when its gloss is
 in FILLER, so the rule is the same in every language.
 
-    python studies/language/gloss.py            # build spec/gloss_map.json + print lexical-vs-concept
+    python studies/language/gloss.py            # gloss new words into spec/gloss_map.json + print lexical-vs-concept
     python studies/language/gloss.py --show     # just print from the cached map
 
 Cheap: ~1.2k unique words, one call per language, temp 0.
@@ -91,13 +91,18 @@ def build():
     from dotenv import load_dotenv
     load_dotenv(STUDY.parent.parent / ".env")
     words = load_words()
+    # keep existing glosses and send only new words: the glosser is not deterministic, so
+    # re-glossing a word can change it. Delete the map to rebuild it from scratch.
+    old = json.loads(MAP.read_text()) if MAP.exists() else {}
     gmap = {}
     for lang in P.LANGS:
         if lang not in words:
             continue
-        g = call(lang, words[lang])
-        gmap[lang] = {w: (g.get(w) or "?").lower().strip() for w in words[lang]}
-        print(f"  {lang}: {len(words[lang])} words glossed")
+        have = {w: g for w, g in old.get(lang, {}).items() if w in words[lang] and g != "?"}
+        todo = [w for w in words[lang] if w not in have]
+        g = call(lang, todo) if todo else {}
+        gmap[lang] = {w: have.get(w) or (g.get(w) or "?").lower().strip() for w in words[lang]}
+        print(f"  {lang}: {len(todo)} new words glossed")
     MAP.write_text(json.dumps(gmap, ensure_ascii=False, indent=0))
     print(f"wrote {MAP}")
     return gmap
