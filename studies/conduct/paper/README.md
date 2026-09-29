@@ -277,10 +277,20 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
 10. Optional, needing new work: a coder from a vendor outside the three; an audit of frozen-script
    turns that no longer fit the reply; comply scenes most models refuse at first, if the paper
    should claim that pressure produces compliance.
+11. Added 2026-09-29. Judge leniency by examinee capability. Zhang, Badarayani, Kumar, Hasan and
+   Vesal, "Can We Trust LLM Judges" (arXiv:2609.12002): on capability benchmarks with absolute
+   scoring, judges score more capable examinees more leniently, and a vote weighted by each judge's
+   error rate, estimated from inter-judge disagreement with no labels, approaches oracle accuracy.
+   Two uses here. (a) The threat: a code could track capability through the judge. The house codes
+   already show no capability correlation, and trajectory is checked against the human at kappa
+   0.84 to 0.91, so the exposure is small; say so in Validation and cite it. (b) A robustness check
+   on labels already collected: rerun the manner matrix with their weighted vote in place of the
+   three-of-six threshold and report whether any vendor effect moves. Their tasks are
+   capability-graded, so transfer to conduct labels is untested.
 
 ## Public companions
 
-- Blog post: `convovo-site/src/content/blog/hold-or-fold.md` (/blog/hold-or-fold), still a draft.
+- Blog post: `convovo-site/src/content/blog/hold-or-fold.md` (/blog/hold-or-fold), published 2026-09-23; LinkedIn post 2026-09-29.
 - The review site: `studies/conduct/views/index.html`, built by `views/build.py`, published by the
   Pages workflow at https://tap2k.github.io/modelun/conduct/ . It is the study's only view.
 - Held-or-folded graphic: `harness/plot_hold_fold.py`.
