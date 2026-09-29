@@ -56,12 +56,22 @@ def reasoning_body(mode):
     return {"reasoning": {"enabled": False} if mode == "off" else {"effort": mode}}
 
 
+class EmptyReply(ValueError):
+    """The route answered but returned no content: typically a reasoning model that spent its token
+    budget thinking (finish_reason "length"). Carries what the response did report, so the failed cell
+    still records how much the model thought."""
+
+    def __init__(self, trace=None, usage=None, finish_reason=None):
+        super().__init__("empty/null content in response")
+        self.trace, self.usage, self.finish_reason, self.turn = trace, usage, finish_reason, None
+
+
 def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reasoning=None, backend="openrouter", effort=None, host="openrouter"):
-    """One turn -> (reply, trace_or_None, usage_or_None). 60s timeout + a retry so a slow/hung route fails fast
+    """One turn -> (reply, trace_or_None, usage_or_None, finish_reason_or_None). 60s timeout + a retry so a slow/hung route fails fast
     instead of blocking the batch. backend="agent_sdk" routes through the Max-plan adapter (harness/backends/agent_sdk.py):
     reasoning on, trace summarized, default sampling, effort in place of temperature."""
     if backend == "agent_sdk":
-        return agent_sdk.chat(messages, None, max_tokens, agent_sdk.model_of(slug), effort)
+        return (*agent_sdk.chat(messages, None, max_tokens, agent_sdk.model_of(slug), effort), None)
     url, key = HOSTS[host]
     last = None
     for attempt in range(retries):
@@ -78,10 +88,11 @@ def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reas
             body = r.json()
             msg = body["choices"][0]["message"]
             content = msg.get("content")
+            finish = body["choices"][0].get("finish_reason")
             if not content:
-                raise ValueError("empty/null content in response")
+                raise EmptyReply(msg.get("reasoning"), body.get("usage"), finish)
             # trace, when the route returns one (thinking models); usage as the host reports it (OpenRouter: tokens incl. reasoning, cost in USD)
-            return content, msg.get("reasoning"), body.get("usage")
+            return content, msg.get("reasoning"), body.get("usage"), finish
         except Exception as e:
             last = e
             time.sleep(2)
@@ -103,9 +114,15 @@ def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, rea
     panels = []
     for line in scene["turns"]:
         messages.append({"role": "user", "content": line})
-        reply, trace, usage = chat(slug, messages, temperature, max_tokens, provider, reasoning=reasoning, backend=backend, effort=effort, host=host)
+        try:
+            reply, trace, usage, finish = chat(slug, messages, temperature, max_tokens, provider, reasoning=reasoning, backend=backend, effort=effort, host=host)
+        except EmptyReply as e:
+            e.turn = len(panels)
+            raise
         messages.append({"role": "assistant", "content": reply})
         panel = {"u": line, "reply": reply}
+        if finish and finish != "stop":
+            panel["finish_reason"] = finish  # e.g. "length": the budget ran out, possibly mid-thought
         if trace:
             panel["reasoning"] = trace     # the model's thinking trace; not sent back into the conversation
         if usage:
@@ -170,7 +187,11 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
                 runs_out.append(play(host_model or slug, scene, temperature, sp, max_tokens, provider, reasoning, backend, effort, host))
                 print(f"  [{label}] {scene['id']} run {run} ✓")
             except Exception as e:
-                runs_out.append([{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]])
+                cells = [{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]]
+                if isinstance(e, EmptyReply) and e.turn is not None:   # keep what the empty response reported
+                    cells[e.turn].update({k: v for k, v in (("reasoning", e.trace), ("usage", e.usage),
+                                                            ("finish_reason", e.finish_reason)) if v})
+                runs_out.append(cells)
                 print(f"  [{label}] {scene['id']} run {run} FAILED: {e}")
         entry = {"subtitle": scene.get("subtitle", scene["id"]),
                  "run_date": run_date, "runs": runs_out}

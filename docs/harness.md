@@ -71,7 +71,12 @@ never rewrites the file.
           { "u": "<user turn>", "reply": "<model reply>", "reasoning": "<thinking trace>" }
           // a failed scene: { "u": "...", "reply": null, "error": "..." }
           // "reasoning" is present only when the route returned a trace (thinking models);
-          // it is stored, never fed back into the conversation, and never classified
+          // it is stored, never fed back into the conversation, and never classified.
+          // "usage" is the host's token and cost report (OpenRouter: completion_tokens_details
+          // .reasoning_tokens counts thinking); recorded from 2026-09-25 on.
+          // "finish_reason" is present only when it is not "stop" (e.g. "length").
+          // A failed cell whose route answered with empty content (a reasoning model that spent
+          // its budget thinking) also keeps "usage", "finish_reason" and "reasoning" (from 2026-09-28).
         ]
       ]
     }
