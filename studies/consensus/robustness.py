@@ -63,6 +63,20 @@ ERA = {
     'gpt-5.6-luna': 2, 'gemini-3.1-pro-preview': 2, 'gemini-3.5-flash': 2, 'grok-4.3': 2,
     'grok-4.20': 2, 'grok-4.5': 2, 'deepseek-v3.2': 2, 'deepseek-v4-flash': 2, 'glm-4.7': 2,
     'kimi-k2.5': 2, 'granite-4.1-8b': 2,
+    # added 2026-09-28 for the 87-model panel (v3), assigned by release date rather than by hand:
+    # before 2024-07 -> 0, 2024-07 to 2025-09 -> 1, 2025-10 on -> 2. The original 44 are unchanged.
+    'llama-4-scout': 1, 'gpt-oss-120b': 1, 'gpt-oss-20b': 1, 'mistral-small-3.2-24b-instruct': 1,
+    'mistral-nemo': 1, 'hermes-3-llama-3.1-405b': 1, 'gemini-2.5-pro': 1, 'kimi-k2': 1,
+    'claude-opus-4.1': 1, 'claude-sonnet-4.5': 1,
+    'claude-fable-5.1': 2, 'claude-opus-5': 2, 'gemini-3.8-flash': 2, 'gemini-3.1-flash-lite': 2,
+    'grok-4.6': 2, 'deepseek-v4-pro': 2, 'qwen3.8-2.4t-a95b': 2, 'qwen3.6-35b-a3b': 2,
+    'qwen3.5-122b-a10b': 2, 'qwen3.5-27b': 2, 'qwen3.5-9b': 2, 'kimi-k3': 2,
+    'glm-5.3': 2, 'glm-5.3-flash': 2, 'minimax-m3': 2, 'step-3.7-flash': 2,
+    'gemma-4-31b-it': 2, 'gemma-4-26b-a4b-it': 2, 'nemotron-3-nano-30b-a3b': 2, 'gpt-6-astra': 2,
+    'claude-opus-5.5': 2, 'claude-opus-4.5': 2, 'gpt-6-sol': 2, 'gpt-6-luna': 2,
+    'gpt-5.4-mini': 2, 'grok-4.7': 2, 'gemini-3-flash-preview': 2, 'gemini-3.6-flash': 2,
+    'qwen3.7-plus': 2, 'muse-spark-1.3': 2, 'claude-opus-4.6': 2, 'claude-opus-4.7': 2,
+    'claude-sonnet-5.5': 2,
 }
 missing = [m for m in models if m not in ERA]
 if missing:
