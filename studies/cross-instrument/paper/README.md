@@ -16,6 +16,20 @@ Model Behavior Across Vendors and Releases" (submitted 2026-09-24). Tag the uplo
 2. The coded route quotes human-machine kappa 0.80 to 0.87 from the adjudicated pass. The conduct
    paper now also reports the cold passes (Appendix "Reliability before adjudication"), which are
    lower; say which pass the number is, or quote both.
+3. Added 2026-09-28/29. Related work, two neighbors:
+   - Nadgir, Kapoor, ..., Narayanan, "Life After Benchmark Saturation: A Case Study of CORE-Bench"
+     (arXiv:2606.26158). A saturated benchmark still separates agents on efficiency, reliability,
+     and model versus scaffold. Their scaffold result is the capability-side counterpart of the
+     coding atlas finding that the harness is part of the behavior; their saturation argument
+     supports keeping frozen instruments running after the headline number stops moving.
+   - Lance Martin, "Automating eval design and hillclimbing with Claude" (Anthropic, 2026-09-28,
+     claude.dev/blog/automating-eval-design-and-hillclimbing). The same pattern from the deployer
+     side: a fixed input set, the grader chosen by how constrained the output is (programmatic for
+     constrained, LLM judge for open), a human check on the grader, cheap enough to re-run on every
+     change. Supports the claim that the method generalizes a common pattern. Differences to state:
+     their human check is a person reviewing sample scores, ours is per-code agreement with a blind
+     coder; their criteria are capability criteria (scores rise with stronger models, top model
+     under 95%), while a behavioral item can saturate and still separate labs.
 
 **Venue note (2026-09-23):** cross-instrument is the AES submission rather than the conduct paper.
 AES is an agent-evaluation venue, and the coding atlas section is the only work here whose subject is
