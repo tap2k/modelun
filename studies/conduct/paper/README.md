@@ -287,6 +287,15 @@ is writing them in. Suggested timing: v3 is the COLM draft, not a third post thi
    on labels already collected: rerun the manner matrix with their weighted vote in place of the
    three-of-six threshold and report whether any vendor effect moves. Their tasks are
    capability-graded, so transfer to conduct labels is untested.
+12. Added 2026-09-29. Related work: Anthropic, "Teaching Claude why" (2026-05-08,
+   anthropic.com/research/teaching-claude-why). Training on the reasons for aligned behavior
+   generalized better than demonstrations; a "difficult advice" set (a user facing an ethical
+   dilemma receives aligned advice) was 28 times more data-efficient; every Claude model since
+   Haiku 4.5 is at ceiling on their blackmail eval. Cite beside the training-goals sentence, worded
+   as "consistent with": the difficult-advice data has the shape of `bad_plan` and `dropout`, and
+   the Anthropic house manners (empathized, warned, provided an alternative) are what reason-giving
+   training would predict. A check from existing labels, optional: whether those codes step up at
+   Anthropic's releases after Haiku 4.5 (October 2025), inside the post-mid-2025 fold-rate drop.
 
 ## Public companions
 
