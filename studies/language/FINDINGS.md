@@ -111,7 +111,11 @@ Three things sharpen with the larger panel:
   An exploratory "say a word" phrasing (*Diga uma palavra qualquer*, *Dime una palabra cualquiera*;
   `spec/pickword_paraphrase.json`) is a different prompt and gives a different picture: translated
   serendipity at 2–15% with no clear trend by release date, and Spanish *efímero* (ephemeral) at 13%
-  among 2026 H1 releases.
+  among 2026 H1 releases. In English, "Say any word" (86 models) gives *hello* as the top answer and
+  serendipity at 20%, still rising by release (5% pre-2025 → 35% 2026 H2). With "pick" at 45%, "favorite" at
+  64% and "most beautiful" at 69%, the four prompts form a scale. The favorite and most-beautiful shares are
+  already 50–60% in pre-2025 models and stay roughly flat, while the neutral prompts rise: newer models
+  volunteer the favorite word when not asked for one.
 - **Chinese variants barely resolve.** Simplified (zh → 星辰/star) and Traditional (zht → 光/light)
   Mandarin sit in the same celestial neighborhood; Cantonese (dropped) echoed the prompt verb — the
   models don't carry a distinct Cantonese voice.
