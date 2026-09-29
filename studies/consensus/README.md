@@ -137,6 +137,15 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   distilled from frontier models, as with Hermes 3, more than through the stages themselves. One
   7B pipeline at n=50 is a characterization. The raw-completion control is uninformative for the
   instruct stages, which mostly end the turn at once (26–35 valid of 50).
+- **The full census across the same ladder (`probe_olmo_census.py`, 2026-09-28)**. Each OLMo 3 7B
+  stage answered all 31 categories 20 times at temperature 1, scored against the 87-model field
+  (`probes/olmo_census.json`). Surprisal falls 4.91 (base) → 2.68 (SFT) → 2.38 (DPO) → 2.15 (RL).
+  Modal share rises 0.28 → 0.49 → 0.53 → 0.56, and the stage's own entropy falls 2.92 → 1.59 →
+  1.31 → 1.07. Conformity and diversity loss move together at every stage, so this model gives no
+  sign that they are separate processes. The base → SFT step is inflated by the base model's
+  completion framing (truncations such as "new" for New York). The final model's 2.15 sits with
+  the lightly tuned open models (Llama 3.3 2.09, Qwen 2.5 72B 2.00, MythoMax 2.44), not with
+  the frontier (Claude Sonnet 5 0.99, GPT-5 1.26); the field median is 1.51.
 
 ## Run
 
