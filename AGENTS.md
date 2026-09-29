@@ -64,6 +64,12 @@ if it is published again.
 So the sequence for adding a model is: append to `spec/models.txt`, run it,
 commit the transcripts, and leave every earlier tag alone.
 
+A model added to the census also gets pickword on the same day: append it to
+`studies/language/spec/models.txt` and run `spec/pickword.json` into
+`transcripts_pickword/`. Pickword is the cheapest longitudinal record the repo
+keeps (one word, 44 languages), and gaps in it cannot be filled after a model
+is retired.
+
 ## What has been run is the transcripts, not the roster
 
 `spec/models.txt` is intent; `transcripts/` (or a study's `paths.json`
