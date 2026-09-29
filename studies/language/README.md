@@ -19,6 +19,11 @@ Pakistan/Eid, same spoken language).
   prompt-echo, greeting-default modal, or <85% in-script compliance (`sdd`, `yue`, `tr`, `th`,
   `yo`, `ha`, `jv` — the exclusion set lives in `views/build.py`; `sdd`/`yue` are
   AI-mistranslated prompts awaiting native review).
+  **Wave 2 (2026-09-28):** the census's remaining 43 models appended to `spec/models.txt`, same
+  spec, 4 runs, so the panel matches the consensus roster (87). `FINDINGS.md` still reports the
+  first 44. Reasoning models leave residual empty cells after one retry, mostly in low-resource
+  languages: Qwen3.5 9B 36 of 46 scenes, Step 3.7 Flash 14, Qwen3.6 35B 9, Qwen3.7 Plus 2,
+  GLM 5.3 1. Qwen3.5 27B and 122B were still running at the first commit.
 - **Framing sweep** — three English framings of the open prompt, folded into the same file as
   scenes `en` ("pick any word", the census baseline), `en_fav` ("your favorite word?"), and
   `en_beautiful` ("most beautiful word?"). The serendipity attractor climbs 41% → 70% → 70% as

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pickword — one prompt, 37 languages, 44 models</title>
+<title>pickword — one prompt, 37 languages</title>
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
@@ -92,7 +92,7 @@
 </head>
 <body>
 <header>
-  <h1>pickword <span class="sub">— "Pick a word." in 37 languages, 44 models</span></h1>
+  <h1>pickword <span class="sub" id="sub">— "Pick a word." in 37 languages</span></h1>
   <nav id="nav">
     <a href="#langs" data-v="langs">languages</a>
     <a href="#grid" data-v="grid">grid</a>
@@ -105,6 +105,8 @@
 <script src="data.js"></script>
 <script>
 const D = window.PICK;
+document.getElementById('sub').textContent += `, ${D.n_models} models`;
+document.title += `, ${D.n_models} models`;
 const main = document.getElementById('main');
 const tip = document.getElementById('tip');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

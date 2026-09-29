@@ -1,7 +1,7 @@
 """
 Build the pickword panel view: views/data.js (window.PICK).
 
-The pickword study is one prompt ("Pick a word.") asked in 44 languages across 44
+The pickword study is one prompt ("Pick a word.") asked in 44 languages across the
 models. This bakes, for the viewer:
   - per-language field stats: modal, share, distinct, effective-N, compliance, and the
     base-rate Zipf of the modal word (wordfreq, where the language is covered)
