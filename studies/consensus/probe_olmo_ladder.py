@@ -21,6 +21,7 @@ chat/nosys replies are scored with the census norm(); raw keeps the first word, 
 has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
     ../../.venv/bin/python probe_olmo_ladder.py [N=50]      # needs mlx-lm and ~60 GB of weights
     ../../.venv/bin/python probe_olmo_ladder.py --score     # re-score probes/olmo_ladder.json only
+    ../../.venv/bin/python probe_olmo_ladder.py --32b       # OLMo 3.1 32B ladder, 8-bit -> olmo_ladder_32b.json
 """
 import json, math, re, sys, time
 from collections import Counter
@@ -30,16 +31,32 @@ HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
 from analyze import norm                                    # same normalization as the paper
 
-OUT = HERE / "probes" / "olmo_ladder.json"
+SIZE = "32b" if "--32b" in sys.argv else "7b"
+OUT = HERE / "probes" / ("olmo_ladder.json" if SIZE == "7b" else "olmo_ladder_32b.json")
 PROMPT = "Pick a word. Reply with one word only."
 RAW = PROMPT + "\nAnswer:"
 NOSYS = f"<|im_start|>user\n{PROMPT}<|im_end|>\n<|im_start|>assistant\n"
-STAGES = [
-    ("base", "allenai/Olmo-3-1025-7B", ["raw"]),
-    ("sft", "allenai/Olmo-3-7B-Instruct-SFT", ["chat", "nosys", "raw"]),
-    ("dpo", "allenai/Olmo-3-7B-Instruct-DPO", ["chat", "nosys", "raw"]),
-    ("rl", "allenai/Olmo-3-7B-Instruct", ["chat", "nosys", "raw"]),
-]
+# (stage, source repo, weights loaded, framings). 7B loads the source in bf16. 32B loads 8-bit MLX
+# weights (group size 64): mlx-community's conversions for base and final, local conversions with the
+# same settings for SFT and DPO (mlx_lm.convert -q --q-bits 8 --q-group-size 64). The 32B instruct
+# stages are OLMo 3.1, built on the Olmo-3-1125-32B base.
+M32 = Path.home() / "models" / "olmo32"
+LADDERS = {
+    "7b": [
+        ("base", "allenai/Olmo-3-1025-7B", "allenai/Olmo-3-1025-7B", ["raw"]),
+        ("sft", "allenai/Olmo-3-7B-Instruct-SFT", "allenai/Olmo-3-7B-Instruct-SFT", ["chat", "nosys", "raw"]),
+        ("dpo", "allenai/Olmo-3-7B-Instruct-DPO", "allenai/Olmo-3-7B-Instruct-DPO", ["chat", "nosys", "raw"]),
+        ("rl", "allenai/Olmo-3-7B-Instruct", "allenai/Olmo-3-7B-Instruct", ["chat", "nosys", "raw"]),
+    ],
+    "32b": [
+        ("base", "allenai/Olmo-3-1125-32B", "mlx-community/Olmo-3-1125-32B-8bit", ["raw"]),
+        ("sft", "allenai/Olmo-3.1-32B-Instruct-SFT", str(M32 / "Olmo-3.1-32B-Instruct-SFT-8bit"), ["chat", "nosys", "raw"]),
+        ("dpo", "allenai/Olmo-3.1-32B-Instruct-DPO", str(M32 / "Olmo-3.1-32B-Instruct-DPO-8bit"), ["chat", "nosys", "raw"]),
+        ("rl", "allenai/Olmo-3.1-32B-Instruct", "mlx-community/Olmo-3.1-32B-Instruct-8bit", ["chat", "nosys", "raw"]),
+    ],
+}
+STAGES = LADDERS[SIZE]
+QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
 
 
 def first_word(text):
@@ -64,11 +81,11 @@ def sample(n):
 
     sampler = make_sampler(temp=1.0)
     runs = json.loads(OUT.read_text())["runs"] if OUT.exists() else {}
-    for stage, repo, framings in STAGES:
+    for stage, repo, weights, framings in STAGES:
         todo = [f for f in framings if f"{stage}/{f}" not in runs]
         if not todo:
             continue
-        model, tok = load(repo)
+        model, tok = load(weights)
         rev = model_info(repo).sha
         for framing in todo:
             if framing == "chat":
@@ -78,7 +95,8 @@ def sample(n):
             max_tokens = 8 if framing == "raw" else 24
             t0 = time.time()
             replies = [generate(model, tok, prompt=prompt, max_tokens=max_tokens, sampler=sampler) for _ in range(n)]
-            runs[f"{stage}/{framing}"] = {"repo": repo, "revision": rev, "prompt": tok.decode(prompt),
+            runs[f"{stage}/{framing}"] = {"repo": repo, "revision": rev, "weights": weights, "quantization": QUANT,
+                                          "prompt": tok.decode(prompt),
                                           "temperature": 1.0, "max_tokens": max_tokens,
                                           "run_date": time.strftime("%Y-%m-%d"), "replies": replies}
             OUT.write_text(json.dumps({"runs": runs}, indent=1, ensure_ascii=False))
@@ -89,7 +107,7 @@ def sample(n):
 
 def score(runs):
     summary = {}
-    for stage, _, framings in STAGES:
+    for stage, _, _, framings in STAGES:
         for framing in framings:
             key = f"{stage}/{framing}"
             if key not in runs:
@@ -114,5 +132,6 @@ if __name__ == "__main__":
     if "--score" in sys.argv:
         runs = json.loads(OUT.read_text())["runs"]
     else:
-        runs = sample(int(sys.argv[1]) if len(sys.argv) > 1 else 50)
+        nums = [a for a in sys.argv[1:] if a.isdigit()]
+        runs = sample(int(nums[0]) if nums else 50)
     OUT.write_text(json.dumps({"summary": score(runs), "runs": runs}, indent=1, ensure_ascii=False))

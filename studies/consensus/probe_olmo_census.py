@@ -13,6 +13,7 @@ Per stage, against the frozen 87-model field (transcripts/, same norm and plural
   entropy       mean per-category entropy of the stage's own answers (diversity)
     ../../.venv/bin/python probe_olmo_census.py [N=20]
     ../../.venv/bin/python probe_olmo_census.py --score
+    ../../.venv/bin/python probe_olmo_census.py --32b       # OLMo 3.1 32B, 8-bit -> probes/olmo_census_32b.json
 """
 import json, math, sys, time
 from collections import Counter
@@ -21,12 +22,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import load, norm                              # same normalization as the paper
-from probe_olmo_ladder import first_word
+from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS
 
-OUT = HERE / "probes" / "olmo_census.json"
+OUT = HERE / "probes" / ("olmo_census.json" if SIZE == "7b" else "olmo_census_32b.json")
 SCENES = json.loads((HERE / "spec" / "stimulus.json").read_text())["scenes"]
-STAGES = [("base", "allenai/Olmo-3-1025-7B"), ("sft", "allenai/Olmo-3-7B-Instruct-SFT"),
-          ("dpo", "allenai/Olmo-3-7B-Instruct-DPO"), ("rl", "allenai/Olmo-3-7B-Instruct")]
+STAGES = [(stage, repo, weights) for stage, repo, weights, _ in LADDERS[SIZE]]  # same checkpoints as the ladder
 
 
 def sample(n):
@@ -36,11 +36,12 @@ def sample(n):
 
     sampler = make_sampler(temp=1.0)
     runs = json.loads(OUT.read_text())["runs"] if OUT.exists() else {}
-    for stage, repo in STAGES:
+    for stage, repo, weights in STAGES:
         if stage in runs and len(runs[stage]["replies"]) == len(SCENES):
             continue
-        model, tok = mlx_load(repo)
-        rec = runs.setdefault(stage, {"repo": repo, "revision": model_info(repo).sha, "temperature": 1.0,
+        model, tok = mlx_load(weights)
+        rec = runs.setdefault(stage, {"repo": repo, "revision": model_info(repo).sha, "weights": weights,
+                                      "quantization": QUANT, "temperature": 1.0,
                                       "framing": "raw" if stage == "base" else "chat",
                                       "run_date": time.strftime("%Y-%m-%d"), "replies": {}})
         t0 = time.time()
@@ -63,7 +64,7 @@ def sample(n):
 def score(runs):
     field = load(HERE)
     summary = {}
-    for stage, _ in STAGES:
+    for stage, _, _ in STAGES:
         if stage not in runs:
             continue
         rec = runs[stage]
@@ -102,5 +103,6 @@ if __name__ == "__main__":
     if "--score" in sys.argv:
         runs = json.loads(OUT.read_text())["runs"]
     else:
-        runs = sample(int(sys.argv[1]) if len(sys.argv) > 1 else 20)
+        nums = [a for a in sys.argv[1:] if a.isdigit()]
+        runs = sample(int(nums[0]) if nums else 20)
     OUT.write_text(json.dumps({"summary": score(runs), "runs": runs}, indent=1, ensure_ascii=False))
