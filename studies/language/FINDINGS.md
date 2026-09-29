@@ -108,6 +108,10 @@ Three things sharpen with the larger panel:
   Twenty models use the Portuguese form and twelve the Spanish, mostly Claude and Gemini models,
   plus GLM, GPT, Hermes 3 and Kimi. German resists. The Spanish "most beautiful words" lists do not
   carry the word, so this is the English favorite being translated outward, and the rise is recent.
+  An exploratory "say a word" phrasing (*Diga uma palavra qualquer*, *Dime una palabra cualquiera*;
+  `spec/pickword_paraphrase.json`) is a different prompt and gives a different picture: translated
+  serendipity at 2–15% with no clear trend by release date, and Spanish *efímero* (ephemeral) at 13%
+  among 2026 H1 releases.
 - **Chinese variants barely resolve.** Simplified (zh → 星辰/star) and Traditional (zht → 光/light)
   Mandarin sit in the same celestial neighborhood; Cantonese (dropped) echoed the prompt verb — the
   models don't carry a distinct Cantonese voice.
