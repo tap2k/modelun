@@ -15,6 +15,8 @@ Per stage, against the frozen 87-model field (transcripts/, same norm and plural
     ../../.venv/bin/python probe_olmo_census.py --score
     ../../.venv/bin/python probe_olmo_census.py --32b       # OLMo 3.1 32B, 8-bit -> probes/olmo_census_32b.json
     ../../.venv/bin/python probe_olmo_census.py --nemotron  # Nemotron 3.5 Lightning -> probes/nemotron_census.json
+    add --expanded for the 65-category battery (spec/stimulus_expanded.json), scored against
+    transcripts-expanded/ -> probes/<name>_expanded.json
 """
 import json, math, sys, time
 from collections import Counter
@@ -25,8 +27,11 @@ sys.path.insert(0, str(HERE))
 from analyze import load, norm                              # same normalization as the paper
 from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS, CHAT_KW
 
-OUT = HERE / "probes" / {"7b": "olmo_census.json", "32b": "olmo_census_32b.json", "nemotron": "nemotron_census.json"}[SIZE]
-SCENES = json.loads((HERE / "spec" / "stimulus.json").read_text())["scenes"]
+EXPANDED = "--expanded" in sys.argv                         # the 65-category battery instead of the 31
+OUT = HERE / "probes" / ({"7b": "olmo_census", "32b": "olmo_census_32b", "nemotron": "nemotron_census"}[SIZE]
+                         + ("_expanded" if EXPANDED else "") + ".json")
+SCENES = json.loads((HERE / "spec" / ("stimulus_expanded.json" if EXPANDED else "stimulus.json")).read_text())["scenes"]
+FIELD_DIR = "transcripts-expanded" if EXPANDED else "transcripts"   # the panel the answers are scored against
 STAGES = [(stage, repo, weights) for stage, repo, weights, _ in LADDERS[SIZE]]  # same checkpoints as the ladder
 
 
@@ -62,8 +67,18 @@ def sample(n):
     return runs
 
 
+def load_dir(d):
+    """analyze.load for another transcript folder: {model: {category: [normalized answers]}}."""
+    out = {}
+    for p in sorted(d.glob("*.json")):
+        x = json.loads(p.read_text())
+        out[x["model"]] = {c: [t for t in (norm(r[0].get("reply")) for r in sc["runs"] if r) if t]
+                           for c, sc in x["scenes"].items()}
+    return out
+
+
 def score(runs):
-    field = load(HERE)
+    field = load(HERE) if FIELD_DIR == "transcripts" else load_dir(HERE / FIELD_DIR)
     summary = {}
     for stage, _, _ in STAGES:
         if stage not in runs:
