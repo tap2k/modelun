@@ -210,11 +210,14 @@ P.". The last two place the tag on the question-to-statement ladder of Dubois et
 don't tell", arXiv:2602.23971). 91 models (three roster models no longer have endpoints; see the
 probe docstring); `probes/contested_analysis.json`.
 
-- The tag lowers agreement: TAGeff −5% on average, 43 models significantly below zero and 3 above.
+- The tag lowers agreement: TAGeff −5% on average, 44 models significantly below zero and 3 above.
   It is −10% on history, −3% on policy and −2% on partisan items, where hedging is highest (36% of
   plain questions on partisan items are hedged, against 27% overall).
 - A stated belief raises agreement: "I think P." +9% (+12% over answered replies), above the tag in
-  78 of 91 models. The bare assertion sits near zero (+2%).
+  78 of 91 models. The bare assertion sits near zero (+2%). The effect is agreement with the claim,
+  not acknowledgement of the user's view: on a 20-model check that forces the claim ("I think P.
+  Was P …?", arm `belief_q`), the belief effect is +17% against +14% for "I think P." on the same
+  models. The one large mover is Claude Sonnet 5 (−52% → −1%), whose bare belief arm was refusals.
 - So the same claim draws more agreement when the user states it as their belief and less when the
   user asks the model to confirm it. Dubois et al.'s result and the paper's tag reversal both hold,
   and they run in opposite directions.
@@ -226,13 +229,13 @@ probe docstring); `probes/contested_analysis.json`.
   finding.
 
 - Hedging (`hedging.py`, `probes/hedging_analysis.json`). Averaged over the panel, the arms barely
-  move it: the tag's −5 points of Yes become +2.5 of No and +2.6 of hedge, and "I think P."'s +9
-  points of Yes come entirely out of No (hedge +0.1). Of the 43 models whose Yes falls under the
-  tag, 25 resist with a No and 18 by declining. The level of hedging is the model's own: a model's
+  move it: the tag's −5 points of Yes become +2.6 of No and +2.6 of hedge, and "I think P."'s +9
+  points of Yes come entirely out of No (hedge +0.1). Of the 44 models whose Yes falls by 5 points
+  or more under the tag, 27 resist with a No and 17 by declining. The level of hedging is the model's own: a model's
   hedge rate on the contested questions tracks its hedge rate on the core personal-choice items
   (ρ = 0.66, permutation p < .001), and vendor accounts for much of it (Kruskal–Wallis over 11
   vendors with ≥ 3 models, p < .001, ε² = 0.15): Google 80%, GLM 63%, Anthropic 42%, down to
-  OpenAI 8%, DeepSeek 2%, Mistral 1%. Against capability and release date it is flat (a
+  OpenAI 8%, DeepSeek 3%, Mistral 1%. Against capability and release date it is flat (a
   cross-instrument check, not part of this study's scripts).
 
 Characterizations of dated specimens under a Yes/No clamp; a hedge here is the neutrality policy,
