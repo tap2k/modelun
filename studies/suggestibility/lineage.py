@@ -21,7 +21,7 @@ FAM = {
     "grok-4.20": ("Grok", 0), "grok-4.3": ("Grok", 1), "grok-4.5": ("Grok", 2), "grok-4.6": ("Grok", 3),
     "qwen-2.5-72b-instruct": ("Qwen", 0), "qwen3-235b-a22b-2507": ("Qwen", 1),
     "qwen3.5-9b": ("Qwen", 2), "qwen3.5-27b": ("Qwen", 2), "qwen3.5-122b-a10b": ("Qwen", 2),
-    "qwen3.6-35b-a3b": ("Qwen", 3), "qwen3.8-2.4t-a95b": ("Qwen", 4),
+    "qwen3.6-35b-a3b": ("Qwen", 3), "qwen3.8-2.4t-a95b": ("Qwen", 4), "qwen3.8-27b": ("Qwen", 4),
     "deepseek-chat-v3-0324": ("DeepSeek", 0), "deepseek-r1": ("DeepSeek", 1),
     "deepseek-v3.2": ("DeepSeek", 2), "deepseek-v4-flash": ("DeepSeek", 3), "deepseek-v4-pro": ("DeepSeek", 3),
     # wave 3 (2026-09-25), placed between the existing generations by release date

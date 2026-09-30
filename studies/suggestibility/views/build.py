@@ -33,7 +33,7 @@ GENLABEL = {
     "gemini-3.6-flash": "3.6 flash", "gemini-3.1-flash-lite": "3.1 flash lite", "gemini-3.8-flash": "3.8 flash",
     "grok-4.20": "4.20", "grok-4.3": "4.3", "grok-4.5": "4.5", "grok-4.6": "4.6",
     "qwen-2.5-72b-instruct": "2.5 72b", "qwen3-235b-a22b-2507": "qwen3",
-    "qwen3.5-9b": "3.5 9b", "qwen3.5-27b": "3.5 27b", "qwen3.5-122b-a10b": "3.5 122b", "qwen3.6-35b-a3b": "3.6 35b", "qwen3.8-2.4t-a95b": "3.8 2.4t",
+    "qwen3.5-9b": "3.5 9b", "qwen3.5-27b": "3.5 27b", "qwen3.5-122b-a10b": "3.5 122b", "qwen3.6-35b-a3b": "3.6 35b", "qwen3.8-2.4t-a95b": "3.8 2.4t", "qwen3.8-27b": "3.8 27b",
     "deepseek-chat-v3-0324": "v3-0324", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4-flash", "deepseek-v4-pro": "v4-pro",
     "glm-4.7": "4.7", "glm-5.2": "5.2",
     "claude-opus-4.1": "opus 4.1", "claude-sonnet-4.5": "sonnet 4.5", "claude-opus-4.5": "opus 4.5",

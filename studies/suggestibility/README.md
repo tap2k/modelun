@@ -187,6 +187,16 @@ disposition mix separates "holds with a reason" from "won't commit."
   hedge 3%). TAGeff −28% [−40%, −17%] (ask 59%, right? 31%) ranks 7th of 88, against GPT-6 Sol
   −14% and Astra −19%. STANCEeff +1% with CORReff −40%, so the dissociation holds in 46 of 88.
   maybe? draws 62% against the ask's 59%, and maybe? beats the neutral ask in 88 of 88.
+- **Open-weight lineages (2026-09-29, +5 models)** — Nemotron 3.5 Lightning, Nemotron 3 Super
+  120B and Ultra 550B, Hermes 4 405B and Qwen3.8 27B. Same frozen stimulus, 4 runs; the empty
+  replies of the three thinking Nemotrons and Qwen were re-collected at `--max-tokens 8192`, which
+  the affected cells record, and the probes ran at 8192. No missing cells; 93 models. The NVIDIA
+  line walks the generational reversal by size inside one pipeline: TAGeff Nano 30B +24%,
+  Lightning +16% [+9, +23], Super +1% [−9, +11], Ultra −18% [−26, −9]. Shift runs Nano +28%,
+  Lightning +44%, Super +34%, Ultra +9%. Hermes 4 405B shift +11%, TAGeff −7% [−14, 0]; Qwen3.8
+  27B shift +11%, TAGeff −16% [−23, −9], the same as Qwen 3.5 27B. The dissociation holds in 49 of
+  93, and maybe? beats the neutral ask in 93 of 93. Mistral Small 2603 is on the roster and follows
+  when its rate-limited cells are complete.
 
 ## Run
 

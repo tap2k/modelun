@@ -34,7 +34,7 @@ WALKS = {
     "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-v4-pro", "deepseek-r1"],
     "llama": ["llama-3.3-70b-instruct", "llama-4-scout", "llama-4-maverick"],
     "grok": ["grok-4.20", "grok-4.3", "grok-4.5", "grok-4.6", "grok-4.7"],
-    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507", "qwen3.5-9b", "qwen3.5-27b", "qwen3.5-122b-a10b", "qwen3.6-35b-a3b", "qwen3.7-plus", "qwen3.8-2.4t-a95b"],
+    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507", "qwen3.5-9b", "qwen3.5-27b", "qwen3.5-122b-a10b", "qwen3.6-35b-a3b", "qwen3.7-plus", "qwen3.8-2.4t-a95b", "qwen3.8-27b"],
     "glm": ["glm-4.7", "glm-5.3-flash", "glm-5.3"],
     "kimi": ["kimi-k2", "kimi-k2.5", "kimi-k3"],
 }

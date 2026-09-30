@@ -92,6 +92,17 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   GPT-6 Sol and Astra (both 1.31). The temperature-0 and unclamped runs were collected the same day.
   The route ignores temperature (`probes/temp0.json`: self-distinctness 0.32 at temperature 1 and
   0.35 at 0), and in free prose it avoids the field's modal word on 35% of replies.
+- **Open-weight lineages (2026-09-29, +5 models)** — Nemotron 3.5 Lightning, Nemotron 3 Super
+  120B and Ultra 550B, Hermes 4 405B and Qwen3.8 27B, appended to extend the NVIDIA, Hermes and
+  Qwen lines. Same frozen stimulus, 4 runs, no failed cells after re-collecting the empty replies
+  at `--max-tokens 8192`; 93 models in `analysis.json`. The temperature-0 and unclamped runs were
+  collected the same day. Within one open pipeline, concentration rises with size: Nemotron 3 Nano
+  30B 1.74 bits (30th), Lightning 1.65 (34th), Super 1.35 (59th), Ultra 1.27 (71st). Hermes 4 405B
+  ranks 13th (2.15) where the departed 70B ranked 1st (3.43), so the line stays in the divergent
+  third without the 70B's scatter, and at temperature 0 it collapses to 1.59. Qwen3.8 27B (1.55,
+  41st) sits well above its 2.4T sibling (1.07, 88th). Mistral Small 2603 was appended with them
+  and is not yet in `analysis.json`: its route returned 429s through the night, and it follows
+  when its cells are complete. Hermes 4 70B and Granite 4.1 8B no longer have OpenRouter endpoints.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
