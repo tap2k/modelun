@@ -22,6 +22,7 @@ has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
     ../../.venv/bin/python probe_olmo_ladder.py [N=50]      # needs mlx-lm and ~60 GB of weights
     ../../.venv/bin/python probe_olmo_ladder.py --score     # re-score probes/olmo_ladder.json only
     ../../.venv/bin/python probe_olmo_ladder.py --32b       # OLMo 3.1 32B ladder, 8-bit -> olmo_ladder_32b.json
+    ../../.venv/bin/python probe_olmo_ladder.py --nemotron  # Nemotron 3.5 Lightning base/final -> nemotron_ladder.json
 """
 import json, math, re, sys, time
 from collections import Counter
@@ -31,8 +32,8 @@ HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
 from analyze import norm                                    # same normalization as the paper
 
-SIZE = "32b" if "--32b" in sys.argv else "7b"
-OUT = HERE / "probes" / ("olmo_ladder.json" if SIZE == "7b" else "olmo_ladder_32b.json")
+SIZE = "32b" if "--32b" in sys.argv else "nemotron" if "--nemotron" in sys.argv else "7b"
+OUT = HERE / "probes" / {"7b": "olmo_ladder.json", "32b": "olmo_ladder_32b.json", "nemotron": "nemotron_ladder.json"}[SIZE]
 PROMPT = "Pick a word. Reply with one word only."
 RAW = PROMPT + "\nAnswer:"
 NOSYS = f"<|im_start|>user\n{PROMPT}<|im_end|>\n<|im_start|>assistant\n"
@@ -54,9 +55,21 @@ LADDERS = {
         ("dpo", "allenai/Olmo-3.1-32B-Instruct-DPO", str(M32 / "Olmo-3.1-32B-Instruct-DPO-8bit"), ["chat", "nosys", "raw"]),
         ("rl", "allenai/Olmo-3.1-32B-Instruct", "mlx-community/Olmo-3.1-32B-Instruct-8bit", ["chat", "nosys", "raw"]),
     ],
+    # NVIDIA Nemotron 3.5 Lightning 30B-A3B: a second lab's open pipeline. Only base and final are
+    # published. Its template has no default system prompt (nosys = chat, so not run) and thinks by
+    # default; chat runs with enable_thinking=False. sysid adds an assistant-identity system prompt,
+    # testing the system-prompt effect seen in OLMo 3.1 32B.
+    "nemotron": [
+        ("base", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16",
+         str(Path.home() / "models" / "nemotron35" / "Lightning-30B-A3B-Base-8bit"), ["raw"]),
+        ("final", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+         "mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit", ["chat", "sysid", "raw"]),
+    ],
 }
 STAGES = LADDERS[SIZE]
 QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
+CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
+SYSID = "You are Nemotron, a helpful AI assistant built by NVIDIA."
 
 
 def first_word(text):
@@ -88,8 +101,9 @@ def sample(n):
         model, tok = load(weights)
         rev = model_info(repo).sha
         for framing in todo:
-            if framing == "chat":
-                prompt = tok.apply_chat_template([{"role": "user", "content": PROMPT}], add_generation_prompt=True)
+            if framing in ("chat", "sysid"):
+                msgs = ([{"role": "system", "content": SYSID}] if framing == "sysid" else []) + [{"role": "user", "content": PROMPT}]
+                prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **CHAT_KW)
             else:
                 prompt = tok.encode(NOSYS if framing == "nosys" else RAW)
             max_tokens = 8 if framing == "raw" else 24

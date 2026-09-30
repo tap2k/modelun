@@ -14,6 +14,7 @@ Per stage, against the frozen 87-model field (transcripts/, same norm and plural
     ../../.venv/bin/python probe_olmo_census.py [N=20]
     ../../.venv/bin/python probe_olmo_census.py --score
     ../../.venv/bin/python probe_olmo_census.py --32b       # OLMo 3.1 32B, 8-bit -> probes/olmo_census_32b.json
+    ../../.venv/bin/python probe_olmo_census.py --nemotron  # Nemotron 3.5 Lightning -> probes/nemotron_census.json
 """
 import json, math, sys, time
 from collections import Counter
@@ -22,9 +23,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import load, norm                              # same normalization as the paper
-from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS
+from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS, CHAT_KW
 
-OUT = HERE / "probes" / ("olmo_census.json" if SIZE == "7b" else "olmo_census_32b.json")
+OUT = HERE / "probes" / {"7b": "olmo_census.json", "32b": "olmo_census_32b.json", "nemotron": "nemotron_census.json"}[SIZE]
 SCENES = json.loads((HERE / "spec" / "stimulus.json").read_text())["scenes"]
 STAGES = [(stage, repo, weights) for stage, repo, weights, _ in LADDERS[SIZE]]  # same checkpoints as the ladder
 
@@ -52,7 +53,7 @@ def sample(n):
             if stage == "base":
                 prompt, mt = tok.encode(q + "\nAnswer:"), 8
             else:
-                prompt, mt = tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True), 24
+                prompt, mt = tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True, **CHAT_KW), 24
             rec["replies"][sc["id"]] = [generate(model, tok, prompt=prompt, max_tokens=mt, sampler=sampler)
                                         for _ in range(n)]
             OUT.write_text(json.dumps({"runs": runs}, indent=1, ensure_ascii=False))
