@@ -81,6 +81,10 @@ LADDERS = {
 STAGES = [(st, repo, w, (["cloze"] if st == "base" and CLOZE else FRAMINGS.split(",") if FRAMINGS and st != "base" else fr))
           for st, repo, w, fr in LADDERS[SIZE]]
 SYSGEN = "You are a helpful assistant."                   # generic assistant framing, no model identity
+# systrain: the system turn every OLMo 3 / 3.1 Instruct training example carried (the instruct-dev
+# template default; 100% of DPO and RL prompts, ~90% of SFT). The released 3.1 32B template swaps in an
+# untrained "You are Olmo..." identity prompt, so systrain is the in-distribution condition.
+SYSTRAIN = "You are a helpful function-calling AI assistant. You do not currently have access to any functions. <functions></functions>"
 QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
 CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
 SYSID = "You are Nemotron, a helpful AI assistant built by NVIDIA."
@@ -115,8 +119,8 @@ def sample(n):
         model, tok = load(weights)
         rev = model_info(repo).sha
         for framing in todo:
-            if framing in ("chat", "sysid", "sysgen", "think"):
-                sp = {"sysid": SYSID, "sysgen": SYSGEN}.get(framing)
+            if framing in ("chat", "sysid", "sysgen", "systrain", "think"):
+                sp = {"sysid": SYSID, "sysgen": SYSGEN, "systrain": SYSTRAIN}.get(framing)
                 msgs = ([{"role": "system", "content": sp}] if sp else []) + [{"role": "user", "content": PROMPT}]
                 kw = {"enable_thinking": True} if framing == "think" else CHAT_KW
                 prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **kw)
