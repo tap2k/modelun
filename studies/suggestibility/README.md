@@ -195,8 +195,12 @@ disposition mix separates "holds with a reason" from "won't commit."
   Lightning +16% [+9, +23], Super +1% [−9, +11], Ultra −18% [−26, −9]. Shift runs Nano +28%,
   Lightning +44%, Super +34%, Ultra +9%. Hermes 4 405B shift +11%, TAGeff −7% [−14, 0]; Qwen3.8
   27B shift +11%, TAGeff −16% [−23, −9], the same as Qwen 3.5 27B. The dissociation holds in 49 of
-  93, and maybe? beats the neutral ask in 93 of 93. Mistral Small 2603 is on the roster and follows
-  when its rate-limited cells are complete.
+  93, and maybe? beats the neutral ask in 93 of 93.
+- **Mistral Small 2603 (2026-09-29/30, +1 model)** — its cells were completed on 2026-09-30 through
+  the study author's Mistral key after the shared route's upstream 429s; the probes ran at 8192.
+  No missing cells; 94 models. Shift +15%, TAGeff +12%, STANCEeff +14%: it still folds to the tag,
+  like Nemo (+14%) and Mixtral (+14%), where Small 3.2 is flat (−2%). maybe? beats the neutral ask
+  in 94 of 94.
 
 ## Run
 

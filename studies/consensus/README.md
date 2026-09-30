@@ -100,9 +100,14 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   30B 1.74 bits (30th), Lightning 1.65 (34th), Super 1.35 (59th), Ultra 1.27 (71st). Hermes 4 405B
   ranks 13th (2.15) where the departed 70B ranked 1st (3.43), so the line stays in the divergent
   third without the 70B's scatter, and at temperature 0 it collapses to 1.59. Qwen3.8 27B (1.55,
-  41st) sits well above its 2.4T sibling (1.07, 88th). Mistral Small 2603 was appended with them
-  and is not yet in `analysis.json`: its route returned 429s through the night, and it follows
-  when its cells are complete. Hermes 4 70B and Granite 4.1 8B no longer have OpenRouter endpoints.
+  41st) sits well above its 2.4T sibling (1.07, 88th). Hermes 4 70B and Granite 4.1 8B no longer
+  have OpenRouter endpoints.
+- **Mistral Small 2603 (2026-09-29/30, +1 model)** — appended with the open-weight wave; Mistral's
+  upstream rate limit on OpenRouter's shared key returned 429s through the night, and the missing
+  cells were collected on 2026-09-30 through the study author's own Mistral key (BYOK). No failed
+  cells; 94 models. It ranks 6th (2.69 bits), above Small 3.2 (2.08, 18th) and beside Nemo (3.01)
+  and Mixtral 8x22B (2.86): the newest Mistral stays divergent. At temperature 0 it collapses to
+  1.65, the persona-tail pattern.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
