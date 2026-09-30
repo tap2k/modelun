@@ -24,7 +24,9 @@ has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
     ../../.venv/bin/python probe_olmo_ladder.py --32b       # OLMo 3.1 32B ladder, 8-bit -> olmo_ladder_32b.json
     ../../.venv/bin/python probe_olmo_ladder.py --nemotron  # Nemotron 3.5 Lightning base/final -> nemotron_ladder.json
     options: --tag NAME (separate output file), --framings chat,nosys,... (instruct stages),
-    framings sysgen ("You are a helpful assistant.") and think (reasoning on, 4096 tokens)
+    framings sysgen ("You are a helpful assistant.") and think (reasoning on, 4096 tokens);
+    --prompt "..." swaps the question (the say/pick/favorite/beautiful scale), --cloze '...' gives the
+    base stage a natural completion instead of the instruction plus "Answer:"
 """
 import json, math, re, sys, time
 from collections import Counter
@@ -43,7 +45,8 @@ TAG = _arg("--tag")                                       # a separate output fi
 FRAMINGS = _arg("--framings")                             # override the instruct stages' framings
 OUT = HERE / "probes" / ({"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder"}[SIZE]
                          + (f"_{TAG}" if TAG else "") + ".json")
-PROMPT = "Pick a word. Reply with one word only."
+PROMPT = _arg("--prompt") or "Pick a word. Reply with one word only."   # --prompt: another item of the scale
+CLOZE = _arg("--cloze")                                   # base stage only: a natural completion, e.g. 'My favorite word is "' 
 RAW = PROMPT + "\nAnswer:"
 NOSYS = f"<|im_start|>user\n{PROMPT}<|im_end|>\n<|im_start|>assistant\n"
 # (stage, source repo, weights loaded, framings). 7B loads the source in bf16. 32B loads 8-bit MLX
@@ -75,7 +78,8 @@ LADDERS = {
          "mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit", ["chat", "sysid", "raw"]),
     ],
 }
-STAGES = [(st, repo, w, (FRAMINGS.split(",") if FRAMINGS and st != "base" else fr)) for st, repo, w, fr in LADDERS[SIZE]]
+STAGES = [(st, repo, w, (["cloze"] if st == "base" and CLOZE else FRAMINGS.split(",") if FRAMINGS and st != "base" else fr))
+          for st, repo, w, fr in LADDERS[SIZE]]
 SYSGEN = "You are a helpful assistant."                   # generic assistant framing, no model identity
 QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
 CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
@@ -117,8 +121,8 @@ def sample(n):
                 kw = {"enable_thinking": True} if framing == "think" else CHAT_KW
                 prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **kw)
             else:
-                prompt = tok.encode(NOSYS if framing == "nosys" else RAW)
-            max_tokens = 8 if framing == "raw" else 4096 if framing == "think" else 24
+                prompt = tok.encode(CLOZE if framing == "cloze" else NOSYS if framing == "nosys" else RAW)
+            max_tokens = 8 if framing in ("raw", "cloze") else 4096 if framing == "think" else 24
             t0 = time.time()
             replies = [generate(model, tok, prompt=prompt, max_tokens=max_tokens, sampler=sampler) for _ in range(n)]
             runs[f"{stage}/{framing}"] = {"repo": repo, "revision": rev, "weights": weights, "quantization": QUANT,
@@ -141,7 +145,7 @@ def score(runs):
             replies = runs[key]["replies"]
             if framing == "think":                       # score the answer after the reasoning; unfinished = invalid
                 replies = [r.split("</think>")[-1] if "</think>" in r else "" for r in replies]
-            answers = [(first_word if framing == "raw" else norm)(r) for r in replies]
+            answers = [(first_word if framing in ("raw", "cloze") else norm)(r) for r in replies]
             valid = [a for a in answers if a]
             k = sum(a == "serendipity" for a in valid)
             c = Counter(valid)
