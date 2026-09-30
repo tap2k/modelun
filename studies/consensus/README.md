@@ -87,6 +87,11 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   [1.54, 2.72]), where Sonnet 5 ranks 85th (0.99). It holds the modal answer on every peaked category
   (oak, hammer, rose) and leaves it on the diffuse ones: lantern for any_word on all four runs (the
   word Opus 5.5 also fixes on), otter, griffin, dragonfly, Lisbon, lemonade or tea.
+- **GPT-6.1 Sol (2026-09-29, +1 model)** — appended on its release day. Same frozen stimulus, 4
+  runs, no failed cells; 88 models in `analysis.json`. It ranks 85th of 88 (surprisal 1.04), below
+  GPT-6 Sol and Astra (both 1.31). The temperature-0 and unclamped runs were collected the same day.
+  The route ignores temperature (`probes/temp0.json`: self-distinctness 0.32 at temperature 1 and
+  0.35 at 0), and in free prose it avoids the field's modal word on 35% of replies.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose

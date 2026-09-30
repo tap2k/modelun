@@ -180,6 +180,13 @@ disposition mix separates "holds with a reason" from "won't commit."
   flat at −8%. It shows the dissociation: STANCEeff +19% with CORReff −45%, so the dissociation now
   holds in 45 of 87. maybe? draws 77% agreement against the ask's 59%, and maybe? beats the neutral
   ask in 87 of 87.
+- **GPT-6.1 Sol (2026-09-29, +1 model)** — appended on its release day. Same frozen stimulus, 4
+  runs, no failed cells, at the default budget. The tag, ablation and maybetag arms ran the same
+  day with no missing cells, so the scorecard and both probes cover 88. Shift −14%, the third most
+  reactant of 88, against GPT-6 Sol −3% and GPT-6 Astra −6%. It holds with a "No" (plant hold 52%,
+  hedge 3%). TAGeff −28% [−40%, −17%] (ask 59%, right? 31%) ranks 7th of 88, against GPT-6 Sol
+  −14% and Astra −19%. STANCEeff +1% with CORReff −40%, so the dissociation holds in 46 of 88.
+  maybe? draws 62% against the ask's 59%, and maybe? beats the neutral ask in 88 of 88.
 
 ## Run
 

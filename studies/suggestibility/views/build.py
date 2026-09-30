@@ -38,7 +38,7 @@ GENLABEL = {
     "glm-4.7": "4.7", "glm-5.2": "5.2",
     "claude-opus-4.1": "opus 4.1", "claude-sonnet-4.5": "sonnet 4.5", "claude-opus-4.5": "opus 4.5",
     "claude-opus-4.6": "opus 4.6", "claude-opus-4.7": "opus 4.7", "claude-opus-5.5": "opus 5.5", "claude-sonnet-5.5": "sonnet 5.5",
-    "gpt-5.4-mini": "5.4 mini", "gpt-6-luna": "6 luna", "gpt-6-sol": "6 sol",
+    "gpt-5.4-mini": "5.4 mini", "gpt-6-luna": "6 luna", "gpt-6-sol": "6 sol", "gpt-6.1-sol": "6.1 sol",
     "gemini-2.5-pro": "2.5 pro", "gemini-3-flash-preview": "3 flash", "grok-4.7": "4.7", "qwen3.7-plus": "3.7 plus",
 }
 FAMCOLOR = {"GPT": "#6ea8fe", "Claude": "#e0a33e", "Gemini": "#4fd1a5", "Grok": "#b39ddb",

@@ -32,4 +32,5 @@ FAM = {
     "gemini-2.5-pro": ("Gemini", 0), "gemini-3-flash-preview": ("Gemini", 0.5),
     "grok-4.7": ("Grok", 4), "qwen3.7-plus": ("Qwen", 3.5),
     "claude-sonnet-5.5": ("Claude", 8),  # 2026-09-28, on its release
+    "gpt-6.1-sol": ("GPT", 9),  # 2026-09-29, on its release
 }
