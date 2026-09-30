@@ -23,6 +23,8 @@ has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
     ../../.venv/bin/python probe_olmo_ladder.py --score     # re-score probes/olmo_ladder.json only
     ../../.venv/bin/python probe_olmo_ladder.py --32b       # OLMo 3.1 32B ladder, 8-bit -> olmo_ladder_32b.json
     ../../.venv/bin/python probe_olmo_ladder.py --nemotron  # Nemotron 3.5 Lightning base/final -> nemotron_ladder.json
+    options: --tag NAME (separate output file), --framings chat,nosys,... (instruct stages),
+    framings sysgen ("You are a helpful assistant.") and think (reasoning on, 4096 tokens)
 """
 import json, math, re, sys, time
 from collections import Counter
@@ -33,7 +35,14 @@ sys.path.insert(0, str(HERE))
 from analyze import norm                                    # same normalization as the paper
 
 SIZE = "32b" if "--32b" in sys.argv else "nemotron" if "--nemotron" in sys.argv else "7b"
-OUT = HERE / "probes" / {"7b": "olmo_ladder.json", "32b": "olmo_ladder_32b.json", "nemotron": "nemotron_ladder.json"}[SIZE]
+def _arg(flag):
+    return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else None
+
+
+TAG = _arg("--tag")                                       # a separate output file, e.g. --tag n200
+FRAMINGS = _arg("--framings")                             # override the instruct stages' framings
+OUT = HERE / "probes" / ({"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder"}[SIZE]
+                         + (f"_{TAG}" if TAG else "") + ".json")
 PROMPT = "Pick a word. Reply with one word only."
 RAW = PROMPT + "\nAnswer:"
 NOSYS = f"<|im_start|>user\n{PROMPT}<|im_end|>\n<|im_start|>assistant\n"
@@ -66,7 +75,8 @@ LADDERS = {
          "mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit", ["chat", "sysid", "raw"]),
     ],
 }
-STAGES = LADDERS[SIZE]
+STAGES = [(st, repo, w, (FRAMINGS.split(",") if FRAMINGS and st != "base" else fr)) for st, repo, w, fr in LADDERS[SIZE]]
+SYSGEN = "You are a helpful assistant."                   # generic assistant framing, no model identity
 QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
 CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
 SYSID = "You are Nemotron, a helpful AI assistant built by NVIDIA."
@@ -101,12 +111,14 @@ def sample(n):
         model, tok = load(weights)
         rev = model_info(repo).sha
         for framing in todo:
-            if framing in ("chat", "sysid"):
-                msgs = ([{"role": "system", "content": SYSID}] if framing == "sysid" else []) + [{"role": "user", "content": PROMPT}]
-                prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **CHAT_KW)
+            if framing in ("chat", "sysid", "sysgen", "think"):
+                sp = {"sysid": SYSID, "sysgen": SYSGEN}.get(framing)
+                msgs = ([{"role": "system", "content": sp}] if sp else []) + [{"role": "user", "content": PROMPT}]
+                kw = {"enable_thinking": True} if framing == "think" else CHAT_KW
+                prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **kw)
             else:
                 prompt = tok.encode(NOSYS if framing == "nosys" else RAW)
-            max_tokens = 8 if framing == "raw" else 24
+            max_tokens = 8 if framing == "raw" else 4096 if framing == "think" else 24
             t0 = time.time()
             replies = [generate(model, tok, prompt=prompt, max_tokens=max_tokens, sampler=sampler) for _ in range(n)]
             runs[f"{stage}/{framing}"] = {"repo": repo, "revision": rev, "weights": weights, "quantization": QUANT,
@@ -126,7 +138,10 @@ def score(runs):
             key = f"{stage}/{framing}"
             if key not in runs:
                 continue
-            answers = [(first_word if framing == "raw" else norm)(r) for r in runs[key]["replies"]]
+            replies = runs[key]["replies"]
+            if framing == "think":                       # score the answer after the reasoning; unfinished = invalid
+                replies = [r.split("</think>")[-1] if "</think>" in r else "" for r in replies]
+            answers = [(first_word if framing == "raw" else norm)(r) for r in replies]
             valid = [a for a in answers if a]
             k = sum(a == "serendipity" for a in valid)
             c = Counter(valid)
