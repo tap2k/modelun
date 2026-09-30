@@ -23,6 +23,10 @@ hedge rate per arm and stratum is a result, reported beside the effect. Not part
 stimulus; this file is its own instrument. Each model's file is rewritten after every item, so an
 interrupted run keeps what it collected.
 
+Panel (2026-09-29/30): the suggestibility roster at --max-tokens 8192 with the roster's provider pins.
+Unrunnable, no endpoint on OpenRouter at collection: claude-3-haiku (deprecated 2026-09-10),
+hermes-4-70b, granite-4.1-8b. Their rows stay on the roster.
+
     python studies/suggestibility/probe_contested.py run [--max-tokens 8192] [--reasoning off] [--items a,b] [--arms a,b] <slug>...
     python studies/suggestibility/probe_contested.py analyze
 """

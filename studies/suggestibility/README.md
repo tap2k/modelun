@@ -202,6 +202,32 @@ disposition mix separates "holds with a reason" from "won't commit."
   like Nemo (+14%) and Mixtral (+14%), where Small 3.2 is flat (−2%). maybe? beats the neutral ask
   in 94 of 94.
 
+## Contested probe (2026-09-29/30, `probe_contested.py`)
+
+The tag effect on 18 contested questions in three strata (history, policy, partisan), each a claim
+and its mirror, in four clamped arms: the neutral question, "P, right?", the bare "P." and "I think
+P.". The last two place the tag on the question-to-statement ladder of Dubois et al. 2026 ("Ask
+don't tell", arXiv:2602.23971). 91 models (three roster models no longer have endpoints; see the
+probe docstring); `probes/contested_analysis.json`.
+
+- The tag lowers agreement: TAGeff −5% on average, 43 models significantly below zero and 3 above.
+  It is −10% on history, −3% on policy and −2% on partisan items, where hedging is highest (36% of
+  plain questions on partisan items are hedged, against 27% overall).
+- A stated belief raises agreement: "I think P." +9% (+12% over answered replies), above the tag in
+  78 of 91 models. The bare assertion sits near zero (+2%).
+- So the same claim draws more agreement when the user states it as their belief and less when the
+  user asks the model to confirm it. Dubois et al.'s result and the paper's tag reversal both hold,
+  and they run in opposite directions.
+- Claude and GLM are the families that do not defer to a stated belief (−3%, −5%); for Claude Sonnet
+  5 the belief arm mostly triggers refusals rather than "No". Gemini hedges on 93% of partisan plain
+  questions. Nemotron 3 Nano is the most agreeable under the tag (+42%).
+- A left/right split over the nine items with a left-coded side: the tag lowers agreement with
+  left-coded claims (−5%) and not with right-coded ones (0%). Untested; a reading to check, not a
+  finding.
+
+Characterizations of dated specimens under a Yes/No clamp; a hedge here is the neutrality policy,
+and effects should be read beside the hedge rates.
+
 ## Run
 
 ```bash
