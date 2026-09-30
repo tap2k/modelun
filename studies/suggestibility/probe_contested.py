@@ -287,6 +287,12 @@ def analyze():
                 m[f"hedge_{a}{k}"] = mean(row[2][(a, s)]["hedge"] for row in sub for s in "xy")
                 m[f"both_no_{a}{k}"] = mean(float(all(row[2][(a, s)]["reject"] > .5 for s in "xy")) for row in sub)
                 m[f"both_yes_{a}{k}"] = mean(float(all(row[2][(a, s)]["affirm"] > .5 for s in "xy")) for row in sub)
+        # Three-way decomposition: how each arm moves Yes, No and hedge against the question, paired
+        # by item and side. It separates resisting with a No from resisting by declining to answer.
+        for a in ARMS[1:]:
+            for out in ("affirm", "reject", "hedge"):
+                m[f"d_{out}_{a}"] = mean(row[2][(a, s)][out] - row[2][("ask", s)][out]
+                                         for row in rows for s in "xy" if row[2][(a, s)] is not None)
         res[d["model"]] = m
     (STUDY / "probes" / "contested_analysis.json").write_text(json.dumps({"per_model": res}, indent=1))
 
@@ -312,6 +318,18 @@ def analyze():
         r = res[n]
         print(f"{n:<20}  " + " / ".join(f"{g(r['hedge_ask_' + st])}->{g(r['hedge_tag_' + st])}" for st in STRATA)
               + f"      {g(r['both_no_ask'])}/{g(r['both_no_tag'])}          {g(r['both_yes_ask'])}/{g(r['both_yes_tag'])}")
+    print(f"\n{'model':<20}  tag: dYes  dNo  dHedge   belief: dYes  dNo  dHedge   tag resistance via")
+    for n in order:
+        r = res[n]
+        via = ("-" if r["d_affirm_tag"] > -0.05 else
+               "No" if r["d_reject_tag"] >= r["d_hedge_tag"] else "declining")
+        print(f"{n:<20}  {f(r['d_affirm_tag']):>9}{f(r['d_reject_tag']):>5}{f(r['d_hedge_tag']):>7}"
+              f"   {f(r['d_affirm_belief']):>12}{f(r['d_reject_belief']):>5}{f(r['d_hedge_belief']):>7}   {via}")
+    panel = {k: mean(r[k] for r in res.values()) for k in
+             [f"d_{o}_{a}" for a in ARMS[1:] for o in ("affirm", "reject", "hedge")]}
+    print("panel mean, per arm (dYes / dNo / dHedge vs the question): "
+          + "; ".join(f"{a} {f(panel['d_affirm_' + a])} / {f(panel['d_reject_' + a])} / {f(panel['d_hedge_' + a])}"
+                      for a in ARMS[1:]))
     print(f"\n{len(res)} models -> probes/contested_analysis.json. TAGeff = affirm(tag) - affirm(ask), hedges count "
           f"as non-agreement; answ = the same over Yes/No replies only. left/right over the {len(LEFT)} items with a "
           f"left-coded side. both-No/Yes = share of items with a majority No (Yes) on both sides of the pair.")

@@ -225,6 +225,16 @@ probe docstring); `probes/contested_analysis.json`.
   left-coded claims (−5%) and not with right-coded ones (0%). Untested; a reading to check, not a
   finding.
 
+- Hedging (`hedging.py`, `probes/hedging_analysis.json`). Averaged over the panel, the arms barely
+  move it: the tag's −5 points of Yes become +2.5 of No and +2.6 of hedge, and "I think P."'s +9
+  points of Yes come entirely out of No (hedge +0.1). Of the 43 models whose Yes falls under the
+  tag, 25 resist with a No and 18 by declining. The level of hedging is the model's own: a model's
+  hedge rate on the contested questions tracks its hedge rate on the core personal-choice items
+  (ρ = 0.66, permutation p < .001), and vendor accounts for much of it (Kruskal–Wallis over 11
+  vendors with ≥ 3 models, p < .001, ε² = 0.15): Google 80%, GLM 63%, Anthropic 42%, down to
+  OpenAI 8%, DeepSeek 2%, Mistral 1%. Against capability and release date it is flat (a
+  cross-instrument check, not part of this study's scripts).
+
 Characterizations of dated specimens under a Yes/No clamp; a hedge here is the neutrality policy,
 and effects should be read beside the hedge rates.
 
