@@ -57,7 +57,7 @@
   /* grid view: the page does not scroll; the grid fills the window below the controls and is the one
      scroll area. On phones the page scrolls and the grid only scrolls sideways. */
   .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto}
-  main.wide{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));padding-bottom:12px}
+  main.wide{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));height:calc(100dvh - var(--hh,0px));padding-bottom:12px}  /* dvh: the visible height on iPad and phone Safari, whose 100vh runs under the toolbar */
   main.wide .gwrap{flex:1;min-height:0}
   @media (max-width:640px){ main.wide{display:block;height:auto} main.wide .gwrap{overflow-y:visible}
     table.g tbody th:not([colspan]){max-width:120px;white-space:normal;font-size:11.5px;line-height:1.3} table.g tbody th .s{display:none} }
