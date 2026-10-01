@@ -1,5 +1,5 @@
 {
-  "note": "Spelling variants merged in analyses after the census paper (companion work from 2026-09-28). analyze.py does not apply this map, so the published numbers (tag consensus-arxiv-v2) are unchanged. Apply it after norm() and the plural merge. Found by a string-similarity scan of all 31 categories plus a check of multi-word answers (2026-09-28); near-matches that are different words (serenity/serendipity, bee/beetle, basketball/baseball, pine/pineapple) are deliberately not merged.",
+  "note": "Variant -> canonical maps, per category. 'variants' is the census, 'expanded' the expanded battery; analyze.answers() applies both (v3 scoring, 2026-10-01). v2's numbers reproduce from the consensus-arxiv-v2 tag, scored without this map. A variant mapped to null is a fragment, not an answer. Sources: a 2026-09-28 similarity scan, and a 2026-10-01 category-by-category review of all three batteries by four reviewers, each proposal checked; near-matches that are different things (serenity/serendipity, pine/pineapple, bran flakes/corn flakes, retriever, lake, Canis/Ursa Major) are deliberately not merged.",
   "variants": {
     "dinosaur": {
       "t-rex": "tyrannosaurus",
@@ -11,19 +11,27 @@
     },
     "emotion": {
       "sad": "sadness"
+    },
+    "country": {
+      "kroa": "croatia"
     }
   },
   "expanded": {
     "note": "Expanded battery (1.0-expanded): forms of one multi-word name that norm()'s last-word rule splits apart, merged to the most common form. analyze.answers() applies this map to the expanded battery only. Generated 2026-10-01 from multi-word replies seen at least twice, then reviewed; ambiguous last words (retriever, lake, dragon) are deliberately not merged.",
     "variants": {
       "author": {
-        "toni": "morrison"
+        "toni": "morrison",
+        "dostoyevsky": "dostoevsky",
+        "agatha": "christie",
+        "chinua": "achebe"
       },
       "cocktail": {
         "fashioned": "oldfashioned"
       },
       "dog_breed": {
-        "goldenretriever": "golden"
+        "goldenretriever": "golden",
+        "lab": "labrador",
+        "labradorretriever": "labrador"
       },
       "landmark": {
         "eiffeltower": "eiffel",
@@ -33,18 +41,114 @@
         "machupicchu": "picchu"
       },
       "painter": {
-        "vangogh": "gogh"
+        "vangogh": "gogh",
+        "vinci": "leonardo"
       },
       "poet": {
         "emily": "dickinson",
-        "maya": "angelou"
+        "maya": "angelou",
+        "akespeare": "shakespeare"
       },
       "soup": {
-        "noodle": "chicken"
+        "noodle": "chicken",
+        "chickensoup": "chicken",
+        "antonym": null
       },
       "villain": {
         "darth": "vader",
         "darthvader": "vader"
+      },
+      "material": {
+        "aluminium": "aluminum"
+      },
+      "sound": {
+        "whirr": "whir"
+      },
+      "hero": {
+        "spider-man": "spiderman",
+        "heracles": "hercules"
+      },
+      "clothing": {
+        "shirtshirt": "shirt"
+      },
+      "plant": {
+        "venus": "venusflytrap",
+        "flytrap": "venusflytrap"
+      },
+      "team": {
+        "real": "madrid"
+      },
+      "island": {
+        "bora-bora": "bora"
+      },
+      "hat": {
+        "fedorafedora": "fedora",
+        "top": "tophat",
+        "baseball": "baseballcap"
+      },
+      "mushroom": {
+        "shittake": "shiitake",
+        "woven": "amanita",
+        "icus": null
+      },
+      "reptile": {
+        "komodo": "komododragon"
+      },
+      "superpower": {
+        "flying": "flight"
+      },
+      "scientist": {
+        "isaac": "newton"
+      },
+      "snack": {
+        "ch": null
+      },
+      "virtue": {
+        "antonyms": null
+      },
+      "currency": {
+        "usd": "dollar",
+        "currency": null
+      },
+      "sauce": {
+        "bbq": "barbecue",
+        "mayo": "mayonnaise"
+      },
+      "toy": {
+        "teddy": "teddybear",
+        "teddies": "teddybear",
+        "teddybears": "teddybear",
+        "rubik": "rubikscube",
+        "cube": "rubikscube",
+        "yoyo": "yo-yo"
+      },
+      "inventor": {
+        "nikola": "tesla",
+        "thomas": "edison"
+      },
+      "religion": {
+        "christian": "christianity",
+        "muslim": "islam"
+      },
+      "candy": {
+        "no": null,
+        "m&ms": "m&m"
+      },
+      "genre": {
+        "jazzjazz": "jazz"
+      },
+      "holiday": {
+        "christmaschristmas": "christmas"
+      },
+      "texture": {
+        "velvety": "velvet",
+        "silk": "silky",
+        "ain": null
+      },
+      "weather": {
+        "rainy": "rain",
+        "raining": "rain",
+        "sunshine": "sunny"
       }
     }
   }

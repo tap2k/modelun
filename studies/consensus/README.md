@@ -61,7 +61,7 @@ Other batteries, each with its own spec, transcripts and scoring (`analyze.BATTE
 - **The census at other settings**: `transcripts-reasoning-off/` (8 runs, reasoning off) and
   `transcripts-extra/` (4 more runs at default) use the frozen 31-category spec.
 
-The newer batteries cover 91 of the 94 census models; three have no OpenRouter endpoint any more.
+Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template wrappers and takes the first line that is an answer, accents fold, compound names in a few categories stay whole, and `answer_variants.json` merges spelling and naming variants in the census and expanded batteries, after a category-by-category review. v2's numbers reproduce from the `consensus-arxiv-v2` tag. The census and the expanded battery run at each route's default reasoning, as served, so they are comparable; only the brand battery turns reasoning off. The newer batteries cover 91 of the 94 census models; three have no OpenRouter endpoint any more.
 
 ## Waves
 

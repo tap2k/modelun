@@ -24,6 +24,7 @@ verbosity couldn't help (the smoking-gun for the verbosity confound); tree->oak 
 """
 
 import re
+import unicodedata
 import json
 import math
 import argparse
@@ -34,29 +35,96 @@ import numpy as np
 
 EMOJI = re.compile(r'[\U0001F000-\U0001FAFF☀-➿]')
 PUNCT = re.compile(r'[*_`#>\[\]().,!?"\':;]')
-WORD = re.compile(r'^[a-z\-]+$|^\d+$')
+WORD = re.compile(r'^[a-z][a-z0-9&\-]*$|^\d+$')
 
 
-JUNK = re.compile(r'\[/?INST\]|<[^>]*>|\bthinking\b', re.I)
+JUNK = re.compile(r'<think>|<thought>|\bthinking\b', re.I)
 ACK = re.compile(r'^\s*(okay|ok|sure|certainly|alright)[.!]?\s*$', re.I)
 
 
+# v3 scoring (2026-10-01, after a category-by-category review of all three batteries). v2's numbers
+# reproduce from the consensus-arxiv-v2 tag.
+THINK_END = re.compile(r'</think>|</thought>', re.I)
+TEMPLATE = re.compile(r'\[/?INST\]|<\|[^|>]*\|>', re.I)
+STOP_AT = re.compile(r'</output>|</user>|</end>|<start>|</输出>|\bASSISTANT:|^###|\n###|```|"\},\{|\[Binary_ID\]', re.I)
+TAG = re.compile(r'<[^>]*>')
+NOT_ANSWER = {'the', 'a', 'an', 'let', 'with', 'but', 'and', 'or', 'of', 'to', 'okay', 'specify', 'context', 'please'}
+
+
+LEAD_IN_LINE = re.compile(r"^\s*(?:(?:sure|okay|ok|here|since you)\b.*|i'?ll just\b.*|i will\b.*|.*\s.*:|thought|thinking)\s*$", re.I)
+ASIDE = re.compile(r"^\s*(?:\*[^*]+\*|\(.*\))\s*$")
+LEAK = re.compile(r"^\s*(?:the user\b|okay, the user|\d+\.\s|\*?hmm\b|let me\b|we need to\b|we are to\b|a chat between\b)", re.I)
+SELF_CORRECT = re.compile(r"^\s*wait\b", re.I)
+
+
+def clean(ans):
+    """Strip what wraps an answer before scoring: everything up to a closed reasoning block, chat-template
+    tokens, a leading 'ASSISTANT:', anything after a stop marker (a leaked next turn, a code fence, JSON
+    debris), leftover tags. Then take the first line that is an answer, skipping lead-ins ('Sure, here is
+    one:'), a bare 'thought' marker, and asides ('*ponders*') when an answer follows: a model's choice is
+    its first answer, not its afterthought ('Cadbury\n\nor if you meant...'). A self-correction ('Wait,
+    that's two words. One word: Stonehenge') replaces it. A reply that opens as leaked reasoning ('The user
+    wants...') and reasoning that never closed are junk, as before."""
+    if not ans:
+        return None
+    if re.search(r'<think>|<thought>', ans, re.I) and not THINK_END.search(ans):
+        return None                      # reasoning that never closed: no answer, only a leak
+    parts = THINK_END.split(ans)
+    a = TEMPLATE.sub(' ', parts[-1])
+    a = re.sub(r'^\s*ASSISTANT:\s*', '', a, flags=re.I)
+    a = STOP_AT.split(a)[0]
+    a = TAG.sub(' ', a)
+    lines = [x.strip() for x in a.split('\n') if re.search(r'\w', x)]
+    if lines and LEAK.match(lines[0]):
+        return None
+    for ln in lines:
+        if SELF_CORRECT.match(ln):
+            return ln
+    for i, ln in enumerate(lines):
+        if LEAD_IN_LINE.match(ln) or (ASIDE.match(ln) and i < len(lines) - 1):
+            continue
+        return ln
+    return None
+
+
+def fold(text):
+    return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
+
+
 def norm(ans):
-    """Reply -> one normalized token. Last alphabetic word (sentence-final answer position)
+    """Reply -> one normalized token. clean() first, then the last word (sentence-final answer position)
     handles models that ignore the clamp ('A common color is blue.' -> 'blue').
-    Junk guard: chat-template artifacts ([/INST], <tags>) and reasoning-leak essays (>15 words)
-    are treated as failed cells, NOT answers — a truncated chain-of-thought's last word would
-    otherwise read as a fake 'novel' answer (reka-flash-3 scored 4.85 on exactly this junk).
-    Bare acknowledgments ('Okay.') are failed cells too, and single-letter tokens are never
-    answers (hermes's '(kroa:ʃi.a)' otherwise yields a fake-novel 'a').
-    Verbose-but-real answers ('A common color is blue.') stay valid."""
+    Junk guard: an unclosed reasoning leak and essays (>15 words) are failed cells, NOT answers; a
+    truncated chain-of-thought's last word would otherwise read as a fake 'novel' answer (reka-flash-3
+    scored 4.85 on exactly this junk). Bare acknowledgments ('Okay.') are failed cells too, single-letter
+    tokens are never answers, and neither are function words ('the', 'let'). Accents fold (souffle);
+    '&' and letter-led digits survive (m&m, k2)."""
+    ans = clean(ans)
     if not ans:
         return None
     if JUNK.search(ans) or ACK.match(ans) or len(ans.split()) > 15:
         return None
-    a = EMOJI.sub(' ', PUNCT.sub(' ', ans.strip().lower()))
+    a = EMOJI.sub(' ', PUNCT.sub(' ', fold(ans.strip().lower())))
     words = [w for w in a.split() if WORD.match(w) and (len(w) > 1 or w.isdigit())]
-    return words[-1] if words else None
+    return words[-1] if words and words[-1] not in NOT_ANSWER else None
+
+
+# Generic head nouns per category: "<word> <head>" is one name, joined ("soysauce", "goldenretriever").
+HEADS = {"sauce": {"sauce"}, "dog_breed": {"retriever", "shepherd", "terrier", "spaniel"},
+         "toy": {"bear", "cube"}, "hat": {"hat", "cap"}, "weapon": {"weapon"}, "soup": {"soup"},
+         "reptile": {"dragon"}, "landmark": {"tower"}, "plant": {"flytrap", "lily"}}
+
+
+def compound(reply, heads):
+    """A two- or three-word answer ending in a generic head noun of its category ('Soy sauce', 'Golden
+    retriever') is one name: join it, so the last-word rule neither splits it nor merges it with others."""
+    r = clean(reply)
+    if not r:
+        return None
+    w = [x for x in PUNCT.sub(' ', fold(r.lower())).split() if x not in NOT_ANSWER]
+    if 2 <= len(w) <= 3 and w[-1] in heads and all(WORD.match(x) for x in w):
+        return ''.join(w)
+    return None
 
 
 # Each battery: its transcripts dir, its spec, and how a reply becomes a canonical answer.
@@ -82,7 +150,9 @@ def load(study_dir, battery="census"):
         d = json.loads(p.read_text())
         scenes = {}
         for sid, sc in d["scenes"].items():
-            toks = [normf(run[0].get("reply")) for run in sc["runs"] if run]
+            heads = HEADS.get(sid) if normf is norm else None
+            toks = [(heads and compound(run[0].get("reply"), heads)) or normf(run[0].get("reply"))
+                    for run in sc["runs"] if run]
             toks = [t for t in toks if t]
             if toks:
                 scenes[sid] = toks
@@ -91,15 +161,16 @@ def load(study_dir, battery="census"):
 
 
 def answers(study_dir, battery="census"):
-    """load(), then the plural merge within each category pool (cats/cat -> cat when both occur). The expanded
-    battery also merges the forms of multi-word names that norm() splits (answer_variants.json, "expanded")."""
+    """load(), the variant merge (answer_variants.json: "variants" for the census, "expanded" for the expanded
+    battery), then the plural merge within each category pool (cats/cat -> cat when both occur)."""
     ans = load(study_dir, battery)
-    if battery == "expanded":
-        var = json.loads((study_dir / "answer_variants.json").read_text())["expanded"]["variants"]
+    if battery in ("census", "expanded"):
+        var = json.loads((study_dir / "answer_variants.json").read_text())
+        var = var["variants"] if battery == "census" else var["expanded"]["variants"]
         for m in ans:
             for c in ans[m]:
-                if c in var:
-                    ans[m][c] = [var[c].get(a, a) for a in ans[m][c]]
+                if c in var:   # a variant mapped to null is a fragment, not an answer
+                    ans[m][c] = [x for x in (var[c].get(a, a) for a in ans[m][c]) if x]
     if scorer(battery)[1]:
         models = [m for m in ans if ans[m]]
         for c in {c for m in models for c in ans[m]}:

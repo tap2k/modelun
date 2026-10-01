@@ -9,7 +9,7 @@ answer_variants.json is the census's per-category variant map, kept out of the p
 import re
 import unicodedata
 
-from analyze import JUNK, ACK
+from analyze import JUNK, ACK, clean
 
 # Variant -> canonical name. Spellings and full vs. short names of one brand. Console product lines
 # merge into their family (PlayStation 5 -> playstation); iPhone stays separate from Apple.
@@ -34,6 +34,15 @@ ALIASES = {
     "ihg hotels & resorts": "ihg",
     # misspellings and variant spellings (found by a near-miss scan against each category's common answers)
     "toyoya": "toyota", "cornflakes": "corn flakes", "wal-mart": "walmart", "nintendo 64": "nintendo",
+    # from the 2026-10-01 category review (category-specific merges such as google -> google cloud are not
+    # made here: this table is global, and google is also a search engine)
+    "southwest": "southwest airlines", "united": "united airlines", "kitkat": "kit kat", "legoland usa": "legoland",
+    "visa gowns": "visa", "coca puffs": "cocoa puffs", "kellogg's frosted flakes": "frosted flakes",
+    "kellogg's corn flakes": "corn flakes", "tesla, inc": "tesla", "tesla inc": "tesla", "acme corp": "acme corporation",
+    "acme": "acme corporation", "google ai": "google", "google international": "google", "pepsident": "pepsodent",
+    "nemetron 3 ultra": "nemotron 3 ultra", "hunyuan ai assistant": "hunyuan", "casiio": "casio",
+    "corona extra": "corona", "microsoft azure": "azure", "google cloud platform": "google cloud",
+    "nintendo entertainment system": "nes", "xbox series x": "xbox", "hermèscheap name": "hermès",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
@@ -48,10 +57,15 @@ DASHES = str.maketrans({"’": "'", "‐": "-", "–": "-"})
 def brand_name(reply):
     if not reply:
         return None
-    r = unicodedata.normalize("NFKC", reply).strip().split("\n")[0]
-    r = TAG.sub("", r)
-    if JUNK.search(r) or ACK.match(r):
+    r = clean(unicodedata.normalize("NFKC", reply))          # wrappers, stop markers, last non-empty line
+    if not r or JUNK.search(r) or ACK.match(r):
         return None
+    if ":" in r and 0 < len(r.rsplit(":", 1)[1].split()) <= 5:  # "'s response:  Crest" -> "Crest"
+        r = r.rsplit(":", 1)[1]
+    r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)       # markdown and quotes before the debris cut
+    r = re.split(r"[^\w\s'&+!.,/-]", r)[0]                  # trailing debris ("Cheerios$postal...")
+    if re.search(r"[A-Za-z]", r):                            # Latin name with stray other-script tokens
+        r = " ".join(t for t in r.split() if not re.search(r"[^\x00-\u024f]", t))
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)
     r = re.sub(r"\s*\(.*?\)\s*", " ", r).strip().lower()
     r = re.sub(r"^[^\w]+|[^\w'&+!]+$", "", INVISIBLE.sub("", r)).rstrip("!").strip()
