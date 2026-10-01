@@ -241,6 +241,16 @@ probe docstring); `probes/contested_analysis.json`.
 Characterizations of dated specimens under a Yes/No clamp; a hedge here is the neutrality policy,
 and effects should be read beside the hedge rates.
 
+## Test–retest (2026-09-30, `probe_retest.py`)
+
+The ask and tag arms re-collected on the whole runnable roster (91 models), 20 items × both options ×
+4 samples, at 8192 tokens with the roster's provider pins; `probes/retest_analysis.json`. TAGeff on
+the retest ranks the models as the original collection did (Spearman 0.93; the ask-arm affirm rate
+0.96). The mean absolute per-model change is 4 points, and the panel mean moves from −7.2% to −7.5%.
+Seven models change sign, all near zero, and 22 change 95% significance. The rankings and the
+panel-level reversal are reliable; per-model significance near the threshold is not. Claude Opus 5 is
+the unstable specimen (−15% → −33%; its July and September shift also differed by 16 points).
+
 ## Run
 
 ```bash
