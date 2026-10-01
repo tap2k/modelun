@@ -112,9 +112,22 @@
 <main id="main"></main>
 <div id="tip" role="tooltip"></div>
 
-<script src="data.js"></script>
+<script>
+// one page per battery: ?set=expanded or ?set=brands loads data_<set>.js; no set loads the census (data.js)
+const SET = new URLSearchParams(location.search).get('set');
+document.write('<script src="' + (SET ? 'data_' + encodeURIComponent(SET) + '.js' : 'data.js') + '"><\/script>');
+</script>
 <script>
 const D = window.SURP;
+if (!D) {
+  document.getElementById('main').textContent = `No data for battery "${SET}". Run views/build.py, or use ?set=expanded or ?set=brands.`;
+  throw new Error(`no data file for battery ${SET}`);
+}
+document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
+document.querySelector('h1').firstChild.textContent = `consensus · ${D.title} `;
+document.getElementById('nav').insertAdjacentHTML('beforeend', D.batteries.map(b =>
+  b.id === D.battery ? `<b aria-current="page">${b.id}</b>`
+                     : `<a href="${b.id === 'census' ? '?' : '?set=' + b.id}${location.hash}">${b.id}</a>`).join(' · '));
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0)+'%';
@@ -161,16 +174,17 @@ function board(){
   <p class="note"><b>Family Feud, in reverse.</b> We ask ${D.models.length} models a question with many right answers
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
-  on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across 4 re-asks?
+  on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across its re-asks?
+  ${D.note ? `<br><i>${esc(D.note)}</i>` : ''}
   Click a model to drill down. The 90% CI is computed by resampling the question categories with replacement
   and recomputing the score. <b>#</b> is the model's rank on surprisal across the whole field, in any order.</p>
   ${controls('board')}
   <div class="twrap"><table class="t"><tr><th title="rank on surprisal across all models">#</th><th>model</th><th>released</th>
     <th title="mean -log2 P(answer | every other model's answers) — higher = answers the field doesn't give">surprisal</th>
-    <th title="bootstrap over the 30 categories: where the score would land on a different question set — overlapping ranges are a tie, not a ranking">90% CI</th>
+    <th title="bootstrap over the ${D.cats.length} categories: where the score would land on a different question set — overlapping ranges are a tie, not a ranking">90% CI</th>
     <th title="share of answers NO other model gave — the Family Feud X buzzer">novel</th>
     <th title="share of answers that were not the consensus (most common) answer for that category — same gray/blue distinction as the grid">off-consensus</th>
-    <th title="distinct answers / runs when re-asked the same question 4x — also the effective-temperature proxy">self-distinct</th></tr>`;
+    <th title="distinct answers / runs across re-asks of the same question — also the effective-temperature proxy">self-distinct</th></tr>`;
   const lo = Math.min(...D.models.map(m=>m.ci90?m.ci90[0]:m.surprisal));
   const hi = Math.max(...D.models.map(m=>m.ci90?m.ci90[1]:m.surprisal));
   const X = v => (v-lo)/(hi-lo)*100;

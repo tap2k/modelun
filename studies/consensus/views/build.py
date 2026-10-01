@@ -7,10 +7,12 @@ and the metadata-axis cuts into one blob the page draws. Self-contained: this st
 transcripts are single-turn one-word answers, so the generic arc renderer (core.js) adds
 nothing and is not copied — the view is one hash-routed index.html with no deps.
 
-    python studies/consensus/views/build.py
-    open studies/consensus/views/index.html
+    python studies/consensus/views/build.py                    # every battery in analyze.BATTERIES
+    python studies/consensus/views/build.py --battery brands   # one battery
+    open studies/consensus/views/index.html                    # census; ?set=expanded or ?set=brands for the others
 """
 
+import argparse
 import json
 import csv
 import math
@@ -23,7 +25,7 @@ import numpy as np
 VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
 sys.path.insert(0, str(STUDY))
-from analyze import load, analyze  # noqa: E402
+from analyze import BATTERIES, answers, analyze  # noqa: E402
 
 # chronological order within lineages, for the generation-walk view (release order,
 # maintained by hand — models.json carries no generation field)
@@ -66,25 +68,23 @@ def release_dates():
     return out
 
 
-def main():
-    result = analyze(STUDY)
+TITLES = {"census": "one-word census", "expanded": "expanded battery", "brands": "brand battery"}
+NOTES = {"brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
+                   "the endpoint allows it; reasoning-only models ran at their default. For the five hybrid models whose "
+                   "answers change with reasoning, transcripts-brands-default/ holds the default-reasoning run."}
+
+
+def build(battery):
+    ans = answers(STUDY, battery)
+    result = analyze(STUDY, battery, ans=ans)
     pm, pc = result["per_model"], result["per_category"]
 
     # the actual prompt text per category (the clean question, sans one-word clamp)
-    stim = json.loads((STUDY / "spec" / "stimulus.json").read_text())
+    stim = json.loads((STUDY / "spec" / BATTERIES[battery][1]).read_text())
     prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in stim["scenes"]}
 
-    ans = load(STUDY)
     models = [m for m in sorted(pm, key=lambda x: -pm[x]["surprisal"]) if m in ans]
     cats = sorted(pc, key=lambda c: -pc[c]["modal_share"])
-
-    # plural merge, same as analyze
-    for c in cats:
-        pool = Counter(a for m in models for a in ans[m].get(c, []))
-        stems = {w: w[:-1] for w in pool if w.endswith("s") and w[:-1] in pool}
-        for m in models:
-            if c in ans[m]:
-                ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
 
     # grid cells + per-model-per-category surprisal
     grid, cat_surp = {}, {}
@@ -141,6 +141,8 @@ def main():
     slug = {r["label"]: r["slug"] for r in json.loads((STUDY / "spec" / "models.json").read_text())["models"]}
     dates = release_dates()
     blob = {
+        "battery": battery, "title": TITLES.get(battery, battery), "note": NOTES.get(battery),
+        "batteries": [{"id": b, "title": TITLES.get(b, b)} for b in BATTERIES],
         "models": [{"label": m, "vendor": VENDOR.get(slug.get(m, "").split("/")[0], slug.get(m, "").split("/")[0]),
                     "released": dates.get(m), **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",
@@ -153,10 +155,18 @@ def main():
         "dists": dists,
         "axes": axes,
     }
-    out = VIEWS / "data.js"
+    out = VIEWS / ("data.js" if battery == "census" else f"data_{battery}.js")
     out.write_text("window.SURP = " + json.dumps(blob) + ";\n")
     print(f"wrote {out}  ({len(models)} models, {len(cats)} categories, {out.stat().st_size // 1024}KB)")
-    print(f"open {VIEWS / 'index.html'} in a browser")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Build the consensus review site's data files")
+    ap.add_argument("--battery", choices=BATTERIES, help="one battery (default: all)")
+    battery = ap.parse_args().battery
+    for b in [battery] if battery else BATTERIES:
+        build(b)
+    print(f"open {VIEWS / 'index.html'} in a browser (?set=expanded, ?set=brands)")
 
 
 if __name__ == "__main__":

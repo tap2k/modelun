@@ -50,6 +50,19 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
   (v3-0324 → v3.2 → v4-flash, + r1) is a deliberate sub-experiment: v3.2 was the pilot's lone genuine
   outlier (25% novel) — is the explorer property lineage-stable or version-specific?
 
+Other batteries, each with its own spec, transcripts and scoring (`analyze.BATTERIES`):
+
+- **Expanded** ([`spec/stimulus_expanded.json`](spec/stimulus_expanded.json), `transcripts-expanded/`): 65
+  more categories, 8 runs, scored like the census.
+- **Brands** ([`spec/stimulus_brands.json`](spec/stimulus_brands.json), `transcripts-brands/`): 37 brand
+  categories ("Name a soda brand. Reply with the name only."), 8 runs, reasoning off where the endpoint
+  allows it. Scored by whole name with variant merging ([`brands.py`](brands.py)), not by last word.
+  `transcripts-brands-default/` holds the five hybrid reasoning models at their default reasoning.
+- **The census at other settings**: `transcripts-reasoning-off/` (8 runs, reasoning off) and
+  `transcripts-extra/` (4 more runs at default) use the frozen 31-category spec.
+
+The newer batteries cover 91 of the 94 census models; three have no OpenRouter endpoint any more.
+
 ## Waves
 
 - **Wave 1 (July 2026, 44 models)** — the arXiv panel; pinned at tag `consensus-arxiv-v2`.
@@ -179,6 +192,10 @@ cat spec/models.txt | xargs -P 8 -I{} python ../../harness/run.py --study . --ru
 
 # analyze: transcripts -> analysis.json + ranked scorecard on stdout
 python analyze.py
+python analyze.py --battery brands    # -> analysis_brands.json (also: expanded)
+
+# review site: one page per battery (index.html, ?set=expanded, ?set=brands)
+python views/build.py
 ```
 
 Known limits: temperature=1.0 is sent to every model but **not honored uniformly**, and providers don't

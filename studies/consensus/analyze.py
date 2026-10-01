@@ -59,14 +59,30 @@ def norm(ans):
     return words[-1] if words else None
 
 
-def load(study_dir):
-    """transcripts/*.json (Contract A) -> {label: {scene_id: [normalized answer per run]}}"""
+# Each battery: its transcripts dir, its spec, and how a reply becomes a canonical answer.
+BATTERIES = {"census": ("transcripts", "stimulus.json"),
+             "expanded": ("transcripts-expanded", "stimulus_expanded.json"),
+             "brands": ("transcripts-brands", "stimulus_brands.json")}
+
+
+def scorer(battery):
+    """(reply -> answer, plural_merge). Brands score whole names (brands.brand_name), whose alias table
+    does the variant merging, so the census's one-word plural merge does not run on them."""
+    if battery == "brands":
+        from brands import brand_name
+        return brand_name, False
+    return norm, True
+
+
+def load(study_dir, battery="census"):
+    """<battery transcripts>/*.json (Contract A) -> {label: {scene_id: [answer per run]}}"""
+    normf, _ = scorer(battery)
     out = {}
-    for p in sorted((study_dir / "transcripts").glob("*.json")):
+    for p in sorted((study_dir / BATTERIES[battery][0]).glob("*.json")):
         d = json.loads(p.read_text())
         scenes = {}
         for sid, sc in d["scenes"].items():
-            toks = [norm(run[0].get("reply")) for run in sc["runs"] if run]
+            toks = [normf(run[0].get("reply")) for run in sc["runs"] if run]
             toks = [t for t in toks if t]
             if toks:
                 scenes[sid] = toks
@@ -74,18 +90,25 @@ def load(study_dir):
     return out
 
 
-def analyze(study_dir):
-    ans = load(study_dir)
+def answers(study_dir, battery="census"):
+    """load(), then the plural merge within each category pool (cats/cat -> cat when both occur)."""
+    ans = load(study_dir, battery)
+    if scorer(battery)[1]:
+        models = [m for m in ans if ans[m]]
+        for c in {c for m in models for c in ans[m]}:
+            pool = Counter(a for m in models for a in ans[m].get(c, []))
+            stems = {w: w[:-1] for w in pool if w.endswith('s') and w[:-1] in pool}
+            for m in models:
+                if c in ans[m]:
+                    ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
+    return ans
+
+
+def analyze(study_dir, battery="census", ans=None):
+    """ans: answers(study_dir, battery), when the caller already has it."""
+    ans = ans if ans is not None else answers(study_dir, battery)
     models = sorted(m for m in ans if ans[m])
     cats = sorted({c for m in models for c in ans[m]})
-
-    # plural merge within each category pool (cats/cat -> cat when both occur)
-    for c in cats:
-        pool = Counter(a for m in models for a in ans[m].get(c, []))
-        stems = {w: w[:-1] for w in pool if w.endswith('s') and w[:-1] in pool}
-        for m in models:
-            if c in ans[m]:
-                ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
 
     per_model, per_cat_surp = {}, {m: {} for m in models}  # per-answer surprisals by category
     for m in models:
@@ -160,11 +183,13 @@ def analyze(study_dir):
 def main():
     ap = argparse.ArgumentParser(description="Surprisal analysis: transcripts -> analysis.json")
     ap.add_argument("--study", default=str(Path(__file__).resolve().parent))
+    ap.add_argument("--battery", choices=BATTERIES, default="census",
+                    help="census writes analysis.json; another battery writes analysis_<battery>.json")
     args = ap.parse_args()
     study_dir = Path(args.study)
 
-    result = analyze(study_dir)
-    out = study_dir / "analysis.json"
+    result = analyze(study_dir, args.battery)
+    out = study_dir / ("analysis.json" if args.battery == "census" else f"analysis_{args.battery}.json")
     out.write_text(json.dumps(result, indent=1) + "\n")
     print(f"→ {out}  ({result['n_models']} models × {result['n_categories']} categories)\n")
 
