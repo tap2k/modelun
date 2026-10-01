@@ -142,7 +142,6 @@ def build(battery):
     dates = release_dates()
     blob = {
         "battery": battery, "title": TITLES.get(battery, battery), "note": NOTES.get(battery),
-        "batteries": [{"id": b, "title": TITLES.get(b, b)} for b in BATTERIES],
         "models": [{"label": m, "vendor": VENDOR.get(slug.get(m, "").split("/")[0], slug.get(m, "").split("/")[0]),
                     "released": dates.get(m), **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",

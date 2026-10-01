@@ -125,9 +125,6 @@ if (!D) {
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
 document.querySelector('h1').firstChild.textContent = `consensus · ${D.title} `;
-document.getElementById('nav').insertAdjacentHTML('beforeend', D.batteries.map(b =>
-  b.id === D.battery ? `<b aria-current="page">${b.id}</b>`
-                     : `<a href="${b.id === 'census' ? '?' : '?set=' + b.id}${location.hash}">${b.id}</a>`).join(' · '));
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0)+'%';
