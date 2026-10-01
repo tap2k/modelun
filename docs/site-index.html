@@ -17,6 +17,9 @@
   .study h2{margin:0 0 5px;font-size:17px}
   .study p{margin:0;color:var(--mut);font-size:13.5px}
   .study .go{color:var(--acc);font-size:13px;margin-top:8px}
+  .sec{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin:30px 0 10px;font-weight:650}
+  .sec .what{text-transform:none;letter-spacing:0;font-weight:400;margin-left:8px}
+  .study h3{margin:0 0 5px;font-size:16px}
   footer{color:var(--mut);font-size:12.5px;margin-top:28px}
   footer code{background:var(--panel2);padding:1px 6px;border-radius:4px}
 </style>
@@ -26,44 +29,53 @@
   <h1>modelun</h1>
   <p class="tag">A small harness for generating, labeling and viewing model transcripts. Each study runs one stimulus (single or multi turn) across several models.</p>
 
+  <h2 class="sec">conduct <span class="what">does a model hold its position under pressure?</span></h2>
   <a class="study" href="conduct/">
-    <h2>conduct — sixty models under pressure</h2>
+    <h3>sixty models under pressure</h3>
     <p>Whether a model holds its position when a user pushes, and how it holds: one measure per model under codebook v2, with every transcript, the scenes that produced it, and the codes six LLM coders applied.</p>
     <div class="go">Open the study →</div>
   </a>
 
+  <h2 class="sec">consensus <span class="what">which models give answers the rest don't?</span></h2>
   <a class="study" href="consensus/">
-    <h2>consensus — which models give answers the rest don't?</h2>
+    <h3>the one-word census</h3>
     <p>94 models × 31 one-word prompts ("Name a color"). A per-model uniqueness scorecard — answer-choice surprisal against the field's distribution — with a models × answers grid and per-model and per-category drill-downs.</p>
     <div class="go">Open the scorecard →</div>
   </a>
-
-  <a class="study" href="consensus/?set=expanded">
-    <h2>consensus — the expanded battery</h2>
+  <a class="study" href="consensus/index.html?set=expanded">
+    <h3>the expanded battery</h3>
     <p>The census and 65 more one-word categories, 96 in all, scored the same way. The same scorecard and grid over the larger question set.</p>
     <div class="go">Open the expanded battery →</div>
   </a>
-
-  <a class="study" href="consensus/?set=brands">
-    <h2>consensus — brands</h2>
+  <a class="study" href="consensus/index.html?set=brands">
+    <h3>brands</h3>
     <p>Name a coffee chain, a search engine, a sneaker brand: which brands the field converges on across 37 categories, scored by whole brand name with variants merged.</p>
     <div class="go">Open the brand battery →</div>
   </a>
-
+  <a class="study" href="language/">
+    <h3>languages</h3>
+    <p>"Pick a word" in 37 languages across 94 models: each language's favorite word, how much of the field agrees on it, and how rare it is. English collapses on one rare word (serendipity); the other languages spread across common words.</p>
+    <div class="go">Open the languages →</div>
+  </a>
   <a class="study" href="structured/">
-    <h2>structured — ask for JSON, lose the mustard</h2>
+    <h3>ask for JSON, lose the mustard</h3>
     <p>The census re-run with one change: "Reply with JSON only." The field converges harder, the distinctive models lose the most, and serialization formats (JSON, XML, YAML, CSV) all do it while bare brackets don't. Plain-vs-JSON scorecard with per-model drill-downs.</p>
     <div class="go">Open the comparison →</div>
   </a>
-
-  <a class="study" href="suggestibility/">
-    <h2>suggestibility — the "right?" reflex</h2>
-    <p>Add one word to a question — "right?" — and a model's answer changes. On 20 decisions with no correct answer, the response to that bid for agreement flips from sycophantic to resistant across model generations (with DeepSeek the lone holdout). TAGeff scorecard, per-family lineage flips, and per-decision drill-downs.</p>
-    <div class="go">Open the scorecard →</div>
+  <a class="study" href="convergence/">
+    <h3>open answers, unscored</h3>
+    <p>Open-ended prompts ("Tell me a joke", "Write a haiku") put to every model, shown side by side with no scores. The census's precursor: its similarity measures were walked back, so the reader judges convergence by eye.</p>
+    <div class="go">Read the answers →</div>
   </a>
 
+  <h2 class="sec">suggestibility <span class="what">does the way you ask move the answer?</span></h2>
+  <a class="study" href="suggestibility/">
+    <h3>the "right?" reflex</h3>
+    <p>Add one word to a question — "right?" — and a model's answer changes. On 20 decisions with no correct answer, older models agree more under the tag and newer ones resist it. TAGeff scorecard for 94 models, per-family lineages, and per-decision drill-downs.</p>
+    <div class="go">Open the scorecard →</div>
+  </a>
   <a class="study" href="suggestibility/contested.html">
-    <h2>suggestibility — contested questions</h2>
+    <h3>contested questions</h3>
     <p>The same claim on 18 contested questions (Hiroshima, geoengineering, abortion), asked four ways. A confirmation tag ("…, right?") lowers agreement and a stated belief ("I think …") raises it, on the same items. Scorecard, models × items grid, and every reply.</p>
     <div class="go">Open the contested questions →</div>
   </a>
