@@ -25,7 +25,7 @@ import numpy as np
 VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
 sys.path.insert(0, str(STUDY))
-from analyze import BATTERIES, answers, analyze  # noqa: E402
+from analyze import BATTERIES, COMBINED, answers, analyze  # noqa: E402
 
 # chronological order within lineages, for the generation-walk view (release order,
 # maintained by hand — models.json carries no generation field)
@@ -68,20 +68,26 @@ def release_dates():
     return out
 
 
-TITLES = {"census": "one-word census", "expanded": "expanded battery", "brands": "brand battery"}
-NOTES = {"brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
+TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery"}
+SOURCE = {"expanded": "combined"}   # the expanded page shows the census and the expanded battery together
+NOTES = {"expanded": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
+                     "battery, same template and scoring. Three models whose endpoints are gone (Claude 3 Haiku, Granite "
+                     "4.1 8B, Hermes 4 70B) have census categories only.",
+         "brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
                    "the endpoint allows it; reasoning-only models ran at their default. For the five hybrid models whose "
                    "answers change with reasoning, transcripts-brands-default/ holds the default-reasoning run."}
 
 
 def build(battery):
-    ans = answers(STUDY, battery)
-    result = analyze(STUDY, battery, ans=ans)
+    src = SOURCE.get(battery, battery)
+    ans = answers(STUDY, src)
+    result = analyze(STUDY, src, ans=ans)
     pm, pc = result["per_model"], result["per_category"]
 
     # the actual prompt text per category (the clean question, sans one-word clamp)
-    stim = json.loads((STUDY / "spec" / BATTERIES[battery][1]).read_text())
-    prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in stim["scenes"]}
+    specs = [BATTERIES[b][1] for b in (COMBINED if src == "combined" else (battery,))]
+    prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip()
+               for f in specs for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]}
 
     models = [m for m in sorted(pm, key=lambda x: -pm[x]["surprisal"]) if m in ans]
     cats = sorted(pc, key=lambda c: -pc[c]["modal_share"])

@@ -160,9 +160,18 @@ def load(study_dir, battery="census"):
     return out
 
 
+COMBINED = ("census", "expanded")   # same template and scoring: together, one 96-category census
+
+
 def answers(study_dir, battery="census"):
     """load(), the variant merge (answer_variants.json: "variants" for the census, "expanded" for the expanded
     battery), then the plural merge within each category pool (cats/cat -> cat when both occur)."""
+    if battery == "combined":
+        out = {}
+        for b in COMBINED:
+            for m, cats in answers(study_dir, b).items():
+                out.setdefault(m, {}).update(cats)
+        return out
     ans = load(study_dir, battery)
     if battery in ("census", "expanded"):
         var = json.loads((study_dir / "answer_variants.json").read_text())

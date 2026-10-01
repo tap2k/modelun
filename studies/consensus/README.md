@@ -194,7 +194,7 @@ cat spec/models.txt | xargs -P 8 -I{} python ../../harness/run.py --study . --ru
 python analyze.py
 python analyze.py --battery brands    # -> analysis_brands.json (also: expanded)
 
-# review site: one page per battery (index.html, ?set=expanded, ?set=brands)
+# review site: index.html (census), ?set=expanded (census + expanded, 96 categories), ?set=brands
 python views/build.py
 ```
 
