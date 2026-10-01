@@ -103,6 +103,7 @@
 <body>
 <header>
   <h1>consensus <span class="sub">— which models give answers the field doesn't?</span></h1>
+  <span class="sets" id="sets"></span>
   <nav id="nav">
     <a href="#board" data-v="board">scorecard</a>
     <a href="#grid" data-v="grid">grid</a>
@@ -126,7 +127,8 @@ if (!D) {
   throw new Error(`no data file for battery ${SET}`);
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
-document.querySelector('h1').firstChild.textContent = `consensus · ${D.title} `;
+document.getElementById('sets').innerHTML = [["", "census"], ["expanded", "expanded"], ["brands", "brands"]]
+  .map(([k, label]) => `<a class="${(SET || "") === k ? "on" : ""}" href="${k ? "?set=" + k : "./"}">${label}</a>`).join("");
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0)+'%';

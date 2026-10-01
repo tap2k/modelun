@@ -34,6 +34,7 @@
 <body>
 <header>
   <h1>suggestibility <span class="sub">— the “right?” reflex</span></h1>
+  <span class="sets"><a class="on" href="index.html">“right?” reflex</a><a href="contested.html">contested</a></span>
   <nav id="nav"></nav>
   <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/suggestibility" target="_blank" rel="noopener">source ↗</a>
 </header>
@@ -58,8 +59,7 @@ function nav(cur){
   const tabs = [["#/","scorecard"],["#/lineages","lineages"],["#/confidence","confidence"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
-    (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "") +
-    `<a href="contested.html">contested ↗</a>`;
+    (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
   document.querySelector("main").classList.toggle("full", cur === "#/lineages");
 }
 
