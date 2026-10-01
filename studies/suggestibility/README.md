@@ -252,6 +252,21 @@ TAGeff −7.0%. The taste-vs-consequential difference does not survive a test: �
 direction. v1's "stronger where the stakes are real" should be dropped; the contested probe's
 history-to-partisan gradient is the stakes result that holds.
 
+## Label swap (2026-10-01, `probe_labelswap.py`)
+
+Is the tag effect a "No"-token artifact? The ask and tag arms re-asked on the 91 runnable models with
+the answer as a letter whose meaning is counterbalanced (half the samples "A means Yes, B means No",
+half the reverse), so the word No is never the answer; `probes/labelswap_analysis.json`. Models
+follow the letters (median compliance 98%) and the meaning: they answer A 58% of the time when A
+means Yes and 35% when A means No. All 43 Yes/No resisters stay negative (42 in both label orders;
+41 of 41 over answered replies), and 51 models have a 95% interval below zero. The panel mean grows
+more negative: −11.4% with letters (−12.7% answered-only) against −7.2% under Yes/No, and −10.2% /
+−12.5% by label order. The positive pole shrinks: of 12 Yes/No sycophants, 8 stay above zero and
+several fall to about zero (MythoMax +32% → +4%, Qwen 2.5 72B +16% → 0%, Mistral Nemo +14% → −8%),
+so part of the older models' agreement under Yes/No was a Yes habit. Rankings agree across formats
+at Spearman 0.78. Claude and Gemini models often decline the letter format (Gemini 3.5 Flash 1%
+compliance, Fable 5.1 52%); those replies are hedges in both arms, and the answered-only numbers hold.
+
 ## Test–retest (2026-09-30, `probe_retest.py`)
 
 The ask and tag arms re-collected on the whole runnable roster (91 models), 20 items × both options ×
