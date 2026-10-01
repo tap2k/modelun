@@ -32,6 +32,8 @@ ALIASES = {
     "colgate-palmolive": "colgate", "cheerios cereal": "cheerios", "tesla motors": "tesla",
     "hermes": "hermès", "hilton hotels & resorts": "hilton", "jpmorgan chase & co": "chase",
     "ihg hotels & resorts": "ihg",
+    # misspellings and variant spellings (found by a near-miss scan against each category's common answers)
+    "toyoya": "toyota", "cornflakes": "corn flakes", "wal-mart": "walmart", "nintendo 64": "nintendo",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
