@@ -14,7 +14,7 @@ from analyze import JUNK, ACK, clean
 # Variant -> canonical name. Spellings and full vs. short names of one brand. Console product lines
 # merge into their family (PlayStation 5 -> playstation); iPhone stays separate from Apple.
 ALIASES = {
-    "coke": "coca-cola", "coca cola": "coca-cola", "cocacola": "coca-cola",
+    "coke": "coca-cola", "coca cola": "coca-cola", "cocacola": "coca-cola", "iphone": "apple",
     "mcdonalds": "mcdonald's", "mc donald's": "mcdonald's",
     "lays": "lay's", "hersheys": "hershey's", "hershey": "hershey's", "kelloggs": "kellogg's", "kellogg": "kellogg's",
     "amazon web services": "aws",
