@@ -2,7 +2,7 @@
 
 Writes one JSON file: a simplified grid (key categories x one flagship model per lab), each category's top
 brands across the whole panel, top-brand shares by release half-year, and one open model's training ladder
-(OLMo 3.1 32B, base/SFT/DPO/RL) for "name a brand". Scoring is analyze.answers(study, "brands") (whole-name,
+(OLMo 3.1 32B, base/SFT/DPO/RL, no system prompt) for "name a brand". Scoring is analyze.answers(study, "brands") (whole-name,
 brands.py); release dates come from views/build.release_dates().
 
     ../../.venv/bin/python export_brands_site.py OUT.json
@@ -26,8 +26,8 @@ MODELS = [("OpenAI", "gpt-6.1-sol"), ("Anthropic", "claude-opus-5.5"), ("Google"
           ("Alibaba", "qwen3.8-2.4t-a95b"), ("Mistral", "mistral-small-2603"),
           ("NVIDIA", "nemotron-3-ultra-550b-a55b"), ("Moonshot", "kimi-k3"), ("Z.ai", "glm-5.3")]
 TREND_CATS = ["ai_assistant", "running_shoe", "hotel", "payment_app", "smartphone", "soda"]
-LADDER = HERE / "probes" / "olmo_census_32b_expanded"   # Contract A, one file per stage
-STAGES = ["base", "sft", "dpo", "rl"]
+LADDER = HERE / "probes" / "brands_ladder_32b"   # probe_brands_ladder.py; the weights alone, no system prompt
+STAGES = [("base", "raw"), ("sft", "nosys"), ("dpo", "nosys"), ("rl", "nosys")]
 
 
 def half(d):
@@ -65,16 +65,16 @@ def main(out):
                      "bins": [{"bin": b, "models": sum(1 for m in ans if m in dates and dates[m] and half(dates[m]) == b and c in ans[m]),
                                "answers": len(v), "share": {t: round(v.count(t) / len(v), 3) for t in top}}
                               for b, v in sorted(bins.items()) if b >= "2024 H1"]}
-    stages = {t["stage"]: t["scenes"] for t in (json.loads(f.read_text()) for f in LADDER.glob("*.json"))}
+    stages = {(t["stage"], t["framing"]): t["scenes"] for t in (json.loads(f.read_text()) for f in LADDER.glob("*.json"))}
     panel = Counter(x for m in ans.values() for x in m.get("brand", []))   # ties break toward brands the panel names
     ladder = []
-    for st in STAGES:
-        replies = [run[-1]["reply"] for run in stages[st]["brand"]["runs"]]
+    for st, framing in STAGES:
+        replies = [run[-1]["reply"] for run in stages[st, framing]["brand"]["runs"]]
         cnt = Counter(x for x in map(brand_name, replies) if x)
         top = sorted(cnt.items(), key=lambda kv: (-kv[1], -panel.get(kv[0], 0), kv[0]))[:6]
         ladder.append({"stage": st, "n": len(replies), "top": top})
     meta = {"panel_models": len(ans), "categories": len(field), "answers_per_model": 8,
-            "spec": "1.0-brands", "ladder_model": "OLMo 3.1 32B (8-bit), 20 samples per stage"}
+            "spec": "1.0-brands", "ladder_model": "OLMo 3.1 32B (8-bit), 20 samples per stage, no system prompt"}
     Path(out).write_text(json.dumps({"meta": meta, "cats": CATS, "grid": grid, "field": field,
                                      "trends": trends, "ladder": ladder}, indent=1, ensure_ascii=False))
     print(f"wrote {out}")
