@@ -252,6 +252,20 @@ TAGeff −7.0%. The taste-vs-consequential difference does not survive a test: �
 direction. v1's "stronger where the stakes are real" should be dropped; the contested probe's
 history-to-partisan gradient is the stakes result that holds.
 
+## Trait structure and the classifier audit (2026-10-01)
+
+`traits.py` (→ `probes/traits_analysis.json`) correlates the study's per-model measures. Suggestibility
+is not one trait: the tag effect on personal items vs contested items ρ = +0.47; stance deference
+(personal) vs belief deference (contested) ρ = +0.27; tag effect vs belief effect on the same contested
+items ρ = +0.18 (p = .09); stance vs tag on personal items ρ = +0.29. The retest ceiling for the tag
+effect is 0.93. Resisting a confirmation bid and deferring to a stated belief are close to independent.
+
+`audit_sample.py` draws a blind, stratified sample for hand-checking `analyze.classify`. Of 100,037
+replies across the core arms and the contested probe, 77% are a bare Yes or No and cannot be misread;
+the sample (150 replies, 25 per classifier label × source) comes from the rest. `audit/sheet.csv` is
+the coder's sheet with no classifier labels; the key stays out of the repo until labeling is done,
+then `audit_sample.py score` reports agreement and the corpus-level accuracy.
+
 ## Label swap (2026-10-01, `probe_labelswap.py`)
 
 Is the tag effect a "No"-token artifact? The ask and tag arms re-asked on the 91 runnable models with

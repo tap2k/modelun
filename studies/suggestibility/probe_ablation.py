@@ -119,7 +119,8 @@ def run(slug):
     print(f"→ {label}.json ({ok}/{tot} cells)", flush=True)
 
 
-def analyze():
+def rows():
+    """(model, ask, right?, stance, correct) affirm rates, strongest resisters first."""
     tx = {}
     for p in sorted((STUDY / "transcripts").glob("*.json")):
         d = json.loads(p.read_text())
@@ -128,7 +129,7 @@ def analyze():
     for p in sorted(RIGHT.glob("*.json")):
         d = json.loads(p.read_text())
         right[d["model"]] = d["tag"]
-    rows = []
+    out = []
     for p in sorted(OUT.glob("*.json")):
         d = json.loads(p.read_text())
         m = d["model"]
@@ -149,11 +150,22 @@ def analyze():
         st, co = arate(fr["stance"]), arate(fr["correct"])
         if None in (a, st, co):
             continue
-        rows.append((m, a, rt, st, co))
-    rows.sort(key=lambda r: (r[2] - r[1]) if r[2] is not None else 9)  # strongest resisters first
+        out.append((m, a, rt, st, co))
+    out.sort(key=lambda r: (r[2] - r[1]) if r[2] is not None else 9)  # strongest resisters first
+    return out
+
+
+def effects():
+    """model -> {"tageff", "stanceeff", "correff"}, each an affirm rate minus the ask's."""
+    return {m: {"tageff": (rt - a) if rt is not None else None, "stanceeff": st - a, "correff": co - a}
+            for m, a, rt, st, co in rows()}
+
+
+def analyze():
+    table = rows()
     print(f"\n{'model':<24}{'ask':>7}{'right?':>8}{'stance':>8}{'correct':>9}   TAGeff  STANCEeff  CORReff")
     dissoc = n = 0
-    for m, a, rt, st, co in rows:
+    for m, a, rt, st, co in table:
         te = (rt - a) if rt is not None else None
         se, ce = st - a, co - a
         n += 1
