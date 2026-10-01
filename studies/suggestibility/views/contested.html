@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>suggestibility — contested questions</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --txt:#e6e8ee; --mut:#9aa3b2;
+    --acc:#6ea8fe; --res:#6ea8fe; --syc:#e0705f; --amber:#e0a33e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px;font-weight:400}
+  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent;cursor:pointer}
+  nav a:hover{color:var(--txt);background:var(--panel2);text-decoration:none}
+  nav a.cur{color:var(--txt);background:var(--panel2);border-color:var(--line)}
+  header .src{color:var(--mut);font-size:13px;padding:6px 4px;white-space:nowrap}
+  main{padding:20px 22px;max-width:1180px}
+  main.full{max-width:none}
+  h2{font-size:19px;margin:0 0 10px} h3{font-size:15px;margin:22px 0 6px}
+  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:95ch}
+  .note b{color:var(--txt)}
+  table{border-collapse:collapse;font-size:13px;width:100%}
+  th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:47px;background:var(--bg);z-index:2}
+  tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
+  .track{position:relative;display:inline-block;width:200px;height:15px;vertical-align:middle}
+  .track:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line)}
+  .bar2{position:absolute;top:2.5px;height:10px;border-radius:2px}
+  .bar2.pos{left:50%;background:var(--syc)} .bar2.neg{right:50%;background:var(--res)}
+  .ci{position:absolute;top:6.5px;height:1px;background:var(--mut);opacity:.6}
+  .val{font-variant-numeric:tabular-nums;font-weight:600} .val.pos{color:var(--syc)} .val.neg{color:var(--res)}
+  .mut{color:var(--mut)} .num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tagm{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
+  .stm{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;border-radius:5px;padding:0 6px;border:1px solid var(--line);color:var(--mut)}
+  .stm.history{color:#b39ddb;border-color:#5b4e7a} .stm.policy{color:#4fd1a5;border-color:#2c6b57} .stm.hot{color:var(--amber);border-color:#7a5a24}
+  .pill{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:11.5px;color:var(--mut);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
+  .pill.affirm{border-color:var(--syc);color:var(--syc)} .pill.reject{border-color:var(--res);color:var(--res)}
+  .pill.hedge{opacity:.75} .pill.fail{opacity:.4;text-decoration:line-through}
+  .rate{display:inline-block;width:40px;font-variant-numeric:tabular-nums;font-weight:600}
+  .filt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12.5px;color:var(--mut)}
+  .filt a{color:var(--mut);padding:3px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+  .filt a.cur{color:var(--txt);background:var(--panel2)}
+  .filt select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin:0 0 14px}
+  .card .claim{font-size:14.5px;font-weight:600;margin:4px 0 2px}
+  .prompts{display:grid;grid-template-columns:130px 1fr 1fr;gap:4px 14px;font-size:12.5px;margin-top:8px}
+  .prompts .k{color:var(--mut)} .prompts code{white-space:normal}
+  code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+  .wide{overflow-x:auto}
+  .eff{font-size:12px;color:var(--mut);margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>contested questions <span class="sub">— confirm vs believe</span></h1>
+  <nav id="nav"></nav>
+  <a class="src" href="index.html">← the “right?” reflex</a>
+</header>
+<main>
+<div id="view"></div>
+</main>
+<script src="data_contested.js"></script>
+<script>
+const $ = (h) => { document.getElementById("view").innerHTML = h; };
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = (x) => x == null ? "–" : (x>=0?"+":"") + Math.round(x*100) + "%";
+const pc0 = (x) => x == null ? "–" : Math.round(x*100) + "%";
+const sgn = (v) => v == null ? "–" : `<span class="val ${v<-0.005?'neg':(v>0.005?'pos':'')}">${pct(v)}</span>`;
+const STRAT = {history: "history", policy: "policy", hot: "partisan"};
+const stm = (s) => `<span class="stm ${s}">${STRAT[s]}</span>`;
+const LABEL = {ask: "question", tag: "…, right?", bare: "bare claim", belief: "I think …", belief_q: "I think … + question"};
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const ITEM = Object.fromEntries(C.items.map(it => [it.id, it]));
+const SC = 230;
+let F = {stratum: "all", vendor: "all"};
+
+function nav(cur, extra){
+  const tabs = [["#/","models"],["#/items","items"],["#/about","method"]];
+  document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
+    `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") + (extra ? `<a class="cur">${esc(extra)}</a>` : "");
+  document.querySelector("main").classList.toggle("full", cur === "#/item" || cur === "#/m");
+}
+
+function bar(v, lo, hi){
+  const w = Math.abs(v) * SC;
+  const ci = (lo != null && hi != null) ? `<span class="ci" style="left:${100 + Math.min(lo,hi)*SC}px;width:${Math.abs(hi-lo)*SC}px"></span>` : "";
+  return `<span class="track"><span class="bar2 ${v<0?'neg':'pos'}" style="width:${Math.min(w,100)}px"></span>${ci}</span>`;
+}
+
+// Yes rate over a cell's replies (failed calls excluded), and per-item effects for a model.
+const yes = (arr) => { const a = (arr||[]).filter(x => x.c !== "fail"); return a.length ? a.filter(x => x.c === "affirm").length / a.length : null; };
+const hedge = (arr) => { const a = (arr||[]).filter(x => x.c !== "fail"); return a.length ? a.filter(x => x.c === "hedge").length / a.length : null; };
+function itemEff(m, id, arm){
+  const c = C.models[m].items[id]; if (!c) return null;
+  const e = ["x","y"].map(s => { const a = yes(c["ask_"+s]), b = yes(c[arm+"_"+s]); return (a==null||b==null) ? null : b - a; }).filter(x => x != null);
+  return e.length ? e.reduce((p,q)=>p+q,0)/e.length : null;
+}
+const avg = (xs) => { const v = xs.filter(x => x != null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; };
+
+function models(){
+  nav("#/");
+  const st = F.stratum, k = (b) => st === "all" ? b : `${b}_${st}`;
+  const ms = C.order.filter(l => F.vendor === "all" || C.models[l].vendor === F.vendor);
+  const rows = ms.map(l => {
+    const m = C.models[l], v = m[k("tageff")];
+    const ci = st === "all" && m.tageff_ci90 ? m.tageff_ci90 : [null, null];
+    return `<tr class="rowlink" onclick="location.hash='#/m/${l}'">
+      <td>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></td>
+      <td>${v == null ? "" : bar(v, ci[0], ci[1])}</td>
+      <td class="num">${sgn(v)}</td><td class="num">${sgn(m[k("bareeff")])}</td><td class="num">${sgn(m[k("beliefeff")])}</td>
+      <td class="num mut">${pc0(m[k("hedge_ask")])}</td><td class="mut">${m.via === "-" ? "" : (m.via === "No" ? "says No" : "declines")}</td></tr>`;
+  }).join("");
+  const mean = (f) => avg(ms.map(l => C.models[l][f]));
+  const sb = ["all", ...C.meta.strata].map(x => `<a class="${x===st?'cur':''}" onclick="F.stratum='${x}';models()">${x === "all" ? "all" : STRAT[x]}</a>`).join("");
+  const vs = `<select onchange="F.vendor=this.value;models()">${["all", ...C.meta.vendors].map(v => `<option ${v===F.vendor?'selected':''}>${v}</option>`).join("")}</select>`;
+  $(`<h2>models</h2>
+  <p class="note">Each effect is the change in the share of Yes against the plain question, counterbalanced over each
+  claim and its mirror. The <b>tag</b> (“…, right?”) asks the model to confirm; <b>bare</b> states the claim with no
+  speaker; <b>belief</b> (“I think …”) states it as the user's view. Across the panel the tag lowers agreement and the
+  belief raises it. <b>hedge</b> is the share of plain questions answered with neither Yes nor No. <b>resists</b> says
+  whether a model's drop under the tag comes as a No or as a refusal. Bars show the tag effect with its 90% interval.
+  Click a model for its replies; the <a href="#/items">items</a> tab shows each question across models.</p>
+  <div class="filt">stratum ${sb} &nbsp; vendor ${vs} &nbsp; <span>${ms.length} models · mean tag ${sgn(mean(k("tageff")))},
+  bare ${sgn(mean(k("bareeff")))}, belief ${sgn(mean(k("beliefeff")))}</span></div>
+  <div class="wide"><table>
+    <tr><th>model</th><th><span style="color:var(--res)">◀ resists</span> tag <span style="color:var(--syc)">agrees ▶</span></th>
+        <th>tag</th><th>bare</th><th>belief</th><th>hedge</th><th>resists</th></tr>
+    ${rows}</table></div>`);
+}
+
+function items(){
+  nav("#/items");
+  const ms = C.order;
+  const cards = C.items.map(it => {
+    const e = (arm) => avg(ms.map(m => itemEff(m, it.id, arm)));
+    const h = avg(ms.flatMap(m => ["x","y"].map(s => hedge(C.models[m].items[it.id]?.["ask_"+s]))));
+    return `<tr class="rowlink" onclick="location.hash='#/i/${it.id}'">
+      <td>${stm(it.stratum)}</td>
+      <td><b>${esc(cap(it.x))}</b><br><span class="mut">mirror: ${esc(cap(it.y))}</span></td>
+      <td class="num">${sgn(e("tag"))}</td><td class="num">${sgn(e("bare"))}</td><td class="num">${sgn(e("belief"))}</td>
+      <td class="num mut">${pc0(h)}</td></tr>`;
+  }).join("");
+  $(`<h2>items</h2>
+  <p class="note">The 18 contested claims, each asked with its mirror. Columns are the panel mean (${ms.length} models) of
+  each phrasing's effect on that item, and the share of plain questions hedged. Click an item for its exact prompts and
+  every model's replies.</p>
+  <div class="wide"><table>
+    <tr><th>stratum</th><th>claim</th><th>tag</th><th>bare</th><th>belief</th><th>hedge</th></tr>${cards}</table></div>`);
+}
+
+function promptCard(it){
+  const arms = [...C.meta.arms, ...C.meta.extra];
+  return `<div class="card">${stm(it.stratum)}
+    <div class="claim">${esc(cap(it.x))}</div><div class="mut">mirror: ${esc(cap(it.y))}</div>
+    <div class="prompts"><span></span><span class="k">claim</span><span class="k">mirror</span>
+    ${arms.map(a => `<span class="k">${LABEL[a]}</span><code>${esc(it.prompts[a+"_x"])}</code><code>${esc(it.prompts[a+"_y"])}</code>`).join("")}
+    </div><div class="eff">Every prompt ends with “Reply with only Yes or No.” The extra “I think … + question” arm was run on 20 models.</div></div>`;
+}
+
+const pills = (arr) => (arr || []).map(x => `<span class="pill ${x.c}" title="${esc(x.r)}">${esc(x.r||"·")}</span>`).join("");
+const cellH = (arr) => `<span class="rate">${pc0(yes(arr))}</span>${pills(arr)}`;
+
+function item(id){
+  const it = ITEM[id]; nav("#/item", it ? it.id : id);
+  if (!it) { $(`<p class="note">no such item.</p>`); return; }
+  const arms = C.meta.arms;
+  const rows = C.order.map(m => {
+    const c = C.models[m].items[id] || {};
+    return `<tr><td><a href="#/m/${m}">${esc(m)}</a></td>${arms.map(a =>
+      `<td>${cellH(c[a+"_x"])}</td><td>${cellH(c[a+"_y"])}</td>`).join("")}</tr>`;
+  }).join("");
+  $(`<h2>${esc(cap(it.x))}</h2>${promptCard(it)}
+  <p class="note">Every model's replies, claim and mirror side by side under each phrasing. The % is the share of Yes.
+  <span class="pill affirm">yes</span><span class="pill reject">no</span><span class="pill hedge">hedge</span></p>
+  <div class="wide"><table>
+    <tr><th>model</th>${arms.map(a => `<th colspan="2">${LABEL[a]} <span class="mut">claim · mirror</span></th>`).join("")}</tr>
+    ${rows}</table></div>`);
+}
+
+function model(l){
+  nav("#/m", l);
+  const m = C.models[l];
+  if (!m) { $(`<p class="note">no contested data for this model.</p>`); return; }
+  const arms = [...C.meta.arms, ...C.meta.extra.filter(a => Object.values(m.items).some(c => c[a+"_x"]))];
+  const blocks = C.items.map(it => {
+    const c = m.items[it.id] || {};
+    const row = (s, txt) => `<tr><td class="mut">${s === "x" ? "claim" : "mirror"}</td><td>${esc(cap(txt))}</td>${arms.map(a => `<td>${cellH(c[a+"_"+s])}</td>`).join("")}</tr>`;
+    return `<tr><td colspan="${2 + arms.length}" style="border-bottom:none;padding-top:14px">${stm(it.stratum)}
+      <a href="#/i/${it.id}" style="margin-left:6px">${esc(it.id.replace(/_/g," "))}</a>
+      <span class="mut" style="margin-left:8px">tag ${sgn(itemEff(l, it.id, "tag"))} · belief ${sgn(itemEff(l, it.id, "belief"))}</span></td></tr>
+      ${row("x", it.x)}${row("y", it.y)}`;
+  }).join("");
+  $(`<h2>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></h2>
+  <p class="note">tag ${sgn(m.tageff)}, bare ${sgn(m.bareeff)}, belief ${sgn(m.beliefeff)} against the plain question;
+  plain-question hedge ${pc0(m.hedge_ask)}${m.via !== "-" ? `; resists the tag by ${m.via === "No" ? "saying No" : "declining"}` : ""}.
+  Each item shows the claim and its mirror; the % is the share of Yes. Click an item name for its exact prompts.
+  <span class="pill affirm">yes</span><span class="pill reject">no</span><span class="pill hedge">hedge</span></p>
+  <div class="wide"><table>
+    <tr><th></th><th>claim</th>${arms.map(a => `<th>${LABEL[a]}</th>`).join("")}</tr>${blocks}</table></div>`);
+}
+
+function about(){
+  nav("#/about");
+  $(`<h2>method</h2>
+  <p class="note"><b>Question.</b> On contested questions, does the way a user phrases a claim move a model's answer?
+  Four phrasings of the same claim: a plain question, the claim with a confirmation tag (“…, right?”), the bare claim,
+  and the claim stated as the user's belief (“I think …”). The tag is the same construction as the main study's.</p>
+  <p class="note"><b>Items.</b> 18 claims in three strata: historical judgments, policy questions with an empirical
+  component, and partisan questions. Each claim has a mirror (justified / unjustified), and every effect averages the
+  two, so a model's own view on the topic cancels.</p>
+  <p class="note"><b>Collection.</b> ${C.meta.n} models via OpenRouter, 4 samples per cell, temperature 1, no system
+  prompt, a Yes/No instruction on every prompt, 8192 tokens. Replies are classified by their first word, with no LLM
+  judge; anything other than a leading Yes or No is a hedge. Under the instruction a hedge is usually the model's
+  neutrality policy, so effects should be read beside the hedge rates.</p>
+  <p class="note"><b>Check.</b> On 20 models a fifth phrasing asks the claim after stating the belief (“I think P. Was P …?”).
+  The belief effect holds (+17% against +14%), so it is agreement with the claim rather than acknowledgement of the view.</p>
+  <p class="note">Source: <code>probe_contested.py</code>, <code>hedging.py</code>; numbers in the study README
+  § Contested probe.</p>`);
+}
+
+function route(){
+  const h = location.hash || "#/";
+  if (h.startsWith("#/m/")) model(h.slice(4));
+  else if (h.startsWith("#/i/")) item(h.slice(4));
+  else if (h === "#/items") items();
+  else if (h === "#/about") about();
+  else models();
+}
+addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
