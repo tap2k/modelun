@@ -21,19 +21,11 @@ import numpy as np
 
 STUDY = Path(__file__).resolve().parent
 sys.path.insert(0, str(STUDY))
-from analyze import load
+from analyze import answers
 
-ans = load(STUDY)
+ans = answers(STUDY)
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
-
-# plural merge, same as analyze.py
-for c in cats:
-    pool = Counter(a for m in models for a in ans[m].get(c, []))
-    stems = {w: w[:-1] for w in pool if w.endswith('s') and w[:-1] in pool}
-    for m in models:
-        if c in ans[m]:
-            ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
 
 meta = {m['label']: m for m in json.loads((STUDY / 'spec' / 'models.json').read_text())['models']}
 fam = {m: (meta.get(m, {}).get('family') or m) for m in models}

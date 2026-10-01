@@ -21,7 +21,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
-from analyze import norm                                    # same normalization as the paper
+from analyze import load, answers, against                  # same scoring as the paper
 
 T0_DIR = HERE / "transcripts-temp0"
 if not T0_DIR.exists():
@@ -29,32 +29,10 @@ if not T0_DIR.exists():
 
 pm = json.loads((HERE / "analysis.json").read_text())["per_model"]   # frozen temp-1 metrics
 
-
-def load_dir(d):
-    """transcripts dir -> {label: {scene_id: [normalized answer per run]}} (mirrors analyze.load)."""
-    out = {}
-    for p in sorted(d.glob("*.json")):
-        dd = json.loads(p.read_text())
-        scenes = {}
-        for sid, sc in dd["scenes"].items():
-            toks = [t for t in (norm(run[0].get("reply")) for run in sc["runs"] if run) if t]
-            if toks:
-                scenes[sid] = toks
-        out[dd["model"]] = scenes
-    return out
-
-
-field = load_dir(HERE / "transcripts")        # all 44 models, temp 1 (the frozen reference)
-t0 = load_dir(T0_DIR)                          # subset, temp 0
+field = answers(HERE)                          # the whole panel, temp 1 (the frozen reference)
+# the temp-0 subset, merged onto the temp-1 field's pool as answers() merges the panel
+t0 = against(field, load(HERE, paths=sorted(T0_DIR.glob("*.json"))), HERE)
 cats = sorted({c for m in field for c in field[m]})
-
-# plural-merge exactly as make_assets: build the stem map from the temp-1 pool, apply to both
-stem = {}
-for c in cats:
-    pool = Counter(a for m in field for a in field[m].get(c, []))
-    stem[c] = {w: w[:-1] for w in pool if w.endswith("s") and w[:-1] in pool}
-merge = lambda A: {m: {c: [stem[c].get(a, a) for a in v] for c, v in sc.items()} for m, sc in A.items()}
-field, t0 = merge(field), merge(t0)
 
 
 def self_distinct(sc):

@@ -18,17 +18,11 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from analyze import load
+from analyze import answers
 
-ans = load(HERE)
+ans = answers(HERE)
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
-for c in cats:  # plural merge, identical to analyze.py
-    pool = Counter(a for m in models for a in ans[m].get(c, []))
-    stems = {w: w[:-1] for w in pool if w.endswith("s") and w[:-1] in pool}
-    for m in models:
-        if c in ans[m]:
-            ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
 
 def mean_surp(alpha=1.0, vc="union"):
     out = {}

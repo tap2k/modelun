@@ -17,7 +17,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from analyze import norm, load
+from analyze import norm, answers
 
 VO_TO_OURS = {"Apreciousstone":"gemstone","Ametal":"metal","Afour-footedanimal":"animal",
  "Atypeoffabric":"fabric","Acolor":"color","Afruit":"fruit","Acountry":"country",
@@ -46,6 +46,7 @@ def parse_vo(pdf_path):
     return {VO_TO_OURS[k]: v for k, v in cats.items() if k in VO_TO_OURS}
 
 def merged(toks):
+    """The plural merge within one field's pool, for the exact-wording rerun (answers() does it for the panel)."""
     pool = Counter(toks); stems = {w: w[:-1] for w in pool if w.endswith("s") and w[:-1] in pool}
     return Counter(stems.get(t, t) for t in toks)
 
@@ -54,9 +55,9 @@ def main():
     human = parse_vo(Path(args.pdf).expanduser())
     exact = json.loads((HERE / "probes/exactword.json").read_text())["replies"]
 
-    ans = load(HERE); models = sorted(m for m in ans if ans[m])
+    ans = answers(HERE); models = sorted(m for m in ans if ans[m])
     def base_field(cat):
-        return merged([a for m in models for a in ans[m].get(cat, [])])
+        return Counter(a for m in models for a in ans[m].get(cat, []))
     def exact_field(cat):
         return merged([t for lab in exact for r in exact[lab].get(cat, []) if r for t in [norm(r)] if t])
 
