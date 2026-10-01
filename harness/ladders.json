@@ -1,0 +1,72 @@
+{
+ "_doc": "Open checkpoints sampled locally by harness/local.py. One entry per pipeline; its stages in training order. repo is the Hub source (its revision is stamped on every transcript); weights is what mlx-lm loads (a Hub id, a folder on the external drive, or a local folder), and is machine-specific. framings are the defaults for a stage; a study may ask for others. nosys is the pipeline's chat turn written out by hand without the template's default system message, {q} the question. system_prompts are named system messages a framing can send. ~/Desktop/projects/modelUN/LOCAL-MODELS.md records where each folder came from, with checksums.",
+ "olmo3-7b": {
+  "note": "OLMo 3 7B Instruct line, bf16. The chat template inserts the training-time system prompt when there is none.",
+  "quantization": null,
+  "nosys": "<|im_start|>user\n{q}<|im_end|>\n<|im_start|>assistant\n",
+  "system_prompts": {"systrain": "You are a helpful function-calling AI assistant. You do not currently have access to any functions. <functions></functions>"},
+  "stages": [
+   {"stage": "base", "repo": "allenai/Olmo-3-1025-7B", "weights": "allenai/Olmo-3-1025-7B", "framings": ["raw"]},
+   {"stage": "sft", "repo": "allenai/Olmo-3-7B-Instruct-SFT", "weights": "allenai/Olmo-3-7B-Instruct-SFT", "framings": ["chat", "nosys"]},
+   {"stage": "dpo", "repo": "allenai/Olmo-3-7B-Instruct-DPO", "weights": "allenai/Olmo-3-7B-Instruct-DPO", "framings": ["chat", "nosys"]},
+   {"stage": "rl", "repo": "allenai/Olmo-3-7B-Instruct", "weights": "allenai/Olmo-3-7B-Instruct", "framings": ["chat", "nosys"]}
+  ]
+ },
+ "olmo31-32b": {
+  "note": "OLMo 3.1 32B Instruct line on the Olmo-3-1125-32B base. 8-bit MLX weights: mlx-community's conversions for base and final, local conversions with the same settings for SFT and DPO. The released template swaps in an untrained 'You are Olmo...' identity prompt; systrain is the prompt every training example carried.",
+  "quantization": "8-bit affine, group size 64",
+  "nosys": "<|im_start|>user\n{q}<|im_end|>\n<|im_start|>assistant\n",
+  "system_prompts": {"systrain": "You are a helpful function-calling AI assistant. You do not currently have access to any functions. <functions></functions>"},
+  "stages": [
+   {"stage": "base", "repo": "allenai/Olmo-3-1125-32B", "weights": "/Volumes/My Passport/models/Olmo-3-1125-32B-8bit", "framings": ["raw"]},
+   {"stage": "sft", "repo": "allenai/Olmo-3.1-32B-Instruct-SFT", "weights": "/Volumes/My Passport/models/Olmo-3.1-32B-Instruct-SFT-8bit", "framings": ["chat", "nosys", "systrain"]},
+   {"stage": "dpo", "repo": "allenai/Olmo-3.1-32B-Instruct-DPO", "weights": "/Volumes/My Passport/models/Olmo-3.1-32B-Instruct-DPO-8bit", "framings": ["chat", "nosys", "systrain"]},
+   {"stage": "rl", "repo": "allenai/Olmo-3.1-32B-Instruct", "weights": "/Volumes/My Passport/models/Olmo-3.1-32B-Instruct-8bit", "framings": ["chat", "nosys", "systrain"]}
+  ]
+ },
+ "olmo3-7b-rlzero": {
+  "note": "OLMo 3 7B with RL straight from the base (no SFT or DPO), bf16; the base is olmo3-7b's. A reasoning model: its template opens <think>, so it runs in the think framing. On one-word prompts (2026-10-01) General never closed its reasoning in 4096 tokens and Mix answered inside the open block and ended its turn there, so neither gives a scorable short answer. Mix's release config says model_type olmo2-retrofit, which mlx-lm cannot load; the local folder symlinks the cached weights under a config relabelled olmo3.",
+  "quantization": null,
+  "stages": [
+   {"stage": "general", "repo": "allenai/Olmo-3-7B-RL-Zero-General", "weights": "allenai/Olmo-3-7B-RL-Zero-General", "framings": ["think"]},
+   {"stage": "mix", "repo": "allenai/Olmo-3-7B-RL-Zero-Mix", "weights": "~/models/rlzero/Olmo-3-7B-RL-Zero-Mix", "framings": ["think"]}
+  ]
+ },
+ "tulu3-8b": {
+  "note": "Tulu 3 8B on Llama 3.1 8B, bf16: the OLMo style of recipe on another base. The template has no default system prompt.",
+  "quantization": null,
+  "stages": [
+   {"stage": "base", "repo": "meta-llama/Llama-3.1-8B", "weights": "meta-llama/Llama-3.1-8B", "framings": ["raw"]},
+   {"stage": "sft", "repo": "allenai/Llama-3.1-Tulu-3-8B-SFT", "weights": "allenai/Llama-3.1-Tulu-3-8B-SFT", "framings": ["chat"]},
+   {"stage": "dpo", "repo": "allenai/Llama-3.1-Tulu-3-8B-DPO", "weights": "allenai/Llama-3.1-Tulu-3-8B-DPO", "framings": ["chat"]},
+   {"stage": "rl", "repo": "allenai/Llama-3.1-Tulu-3-8B", "weights": "allenai/Llama-3.1-Tulu-3-8B", "framings": ["chat"]}
+  ]
+ },
+ "nemotron35-lightning": {
+  "note": "NVIDIA Nemotron 3.5 Lightning 30B-A3B; only base and final are published. 8-bit: a local conversion for base, mlx-community's for final. The template thinks by default and has no default system prompt; chat runs with thinking off, the think framing turns it on.",
+  "quantization": "8-bit affine, group size 64",
+  "chat_kwargs": {"enable_thinking": false},
+  "system_prompts": {"sysid": "You are Nemotron, a helpful AI assistant built by NVIDIA."},
+  "stages": [
+   {"stage": "base", "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16", "weights": "/Volumes/My Passport/models/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-8bit", "framings": ["raw"]},
+   {"stage": "final", "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16", "weights": "/Volumes/My Passport/models/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit", "framings": ["chat"]}
+  ]
+ },
+ "hermes-4-70b": {
+  "note": "Panel model whose API endpoint is gone. 4-bit; 32 replies in parallel ran out of memory on a 64 GB machine. Ends turns with <|eot_id|>. The template inserts a default system prompt; nosys is the Llama 3 turn without it (the tokenizer adds <|begin_of_text|>).",
+  "quantization": "4-bit (mlx-community/Hermes-4-70B-4bit)",
+  "batch": 16,
+  "nosys": "<|start_header_id|>user<|end_header_id|>\n\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+  "stages": [
+   {"stage": "final", "label": "hermes-4-70b", "repo": "NousResearch/Hermes-4-70B", "weights": "/Volumes/My Passport/models/Hermes-4-70B-4bit", "framings": ["chat"]}
+  ]
+ },
+ "granite-4.1-8b": {
+  "note": "Panel model whose API endpoint is gone, bf16. Its weights carry a separate lm_head, which the config does not say.",
+  "quantization": "bf16",
+  "model_config": {"tie_word_embeddings": false},
+  "stages": [
+   {"stage": "final", "label": "granite-4.1-8b", "repo": "ibm-granite/granite-4.1-8b", "weights": "/Volumes/My Passport/models/granite-4.1-8b", "framings": ["chat"]}
+  ]
+ }
+}

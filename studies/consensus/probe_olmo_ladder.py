@@ -1,104 +1,65 @@
-"""probe_olmo_ladder.py — does post-training put "serendipity" into any_word? The OLMo 3 7B stage ladder.
+"""probe_olmo_ladder.py — does post-training put "serendipity" into any_word? Stage ladders of open pipelines.
 
 The census any_word item ("Pick a word. Reply with one word only.") has serendipity as its modal
 answer, rising with release date, near 0% on lightly tuned models and 100% on Hermes 3 405B. The
 hypothesis under test: pretraining links the prompt to charming words, preference tuning rewards
 serendipity, RL collapses onto it. OLMo 3 publishes every stage of one pipeline, so each stage is
-sampled locally (mlx-lm, bf16, temperature 1, no system prompt of our own):
+sampled locally (harness/local.py: mlx-lm, temperature 1, no system prompt of our own). The pipelines
+and their stages are in harness/ladders.json:
 
-  base  allenai/Olmo-3-1025-7B            raw only
-  sft   allenai/Olmo-3-7B-Instruct-SFT    chat, nosys, raw
-  dpo   allenai/Olmo-3-7B-Instruct-DPO    chat, nosys, raw
-  rl    allenai/Olmo-3-7B-Instruct        chat, nosys, raw
+  --7b        olmo3-7b              base / SFT / DPO / RL, bf16            -> probes/olmo_ladder/
+  --32b       olmo31-32b            base / SFT / DPO / RL, 8-bit           -> probes/olmo_ladder_32b/
+  --nemotron  nemotron35-lightning  base / final, 8-bit                    -> probes/nemotron_ladder/
+  --tulu      tulu3-8b              Tulu 3 on Llama 3.1 8B, bf16           -> probes/tulu_ladder/
+  --rlzero    olmo3-7b-rlzero       RL straight from the 7B base, bf16     -> probes/rlzero_ladder/
 
-  chat   the stage's own chat template. With no system message it inserts a default one
-         ("You are a helpful function-calling AI assistant. ..."), which any host using the
-         template would send too.
-  nosys  the same ChatML turn with that default system message removed.
-  raw    completion text 'Pick a word. Reply with one word only.\\nAnswer:', first word kept.
+Framings (harness/local.py): raw for the base, then the stage's defaults, and raw as well. chat is the
+stage's own template, with whatever default system prompt it inserts (OLMo 3 7B: "You are a helpful
+function-calling AI assistant..."); nosys is the same turn without it; sysgen, systrain, sysid and think
+are the other framings asked for over time. raw is 'Pick a word. Reply with one word only.\\nAnswer:',
+first word kept.
 
-chat/nosys replies are scored with the census norm(); raw keeps the first word, since a base model
-has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
-    ../../.venv/bin/python probe_olmo_ladder.py [N=50]      # needs mlx-lm and ~60 GB of weights
-    ../../.venv/bin/python probe_olmo_ladder.py --score     # re-score probes/olmo_ladder.json only
-    ../../.venv/bin/python probe_olmo_ladder.py --32b       # OLMo 3.1 32B ladder, 8-bit -> olmo_ladder_32b.json
-    ../../.venv/bin/python probe_olmo_ladder.py --nemotron  # Nemotron 3.5 Lightning base/final -> nemotron_ladder.json
-    options: --tag NAME (separate output file), --framings chat,nosys,... (instruct stages),
-    framings sysgen ("You are a helpful assistant.") and think (reasoning on, 4096 tokens);
+Each stage/framing is one Contract-A transcript in probes/<name>/ (scene any_word); probes/<name>.json
+holds the summary. Template framings are scored with the census norm(); raw and cloze keep the first
+word, since a base model has no stop convention. Share = serendipity / valid answers, Wilson 95% CI.
+    ../../.venv/bin/python probe_olmo_ladder.py --7b [N=50]   # needs mlx-lm and the weights
+    ../../.venv/bin/python probe_olmo_ladder.py --7b --score  # re-score probes/olmo_ladder/ only
+    options: --tag NAME (separate output), --framings chat,nosys,... (instruct stages),
     --prompt "..." swaps the question (the say/pick/favorite/beautiful scale), --cloze '...' gives the
     base stage a natural completion instead of the instruction plus "Answer:"
 """
-import json, math, re, sys, time
+import json, math, re, sys
 from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[1] / "harness"))
 from analyze import norm                                    # same normalization as the paper
+import local
 
 SIZE = next((k for k in ("32b", "nemotron", "tulu", "rlzero") if f"--{k}" in sys.argv), "7b")
+PIPELINE = {"7b": "olmo3-7b", "32b": "olmo31-32b", "nemotron": "nemotron35-lightning", "tulu": "tulu3-8b",
+            "rlzero": "olmo3-7b-rlzero"}[SIZE]
+
+
 def _arg(flag):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else None
 
 
-TAG = _arg("--tag")                                       # a separate output file, e.g. --tag n200
+TAG = _arg("--tag")                                       # a separate output, e.g. --tag n200
 FRAMINGS = _arg("--framings")                             # override the instruct stages' framings
-OUT = HERE / "probes" / ({"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder", "tulu": "tulu_ladder", "rlzero": "rlzero_ladder"}[SIZE]
-                         + (f"_{TAG}" if TAG else "") + ".json")
+NAME = {"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder", "tulu": "tulu_ladder",
+        "rlzero": "rlzero_ladder"}[SIZE] + (f"_{TAG}" if TAG else "")
+DIR, OUT = HERE / "probes" / NAME, HERE / "probes" / f"{NAME}.json"
 PROMPT = _arg("--prompt") or "Pick a word. Reply with one word only."   # --prompt: another item of the scale
-CLOZE = _arg("--cloze")                                   # base stage only: a natural completion, e.g. 'My favorite word is "' 
-RAW = PROMPT + "\nAnswer:"
-NOSYS = f"<|im_start|>user\n{PROMPT}<|im_end|>\n<|im_start|>assistant\n"
-# (stage, source repo, weights loaded, framings). 7B loads the source in bf16. 32B loads 8-bit MLX
-# weights (group size 64): mlx-community's conversions for base and final, local conversions with the
-# same settings for SFT and DPO (mlx_lm.convert -q --q-bits 8 --q-group-size 64). The 32B instruct
-# stages are OLMo 3.1, built on the Olmo-3-1125-32B base.
-M32 = Path.home() / "models" / "olmo32"
-LADDERS = {
-    "7b": [
-        ("base", "allenai/Olmo-3-1025-7B", "allenai/Olmo-3-1025-7B", ["raw"]),
-        ("sft", "allenai/Olmo-3-7B-Instruct-SFT", "allenai/Olmo-3-7B-Instruct-SFT", ["chat", "nosys", "raw"]),
-        ("dpo", "allenai/Olmo-3-7B-Instruct-DPO", "allenai/Olmo-3-7B-Instruct-DPO", ["chat", "nosys", "raw"]),
-        ("rl", "allenai/Olmo-3-7B-Instruct", "allenai/Olmo-3-7B-Instruct", ["chat", "nosys", "raw"]),
-    ],
-    "32b": [
-        ("base", "allenai/Olmo-3-1125-32B", "mlx-community/Olmo-3-1125-32B-8bit", ["raw"]),
-        ("sft", "allenai/Olmo-3.1-32B-Instruct-SFT", str(M32 / "Olmo-3.1-32B-Instruct-SFT-8bit"), ["chat", "nosys", "raw"]),
-        ("dpo", "allenai/Olmo-3.1-32B-Instruct-DPO", str(M32 / "Olmo-3.1-32B-Instruct-DPO-8bit"), ["chat", "nosys", "raw"]),
-        ("rl", "allenai/Olmo-3.1-32B-Instruct", "mlx-community/Olmo-3.1-32B-Instruct-8bit", ["chat", "nosys", "raw"]),
-    ],
-    # NVIDIA Nemotron 3.5 Lightning 30B-A3B: a second lab's open pipeline. Only base and final are
-    # published. Its template has no default system prompt (nosys = chat, so not run) and thinks by
-    # default; chat runs with enable_thinking=False. sysid adds an assistant-identity system prompt,
-    # testing the system-prompt effect seen in OLMo 3.1 32B.
-    "tulu": [                # Tulu 3 8B on Llama 3.1 8B, bf16: the same style of recipe on another base
-        ("base", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B", ["raw"]),
-        ("sft", "allenai/Llama-3.1-Tulu-3-8B-SFT", "allenai/Llama-3.1-Tulu-3-8B-SFT", ["chat", "raw"]),
-        ("dpo", "allenai/Llama-3.1-Tulu-3-8B-DPO", "allenai/Llama-3.1-Tulu-3-8B-DPO", ["chat", "raw"]),
-        ("rl", "allenai/Llama-3.1-Tulu-3-8B", "allenai/Llama-3.1-Tulu-3-8B", ["chat", "raw"]),
-    ],
-    "rlzero": [              # OLMo 3 7B with RL straight from the base (no SFT/DPO), bf16; base is in the 7b ladder
-        ("general", "allenai/Olmo-3-7B-RL-Zero-General", "allenai/Olmo-3-7B-RL-Zero-General", ["chat", "raw"]),
-        ("mix", "allenai/Olmo-3-7B-RL-Zero-Mix", str(Path.home() / "models" / "rlzero" / "Olmo-3-7B-RL-Zero-Mix"),  # config relabeled olmo2-retrofit -> olmo3
-         ["chat", "raw"]),
-    ],
-    "nemotron": [
-        ("base", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16",
-         str(Path.home() / "models" / "nemotron35" / "Lightning-30B-A3B-Base-8bit"), ["raw"]),
-        ("final", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
-         "mlx-community/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit", ["chat", "sysid", "raw"]),
-    ],
-}
-STAGES = [(st, repo, w, (["cloze"] if st == "base" and CLOZE else FRAMINGS.split(",") if FRAMINGS and st != "base" else fr))
-          for st, repo, w, fr in LADDERS[SIZE]]
-SYSGEN = "You are a helpful assistant."                   # generic assistant framing, no model identity
-# systrain: the system turn every OLMo 3 / 3.1 Instruct training example carried (the instruct-dev
-# template default; 100% of DPO and RL prompts, ~90% of SFT). The released 3.1 32B template swaps in an
-# untrained "You are Olmo..." identity prompt, so systrain is the in-distribution condition.
-SYSTRAIN = "You are a helpful function-calling AI assistant. You do not currently have access to any functions. <functions></functions>"
-QUANT = None if SIZE in ("7b", "tulu", "rlzero") else "8-bit affine, group size 64"
-CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
-SYSID = "You are Nemotron, a helpful AI assistant built by NVIDIA."
+CLOZE = _arg("--cloze")                                   # base stage only: a natural completion, e.g. 'My favorite word is "'
+
+
+def framings(st):
+    if st["stage"] == "base":
+        return ["cloze"] if CLOZE else ["raw"]
+    return FRAMINGS.split(",") if FRAMINGS else st["framings"] + ["raw"]
 
 
 def first_word(text):
@@ -117,69 +78,46 @@ def wilson(k, n, z=1.96):
 
 
 def sample(n):
-    from mlx_lm import load, generate
-    from mlx_lm.sample_utils import make_sampler
-    from huggingface_hub import model_info
-
-    sampler = make_sampler(temp=1.0)
-    runs = json.loads(OUT.read_text())["runs"] if OUT.exists() else {}
-    for stage, repo, weights, framings in STAGES:
-        todo = [f for f in framings if f"{stage}/{f}" not in runs]
+    for st in local.stages(PIPELINE):
+        todo = [f for f in framings(st) if not local.path(DIR, st, f).exists()]
         if not todo:
             continue
-        model, tok = load(weights)
-        rev = model_info(repo).sha
+        model = local.load(st)
         for framing in todo:
-            if framing in ("chat", "sysid", "sysgen", "systrain", "think"):
-                sp = {"sysid": SYSID, "sysgen": SYSGEN, "systrain": SYSTRAIN}.get(framing)
-                msgs = ([{"role": "system", "content": sp}] if sp else []) + [{"role": "user", "content": PROMPT}]
-                kw = {"enable_thinking": True} if framing == "think" else CHAT_KW
-                prompt = tok.apply_chat_template(msgs, add_generation_prompt=True, **kw)
-            else:
-                prompt = tok.encode(CLOZE if framing == "cloze" else NOSYS if framing == "nosys" else RAW)
-            max_tokens = 8 if framing in ("raw", "cloze") else 4096 if framing == "think" else 24
-            t0 = time.time()
-            replies = [generate(model, tok, prompt=prompt, max_tokens=max_tokens, sampler=sampler) for _ in range(n)]
-            runs[f"{stage}/{framing}"] = {"repo": repo, "revision": rev, "weights": weights, "quantization": QUANT,
-                                          "prompt": tok.decode(prompt),
-                                          "temperature": 1.0, "max_tokens": max_tokens,
-                                          "run_date": time.strftime("%Y-%m-%d"), "replies": replies}
-            OUT.write_text(json.dumps({"runs": runs}, indent=1, ensure_ascii=False))
-            print(f"{stage}/{framing}: {time.time() - t0:.0f}s", flush=True)
-        del model, tok
-    return runs
+            spec = {"spec_version": "probe_olmo_ladder",
+                    "scenes": [{"id": "any_word", "turns": [CLOZE if framing == "cloze" else PROMPT]}]}
+            local.run(spec, st, framing, n, local.path(DIR, st, framing), local.MAX_TOKENS.get(framing, 24), model=model)
+        del model
 
 
-def score(runs):
+def score():
+    """Every transcript in DIR, in ladder order -> {stage/framing: summary}."""
+    order = [st["stage"] for st in local.stages(PIPELINE)]
+    runs = sorted((json.loads(p.read_text()) for p in DIR.glob("*.json")),
+                  key=lambda d: (order.index(d["stage"]), d["framing"]))
     summary = {}
-    for stage, _, _, framings in STAGES:
-        for framing in framings:
-            key = f"{stage}/{framing}"
-            if key not in runs:
-                continue
-            replies = runs[key]["replies"]
-            if framing == "think":                       # score the answer after the reasoning; unfinished = invalid
-                replies = [r.split("</think>")[-1] if "</think>" in r else "" for r in replies]
-            answers = [(first_word if framing in ("raw", "cloze") else norm)(r) for r in replies]
-            valid = [a for a in answers if a]
-            k = sum(a == "serendipity" for a in valid)
-            c = Counter(valid)
-            lo, hi = wilson(k, len(valid))
-            h = -sum(v / len(valid) * math.log2(v / len(valid)) for v in c.values()) if valid else 0.0
-            summary[key] = {"n": len(answers), "valid": len(valid), "serendipity": k,
-                            "share": round(k / len(valid), 3) if valid else None,
-                            "ci95": [round(lo, 3), round(hi, 3)], "distinct": len(c),
-                            "entropy_bits": round(h, 2), "top": c.most_common(8)}
-            print(f"{key:10s} valid={len(valid):2d}/{len(answers)} serendipity={k:2d} "
-                  f"({100 * k / max(len(valid), 1):3.0f}%, CI {100 * lo:.0f}-{100 * hi:.0f})  "
-                  f"H={h:.2f}  " + ", ".join(f"{w}×{n}" for w, n in c.most_common(6)))
+    for d in runs:
+        key, framing = f"{d['stage']}/{d['framing']}", d["framing"]
+        replies = [r[0]["reply"] for r in d["scenes"]["any_word"]["runs"]]
+        score_fn = first_word if framing in ("raw", "cloze") else norm
+        answers = [score_fn(r) if r else None for r in replies]   # think: an unclosed trace has no reply
+        valid = [a for a in answers if a]
+        k = sum(a == "serendipity" for a in valid)
+        c = Counter(valid)
+        lo, hi = wilson(k, len(valid))
+        h = -sum(v / len(valid) * math.log2(v / len(valid)) for v in c.values()) if valid else 0.0
+        summary[key] = {"n": len(answers), "valid": len(valid), "serendipity": k,
+                        "share": round(k / len(valid), 3) if valid else None,
+                        "ci95": [round(lo, 3), round(hi, 3)], "distinct": len(c),
+                        "entropy_bits": round(h, 2), "top": c.most_common(8)}
+        print(f"{key:10s} valid={len(valid):2d}/{len(answers)} serendipity={k:2d} "
+              f"({100 * k / max(len(valid), 1):3.0f}%, CI {100 * lo:.0f}-{100 * hi:.0f})  "
+              f"H={h:.2f}  " + ", ".join(f"{w}×{n}" for w, n in c.most_common(6)))
     return summary
 
 
 if __name__ == "__main__":
-    if "--score" in sys.argv:
-        runs = json.loads(OUT.read_text())["runs"]
-    else:
+    if "--score" not in sys.argv:
         nums = [a for a in sys.argv[1:] if a.isdigit()]
-        runs = sample(int(nums[0]) if nums else 50)
-    OUT.write_text(json.dumps({"summary": score(runs), "runs": runs}, indent=1, ensure_ascii=False))
+        sample(int(nums[0]) if nums else 50)
+    OUT.write_text(json.dumps({"summary": score()}, indent=1, ensure_ascii=False) + "\n")

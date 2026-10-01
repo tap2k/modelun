@@ -13,16 +13,15 @@ items; nested bootstrap 95% CI), the same effects answered-only, the both-Yes / 
 pairs (sample i of side x against sample i of side y), and on the 9 LEFT-coded items the affirm rate of
 the left- vs right-coded claim.
 
-    ../../.venv/bin/python probe_contested_ladder.py --32b [N=16]   # -> probes/contested_ladder_32b.json
+    ../../.venv/bin/python probe_contested_ladder.py --32b [N=16]   # -> probes/contested_ladder_32b/ (Contract A) + .json
     ../../.venv/bin/python probe_contested_ladder.py --nemotron --score
 """
 import json, sys
 import numpy as np
-from probe_suggest_ladder import HERE, SIZE, THINK, sample, boot_effect
+from probe_suggest_ladder import HERE, SIZE, sample, labelled, boot_effect
 from probe_contested import ITEMS, ARMS, STRATA, LEFT, prompt
-from analyze import classify
 
-OUT = HERE / "probes" / f"contested_ladder_{SIZE}.json"
+DIR, OUT = HERE / "probes" / f"contested_ladder_{SIZE}", HERE / "probes" / f"contested_ladder_{SIZE}.json"
 STRATUM = {sid: st for sid, st, _, _ in ITEMS}
 EFFECTS = [a for a in ARMS if a != "ask"]
 
@@ -60,13 +59,10 @@ def lean(M):
     return out
 
 
-def score(runs):
+def score():
     summary = {}
     f = lambda e: f"{100 * e[0]:+4.0f} [{100 * e[1]:+.0f},{100 * e[2]:+.0f}]"
-    for key, run in runs.items():
-        M = {}
-        for c in run["cells"]:
-            M.setdefault(c["item"], {}).setdefault(c["side"], {})[c["arm"]] = [classify(THINK.sub("", r)) for r in c["replies"]]
+    for key, M in labelled(DIR).items():
         summary[key] = {"all": block(M), **{st: block({k: v for k, v in M.items() if STRATUM[k] == st}) for st in STRATA},
                         "left_right": lean(M)}
         print(f"\n{key}")
@@ -86,9 +82,7 @@ def score(runs):
 
 
 if __name__ == "__main__":
-    if "--score" in sys.argv:
-        runs = json.loads(OUT.read_text())["runs"]
-    else:
+    if "--score" not in sys.argv:
         nums = [a for a in sys.argv[1:] if a.isdigit()]
-        runs = sample(int(nums[0]) if nums else 16, battery=cells(), out=OUT)
-    OUT.write_text(json.dumps({"summary": score(runs), "runs": runs}, indent=1, ensure_ascii=False))
+        sample(int(nums[0]) if nums else 16, cells(), DIR, "probe_contested_ladder")
+    OUT.write_text(json.dumps({"summary": score()}, indent=1, ensure_ascii=False) + "\n")

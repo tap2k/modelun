@@ -148,7 +148,14 @@ old/new are not comparable.
 1. **RUNNER** — *stimulus → transcripts.* Plays each scene's escalating turns multi-turn against each
    model via one OpenRouter endpoint; writes Contract A, merging by scene-key. Escalation is scripted,
    not adaptive — identical turns regardless of reply, which is what makes columns comparable.
-   *(= `harness/run.py`.)*
+   *(= `harness/run.py`.)* A second runner samples open checkpoints on this machine with mlx-lm:
+   single-turn scenes, batched, under a named *framing* (raw completion, the chat template, the
+   template without its default system prompt, a named system prompt, or reasoning on). It writes the
+   same Contract A, with header stamps `host: "local-mlx"`, `pipeline`, `stage`, `framing`, `weights`,
+   `quantization`, `revision`, and any `model_config` / `chat_kwargs` / `system_prompt` override. In
+   the `think` framing a cell's `reply` is the answer after `</think>` and `reasoning` the trace; a
+   trace that never closed is a failed cell. The checkpoints (each open pipeline's stages, and panel
+   models whose endpoint is gone) are listed in `harness/ladders.json`. *(= `harness/local.py`.)*
 
 2. **JUDGE** — *transcript + codebook → labels.* Two backends behind one contract: an LLM judge
    (builds a prompt from the codebook, forces grounded JSON) and a human judge (the codebook as a side
@@ -208,6 +215,8 @@ A study may rename the data dirs via `spec/paths.json` (conduct keeps its histor
 modelun/
 ├── harness/                 # the tool — code only, no study semantics
 │   ├── run.py               #   stimulus → transcripts
+│   ├── local.py             #   stimulus → transcripts, from a checkpoint on this machine (mlx-lm)
+│   ├── ladders.json         #   the open checkpoints local.py knows: pipelines, stages, weights
 │   ├── judge.py             #   transcript + codebook → labels
 │   ├── adjudicate.py        #   verify + vote + self-family tag
 │   ├── render.py            #   transcript → readable markdown

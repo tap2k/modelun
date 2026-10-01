@@ -142,11 +142,12 @@ def scorer(battery):
     return norm, True
 
 
-def load(study_dir, battery="census"):
-    """<battery transcripts>/*.json (Contract A) -> {label: {scene_id: [answer per run]}}"""
+def load(study_dir, battery="census", paths=None):
+    """<battery transcripts>/*.json (Contract A) -> {label: {scene_id: [answer per run]}}. paths: Contract-A
+    files to read instead of the battery's directory (a local checkpoint, a temp-0 rerun)."""
     normf, _ = scorer(battery)
     out = {}
-    for p in sorted((study_dir / BATTERIES[battery][0]).glob("*.json")):
+    for p in paths if paths is not None else sorted((study_dir / BATTERIES[battery][0]).glob("*.json")):
         d = json.loads(p.read_text())
         scenes = {}
         for sid, sc in d["scenes"].items():
@@ -163,32 +164,50 @@ def load(study_dir, battery="census"):
 COMBINED = ("census", "expanded")   # same template and scoring: together, one 96-category census
 
 
+def merge_variants(ans, study_dir, battery):
+    """The variant merge, in place (answer_variants.json: "variants" for the census, "expanded" for the expanded
+    battery). A variant mapped to null is a fragment, not an answer."""
+    if battery not in ("census", "expanded"):
+        return ans
+    var = json.loads((study_dir / "answer_variants.json").read_text())
+    var = var["variants"] if battery == "census" else var["expanded"]["variants"]
+    for m in ans:
+        for c in ans[m]:
+            if c in var:
+                ans[m][c] = [x for x in (var[c].get(a, a) for a in ans[m][c]) if x]
+    return ans
+
+
 def answers(study_dir, battery="census"):
-    """load(), the variant merge (answer_variants.json: "variants" for the census, "expanded" for the expanded
-    battery), then the plural merge within each category pool (cats/cat -> cat when both occur)."""
+    """load(), the variant merge, then the plural merge within each category pool (cats/cat -> cat when both
+    occur)."""
     if battery == "combined":
         out = {}
         for b in COMBINED:
             for m, cats in answers(study_dir, b).items():
                 out.setdefault(m, {}).update(cats)
         return out
-    ans = load(study_dir, battery)
-    if battery in ("census", "expanded"):
-        var = json.loads((study_dir / "answer_variants.json").read_text())
-        var = var["variants"] if battery == "census" else var["expanded"]["variants"]
+    ans = merge_variants(load(study_dir, battery), study_dir, battery)
+    return plural_merge(ans, ans) if scorer(battery)[1] else ans
+
+
+def plural_merge(ans, field):
+    """In place: an answer ending in s becomes its stem when the stem is in field's pool for that category
+    (cats -> cat when the field says 'cat')."""
+    for c in {c for m in ans for c in ans[m]}:
+        pool = {a for m in field for a in field[m].get(c, [])}
         for m in ans:
-            for c in ans[m]:
-                if c in var:   # a variant mapped to null is a fragment, not an answer
-                    ans[m][c] = [x for x in (var[c].get(a, a) for a in ans[m][c]) if x]
-    if scorer(battery)[1]:
-        models = [m for m in ans if ans[m]]
-        for c in {c for m in models for c in ans[m]}:
-            pool = Counter(a for m in models for a in ans[m].get(c, []))
-            stems = {w: w[:-1] for w in pool if w.endswith('s') and w[:-1] in pool}
-            for m in models:
-                if c in ans[m]:
-                    ans[m][c] = [stems.get(a, a) for a in ans[m][c]]
+            if c in ans[m]:
+                ans[m][c] = [a[:-1] if a.endswith('s') and a[:-1] in pool else a for a in ans[m][c]]
     return ans
+
+
+def against(field, ans, study_dir, battery="census"):
+    """Answers from outside the panel (a local checkpoint, a temp-0 rerun; {label: {category: [answer]}}) merged
+    as answers() merges the panel's: the variant merge, then the plural merge onto the panel's pool
+    (field = answers(study_dir, battery)), so 'cats' counts as 'cat' when the panel says 'cat'. In place."""
+    merge_variants(ans, study_dir, battery)
+    return plural_merge(ans, field) if scorer(battery)[1] else ans
 
 
 def analyze(study_dir, battery="census", ans=None):

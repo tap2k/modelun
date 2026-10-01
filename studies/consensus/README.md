@@ -155,7 +155,7 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
 - **Serendipity across a post-training ladder (`probe_olmo_ladder.py`, `probe_olmo_data.py`,
   2026-09-28)**. The test is whether SFT, preference tuning and RL put serendipity into any_word.
   OLMo 3 7B publishes every stage of one pipeline, so each stage was sampled locally 50 times at
-  temperature 1 (`probes/olmo_ladder.json`). No stage picks it. Under the model's own chat template
+  temperature 1 (`probes/olmo_ladder/`, summary in `probes/olmo_ladder.json`). No stage picks it. Under the model's own chat template
   the counts are SFT 2/50, DPO 1/50 and RL 0/50. Without the template's default system prompt all
   three are 0/50, and the base model in completion framing is 0/46. The upper 95% bounds are 7–13%,
   against 61% for 2026 H2 releases. Post-training does narrow the answers. The base model scatters
@@ -172,14 +172,15 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   7B pipeline at n=50 is a characterization. The raw-completion control is uninformative for the
   instruct stages, which mostly end the turn at once (26–35 valid of 50).
 - **The full census across the same ladder (`probe_olmo_census.py`, 2026-09-28)**. Each OLMo 3 7B
-  stage answered all 31 categories 20 times at temperature 1, scored against the 87-model field
-  (`probes/olmo_census.json`). Surprisal falls 4.91 (base) → 2.68 (SFT) → 2.38 (DPO) → 2.15 (RL).
-  Modal share rises 0.28 → 0.49 → 0.53 → 0.56, and the stage's own entropy falls 2.92 → 1.59 →
-  1.31 → 1.07. Conformity and diversity loss move together at every stage, so this model gives no
+  stage answered all 31 categories 20 times at temperature 1 (`probes/olmo_census/`, Contract A),
+  scored as the panel is scored (`analyze.answers()`, v3) against the 94-model field
+  (`probes/olmo_census.json`). Surprisal falls 4.92 (base) → 2.67 (SFT) → 2.34 (DPO) → 2.11 (RL).
+  Modal share rises 0.28 → 0.49 → 0.54 → 0.56, and the stage's own entropy falls 2.92 → 1.59 →
+  1.29 → 1.05. Conformity and diversity loss move together at every stage, so this model gives no
   sign that they are separate processes. The base → SFT step is inflated by the base model's
-  completion framing (truncations such as "new" for New York). The final model's 2.15 sits with
-  the lightly tuned open models (Llama 3.3 2.09, Qwen 2.5 72B 2.00, MythoMax 2.44), not with
-  the frontier (Claude Sonnet 5 0.99, GPT-5 1.26); the field median is 1.51.
+  completion framing (truncations such as "new" for New York). The final model's 2.11 sits with
+  the lightly tuned open models (Llama 3.3 2.06, Qwen 2.5 72B 2.00, MythoMax 2.34), not with
+  the frontier (Claude Sonnet 5 0.98, GPT-5 1.26); the field median is 1.49.
 
 ## Run
 

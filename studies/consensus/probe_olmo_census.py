@@ -5,95 +5,76 @@ runs together: diversity collapse (a model's own answers narrow) and conformity 
 onto the field's modal answer). Karouzos et al. (arXiv:2604.16027) put the Instruct line's diversity
 collapse at DPO. If conformity is installed at a different stage, the two are distinct processes.
 
-Stages and framings as in probe_olmo_ladder.py: base as a raw completion (first word kept), the
-instruct stages through their own chat template. N samples per category at temperature 1.
-Per stage, against the frozen 87-model field (transcripts/, same norm and plural merge as analyze.py):
+Pipelines as in probe_olmo_ladder.py (harness/ladders.json, sampled by harness/local.py): base as a raw
+completion (first word kept), the other stages in their first default framing: the chat template, or
+for a reasoning model (RL-Zero) the think framing, where only the answer after </think> is scored and
+an unclosed trace is no answer. N samples per category at temperature 1. Each stage is one Contract-A transcript in
+probes/<name>/; probes/<name>.json holds the summary.
+
+Per stage, against the frozen field (transcripts/, scored by analyze.answers(); the stage's answers get
+the same variant merge and the plural merge onto the field's pool, analyze.against()):
   surprisal     mean -log2 P(answer | field), add-one smoothed        (conformity, lower = more)
   modal_share   share of answers equal to the field's modal answer   (conformity)
   entropy       mean per-category entropy of the stage's own answers (diversity)
-    ../../.venv/bin/python probe_olmo_census.py [N=20]
-    ../../.venv/bin/python probe_olmo_census.py --score
-    ../../.venv/bin/python probe_olmo_census.py --32b       # OLMo 3.1 32B, 8-bit -> probes/olmo_census_32b.json
-    ../../.venv/bin/python probe_olmo_census.py --nemotron  # Nemotron 3.5 Lightning -> probes/nemotron_census.json
-    add --expanded for the 65-category battery (spec/stimulus_expanded.json), scored against
-    transcripts-expanded/ -> probes/<name>_expanded.json
+    ../../.venv/bin/python probe_olmo_census.py --7b [N=20]   # -> probes/olmo_census/
+    ../../.venv/bin/python probe_olmo_census.py --7b --score
+    --32b, --nemotron, --tulu, --rlzero pick the pipeline; add --expanded for the 65-category battery
+    (spec/stimulus_expanded.json), scored against transcripts-expanded/ -> probes/<name>_expanded/
 """
-import json, math, sys, time
+import json, math, sys
 from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from analyze import load, norm                              # same normalization as the paper
-from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS, CHAT_KW
+sys.path.insert(0, str(HERE.parents[1] / "harness"))
+from analyze import answers, against, load
+from probe_olmo_ladder import first_word, SIZE, PIPELINE
+import local
 
 EXPANDED = "--expanded" in sys.argv                         # the 65-category battery instead of the 31
-OUT = HERE / "probes" / ({"7b": "olmo_census", "32b": "olmo_census_32b", "nemotron": "nemotron_census", "tulu": "tulu_census", "rlzero": "rlzero_census"}[SIZE]
-                         + ("_expanded" if EXPANDED else "") + ".json")
-SCENES = json.loads((HERE / "spec" / ("stimulus_expanded.json" if EXPANDED else "stimulus.json")).read_text())["scenes"]
-FIELD_DIR = "transcripts-expanded" if EXPANDED else "transcripts"   # the panel the answers are scored against
-STAGES = [(stage, repo, weights) for stage, repo, weights, _ in LADDERS[SIZE]]  # same checkpoints as the ladder
+BATTERY = "expanded" if EXPANDED else "census"
+NAME = ({"7b": "olmo_census", "32b": "olmo_census_32b", "nemotron": "nemotron_census", "tulu": "tulu_census",
+         "rlzero": "rlzero_census"}[SIZE] + ("_expanded" if EXPANDED else ""))
+DIR, OUT = HERE / "probes" / NAME, HERE / "probes" / f"{NAME}.json"
+SPEC = json.loads((HERE / "spec" / ("stimulus_expanded.json" if EXPANDED else "stimulus.json")).read_text())
+
+
+def framing(st):
+    return "raw" if st["stage"] == "base" else st["framings"][0]
 
 
 def sample(n):
-    from mlx_lm import load as mlx_load, generate
-    from mlx_lm.sample_utils import make_sampler
-    from huggingface_hub import model_info
-
-    sampler = make_sampler(temp=1.0)
-    runs = json.loads(OUT.read_text())["runs"] if OUT.exists() else {}
-    for stage, repo, weights in STAGES:
-        if stage in runs and len(runs[stage]["replies"]) == len(SCENES):
-            continue
-        model, tok = mlx_load(weights)
-        rec = runs.setdefault(stage, {"repo": repo, "revision": model_info(repo).sha, "weights": weights,
-                                      "quantization": QUANT, "temperature": 1.0,
-                                      "framing": "raw" if stage == "base" else "chat",
-                                      "run_date": time.strftime("%Y-%m-%d"), "replies": {}})
-        t0 = time.time()
-        for sc in SCENES:
-            if sc["id"] in rec["replies"]:
-                continue
-            q = sc["turns"][0]
-            if stage == "base":
-                prompt, mt = tok.encode(q + "\nAnswer:"), 8
-            else:
-                prompt, mt = tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True, **CHAT_KW), 24
-            rec["replies"][sc["id"]] = [generate(model, tok, prompt=prompt, max_tokens=mt, sampler=sampler)
-                                        for _ in range(n)]
-            OUT.write_text(json.dumps({"runs": runs}, indent=1, ensure_ascii=False))
-        print(f"{stage}: {time.time() - t0:.0f}s", flush=True)
-        del model, tok
-    return runs
+    for st in local.stages(PIPELINE):
+        f = framing(st)
+        local.run(SPEC, st, f, n, local.path(DIR, st, f), local.MAX_TOKENS.get(f, 24))
 
 
-def load_dir(d):
-    """analyze.load for another transcript folder: {model: {category: [normalized answers]}}."""
-    out = {}
-    for p in sorted(d.glob("*.json")):
-        x = json.loads(p.read_text())
-        out[x["model"]] = {c: [t for t in (norm(r[0].get("reply")) for r in sc["runs"] if r) if t]
-                           for c, sc in x["scenes"].items()}
-    return out
+def stage_answers(path, field):
+    """One stage's transcript -> {category: [answer]}: first word for raw, the panel's scoring otherwise."""
+    d = json.loads(path.read_text())
+    if d["framing"] == "raw":
+        ans = {d["model"]: {c: [a for a in (first_word(r[0]["reply"]) for r in sc["runs"]) if a]
+                            for c, sc in d["scenes"].items()}}
+    else:
+        ans = load(HERE, BATTERY, paths=[path])
+    return d["stage"], against(field, ans, HERE, BATTERY)[d["model"]]
 
 
-def score(runs):
-    field = load(HERE) if FIELD_DIR == "transcripts" else load_dir(HERE / FIELD_DIR)
+def score():
+    field = answers(HERE, BATTERY)
     summary = {}
-    for stage, _, _ in STAGES:
-        if stage not in runs:
+    for st in local.stages(PIPELINE):
+        path = local.path(DIR, st, framing(st))
+        if not path.exists():
             continue
-        rec = runs[stage]
-        score_fn = first_word if rec["framing"] == "raw" else norm
+        stage, mine_by_cat = stage_answers(path, field)
         surp, modal_hits, ents, per_cat = [], [], [], {}
-        for c, replies in rec["replies"].items():
-            mine = [a for a in (score_fn(r) for r in replies) if a]
+        for c, mine in mine_by_cat.items():
             others = [a for m in field for a in field[m].get(c, [])]
             if not mine or not others:
                 continue
             pool = Counter(others)
-            stems = {w: w[:-1] for w in set(pool) | set(mine) if w.endswith("s") and w[:-1] in pool}
-            mine = [stems.get(a, a) for a in mine]
             total, vocab = sum(pool.values()), len(set(others) | set(mine))
             modal = pool.most_common(1)[0][0]
             s = [-math.log2((pool.get(a, 0) + 1) / (total + vocab)) for a in mine]
@@ -110,15 +91,13 @@ def score(runs):
                           "entropy": round(sum(ents) / len(ents), 3),
                           "valid": len(surp), "categories": len(per_cat), "per_category": per_cat}
         v = summary[stage]
-        print(f"{stage:5s} surprisal {v['surprisal']:.2f}  modal_share {v['modal_share']:.2f}  "
+        print(f"{stage:7s} surprisal {v['surprisal']:.2f}  modal_share {v['modal_share']:.2f}  "
               f"entropy {v['entropy']:.2f}  ({v['valid']} answers, {v['categories']} categories)")
     return summary
 
 
 if __name__ == "__main__":
-    if "--score" in sys.argv:
-        runs = json.loads(OUT.read_text())["runs"]
-    else:
+    if "--score" not in sys.argv:
         nums = [a for a in sys.argv[1:] if a.isdigit()]
-        runs = sample(int(nums[0]) if nums else 20)
-    OUT.write_text(json.dumps({"summary": score(runs), "runs": runs}, indent=1, ensure_ascii=False))
+        sample(int(nums[0]) if nums else 20)
+    OUT.write_text(json.dumps({"summary": score()}, indent=1, ensure_ascii=False) + "\n")

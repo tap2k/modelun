@@ -117,5 +117,8 @@ where waiting loses the data permanently.
 ## Gotchas
 - `harness/run.py` exits 0 even if cells fail (failures are written into the file). Check the output,
   not just the exit code.
+- Local checkpoints (`harness/local.py`, listed in `harness/ladders.json`) write Contract A into a
+  probe's own directory (`probes/<name>/`) or `transcripts-local/`, never into a study's API transcript
+  directory: a file there joins the panel, the views and `analysis.json` on the next build.
 - Commit messages: use `git commit -F <file>`. Heredocs with apostrophes (`model's`, `don't`) break
   the shell.
