@@ -79,6 +79,7 @@ def sample(n, battery, out_dir, probe):
             local.run(spec, st, framing, n, local.path(out_dir, st, framing), None if framing == "think" else 8,
                       batch=16 if framing == "think" else 64, model=model)
         del model
+        local.free()
 
 
 def labelled(out_dir):

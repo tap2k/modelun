@@ -88,6 +88,7 @@ def sample(n):
                     "scenes": [{"id": "any_word", "turns": [CLOZE if framing == "cloze" else PROMPT]}]}
             local.run(spec, st, framing, n, local.path(DIR, st, framing), local.MAX_TOKENS.get(framing, 24), model=model)
         del model
+        local.free()
 
 
 def score():

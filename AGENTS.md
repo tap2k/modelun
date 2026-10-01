@@ -120,5 +120,9 @@ where waiting loses the data permanently.
 - Local checkpoints (`harness/local.py`, listed in `harness/ladders.json`) write Contract A into a
   probe's own directory (`probes/<name>/`) or `transcripts-local/`, never into a study's API transcript
   directory: a file there joins the panel, the views and `analysis.json` on the next build.
+- One local model in memory at a time on this 64 GB machine. Two large checkpoints resident together
+  (a second process, or a dropped model mlx still caches) gave `<unk>` replies, not an error. Between
+  stages call `del model` then `local.free()`; before starting a GPU job, check that no other `local.py`
+  or mlx process is running (`pgrep -fl mlx`), including another session's.
 - Commit messages: use `git commit -F <file>`. Heredocs with apostrophes (`model's`, `don't`) break
   the shell.

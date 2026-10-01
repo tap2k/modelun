@@ -79,6 +79,16 @@ def load(st):
     return model, tok
 
 
+def free():
+    """Release a dropped model's memory. Call after `del model` and before loading the next one: mlx keeps
+    freed buffers in its cache, and two large checkpoints resident at once on a 64 GB machine gave garbage
+    (<unk>) replies rather than an error (Nemotron after OLMo 3.1 32B, 2026-10-01)."""
+    import gc
+    import mlx.core as mx
+    gc.collect()
+    mx.clear_cache()
+
+
 def system_prompt(st, framing):
     return SYSGEN if framing == "sysgen" else st.get("system_prompts", {}).get(framing)
 
@@ -105,9 +115,19 @@ def revision(repo):
     return model_info(repo).sha
 
 
-def generate(model, tok, prompts, max_tokens, sampler, batch):
+def generate(model, tok, prompts, max_tokens, sampler, batch, batched=True):
     """[(text, finish_reason)] per prompt, in order: batch_generate, keeping each reply's finish reason
-    ("stop" at an end-of-text or end-of-turn token, "length" when max_tokens ran out)."""
+    ("stop" at an end-of-text or end-of-turn token, "length" when max_tokens ran out). batched=False samples
+    one prompt at a time, for models whose batched path is broken in mlx-lm (ladders.json "batched")."""
+    if not batched:
+        from mlx_lm import stream_generate
+        out = []
+        for p in prompts:
+            text, finish = "", None
+            for r in stream_generate(model, tok, p, max_tokens=max_tokens, sampler=sampler):
+                text, finish = text + r.text, r.finish_reason or finish
+            out.append((text, finish))
+        return out
     from mlx_lm.generate import BatchGenerator
     gen = BatchGenerator(model, stop_tokens=[[t] for t in tok.eos_token_ids], sampler=sampler,
                          completion_batch_size=batch)
@@ -182,7 +202,8 @@ def run(spec, st, framing, runs, out, max_tokens=None, batch=None, temperature=1
     for i in range(0, len(todo), per_chunk):
         chunk = todo[i:i + per_chunk]
         prompts = [encode(tok, st, framing, s["turns"][0]) for s in chunk]
-        replies = generate(model, tok, [p for p in prompts for _ in range(runs)], max_tokens, sampler, batch)
+        replies = generate(model, tok, [p for p in prompts for _ in range(runs)], max_tokens, sampler, batch,
+                           st.get("batched", True))
         date = time.strftime("%Y-%m-%d")
         for j, s in enumerate(chunk):
             q = s["turns"][0]

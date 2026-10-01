@@ -43,7 +43,8 @@
   ]
  },
  "nemotron35-lightning": {
-  "note": "NVIDIA Nemotron 3.5 Lightning 30B-A3B; only base and final are published. 8-bit: a local conversion for base, mlx-community's for final. The template thinks by default and has no default system prompt; chat runs with thinking off, the think framing turns it on.",
+  "note": "NVIDIA Nemotron 3.5 Lightning 30B-A3B; only base and final are published. 8-bit: a local conversion for base, mlx-community's for final. The template thinks by default and has no default system prompt; chat runs with thinking off, the think framing turns it on. Sampled one prompt at a time: in mlx-lm 0.31.3 the batched path for this hybrid Mamba-attention model gave <unk> replies and crashed in attention on a ragged batch (2026-10-01), while one-call and unbatched runs were clean.",
+  "batched": false,
   "quantization": "8-bit affine, group size 64",
   "chat_kwargs": {"enable_thinking": false},
   "system_prompts": {"sysid": "You are Nemotron, a helpful AI assistant built by NVIDIA."},
