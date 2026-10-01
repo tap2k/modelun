@@ -4,44 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>suggestibility — the “right?” reflex</title>
+<link rel="stylesheet" href="base.css">
 <style>
-  :root{
-    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --txt:#e6e8ee; --mut:#9aa3b2;
-    --acc:#6ea8fe; --res:#6ea8fe; --syc:#e0705f; --amber:#e0a33e;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
-  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
-  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px;font-weight:400}
-  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent;cursor:pointer}
-  nav a:hover{color:var(--txt);background:var(--panel2);text-decoration:none}
-  nav a.cur{color:var(--txt);background:var(--panel2);border-color:var(--line)}
-  header .src{color:var(--mut);font-size:13px;padding:6px 4px;white-space:nowrap}
-  header .src:hover{color:var(--txt);text-decoration:none}
   main{padding:20px 22px;max-width:1080px}
   main.full{max-width:none}
-  h2{font-size:19px;margin:0 0 10px}
-  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:90ch}
-  .note b{color:var(--txt)}
   .lead{font-size:13px;margin-bottom:20px}
   table{border-collapse:collapse;font-size:13px;width:100%}
   th,td{text-align:left;padding:6px 12px;border-bottom:1px solid var(--line);vertical-align:top}
   th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
-  tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
   .track{position:relative;display:inline-block;width:260px;height:15px;vertical-align:middle}
   .track:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line)}
   .bar2{position:absolute;top:2.5px;height:10px;border-radius:2px}
   .bar2.pos{left:50%;background:var(--syc)} .bar2.neg{right:50%;background:var(--res)}
   .ci{position:absolute;top:6.5px;height:1px;background:var(--mut);opacity:.6}
-  .val{font-variant-numeric:tabular-nums;font-weight:600} .val.pos{color:var(--syc)} .val.neg{color:var(--res)}
   .cimut{color:var(--mut);font-size:11.5px;font-variant-numeric:tabular-nums}
-  .tagm{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
   .floor{color:var(--mut)} .floor .fm{color:var(--amber)}
-  .pill{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:11.5px;color:var(--mut)}
-  .pill.affirm{border-color:var(--syc);color:var(--syc)} .pill.reject{border-color:var(--res);color:var(--res)}
-  .pill.hedge{opacity:.7} .pill.fail{opacity:.4;text-decoration:line-through}
   .lin{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 14px}
   .lin .fam{width:78px;font-weight:650;font-size:13px}
   .chip{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:7px;padding:3px 9px;min-width:52px}
@@ -50,9 +27,7 @@
   .chip.neg{background:rgba(110,168,254,.12);border-color:rgba(110,168,254,.4)} .chip.neg .v{color:var(--res)}
   .chip.flat .v{color:var(--mut)}
   .arr{color:var(--mut)}
-  .wide{overflow-x:auto}
   .rate{display:inline-block;width:44px;font-variant-numeric:tabular-nums}
-  code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
   .key{font-size:12px;color:var(--mut);margin:4px 0 18px}
 </style>
 </head>
@@ -117,7 +92,7 @@ function scorecard(){
   validates harder when you fish. <span class="val neg">Left / blue</span> = resists the bid.
   <span class="fm">°</span> floor-limited (baseline affirm &lt; 10%, so the tag has little to move —
   uninformative). Click a model to see its per-decision replies.</p>
-  <div class="wide"><table>
+  <div class="hscroll"><table>
     <tr><th>model</th><th><span style="color:var(--res)">◀ resists</span> &nbsp; <span style="color:var(--syc)">validates ▶</span></th><th>TAGeff</th><th>90% CI</th></tr>
     ${rows}</table></div>`);
 }
@@ -149,7 +124,7 @@ function model(l){
   nav("#/m/"+l);
   const m = D.models[l];
   if (!m || !m.items) { $(`<p class="note">no per-decision drill-down for this model.</p>`); return; }
-  const cellHtml = (arr) => arr.map(x => `<span class="pill ${x.c}">${esc(x.r||"·")}</span>`).join("");
+  const cellHtml = (arr) => arr.map(x => `<span class="rep ${x.c}">${esc(x.r||"·")}</span>`).join("");
   const rows = m.items.map(it => {
     const d = it.tag_rate - it.ask_rate;
     const cls = d > 0.05 ? "pos" : (d < -0.05 ? "neg" : "");
@@ -164,9 +139,9 @@ function model(l){
   $(`<h2>${esc(l)} <span class="val ${m.tageff<0?'neg':'pos'}" style="font-size:15px">${pct(m.tageff)}</span></h2>
   <p class="note">baseline affirm ${Math.round(m.ask*100)}% → with “…right?” ${Math.round(m.tag*100)}%${fam}.
   Each row is one decision; cells show every reply (both options pooled), colored
-  <span class="pill affirm">affirm</span> <span class="pill reject">reject</span>
-  <span class="pill hedge">hedge</span>. Δ is the shift the tag caused.</p>
-  <div class="wide"><table>
+  <span class="rep affirm">affirm</span> <span class="rep reject">reject</span>
+  <span class="rep hedge">hedge</span>. Δ is the shift the tag caused.</p>
+  <div class="hscroll"><table>
     <tr><th>decision</th><th>neutral “is X better?”</th><th>“X is better, right?”</th><th>Δ</th></tr>
     ${rows}</table></div>`);
 }
@@ -197,7 +172,7 @@ function confidence(){
   <span class="val pos">Δ confident</span> = confident − neutral (the “right?” effect): the newest
   flagships go <span class="val neg">negative</span> (resist), older ones positive. The well-behaved
   models are the flat ones. Sorted by the hesitant-boost; 8-item probe.</p>
-  <div class="wide"><table>
+  <div class="hscroll"><table>
     <tr><th>model</th><th>neutral</th><th>confident</th><th>tentative</th>
         <th>Δ confident <span class="mut">(right?)</span></th><th>Δ tentative <span class="mut">(maybe?)</span></th></tr>
     ${body}</table></div>`);

@@ -14,6 +14,9 @@ import shutil
 from pathlib import Path
 
 VIEWS = Path(__file__).resolve().parent
+# shared styling for the study sites (copied, like core.js; the copy is gitignored)
+import shutil  # noqa: E402
+shutil.copy(Path(__file__).resolve().parents[3] / "harness" / "viewer" / "base.css", VIEWS / "base.css")
 STUDY = VIEWS.parent
 REPO = STUDY.parent.parent
 TRANSCRIPTS = STUDY / "transcripts"

@@ -1,0 +1,65 @@
+/* base.css — shared styling for the study review sites.
+   Source lives here; each study's views/build.py copies it next to index.html (like core.js), and the
+   copy is gitignored. Pages link it first and keep their own <style> for what is particular to them;
+   a page rule with the same selector wins. The palette is the dark one the study sites share; text
+   colors derive from --fg, so a page that sets its own --fg keeps its text color. The conduct view has
+   a light theme of its own and does not link this file. */
+
+:root{
+  color-scheme:dark;
+  --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --txt:var(--fg); --mut:#9aa3b2;
+  --acc:#6ea8fe; --res:#6ea8fe; --syc:#e0705f; --amber:#e0a33e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+
+/* header: title, tabs, and links to sibling pages; wraps on narrow screens */
+header{display:flex;align-items:center;flex-wrap:wrap;gap:6px 18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px;font-weight:400}
+nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent;cursor:pointer}
+nav a:hover{color:var(--txt);background:var(--panel2);text-decoration:none}
+nav a.cur,nav a.on{color:var(--txt);background:var(--panel2);border-color:var(--line)}
+header .src{color:var(--mut);font-size:13px;padding:6px 4px;white-space:nowrap}
+header .src:hover{color:var(--txt);text-decoration:none}
+main{padding:20px 22px;max-width:1180px}
+main.full{max-width:none}
+h2{font-size:19px;margin:0 0 10px}
+.note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:92ch}
+.note b{color:var(--txt)}
+.mut{color:var(--mut)}
+
+/* tables: wrap a wide table in .hscroll so it scrolls in its own box, never the page; the table rules
+   apply only inside it, so pages with their own grids are untouched */
+.hscroll{overflow-x:auto;max-width:100%}
+.hscroll table{border-collapse:collapse;font-size:13px}
+.hscroll th,.hscroll td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.hscroll th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
+td.name{white-space:nowrap}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* signed values: blue = resists / below, red = agrees / above */
+.val{font-variant-numeric:tabular-nums;font-weight:600} .val.pos{color:var(--syc)} .val.neg{color:var(--res)}
+.tagm{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
+
+/* a model's reply, colored by how the classifier read it */
+.rep{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:11.5px;color:var(--mut);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
+.rep.affirm{border-color:var(--syc);color:var(--syc)} .rep.reject{border-color:var(--res);color:var(--res)}
+.rep.hedge{opacity:.75} .rep.fail{opacity:.4;text-decoration:line-through}
+
+/* filter and order controls; state belongs in the URL hash so views can be shared */
+.filt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--mut)}
+.filt .lab{width:64px;text-transform:uppercase;font-size:10.5px;letter-spacing:.4px}
+.filt a{color:var(--mut);padding:3px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.filt a.cur,.filt a.on{color:var(--txt);background:var(--panel2);border-color:var(--mut)}
+.filt a:hover{color:var(--txt);text-decoration:none}
+
+@media (max-width:640px){
+  main{padding:14px}
+  nav{margin-left:0}
+  header .sub{display:none}
+  .note{font-size:12px}
+}

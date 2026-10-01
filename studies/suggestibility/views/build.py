@@ -8,7 +8,9 @@ consensus / structured explorers.
     python studies/suggestibility/views/build.py
     open studies/suggestibility/views/index.html
 """
+import csv
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -134,8 +136,38 @@ blob = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data.js").write_text(f"const D = {blob};\n")
 print(f"wrote {VIEWS/'data.js'}  ({len(models)} models, {len(walks)} lineages, {len(blob)//1024}KB)")
 
-# --- contested probe (probe_contested.py): its own blob, data_contested.js, drawn by the "contested" tab ---
+# shared styling for the study sites (copied, like core.js; the copy is gitignored)
+shutil.copy(STUDY.parent.parent / "harness" / "viewer" / "base.css", VIEWS / "base.css")
+
+# --- contested probe (probe_contested.py): its own blob, data_contested.js, drawn by contested.html ---
 import probe_contested as PC   # noqa: E402
+
+VENDOR = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "x-ai": "xAI", "meta": "Meta",
+          "meta-llama": "Meta", "deepseek": "DeepSeek", "moonshotai": "Moonshot", "qwen": "Qwen", "z-ai": "Z.ai",
+          "mistralai": "Mistral", "minimax": "MiniMax", "cohere": "Cohere", "baidu": "Baidu", "tencent": "Tencent",
+          "stepfun": "StepFun", "nvidia": "NVIDIA", "ibm-granite": "IBM", "microsoft": "Microsoft", "writer": "Writer",
+          "perplexity": "Perplexity", "nousresearch": "Nous", "gryphe": "Gryphe"}
+
+
+def release_dates():
+    """label -> release date, read the way the consensus view does: the ECI file in cross-instrument,
+    else the conduct study's looked-up dates."""
+    xi = STUDY.parent / "cross-instrument"
+    eci = {r["Model"]: r["date"] for r in csv.DictReader((xi / "eci_scores_2026-09-13.csv").open())}
+    out = {}
+    for ln in (xi / "eci_map_2026-09-13.tsv").read_text().splitlines():
+        if not ln.startswith("#") and "\t" in ln:
+            ours, theirs = ln.split("\t")[:2]
+            if eci.get(theirs):
+                out[ours] = eci[theirs]
+    for ln in (STUDY.parent / "conduct" / "spec" / "release-dates.tsv").read_text().splitlines():
+        f = ln.split("\t")
+        if not ln.startswith("#") and len(f) >= 2:
+            out.setdefault(f[0], f[1][:10])
+    return out
+
+
+released = release_dates()
 
 ca = json.loads((STUDY / "probes" / "contested_analysis.json").read_text())["per_model"]
 vendor = {s.split("/")[-1]: s.split("/")[0] for s in
@@ -154,7 +186,8 @@ for p in sorted(PC.OUT.glob("*.json")):
     if r.get("tageff_ci90"):
         v["tageff_ci90"] = [round(x, 3) for x in r["tageff_ci90"]]
     v["via"] = ("-" if r["d_affirm_tag"] > -0.05 else "No" if r["d_reject_tag"] >= r["d_hedge_tag"] else "declining")
-    v["vendor"] = vendor.get(m, "?")
+    v["vendor"] = VENDOR.get(vendor.get(m, ""), vendor.get(m, "?"))
+    v["released"] = released.get(m)
     v["items"] = {item: {key: cell(reps) for key, reps in c.items()} for item, c in d["cells"].items()}
     cmodels[m] = v
 citems = [{"id": i, "stratum": st, "x": cx, "y": cy,

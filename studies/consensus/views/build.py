@@ -13,6 +13,7 @@ nothing and is not copied — the view is one hash-routed index.html with no dep
 """
 
 import argparse
+import shutil
 import json
 import csv
 import math
@@ -86,8 +87,9 @@ def build(battery):
 
     # the actual prompt text per category (the clean question, sans one-word clamp)
     specs = [BATTERIES[b][1] for b in (COMBINED if src == "combined" else (battery,))]
-    prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip()
-               for f in specs for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]}
+    scenes = [s for f in specs for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]]
+    prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in scenes}
+    prompts_full = {s["id"]: s["turns"][0].strip() for s in scenes}
 
     models = [m for m in sorted(pm, key=lambda x: -pm[x]["surprisal"]) if m in ans]
     cats = sorted(pc, key=lambda c: -pc[c]["modal_share"])
@@ -152,7 +154,7 @@ def build(battery):
                     "released": dates.get(m), **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",
                      "origin", "open", "family", "ci90")}} for m in models],
-        "cats": [{"id": c, "prompt": prompts.get(c, ""), "modal": pc[c]["modal"],
+        "cats": [{"id": c, "prompt": prompts.get(c, ""), "prompt_full": prompts_full.get(c, ""), "modal": pc[c]["modal"],
                   "share": pc[c]["modal_share"], "eff": dists[c]["eff"],
                   "n_distinct": pc[c]["n_distinct"]} for c in cats],
         "grid": grid,
@@ -169,6 +171,8 @@ def main():
     ap = argparse.ArgumentParser(description="Build the consensus review site's data files")
     ap.add_argument("--battery", choices=BATTERIES, help="one battery (default: all)")
     battery = ap.parse_args().battery
+    # shared styling for the study sites (copied, like core.js; the copy is gitignored)
+    shutil.copy(STUDY.parent.parent / "harness" / "viewer" / "base.css", VIEWS / "base.css")
     for b in [battery] if battery else BATTERIES:
         build(b)
     print(f"open {VIEWS / 'index.html'} in a browser (?set=expanded, ?set=brands)")

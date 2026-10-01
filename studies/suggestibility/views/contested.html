@@ -4,56 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>suggestibility — contested questions</title>
+<link rel="stylesheet" href="base.css">
 <style>
-  :root{
-    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --txt:#e6e8ee; --mut:#9aa3b2;
-    --acc:#6ea8fe; --res:#6ea8fe; --syc:#e0705f; --amber:#e0a33e;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
-  header{display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
-  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px;font-weight:400}
-  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent;cursor:pointer}
-  nav a:hover{color:var(--txt);background:var(--panel2);text-decoration:none}
-  nav a.cur{color:var(--txt);background:var(--panel2);border-color:var(--line)}
-  header .src{color:var(--mut);font-size:13px;padding:6px 4px;white-space:nowrap}
-  main{padding:20px 22px;max-width:1180px}
-  main.full{max-width:none}
-  h2{font-size:19px;margin:0 0 10px} h3{font-size:15px;margin:22px 0 6px}
-  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:95ch}
-  .note b{color:var(--txt)}
-  table{border-collapse:collapse;font-size:13px;width:100%}
-  th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
-  td.name{white-space:nowrap}
-  tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
+  h3{font-size:15px;margin:22px 0 6px}
+  table.full{width:100%}
   .track{position:relative;display:inline-block;width:220px;height:15px;vertical-align:middle;overflow:hidden}
   .track:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line)}
   .bar2{position:absolute;top:2.5px;height:10px;border-radius:2px}
   .bar2.pos{left:50%;background:var(--syc)} .bar2.neg{right:50%;background:var(--res)}
   .ci{position:absolute;top:6.5px;height:1px;background:var(--mut);opacity:.6}
-  .val{font-variant-numeric:tabular-nums;font-weight:600} .val.pos{color:var(--syc)} .val.neg{color:var(--res)}
-  .mut{color:var(--mut)} .num{font-variant-numeric:tabular-nums;white-space:nowrap}
-  .tagm{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
+  th.barh{width:240px;text-align:center}
+  tr.grp td{padding:16px 10px 4px;font-weight:650;font-size:12.5px;border-bottom:1px solid var(--mut)}
+  tr.grp td span{color:var(--mut);font-weight:400;margin-left:6px}
   .stm{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;border-radius:5px;padding:0 6px;border:1px solid var(--line);color:var(--mut)}
   .stm.history{color:#b39ddb;border-color:#5b4e7a} .stm.policy{color:#4fd1a5;border-color:#2c6b57} .stm.hot{color:var(--amber);border-color:#7a5a24}
-  .pill{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:11.5px;color:var(--mut);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
-  .pill.affirm{border-color:var(--syc);color:var(--syc)} .pill.reject{border-color:var(--res);color:var(--res)}
-  .pill.hedge{opacity:.75} .pill.fail{opacity:.4;text-decoration:line-through}
   .rate{display:inline-block;width:40px;font-variant-numeric:tabular-nums;font-weight:600}
-  .filt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12.5px;color:var(--mut)}
-  .filt a{color:var(--mut);padding:3px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
-  .filt a.cur{color:var(--txt);background:var(--panel2)}
-  .filt select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin:0 0 14px}
   .card .claim{font-size:14.5px;font-weight:600;margin:4px 0 2px}
-  .prompts{display:grid;grid-template-columns:130px 1fr 1fr;gap:4px 14px;font-size:12.5px;margin-top:8px}
+  .prompts{display:grid;grid-template-columns:150px 1fr 1fr;gap:4px 14px;font-size:12.5px;margin-top:8px}
   .prompts .k{color:var(--mut)} .prompts code{white-space:normal}
-  code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
-  .wide{overflow-x:auto}
   .eff{font-size:12px;color:var(--mut);margin-top:6px}
+  @media (max-width:640px){ .prompts{grid-template-columns:1fr} .prompts .k:first-child{display:none} }
+  /* grid: the window is the scroll area, as in the consensus view */
+  main.gridv{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));height:calc(100dvh - var(--hh,0px));padding-bottom:12px}
+  .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto;flex:1;min-height:0}
+  table.g{border-collapse:separate;border-spacing:2px;margin:2px}
+  table.g th,table.g td{padding:0;border:0;text-align:center;vertical-align:middle}
+  table.g thead th{position:sticky;background:var(--bg);z-index:3;font-size:10.5px;text-transform:none;letter-spacing:0;color:var(--mut);padding:4px 3px;cursor:pointer}
+  table.g thead tr.s th{top:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;cursor:default}
+  table.g thead tr.i th{top:24px;height:84px;vertical-align:bottom}
+  table.g thead tr.i th div{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;margin:0 auto}
+  table.g thead th.mh{left:0;z-index:5;cursor:default}
+  table.g tbody th{position:sticky;left:0;background:var(--bg);z-index:2;text-align:left;padding:3px 12px 3px 4px;white-space:nowrap;font-size:12.5px;font-weight:400;color:var(--txt);cursor:pointer;border-right:1px solid var(--line);text-transform:none;letter-spacing:0}
+  table.g tbody th .s{font-size:10.5px;color:var(--mut);margin-left:6px}
+  table.g td.c{width:42px;min-width:42px;height:24px;border-radius:4px;font-size:11px;font-variant-numeric:tabular-nums;color:var(--txt);cursor:pointer}
+  table.g td.c.na{color:var(--line)}
+  table.g tr.grp th{background:var(--bg);text-align:left;padding:12px 4px 3px;font-weight:650;font-size:12px;border:0;cursor:default;color:var(--txt)}
+  table.g tr.grp th span{color:var(--mut);font-weight:400;margin-left:6px}
+  table.g tbody tr:hover td.c{box-shadow:inset 0 0 0 200px rgba(230,232,238,.06)}
+  @media (max-width:640px){ main.gridv{display:block;height:auto} .gwrap{overflow-y:visible} }
 </style>
 </head>
 <body>
@@ -62,86 +51,138 @@
   <nav id="nav"></nav>
   <a class="src" href="index.html">← the “right?” reflex</a>
 </header>
-<main>
-<div id="view"></div>
-</main>
+<main id="main"><div id="view"></div></main>
 <script src="data_contested.js"></script>
 <script>
+const main = document.getElementById("main");
 const $ = (h) => { document.getElementById("view").innerHTML = h; };
-const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x) => x == null ? "–" : (x>=0?"+":"") + Math.round(x*100) + "%";
 const pc0 = (x) => x == null ? "–" : Math.round(x*100) + "%";
 const sgn = (v) => v == null ? "–" : `<span class="val ${v<-0.005?'neg':(v>0.005?'pos':'')}">${pct(v)}</span>`;
 const STRAT = {history: "history", policy: "policy", hot: "partisan"};
 const stm = (s) => `<span class="stm ${s}">${STRAT[s]}</span>`;
 const LABEL = {ask: "question", tag: "…, right?", bare: "bare claim", belief: "I think …", belief_q: "I think … + question"};
+const ARMNAME = {tag: "tag", bare: "bare", belief: "belief"};
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const short = (id) => id.replace(/_/g, " ");
 const ITEM = Object.fromEntries(C.items.map(it => [it.id, it]));
-const SC = 230;
-let F = {stratum: "all"};
+const avg = (xs) => { const v = xs.filter(x => x != null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; };
+
+/* ---- state lives in the hash: #/?s=history&o=release, #/grid?a=belief&o=provider ---- */
+let Q = {};
+const parseHash = () => { const [p, q] = (location.hash || "#/").slice(1).split("?"); Q = Object.fromEntries(new URLSearchParams(q || "")); return p || "/"; };
+const link = (path, over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k,v]) => { if (v === "" || v == null) q.delete(k); }); const s = q.toString(); return `#${path}${s ? "?" + s : ""}`; };
 
 function nav(cur, extra){
-  const tabs = [["#/","models"],["#/items","items"],["#/about","method"]];
-  document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
-    `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") + (extra ? `<a class="cur">${esc(extra)}</a>` : "");
-  document.querySelector("main").classList.toggle("full", cur === "#/item" || cur === "#/m");
+  const tabs = [["/","models"],["/grid","grid"],["/items","items"],["/about","method"]];
+  document.getElementById("nav").innerHTML = tabs.map(([h,t]) => {
+    const href = (h === "/" || h === "/grid") ? link(h, {}) : `#${h}`;
+    return `<a href="${href}" class="${cur===h?"cur":""}">${t}</a>`; }).join("") + (extra ? `<a class="cur">${esc(extra)}</a>` : "");
+  main.classList.toggle("full", ["/item", "/m", "/grid"].includes(cur));
+  main.classList.toggle("gridv", cur === "/grid");
 }
 
-// Bars are scaled so the largest |value| in view (bar or interval end) fills half the 220px track.
-function bar(v, lo, hi, scale){
-  const px = (x) => x * scale, c = 110;
-  const ci = (lo != null && hi != null) ? `<span class="ci" style="left:${c + px(Math.min(lo,hi))}px;width:${px(Math.abs(hi-lo))}px"></span>` : "";
-  return `<span class="track"><span class="bar2 ${v<0?'neg':'pos'}" style="width:${px(Math.abs(v))}px"></span>${ci}</span>`;
-}
-
-// Yes rate over a cell's replies (failed calls excluded), and per-item effects for a model.
+/* ---- shared pieces ---- */
 const yes = (arr) => { const a = (arr||[]).filter(x => x.c !== "fail"); return a.length ? a.filter(x => x.c === "affirm").length / a.length : null; };
 const hedge = (arr) => { const a = (arr||[]).filter(x => x.c !== "fail"); return a.length ? a.filter(x => x.c === "hedge").length / a.length : null; };
 function itemEff(m, id, arm){
   const c = C.models[m].items[id]; if (!c) return null;
-  const e = ["x","y"].map(s => { const a = yes(c["ask_"+s]), b = yes(c[arm+"_"+s]); return (a==null||b==null) ? null : b - a; }).filter(x => x != null);
-  return e.length ? e.reduce((p,q)=>p+q,0)/e.length : null;
+  return avg(["x","y"].map(s => { const a = yes(c["ask_"+s]), b = yes(c[arm+"_"+s]); return (a==null||b==null) ? null : b - a; }));
 }
-const avg = (xs) => { const v = xs.filter(x => x != null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; };
+const byDate = (a, b) => (C.models[a].released || "9999").localeCompare(C.models[b].released || "9999") || a.localeCompare(b);
+function ordered(ms, key){   // -> [{g, n} | {m}] by the "o" control: effect (default), release, provider
+  const o = Q.o || "effect";
+  if (o === "release") return [...ms].sort(byDate).map(m => ({m}));
+  if (o === "provider"){
+    const cnt = {}; ms.forEach(m => cnt[C.models[m].vendor] = (cnt[C.models[m].vendor] || 0) + 1);
+    const vs = Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a] || a.localeCompare(b));
+    return vs.flatMap(v => [{g: v, n: cnt[v]}, ...ms.filter(m => C.models[m].vendor === v).sort(byDate).map(m => ({m}))]);
+  }
+  return [...ms].sort((a,b) => (key(a) ?? 0) - (key(b) ?? 0)).map(m => ({m}));
+}
+function controls(path, extra){
+  const o = Q.o || "effect";
+  const ord = ["effect","release","provider"].map(k => `<a class="${o===k?'cur':''}" href="${link(path, {o: k === "effect" ? "" : k})}">${k}</a>`).join("");
+  return `${extra || ""}<div class="filt"><span class="lab">order</span>${ord}</div>`;
+}
+function bar(v, lo, hi, scale){
+  const px = (x) => x * scale, c = 110;
+  const ci = (lo != null && hi != null) ? `<span class="ci" style="left:${c + px(Math.min(lo,hi))}px;width:${px(Math.abs(hi-lo))}px"></span>` : "";
+  return `<span class="track"><span class="bar2 ${v<0?'neg':'pos'}" style="width:${Math.min(108, px(Math.abs(v)))}px"></span>${ci}</span>`;
+}
 
+/* ---- models ---- */
 function models(){
-  nav("#/");
-  const st = F.stratum, k = (b) => st === "all" ? b : `${b}_${st}`;
-  const ms = C.order.filter(l => C.models[l][k("tageff")] != null)
-    .sort((a,b) => C.models[a][k("tageff")] - C.models[b][k("tageff")]);
-  const ext = Math.max(0.05, ...ms.flatMap(l => { const m = C.models[l];
-    return [Math.abs(m[k("tageff")]), ...(st === "all" && m.tageff_ci90 ? m.tageff_ci90.map(Math.abs) : [])]; }));
-  const scale = 106 / ext;
-  const rows = ms.map(l => {
-    const m = C.models[l], v = m[k("tageff")];
+  nav("/");
+  const st = Q.s || "all", k = (b) => st === "all" ? b : `${b}_${st}`;
+  const ms = C.order.filter(l => C.models[l][k("tageff")] != null);
+  const scale = 104 / Math.max(0.05, ...ms.map(l => Math.abs(C.models[l][k("tageff")])));
+  const rows = ordered(ms, l => C.models[l][k("tageff")]).map(r => {
+    if (r.g) return `<tr class="grp"><td colspan="7">${esc(r.g)}<span>${r.n}</span></td></tr>`;
+    const l = r.m, m = C.models[l], v = m[k("tageff")];
     const ci = st === "all" && m.tageff_ci90 ? m.tageff_ci90 : [null, null];
     return `<tr class="rowlink" onclick="location.hash='#/m/${l}'">
-      <td class="name">${esc(l)}</td>
-      <td>${bar(v, ci[0], ci[1], scale)}</td>
+      <td class="name">${esc(l)}</td><td>${bar(v, ci[0], ci[1], scale)}</td>
       <td class="num">${sgn(v)}</td><td class="num">${sgn(m[k("bareeff")])}</td><td class="num">${sgn(m[k("beliefeff")])}</td>
       <td class="num mut">${pc0(m[k("hedge_ask")])}</td><td class="mut">${m.via === "-" ? "" : (m.via === "No" ? "says No" : "declines")}</td></tr>`;
   }).join("");
   const mean = (f) => avg(ms.map(l => C.models[l][f]));
-  const sb = ["all", ...C.meta.strata].map(x => `<a class="${x===st?'cur':''}" onclick="F.stratum='${x}';models()">${x === "all" ? "all" : STRAT[x]}</a>`).join("");
+  const strat = `<div class="filt"><span class="lab">stratum</span>${["all", ...C.meta.strata].map(x =>
+    `<a class="${x===st?'cur':''}" href="${link("/", {s: x === "all" ? "" : x})}">${x === "all" ? "all" : STRAT[x]}</a>`).join("")}</div>`;
   $(`<h2>models</h2>
   <p class="note">Each effect is the change in the share of Yes against the plain question, counterbalanced over each
   claim and its mirror. The <b>tag</b> (“…, right?”) asks the model to confirm; <b>bare</b> states the claim with no
   speaker; <b>belief</b> (“I think …”) states it as the user's view. Across the panel the tag lowers agreement and the
   belief raises it. <b>hedge</b> is the share of plain questions answered with neither Yes nor No. <b>resists</b> says
   whether a model's drop under the tag comes as a No or as a refusal. Bars show the tag effect with its 90% interval.
-  Click a model for its replies; the <a href="#/items">items</a> tab shows each question across models.</p>
-  <div class="filt">stratum ${sb} &nbsp; <span>${ms.length} models · mean tag ${sgn(mean(k("tageff")))},
-  bare ${sgn(mean(k("bareeff")))}, belief ${sgn(mean(k("beliefeff")))}</span></div>
-  <div class="wide"><table>
-    <tr><th>model</th><th><span style="color:var(--res)">◀ resists</span> tag <span style="color:var(--syc)">agrees ▶</span></th>
+  Click a model for its replies; <a href="#/grid">grid</a> shows every model on every item.</p>
+  ${controls("/", strat)}
+  <p class="note">${ms.length} models · mean tag ${sgn(mean(k("tageff")))}, bare ${sgn(mean(k("bareeff")))}, belief ${sgn(mean(k("beliefeff")))}</p>
+  <div class="hscroll"><table class="full">
+    <tr><th>model</th><th class="barh"><span style="color:var(--res)">◀ resists</span> &nbsp; <span style="color:var(--syc)">agrees ▶</span></th>
         <th>tag</th><th>bare</th><th>belief</th><th>hedge</th><th>resists</th></tr>
     ${rows}</table></div>`);
 }
 
+/* ---- grid: every model x every item, colored by one phrasing's effect ---- */
+function cellColor(v){
+  if (v == null) return "";
+  const a = Math.min(1, Math.abs(v) / 0.5) * 0.85;
+  return `background:${v < 0 ? `rgba(110,168,254,${a.toFixed(2)})` : `rgba(224,112,95,${a.toFixed(2)})`}`;
+}
+function grid(){
+  nav("/grid");
+  const arm = Q.a || "tag";
+  const items = C.meta.strata.flatMap(s => C.items.filter(it => it.stratum === s));
+  const mean = (l) => avg(items.map(it => itemEff(l, it.id, arm)));
+  const head1 = `<tr class="s"><th class="mh"></th>${C.meta.strata.map(s =>
+    `<th colspan="${C.items.filter(it => it.stratum === s).length}">${stm(s)}</th>`).join("")}</tr>`;
+  const head2 = `<tr class="i"><th class="mh" style="top:24px"></th>${items.map(it =>
+    `<th onclick="location.hash='#/i/${it.id}'" title="${esc(cap(it.x))}"><div>${esc(short(it.id))}</div></th>`).join("")}</tr>`;
+  const body = ordered(C.order, mean).map(r => {
+    if (r.g) return `<tr class="grp"><th colspan="${items.length + 1}">${esc(r.g)}<span>${r.n}</span></th></tr>`;
+    const l = r.m;
+    return `<tr><th onclick="location.hash='#/m/${l}'">${esc(l)}<span class="s">${pct(mean(l))}</span></th>${items.map(it => {
+      const v = itemEff(l, it.id, arm);
+      return `<td class="c ${v==null?'na':''}" style="${cellColor(v)}" title="${esc(l)} · ${esc(short(it.id))}: ${pct(v)}"
+        onclick="location.hash='#/m/${l}'">${v == null ? "·" : Math.round(v*100)}</td>`; }).join("")}</tr>`;
+  }).join("");
+  const arms = `<div class="filt"><span class="lab">phrasing</span>${["tag","bare","belief"].map(a =>
+    `<a class="${a===arm?'cur':''}" href="${link("/grid", {a: a === "tag" ? "" : a})}">${LABEL[a]}</a>`).join("")}</div>`;
+  $(`<h2>grid</h2>
+  <p class="note">Each cell is one model's ${ARMNAME[arm]} effect on one item, in points against the plain question
+  (claim and mirror averaged): <span class="val neg">blue</span> = less agreement, <span class="val pos">red</span> = more.
+  The number after each model is its mean over the items. Click a model or a cell for its replies, an item for its prompts.</p>
+  ${controls("/grid", arms)}
+  <div class="gwrap"><table class="g"><thead>${head1}${head2}</thead><tbody>${body}</tbody></table></div>`);
+}
+
+/* ---- items ---- */
 function items(){
-  nav("#/items");
+  nav("/items");
   const ms = C.order;
-  const cards = C.items.map(it => {
+  const rows = C.meta.strata.flatMap(s => C.items.filter(it => it.stratum === s)).map(it => {
     const e = (arm) => avg(ms.map(m => itemEff(m, it.id, arm)));
     const h = avg(ms.flatMap(m => ["x","y"].map(s => hedge(C.models[m].items[it.id]?.["ask_"+s]))));
     return `<tr class="rowlink" onclick="location.hash='#/i/${it.id}'">
@@ -154,63 +195,63 @@ function items(){
   <p class="note">The 18 contested claims, each asked with its mirror. Columns are the panel mean (${ms.length} models) of
   each phrasing's effect on that item, and the share of plain questions hedged. Click an item for its exact prompts and
   every model's replies.</p>
-  <div class="wide"><table>
-    <tr><th>stratum</th><th>claim</th><th>tag</th><th>bare</th><th>belief</th><th>hedge</th></tr>${cards}</table></div>`);
+  <div class="hscroll"><table class="full">
+    <tr><th>stratum</th><th>claim</th><th>tag</th><th>bare</th><th>belief</th><th>hedge</th></tr>${rows}</table></div>`);
 }
 
 function promptCard(it){
   const arms = [...C.meta.arms, ...C.meta.extra];
   return `<div class="card">${stm(it.stratum)}
     <div class="claim">${esc(cap(it.x))}</div><div class="mut">mirror: ${esc(cap(it.y))}</div>
-    <div class="prompts"><span></span><span class="k">claim</span><span class="k">mirror</span>
+    <div class="prompts"><span class="k"></span><span class="k">claim</span><span class="k">mirror</span>
     ${arms.map(a => `<span class="k">${LABEL[a]}</span><code>${esc(it.prompts[a+"_x"])}</code><code>${esc(it.prompts[a+"_y"])}</code>`).join("")}
-    </div><div class="eff">Every prompt ends with “Reply with only Yes or No.” The extra “I think … + question” arm was run on 20 models.</div></div>`;
+    </div><div class="eff">Every prompt ends with “Reply with only Yes or No.” The “I think … + question” check was run on 20 models.</div></div>`;
 }
 
-const pills = (arr) => (arr || []).map(x => `<span class="pill ${x.c}" title="${esc(x.r)}">${esc(x.r||"·")}</span>`).join("");
+const pills = (arr) => (arr || []).map(x => `<span class="rep ${x.c}" title="${esc(x.r)}">${esc(x.r||"·")}</span>`).join("");
 const cellH = (arr) => `<span class="rate">${pc0(yes(arr))}</span>${pills(arr)}`;
 
 function item(id){
-  const it = ITEM[id]; nav("#/item", it ? it.id : id);
+  const it = ITEM[id]; nav("/item", it ? short(it.id) : id);
   if (!it) { $(`<p class="note">no such item.</p>`); return; }
   const arms = C.meta.arms;
   const rows = C.order.map(m => {
     const c = C.models[m].items[id] || {};
-    return `<tr><td><a href="#/m/${m}">${esc(m)}</a></td>${arms.map(a =>
+    return `<tr><td class="name"><a href="#/m/${m}">${esc(m)}</a></td>${arms.map(a =>
       `<td>${cellH(c[a+"_x"])}</td><td>${cellH(c[a+"_y"])}</td>`).join("")}</tr>`;
   }).join("");
   $(`<h2>${esc(cap(it.x))}</h2>${promptCard(it)}
   <p class="note">Every model's replies, claim and mirror side by side under each phrasing. The % is the share of Yes.
-  <span class="pill affirm">yes</span><span class="pill reject">no</span><span class="pill hedge">hedge</span></p>
-  <div class="wide"><table>
+  <span class="rep affirm">yes</span><span class="rep reject">no</span><span class="rep hedge">hedge</span></p>
+  <div class="hscroll"><table class="full">
     <tr><th>model</th>${arms.map(a => `<th colspan="2">${LABEL[a]} <span class="mut">claim · mirror</span></th>`).join("")}</tr>
     ${rows}</table></div>`);
 }
 
 function model(l){
-  nav("#/m", l);
+  nav("/m", l);
   const m = C.models[l];
   if (!m) { $(`<p class="note">no contested data for this model.</p>`); return; }
   const arms = [...C.meta.arms, ...C.meta.extra.filter(a => Object.values(m.items).some(c => c[a+"_x"]))];
-  const blocks = C.items.map(it => {
+  const blocks = C.meta.strata.flatMap(s => C.items.filter(it => it.stratum === s)).map(it => {
     const c = m.items[it.id] || {};
     const row = (s, txt) => `<tr><td class="mut">${s === "x" ? "claim" : "mirror"}</td><td>${esc(cap(txt))}</td>${arms.map(a => `<td>${cellH(c[a+"_"+s])}</td>`).join("")}</tr>`;
     return `<tr><td colspan="${2 + arms.length}" style="border-bottom:none;padding-top:14px">${stm(it.stratum)}
-      <a href="#/i/${it.id}" style="margin-left:6px">${esc(it.id.replace(/_/g," "))}</a>
+      <a href="#/i/${it.id}" style="margin-left:6px">${esc(short(it.id))}</a>
       <span class="mut" style="margin-left:8px">tag ${sgn(itemEff(l, it.id, "tag"))} · belief ${sgn(itemEff(l, it.id, "belief"))}</span></td></tr>
       ${row("x", it.x)}${row("y", it.y)}`;
   }).join("");
-  $(`<h2>${esc(l)}</h2>
+  $(`<h2>${esc(l)} <span class="tagm">${esc(m.vendor)}${m.released ? " · " + esc(m.released) : ""}</span></h2>
   <p class="note">tag ${sgn(m.tageff)}, bare ${sgn(m.bareeff)}, belief ${sgn(m.beliefeff)} against the plain question;
   plain-question hedge ${pc0(m.hedge_ask)}${m.via !== "-" ? `; resists the tag by ${m.via === "No" ? "saying No" : "declining"}` : ""}.
   Each item shows the claim and its mirror; the % is the share of Yes. Click an item name for its exact prompts.
-  <span class="pill affirm">yes</span><span class="pill reject">no</span><span class="pill hedge">hedge</span></p>
-  <div class="wide"><table>
+  <span class="rep affirm">yes</span><span class="rep reject">no</span><span class="rep hedge">hedge</span></p>
+  <div class="hscroll"><table class="full">
     <tr><th></th><th>claim</th>${arms.map(a => `<th>${LABEL[a]}</th>`).join("")}</tr>${blocks}</table></div>`);
 }
 
 function about(){
-  nav("#/about");
+  nav("/about");
   $(`<h2>method</h2>
   <p class="note"><b>Question.</b> On contested questions, does the way a user phrases a claim move a model's answer?
   Four phrasings of the same claim: a plain question, the claim with a confirmation tag (“…, right?”), the bare claim,
@@ -229,13 +270,17 @@ function about(){
 }
 
 function route(){
-  const h = location.hash || "#/";
-  if (h.startsWith("#/m/")) model(h.slice(4));
-  else if (h.startsWith("#/i/")) item(h.slice(4));
-  else if (h === "#/items") items();
-  else if (h === "#/about") about();
+  const p = parseHash();
+  if (p.startsWith("/m/")) model(decodeURIComponent(p.slice(3)));
+  else if (p.startsWith("/i/")) item(decodeURIComponent(p.slice(3)));
+  else if (p === "/grid") grid();
+  else if (p === "/items") items();
+  else if (p === "/about") about();
   else models();
+  window.scrollTo(0, 0);
 }
+const setHH = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
+addEventListener("resize", setHH); setHH();
 addEventListener("hashchange", route);
 route();
 </script>

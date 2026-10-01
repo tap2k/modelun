@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>consensus — which models give answers the field doesn't?</title>
+<link rel="stylesheet" href="base.css">
 <style>
   :root{
     color-scheme:dark;
@@ -106,6 +107,7 @@
     <a href="#board" data-v="board">scorecard</a>
     <a href="#grid" data-v="grid">grid</a>
     <a href="#questions" data-v="questions">questions</a>
+    <a href="#about" data-v="about">method</a>
     <a href="https://github.com/tap2k/modelun/tree/main/studies/consensus" target="_blank" rel="noopener">source ↗</a>
   </nav>
 </header>
@@ -172,7 +174,7 @@ function board(){
   ("Name a color") and score each one by how far down the field's survey board its answers land —
   <b>surprisal</b> is that score (higher = answers the field doesn't give), and a <b>novel</b> answer isn't
   on the board at all. <b>self-distinct</b> is the other dial: does it even agree with itself across its re-asks?
-  ${D.note ? `<br><i>${esc(D.note)}</i>` : ''}
+  ${D.note ? `See <a href="#about">method</a> for how this battery was scored.` : ''}
   Click a model to drill down. The 90% CI is computed by resampling the question categories with replacement
   and recomputing the score. <b>#</b> is the model's rank on surprisal across the whole field, in any order.</p>
   ${controls('board')}
@@ -319,6 +321,7 @@ function category(id){
   const q = c.prompt || `Name a ${id.replace('_',' ')}.`;
   let h = `<p class="crumb"><a href="#questions">questions</a> / ${esc(id.replace('_',' '))}</p>
   <h2>“${esc(q)}”</h2>
+  ${c.prompt_full ? `<p class="note">Sent to every model as <code>${esc(c.prompt_full)}</code></p>` : ''}
   <p class="note">${d.answers.length} distinct answers over ${d.total} runs across ${D.models.length} models —
   <b>≈${d.eff} effectively in play</b>. Amber bars are answers only one model gave. Click a bar for who said it.</p>`;
   d.answers.forEach((en,i)=>{
@@ -330,6 +333,26 @@ function category(id){
       <div class="drow"><span></span><div class="who">${en.models.map(esc).join(' · ')}</div></div></details>`;
   });
   main.innerHTML = h;
+}
+
+/* ---------- method ---------- */
+function about(){
+  const sets = [["", "census", "31 one-word categories"], ["expanded", "expanded", "the census plus 65 more categories"],
+                ["brands", "brands", "brand names"]];
+  const cur = SET || "";
+  main.innerHTML = `<h2>method</h2>
+  <p class="note"><b>Instrument.</b> Each model is asked short questions with many right one-word answers (“Name a
+  color.”), identically, with no system prompt and a one-word instruction, several times each. An answer is scored
+  against the answers every other model gave to the same question. <b>surprisal</b> is the mean −log₂ probability of a
+  model's answers under the rest of the field (add-one smoothed, leave-one-out): higher means answers the field doesn't
+  give. <b>novel</b> is the share of answers no other model gave. <b>self-distinct</b> is a model's distinct answers divided by
+  its re-asks of the same question. The 90% interval resamples the question categories.</p>
+  <p class="note"><b>This battery: ${esc(D.title)}.</b> ${D.models.length} models, ${D.cats.length} categories.
+  ${D.note ? esc(D.note) : ''}</p>
+  <p class="note"><b>Batteries.</b> ${sets.map(([k, label, what]) => k === cur
+      ? `<b>${label}</b> (${what}, this page)` : `<a href="${k ? '?set=' + k : './'}">${label}</a> (${what})`).join(' · ')}.</p>
+  <p class="note">Source: <code>studies/consensus/</code> — <code>analyze.py</code> for the scores and
+  <code>views/build.py</code> for this page.</p>`;
 }
 
 /* ---------- router ---------- */
@@ -348,6 +371,7 @@ function route(){
   else if(v==='c' && arg) category(decodeURIComponent(arg));
   else if(v==='grid') grid();
   else if(v==='questions') questions();
+  else if(v==='about') about();
   else board();
   window.scrollTo(0,0);
 }
