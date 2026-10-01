@@ -28,7 +28,7 @@ from analyze import load, norm                              # same normalization
 from probe_olmo_ladder import first_word, SIZE, QUANT, LADDERS, CHAT_KW
 
 EXPANDED = "--expanded" in sys.argv                         # the 65-category battery instead of the 31
-OUT = HERE / "probes" / ({"7b": "olmo_census", "32b": "olmo_census_32b", "nemotron": "nemotron_census"}[SIZE]
+OUT = HERE / "probes" / ({"7b": "olmo_census", "32b": "olmo_census_32b", "nemotron": "nemotron_census", "tulu": "tulu_census", "rlzero": "rlzero_census"}[SIZE]
                          + ("_expanded" if EXPANDED else "") + ".json")
 SCENES = json.loads((HERE / "spec" / ("stimulus_expanded.json" if EXPANDED else "stimulus.json")).read_text())["scenes"]
 FIELD_DIR = "transcripts-expanded" if EXPANDED else "transcripts"   # the panel the answers are scored against

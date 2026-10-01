@@ -37,9 +37,9 @@ sys.path.insert(0, str(HERE))
 from analyze import classify, CONSEQUENTIAL
 from probe_righteffect import ITEMS, CLAMP, cap
 
-SIZE = "nemotron" if "--nemotron" in sys.argv else "7b" if "--7b" in sys.argv else "32b"
+SIZE = next((k for k in ("nemotron", "7b", "tulu", "rlzero") if f"--{k}" in sys.argv), "32b")
 OUT = HERE / "probes" / f"suggest_ladder_{SIZE}.json"
-QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
+QUANT = None if SIZE in ("7b", "tulu", "rlzero") else "8-bit affine, group size 64"
 M32 = Path.home() / "models" / "olmo32"
 LADDERS = {
     "7b": [                  # bf16; the 7B chat template inserts the training system prompt, so chat = systrain
@@ -53,6 +53,17 @@ LADDERS = {
         ("sft", "allenai/Olmo-3.1-32B-Instruct-SFT", str(M32 / "Olmo-3.1-32B-Instruct-SFT-8bit"), ["nosys", "chat", "systrain"]),
         ("dpo", "allenai/Olmo-3.1-32B-Instruct-DPO", str(M32 / "Olmo-3.1-32B-Instruct-DPO-8bit"), ["nosys", "chat", "systrain"]),
         ("rl", "allenai/Olmo-3.1-32B-Instruct", "mlx-community/Olmo-3.1-32B-Instruct-8bit", ["nosys", "chat", "systrain"]),
+    ],
+    "tulu": [                # Tulu 3 8B on Llama 3.1 8B, bf16: the same style of recipe on another base
+        ("base", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B", ["raw"]),
+        ("sft", "allenai/Llama-3.1-Tulu-3-8B-SFT", "allenai/Llama-3.1-Tulu-3-8B-SFT", ["chat"]),
+        ("dpo", "allenai/Llama-3.1-Tulu-3-8B-DPO", "allenai/Llama-3.1-Tulu-3-8B-DPO", ["chat"]),
+        ("rl", "allenai/Llama-3.1-Tulu-3-8B", "allenai/Llama-3.1-Tulu-3-8B", ["chat"]),
+    ],
+    "rlzero": [              # OLMo 3 7B with RL straight from the base (no SFT/DPO), bf16; base is in the 7b ladder
+        ("general", "allenai/Olmo-3-7B-RL-Zero-General", "allenai/Olmo-3-7B-RL-Zero-General", ["chat"]),
+        ("mix", "allenai/Olmo-3-7B-RL-Zero-Mix", str(Path.home() / "models" / "rlzero" / "Olmo-3-7B-RL-Zero-Mix"),  # config relabeled olmo2-retrofit -> olmo3
+         ["chat"]),
     ],
     "nemotron": [
         ("base", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16",

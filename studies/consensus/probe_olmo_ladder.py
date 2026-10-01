@@ -36,14 +36,14 @@ HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
 from analyze import norm                                    # same normalization as the paper
 
-SIZE = "32b" if "--32b" in sys.argv else "nemotron" if "--nemotron" in sys.argv else "7b"
+SIZE = next((k for k in ("32b", "nemotron", "tulu", "rlzero") if f"--{k}" in sys.argv), "7b")
 def _arg(flag):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else None
 
 
 TAG = _arg("--tag")                                       # a separate output file, e.g. --tag n200
 FRAMINGS = _arg("--framings")                             # override the instruct stages' framings
-OUT = HERE / "probes" / ({"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder"}[SIZE]
+OUT = HERE / "probes" / ({"7b": "olmo_ladder", "32b": "olmo_ladder_32b", "nemotron": "nemotron_ladder", "tulu": "tulu_ladder", "rlzero": "rlzero_ladder"}[SIZE]
                          + (f"_{TAG}" if TAG else "") + ".json")
 PROMPT = _arg("--prompt") or "Pick a word. Reply with one word only."   # --prompt: another item of the scale
 CLOZE = _arg("--cloze")                                   # base stage only: a natural completion, e.g. 'My favorite word is "' 
@@ -71,6 +71,17 @@ LADDERS = {
     # published. Its template has no default system prompt (nosys = chat, so not run) and thinks by
     # default; chat runs with enable_thinking=False. sysid adds an assistant-identity system prompt,
     # testing the system-prompt effect seen in OLMo 3.1 32B.
+    "tulu": [                # Tulu 3 8B on Llama 3.1 8B, bf16: the same style of recipe on another base
+        ("base", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B", ["raw"]),
+        ("sft", "allenai/Llama-3.1-Tulu-3-8B-SFT", "allenai/Llama-3.1-Tulu-3-8B-SFT", ["chat", "raw"]),
+        ("dpo", "allenai/Llama-3.1-Tulu-3-8B-DPO", "allenai/Llama-3.1-Tulu-3-8B-DPO", ["chat", "raw"]),
+        ("rl", "allenai/Llama-3.1-Tulu-3-8B", "allenai/Llama-3.1-Tulu-3-8B", ["chat", "raw"]),
+    ],
+    "rlzero": [              # OLMo 3 7B with RL straight from the base (no SFT/DPO), bf16; base is in the 7b ladder
+        ("general", "allenai/Olmo-3-7B-RL-Zero-General", "allenai/Olmo-3-7B-RL-Zero-General", ["chat", "raw"]),
+        ("mix", "allenai/Olmo-3-7B-RL-Zero-Mix", str(Path.home() / "models" / "rlzero" / "Olmo-3-7B-RL-Zero-Mix"),  # config relabeled olmo2-retrofit -> olmo3
+         ["chat", "raw"]),
+    ],
     "nemotron": [
         ("base", "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16",
          str(Path.home() / "models" / "nemotron35" / "Lightning-30B-A3B-Base-8bit"), ["raw"]),
@@ -85,7 +96,7 @@ SYSGEN = "You are a helpful assistant."                   # generic assistant fr
 # template default; 100% of DPO and RL prompts, ~90% of SFT). The released 3.1 32B template swaps in an
 # untrained "You are Olmo..." identity prompt, so systrain is the in-distribution condition.
 SYSTRAIN = "You are a helpful function-calling AI assistant. You do not currently have access to any functions. <functions></functions>"
-QUANT = None if SIZE == "7b" else "8-bit affine, group size 64"
+QUANT = None if SIZE in ("7b", "tulu", "rlzero") else "8-bit affine, group size 64"
 CHAT_KW = {"enable_thinking": False} if SIZE == "nemotron" else {}
 SYSID = "You are Nemotron, a helpful AI assistant built by NVIDIA."
 
