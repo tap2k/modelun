@@ -91,8 +91,15 @@ def load(study_dir, battery="census"):
 
 
 def answers(study_dir, battery="census"):
-    """load(), then the plural merge within each category pool (cats/cat -> cat when both occur)."""
+    """load(), then the plural merge within each category pool (cats/cat -> cat when both occur). The expanded
+    battery also merges the forms of multi-word names that norm() splits (answer_variants.json, "expanded")."""
     ans = load(study_dir, battery)
+    if battery == "expanded":
+        var = json.loads((study_dir / "answer_variants.json").read_text())["expanded"]["variants"]
+        for m in ans:
+            for c in ans[m]:
+                if c in var:
+                    ans[m][c] = [var[c].get(a, a) for a in ans[m][c]]
     if scorer(battery)[1]:
         models = [m for m in ans if ans[m]]
         for c in {c for m in models for c in ans[m]}:
