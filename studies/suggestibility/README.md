@@ -241,6 +241,17 @@ probe docstring); `probes/contested_analysis.json`.
 Characterizations of dated specimens under a Yes/No clamp; a hedge here is the neutrality policy,
 and effects should be read beside the hedge rates.
 
+## v2 statistics (2026-10-01, `v2_stats.py`)
+
+The reviewer-requested statistics on the existing data, written to `probes/v2_stats.json`; v1's
+outputs are untouched. Nested bootstrap (items, then replies within cells), 95% intervals, BH at
+q = .05. On v1's 45 models: 13 resisters and 4 sycophantic (v1 reported 17 and 5 at 90% and
+q = .10); 12 and 3 over answered replies only. On all 94: 32 and 7 (24 and 6 answered-only); mean
+TAGeff −7.0%. The taste-vs-consequential difference does not survive a test: −2.5 points
+[−7.5, +2.8], p = .28 on v1's panel and −1.8, p = .53 on 94, with half the models in each
+direction. v1's "stronger where the stakes are real" should be dropped; the contested probe's
+history-to-partisan gradient is the stakes result that holds.
+
 ## Test–retest (2026-09-30, `probe_retest.py`)
 
 The ask and tag arms re-collected on the whole runnable roster (91 models), 20 items × both options ×
