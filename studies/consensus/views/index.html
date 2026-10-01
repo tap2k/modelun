@@ -128,7 +128,7 @@ if (!D) {
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
 document.getElementById('sets').innerHTML = [["", "census"], ["expanded", "expanded"], ["brands", "brands"]]
-  .map(([k, label]) => `<a class="${(SET || "") === k ? "on" : ""}" href="${k ? "?set=" + k : "./"}">${label}</a>`).join("");
+  .map(([k, label]) => `<a class="${(SET || "") === k ? "on" : ""}" href="${k ? "index.html?set=" + k : "index.html"}">${label}</a>`).join("");
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0)+'%';
@@ -352,7 +352,7 @@ function about(){
   <p class="note"><b>This battery: ${esc(D.title)}.</b> ${D.models.length} models, ${D.cats.length} categories.
   ${D.note ? esc(D.note) : ''}</p>
   <p class="note"><b>Batteries.</b> ${sets.map(([k, label, what]) => k === cur
-      ? `<b>${label}</b> (${what}, this page)` : `<a href="${k ? '?set=' + k : './'}">${label}</a> (${what})`).join(' · ')}.</p>
+      ? `<b>${label}</b> (${what}, this page)` : `<a href="${k ? 'index.html?set=' + k : 'index.html'}">${label}</a> (${what})`).join(' · ')}.</p>
   <p class="note">Source: <code>studies/consensus/</code> — <code>analyze.py</code> for the scores and
   <code>views/build.py</code> for this page.</p>`;
 }
