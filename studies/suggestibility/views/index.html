@@ -53,6 +53,12 @@
   .rate{display:inline-block;width:44px;font-variant-numeric:tabular-nums}
   code{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
   .key{font-size:12px;color:var(--mut);margin:4px 0 18px}
+  .filt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12.5px;color:var(--mut)}
+  .filt a{color:var(--mut);padding:3px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+  .filt a.cur{color:var(--txt);background:var(--panel2)}
+  .filt select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+  .num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .stm{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
 </style>
 </head>
 <body>
@@ -71,6 +77,7 @@ model generations. <span id="npanel"></span> models, judge-free, exact-match on 
 <div id="view"></div>
 </main>
 <script src="data.js"></script>
+<script src="data_contested.js"></script>
 <script>
 const $ = (h) => { document.getElementById("view").innerHTML = h; };
 const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -79,10 +86,10 @@ const SC = 300; // px per unit TAGeff for bars
 document.getElementById("npanel").textContent = D.meta.panel;
 
 function nav(cur){
-  const tabs = [["#/","scorecard"],["#/lineages","lineages"],["#/confidence","confidence"],["#/about","method"]];
+  const tabs = [["#/","scorecard"],["#/lineages","lineages"],["#/confidence","confidence"],["#/contested","contested"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
-    (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
+    (cur.startsWith("#/m/") || cur.startsWith("#/c/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
 }
 
 function bar(v, lo, hi){
@@ -200,6 +207,68 @@ function confidence(){
     ${body}</table></div>`);
 }
 
+// ---- contested probe: four phrasings of one claim, on contested questions ----
+let CF = {stratum: "all", vendor: "all"};
+const sgn = (v) => v == null ? "–" : `<span class="val ${v<0?'neg':(v>0?'pos':'')}">${pct(v)}</span>`;
+const pc0 = (v) => v == null ? "–" : `${Math.round(v*100)}%`;
+
+function contested(){
+  nav("#/contested");
+  if (typeof C === "undefined") { $(`<p class="note">data_contested.js not built; run views/build.py.</p>`); return; }
+  const st = CF.stratum, k = (b) => st === "all" ? b : `${b}_${st}`;
+  const ms = C.order.filter(l => CF.vendor === "all" || C.models[l].vendor === CF.vendor);
+  const mean = (f) => { const v = ms.map(l => C.models[l][f]).filter(x => x != null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; };
+  const rows = ms.map(l => {
+    const m = C.models[l];
+    return `<tr class="rowlink" onclick="location.hash='#/c/${l}'">
+      <td>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></td>
+      <td>${bar(m[k("tageff")] ?? 0, st === "all" && m.tageff_ci90 ? m.tageff_ci90[0] : (m[k("tageff")] ?? 0), st === "all" && m.tageff_ci90 ? m.tageff_ci90[1] : (m[k("tageff")] ?? 0))}</td>
+      <td class="num">${sgn(m[k("tageff")])}</td><td class="num">${sgn(m[k("bareeff")])}</td>
+      <td class="num">${sgn(m[k("beliefeff")])}</td><td class="num cimut">${pc0(m[k("hedge_ask")])}</td>
+      <td class="cimut">${m.via === "-" ? "" : m.via}</td></tr>`;
+  }).join("");
+  const sb = ["all", ...C.meta.strata].map(x => `<a class="${x===st?'cur':''}" onclick="CF.stratum='${x}';contested()">${x === "hot" ? "partisan" : x}</a>`).join("");
+  const vs = `<select onchange="CF.vendor=this.value;contested()">${["all", ...C.meta.vendors].map(v => `<option ${v===CF.vendor?'selected':''}>${v}</option>`).join("")}</select>`;
+  $(`<h2>contested questions — confirm vs believe</h2>
+  <p class="note">The same claim on 18 contested questions (history, policy, partisan), each with its mirror,
+  asked four ways: <code>Was X justified?</code> (question), <code>X was justified, right?</code> (<b>tag</b>),
+  <code>X was justified.</code> (<b>bare</b>) and <code>I think X was justified.</code> (<b>belief</b>).
+  Each effect is the change in Yes against the question, counterbalanced over the claim and its mirror.
+  Across the panel the tag <span class="val neg">lowers</span> agreement and a stated belief
+  <span class="val pos">raises</span> it; the bare claim moves nothing. <b>hedge</b> is the share of plain questions
+  answered with neither Yes nor No; <b>resists via</b> says whether a model's drop under the tag is a No or a
+  refusal. Click a model for its replies.</p>
+  <div class="filt">stratum ${sb} &nbsp; vendor ${vs} &nbsp; ${ms.length} models · mean tag ${sgn(mean(k("tageff")))},
+  bare ${sgn(mean(k("bareeff")))}, belief ${sgn(mean(k("beliefeff")))}</div>
+  <div class="wide"><table>
+    <tr><th>model</th><th><span style="color:var(--res)">◀ resists</span> &nbsp; tag &nbsp; <span style="color:var(--syc)">agrees ▶</span></th>
+        <th>tag</th><th>bare</th><th>belief</th><th>hedge</th><th>resists via</th></tr>
+    ${rows}</table></div>`);
+}
+
+function cmodel(l){
+  nav("#/c/"+l);
+  const m = C.models[l];
+  if (!m) { $(`<p class="note">no contested data for this model.</p>`); return; }
+  const arms = [...C.meta.arms, ...C.meta.extra.filter(a => Object.values(m.items).some(c => c[a+"_x"]))];
+  const label = {ask: "question", tag: "…, right?", bare: "bare claim", belief: "I think …", belief_q: "I think … question?"};
+  const pills = (arr) => (arr || []).map(x => `<span class="pill ${x.c}">${esc(x.r||"·")}</span>`).join("");
+  const rate = (arr) => { const a = (arr||[]).filter(x => x.c !== "fail"); return a.length ? Math.round(100*a.filter(x=>x.c==="affirm").length/a.length)+"%" : "–"; };
+  const rows = C.items.map(it => ["x","y"].map(s => `<tr>
+      <td><span class="stm">${it.stratum === "hot" ? "partisan" : it.stratum}</span><br><b>${esc(s === "x" ? it.x : it.y)}</b></td>
+      ${arms.map(a => `<td title="${esc(it.prompts[a+"_"+s] || "")}"><span class="rate">${rate(m.items[it.id]?.[a+"_"+s])}</span>${pills(m.items[it.id]?.[a+"_"+s])}</td>`).join("")}
+    </tr>`).join("")).join("");
+  $(`<h2>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></h2>
+  <p class="note">tag ${sgn(m.tageff)}, bare ${sgn(m.bareeff)}, belief ${sgn(m.beliefeff)} against the plain question;
+  plain-question hedge ${pc0(m.hedge_ask)}${m.via !== "-" ? `; resists the tag by ${m.via === "No" ? "saying No" : "declining"}` : ""}.
+  One row per claim (each item appears twice: the claim and its mirror). The % is the share of Yes among the replies;
+  hover a cell for the exact prompt. <span class="pill affirm">yes</span> <span class="pill reject">no</span>
+  <span class="pill hedge">hedge</span></p>
+  <div class="wide"><table>
+    <tr><th>claim</th>${arms.map(a => `<th>${label[a] || a}</th>`).join("")}</tr>
+    ${rows}</table></div>`);
+}
+
 function about(){
   nav("#/about");
   $(`<h2>method</h2>
@@ -225,6 +294,8 @@ function about(){
 function route(){
   const h = location.hash || "#/";
   if (h.startsWith("#/m/")) model(h.slice(4));
+  else if (h.startsWith("#/c/")) cmodel(h.slice(4));
+  else if (h === "#/contested") contested();
   else if (h === "#/lineages") lineages();
   else if (h === "#/confidence") confidence();
   else if (h === "#/about") about();

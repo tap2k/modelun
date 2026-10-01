@@ -133,3 +133,37 @@ data = {
 blob = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data.js").write_text(f"const D = {blob};\n")
 print(f"wrote {VIEWS/'data.js'}  ({len(models)} models, {len(walks)} lineages, {len(blob)//1024}KB)")
+
+# --- contested probe (probe_contested.py): its own blob, data_contested.js, drawn by the "contested" tab ---
+import probe_contested as PC   # noqa: E402
+
+ca = json.loads((STUDY / "probes" / "contested_analysis.json").read_text())["per_model"]
+vendor = {s.split("/")[-1]: s.split("/")[0] for s in
+          (l.strip() for l in (STUDY / "spec" / "models.txt").read_text().splitlines()) if s and not s.startswith("#")}
+KEEP = ["tageff", "tageff_ci90", "tageff_answered", "bareeff", "beliefeff", "beliefeff_answered", "belief_q_eff",
+        "hedge_ask", "hedge_tag", "d_affirm_tag", "d_reject_tag", "d_hedge_tag",
+        "d_affirm_belief", "d_reject_belief", "d_hedge_belief", "both_no_ask", "tageff_left", "tageff_right"]
+KEEP += [f"{k}_{st}" for st in PC.STRATA for k in ("tageff", "bareeff", "beliefeff", "hedge_ask")]
+cmodels = {}
+for p in sorted(PC.OUT.glob("*.json")):
+    d = json.loads(p.read_text()); m = d["model"]
+    if m not in ca:
+        continue
+    r = ca[m]
+    v = {k: (round(r[k], 3) if isinstance(r.get(k), float) else r.get(k)) for k in KEEP if k in r}
+    if r.get("tageff_ci90"):
+        v["tageff_ci90"] = [round(x, 3) for x in r["tageff_ci90"]]
+    v["via"] = ("-" if r["d_affirm_tag"] > -0.05 else "No" if r["d_reject_tag"] >= r["d_hedge_tag"] else "declining")
+    v["vendor"] = vendor.get(m, "?")
+    v["items"] = {item: {key: cell(reps) for key, reps in c.items()} for item, c in d["cells"].items()}
+    cmodels[m] = v
+citems = [{"id": i, "stratum": st, "x": cx, "y": cy,
+           "prompts": {f"{a}_{s}": PC.prompt(a, q, cl).replace(" " + PC.CLAMP, "")
+                       for a in PC.ARMS + PC.EXTRA_ARMS for s, (q, cl) in (("x", (qx, cx)), ("y", (qy, cy)))}}
+          for i, st, (qx, cx), (qy, cy) in PC.ITEMS]
+cdata = {"meta": {"n": len(cmodels), "strata": list(PC.STRATA), "arms": list(PC.ARMS), "extra": list(PC.EXTRA_ARMS),
+                  "vendors": sorted({v["vendor"] for v in cmodels.values()})},
+         "models": cmodels, "order": sorted(cmodels, key=lambda m: cmodels[m]["tageff"]), "items": citems}
+cblob = json.dumps(cdata, ensure_ascii=False, separators=(",", ":"))
+(VIEWS / "data_contested.js").write_text(f"const C = {cblob};\n")
+print(f"wrote {VIEWS/'data_contested.js'}  ({len(cmodels)} models, {len(citems)} items, {len(cblob)//1024}KB)")
