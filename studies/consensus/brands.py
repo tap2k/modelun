@@ -30,9 +30,16 @@ ALIASES = {
     "open ai": "openai", "google deepmind": "deepmind",
     "google search": "google", "amazon.com": "amazon", "apple inc": "apple",
     "colgate-palmolive": "colgate", "cheerios cereal": "cheerios", "tesla motors": "tesla",
-    "hermes": "hermès",
+    "hermes": "hermès", "hilton hotels & resorts": "hilton", "jpmorgan chase & co": "chase",
+    "ihg hotels & resorts": "ihg",
 }
 TAG = re.compile(r"<[^>]*>")
+INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
+# A sentence around the name: keep the name ("the brand is converse" -> "converse").
+LEAD_IN = re.compile(r"^(?:(?:sure|okay|ok)[!,.]?\s+)?(?:(?:the (?:brand|name|answer|company)(?: name)? is|my name is"
+                     r"|i am|i'm|it's|it is|i'd (?:say|pick|go with)|i would (?:say|pick)|how about)\s+)?")
+# Not an answer at all: talk about the task, or reasoning leaking into the reply.
+NON_ANSWER = re.compile(r"^(?:i'll|i will|i think|let me|\d+\.)|user's request")
 DASHES = str.maketrans({"’": "'", "‐": "-", "–": "-"})
 
 
@@ -45,7 +52,10 @@ def brand_name(reply):
         return None
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)
     r = re.sub(r"\s*\(.*?\)\s*", " ", r).strip().lower()
-    r = re.sub(r"^[^\w]+|[^\w'&+!]+$", "", r).rstrip("!").strip()
+    r = re.sub(r"^[^\w]+|[^\w'&+!]+$", "", INVISIBLE.sub("", r)).rstrip("!").strip()
+    if NON_ANSWER.search(r):
+        return None
+    r = LEAD_IN.sub("", r)
     if not r or len(r.split()) > 5:
         return None
     return ALIASES.get(r, r)
