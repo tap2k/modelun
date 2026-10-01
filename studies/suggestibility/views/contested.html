@@ -26,9 +26,10 @@
   .note b{color:var(--txt)}
   table{border-collapse:collapse;font-size:13px;width:100%}
   th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:47px;background:var(--bg);z-index:2}
+  th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  td.name{white-space:nowrap}
   tr.rowlink{cursor:pointer} tr.rowlink:hover td{background:var(--panel)}
-  .track{position:relative;display:inline-block;width:200px;height:15px;vertical-align:middle}
+  .track{position:relative;display:inline-block;width:220px;height:15px;vertical-align:middle;overflow:hidden}
   .track:before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line)}
   .bar2{position:absolute;top:2.5px;height:10px;border-radius:2px}
   .bar2.pos{left:50%;background:var(--syc)} .bar2.neg{right:50%;background:var(--res)}
@@ -77,7 +78,7 @@ const LABEL = {ask: "question", tag: "…, right?", bare: "bare claim", belief: 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const ITEM = Object.fromEntries(C.items.map(it => [it.id, it]));
 const SC = 230;
-let F = {stratum: "all", vendor: "all"};
+let F = {stratum: "all"};
 
 function nav(cur, extra){
   const tabs = [["#/","models"],["#/items","items"],["#/about","method"]];
@@ -86,10 +87,11 @@ function nav(cur, extra){
   document.querySelector("main").classList.toggle("full", cur === "#/item" || cur === "#/m");
 }
 
-function bar(v, lo, hi){
-  const w = Math.abs(v) * SC;
-  const ci = (lo != null && hi != null) ? `<span class="ci" style="left:${100 + Math.min(lo,hi)*SC}px;width:${Math.abs(hi-lo)*SC}px"></span>` : "";
-  return `<span class="track"><span class="bar2 ${v<0?'neg':'pos'}" style="width:${Math.min(w,100)}px"></span>${ci}</span>`;
+// Bars are scaled so the largest |value| in view (bar or interval end) fills half the 220px track.
+function bar(v, lo, hi, scale){
+  const px = (x) => x * scale, c = 110;
+  const ci = (lo != null && hi != null) ? `<span class="ci" style="left:${c + px(Math.min(lo,hi))}px;width:${px(Math.abs(hi-lo))}px"></span>` : "";
+  return `<span class="track"><span class="bar2 ${v<0?'neg':'pos'}" style="width:${px(Math.abs(v))}px"></span>${ci}</span>`;
 }
 
 // Yes rate over a cell's replies (failed calls excluded), and per-item effects for a model.
@@ -105,19 +107,22 @@ const avg = (xs) => { const v = xs.filter(x => x != null); return v.length ? v.r
 function models(){
   nav("#/");
   const st = F.stratum, k = (b) => st === "all" ? b : `${b}_${st}`;
-  const ms = C.order.filter(l => F.vendor === "all" || C.models[l].vendor === F.vendor);
+  const ms = C.order.filter(l => C.models[l][k("tageff")] != null)
+    .sort((a,b) => C.models[a][k("tageff")] - C.models[b][k("tageff")]);
+  const ext = Math.max(0.05, ...ms.flatMap(l => { const m = C.models[l];
+    return [Math.abs(m[k("tageff")]), ...(st === "all" && m.tageff_ci90 ? m.tageff_ci90.map(Math.abs) : [])]; }));
+  const scale = 106 / ext;
   const rows = ms.map(l => {
     const m = C.models[l], v = m[k("tageff")];
     const ci = st === "all" && m.tageff_ci90 ? m.tageff_ci90 : [null, null];
     return `<tr class="rowlink" onclick="location.hash='#/m/${l}'">
-      <td>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></td>
-      <td>${v == null ? "" : bar(v, ci[0], ci[1])}</td>
+      <td class="name">${esc(l)}</td>
+      <td>${bar(v, ci[0], ci[1], scale)}</td>
       <td class="num">${sgn(v)}</td><td class="num">${sgn(m[k("bareeff")])}</td><td class="num">${sgn(m[k("beliefeff")])}</td>
       <td class="num mut">${pc0(m[k("hedge_ask")])}</td><td class="mut">${m.via === "-" ? "" : (m.via === "No" ? "says No" : "declines")}</td></tr>`;
   }).join("");
   const mean = (f) => avg(ms.map(l => C.models[l][f]));
   const sb = ["all", ...C.meta.strata].map(x => `<a class="${x===st?'cur':''}" onclick="F.stratum='${x}';models()">${x === "all" ? "all" : STRAT[x]}</a>`).join("");
-  const vs = `<select onchange="F.vendor=this.value;models()">${["all", ...C.meta.vendors].map(v => `<option ${v===F.vendor?'selected':''}>${v}</option>`).join("")}</select>`;
   $(`<h2>models</h2>
   <p class="note">Each effect is the change in the share of Yes against the plain question, counterbalanced over each
   claim and its mirror. The <b>tag</b> (“…, right?”) asks the model to confirm; <b>bare</b> states the claim with no
@@ -125,7 +130,7 @@ function models(){
   belief raises it. <b>hedge</b> is the share of plain questions answered with neither Yes nor No. <b>resists</b> says
   whether a model's drop under the tag comes as a No or as a refusal. Bars show the tag effect with its 90% interval.
   Click a model for its replies; the <a href="#/items">items</a> tab shows each question across models.</p>
-  <div class="filt">stratum ${sb} &nbsp; vendor ${vs} &nbsp; <span>${ms.length} models · mean tag ${sgn(mean(k("tageff")))},
+  <div class="filt">stratum ${sb} &nbsp; <span>${ms.length} models · mean tag ${sgn(mean(k("tageff")))},
   bare ${sgn(mean(k("bareeff")))}, belief ${sgn(mean(k("beliefeff")))}</span></div>
   <div class="wide"><table>
     <tr><th>model</th><th><span style="color:var(--res)">◀ resists</span> tag <span style="color:var(--syc)">agrees ▶</span></th>
@@ -195,7 +200,7 @@ function model(l){
       <span class="mut" style="margin-left:8px">tag ${sgn(itemEff(l, it.id, "tag"))} · belief ${sgn(itemEff(l, it.id, "belief"))}</span></td></tr>
       ${row("x", it.x)}${row("y", it.y)}`;
   }).join("");
-  $(`<h2>${esc(l)} <span class="tagm">${esc(m.vendor)}</span></h2>
+  $(`<h2>${esc(l)}</h2>
   <p class="note">tag ${sgn(m.tageff)}, bare ${sgn(m.bareeff)}, belief ${sgn(m.beliefeff)} against the plain question;
   plain-question hedge ${pc0(m.hedge_ask)}${m.via !== "-" ? `; resists the tag by ${m.via === "No" ? "saying No" : "declining"}` : ""}.
   Each item shows the claim and its mirror; the % is the share of Yes. Click an item name for its exact prompts.
