@@ -53,7 +53,6 @@ def stages(pipeline):
 
 
 def main(pipeline, delete_cache):
-    import mlx.core as mx
     out = HERE / "probes" / f"verb_ladder_{pipeline}"
     for st in stages(pipeline):
         base = st["stage"] == "base"
@@ -69,7 +68,7 @@ def main(pipeline, delete_cache):
             local.run(free_brand_spec(), st, framing, RUNS, local.path(out / "free_brands", st, framing), max_tokens=256,
                       batch=16, model=model)
         del model
-        mx.clear_cache()
+        local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
             cache = Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--"))
             shutil.rmtree(cache, ignore_errors=True)
@@ -93,7 +92,6 @@ def recommend_spec():
 
 def recommend_pass(pipeline, delete_cache):
     """The one-turn recommend question on the tuned stages (a base model does not take requests)."""
-    import mlx.core as mx
     out = HERE / "probes" / f"verb_ladder_{pipeline}" / "recommend"
     spec = recommend_spec()
     for st in stages(pipeline):
@@ -103,7 +101,7 @@ def recommend_pass(pipeline, delete_cache):
         f = tuned_framing(st)
         local.run(spec, st, f, RUNS, local.path(out, st, f), max_tokens=512, batch=16, model=model)
         del model
-        mx.clear_cache()
+        local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
             shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
 

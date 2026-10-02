@@ -64,7 +64,6 @@ def score(model, tok, prefix, answer, raw):
 
 
 def main(pipeline, delete_cache):
-    import mlx.core as mx
     cand = candidates()
     res = {"pipeline": pipeline, "categories": {}}
     for st in stages(pipeline):
@@ -82,7 +81,7 @@ def main(pipeline, delete_cache):
         print(f"logprob {st['label']}: {len(cand)} categories", flush=True)
         (HERE / "probes" / f"answer_logprob_{pipeline}.json").write_text(json.dumps(res, indent=1) + "\n")
         del model
-        mx.clear_cache()
+        local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
             shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
 

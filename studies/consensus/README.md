@@ -151,9 +151,9 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   **At full scale (2026-10-02):** every census, expanded and brand category (137) asked free on the live
   panel (`transcripts-clamp-free/`, `transcripts-clamp-ext/`, `transcripts-clamp-free-brands-ext/`). Free
   replies are scored by first mention among the category's answers (whole-word regex, plurals, brand
-  aliases). Per model, Spearman 0.60 (n=94, p<0.0001), so the ranking survives. Per category, clamped and
-  free modal shares correlate at 0.80; 55 categories hold within 5 points, 26 strengthen and 30 weaken by
-  15 or more. The weakening is concentrated in name categories, where the one-word instruction favours the
+  aliases). Per model, Spearman 0.58 (n=105, p<0.0001), so the ranking survives. Per category, clamped and
+  free modal shares correlate at 0.80; 53 categories hold within 5 points, 26 strengthen by more than 5,
+  and 58 weaken by more than 5, 30 of them by 15 or more. The weakening is concentrated in name categories, where the one-word instruction favours the
   most famous one-word name: painter is Picasso 59% clamped and 3% free, where Vincent van Gogh leads.
   Brand answers hold without the clamp.
 - **Construct check vs open-ended convergence (`probe_convergence_xval.py`, 2026-09-07)** — census
