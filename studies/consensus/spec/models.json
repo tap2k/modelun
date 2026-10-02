@@ -1,5 +1,5 @@
 {
- "note": "Roster for the consensus study. Broad on purpose — the metric is cheap (one-word answers), so the roster spans US frontier (multiple generations), Chinese labs, enterprise, search-tuned, persona/roleplay, and small open models. The DEEPSEEK LINEAGE (chat-v3-0324 -> v3.2 -> v4-flash, + r1) is a deliberate sub-experiment: deepseek-v3.2 was the pilot's lone genuine outlier (25% novel answers) — is the explorer property stable across its generations, or version-specific? `family` groups lineages; `origin` tags the a-priori expectation bucket (us-frontier | chinese | enterprise | persona | search | small-open); `open` = open weights. WAVE 2 (2026-09-03): 25 models appended from the cross-repo registry (current quorum roster) — the paper's 44 are the first 44 entries; tag consensus-arxiv-v2 pins that panel. hermes-3-llama-3.1-70b was tried and dropped: its only host (DeepInfra) returns rambling multi-sentence text on every prompt, 1 valid one-word answer in 124. WAVE 3 (2026-09-25): 16 models appended to fill the frontier-lab families for the atlas (Anthropic 4/5, GPT 5/6, Grok 4, Gemini 2.5/3, Kimi, Qwen, Meta Muse), same frozen stimulus, 4 runs. Muse Spark requires an 18+ attestation on the OpenRouter account. 2026-09-28: claude-sonnet-5.5 appended on its release, same stimulus, 4 runs. 2026-09-29: gpt-6.1-sol appended on its release, same stimulus, 4 runs. 2026-09-29: six open-weight models appended, same stimulus, 4 runs: Nemotron 3.5 Lightning, Nemotron 3 Super 120B and Ultra 550B (with Nemotron 3 Nano, an NVIDIA lineage across four sizes from one open pipeline), Hermes 4 405B (keeps the Hermes 4 line in the panel now that the 70B has left the catalog), Mistral Small 2603 and Qwen3.8 27B.",
+ "note": "Roster for the consensus study. Broad on purpose — the metric is cheap (one-word answers), so the roster spans US frontier (multiple generations), Chinese labs, enterprise, search-tuned, persona/roleplay, and small open models. The DEEPSEEK LINEAGE (chat-v3-0324 -> v3.2 -> v4-flash, + r1) is a deliberate sub-experiment: deepseek-v3.2 was the pilot's lone genuine outlier (25% novel answers) — is the explorer property stable across its generations, or version-specific? `family` groups lineages; `origin` tags the a-priori expectation bucket (us-frontier | chinese | enterprise | persona | search | small-open); `open` = open weights. WAVE 2 (2026-09-03): 25 models appended from the cross-repo registry (current quorum roster) — the paper's 44 are the first 44 entries; tag consensus-arxiv-v2 pins that panel. hermes-3-llama-3.1-70b was tried and dropped: its only host (DeepInfra) returns rambling multi-sentence text on every prompt, 1 valid one-word answer in 124. WAVE 3 (2026-09-25): 16 models appended to fill the frontier-lab families for the atlas (Anthropic 4/5, GPT 5/6, Grok 4, Gemini 2.5/3, Kimi, Qwen, Meta Muse), same frozen stimulus, 4 runs. Muse Spark requires an 18+ attestation on the OpenRouter account. 2026-09-28: claude-sonnet-5.5 appended on its release, same stimulus, 4 runs. 2026-09-29: gpt-6.1-sol appended on its release, same stimulus, 4 runs. 2026-09-29: six open-weight models appended, same stimulus, 4 runs: Nemotron 3.5 Lightning, Nemotron 3 Super 120B and Ultra 550B (with Nemotron 3 Nano, an NVIDIA lineage across four sizes from one open pipeline), Hermes 4 405B (keeps the Hermes 4 line in the panel now that the 70B has left the catalog), Mistral Small 2603 and Qwen3.8 27B. WAVE 4 (2026-10-02): 11 models appended, all batteries (census 4+4, expanded, brands, choose) plus pickword the same day. Hermes 3 Llama 3.1 70B rejoins: DeepInfra now answers one-word prompts cleanly (124/124), so the September drop no longer applies. Granite 4.2 8B and 30B restore a live IBM model (Granite 4.1 8B's endpoint is gone). New labs: Thinking Machines (Inkling, Inkling-Small), ByteDance (Seed 2.0 Pro), Xiaomi (MiMo V2.6 Pro), Ant/inclusionAI (Ling 3.0 Flash); plus Microsoft's own Phi-4, Meta's Muse Glimmer 30B and Tencent's Hy4. Served by DeepInfra (host field): Hermes 3 70B, Granite 4.2 30B, Seed 2.0 Pro (not on OpenRouter); everything else OpenRouter. open=null where weight availability was not verified on 2026-10-02.",
  "models": [
   {
    "slug": "anthropic/claude-3-haiku",
@@ -664,6 +664,86 @@
    "family": "qwen",
    "origin": "chinese",
    "open": true
+  },
+  {
+   "slug": "nousresearch/hermes-3-llama-3.1-70b",
+   "label": "hermes-3-llama-3.1-70b",
+   "family": "hermes",
+   "origin": "persona",
+   "open": true,
+   "host": "deepinfra"
+  },
+  {
+   "slug": "ibm-granite/granite-4.2-8b",
+   "label": "granite-4.2-8b",
+   "family": "granite",
+   "origin": "enterprise",
+   "open": true
+  },
+  {
+   "slug": "ibm-granite/granite-4.2-30b",
+   "label": "granite-4.2-30b",
+   "family": "granite",
+   "origin": "enterprise",
+   "open": true,
+   "host": "deepinfra"
+  },
+  {
+   "slug": "thinkingmachines/inkling",
+   "label": "inkling",
+   "family": "inkling",
+   "origin": "us-frontier",
+   "open": null
+  },
+  {
+   "slug": "thinkingmachines/inkling-small",
+   "label": "inkling-small",
+   "family": "inkling",
+   "origin": "us-frontier",
+   "open": null
+  },
+  {
+   "slug": "bytedance-seed/seed-2.0-pro",
+   "label": "seed-2.0-pro",
+   "family": "seed",
+   "origin": "chinese",
+   "open": null,
+   "host": "deepinfra"
+  },
+  {
+   "slug": "xiaomi/mimo-v2.6-pro",
+   "label": "mimo-v2.6-pro",
+   "family": "mimo",
+   "origin": "chinese",
+   "open": null
+  },
+  {
+   "slug": "inclusionai/ling-3.0-flash",
+   "label": "ling-3.0-flash",
+   "family": "ling",
+   "origin": "chinese",
+   "open": null
+  },
+  {
+   "slug": "microsoft/phi-4",
+   "label": "phi-4",
+   "family": "phi",
+   "origin": "small-open",
+   "open": true
+  },
+  {
+   "slug": "meta/muse-glimmer-30b",
+   "label": "muse-glimmer-30b",
+   "family": "muse",
+   "origin": "us-frontier",
+   "open": true
+  },
+  {
+   "slug": "tencent/hy4-preview",
+   "label": "hy4-preview",
+   "family": "hunyuan",
+   "origin": "chinese",
+   "open": null
   }
  ]
 }

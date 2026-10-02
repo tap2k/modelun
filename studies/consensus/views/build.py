@@ -7,7 +7,7 @@ and the metadata-axis cuts into one blob the page draws. Self-contained: this st
 transcripts are single-turn one-word answers, so the generic arc renderer (core.js) adds
 nothing and is not copied — the view is one hash-routed index.html with no deps.
 
-    python studies/consensus/views/build.py                    # every battery in analyze.BATTERIES
+    python studies/consensus/views/build.py                    # every page in PAGES
     python studies/consensus/views/build.py --battery brands   # one battery
     open studies/consensus/views/index.html                    # census; ?set=expanded or ?set=brands for the others
 """
@@ -69,14 +69,20 @@ def release_dates():
     return out
 
 
-TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery"}
-SOURCE = {"expanded": "combined"}   # the expanded page shows the census and the expanded battery together
+TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery",
+          "choose": "choose battery (96 categories)"}
+# the expanded page shows the census and the expanded battery together; the choose page, both with "Choose"
+SOURCE = {"expanded": "combined", "choose": "choose"}
+PAGES = ["census", "expanded", "brands", "choose"]
 NOTES = {"expanded": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
                      "battery, same template and scoring. Three models whose endpoints are gone (Claude 3 Haiku, Granite "
                      "4.1 8B, Hermes 4 70B) have census categories only.",
          "brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
                    "the endpoint allows it; reasoning-only models ran at their default. For the five hybrid models whose "
-                   "answers change with reasoning, transcripts-brands-default/ holds the default-reasoning run."}
+                   "answers change with reasoning, transcripts-brands-default/ holds the default-reasoning run.",
+         "choose": "The 96 census and expanded questions with one word changed: \u201cChoose a fruit\u201d instead of "
+                   "\u201cName a fruit\u201d, which asks for a pick rather than an example. 8 answers per model, scored as the "
+                   "census. Compare with the expanded page to see which consensus answers change."}
 
 
 def build(battery):
@@ -86,7 +92,7 @@ def build(battery):
     pm, pc = result["per_model"], result["per_category"]
 
     # the actual prompt text per category (the clean question, sans one-word clamp)
-    specs = [BATTERIES[b][1] for b in (COMBINED if src == "combined" else (battery,))]
+    specs = [BATTERIES[b][1] for b in COMBINED.get(src, (battery,))]
     scenes = [s for f in specs for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]]
     prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in scenes}
     prompts_full = {s["id"]: s["turns"][0].strip() for s in scenes}
@@ -169,13 +175,13 @@ def build(battery):
 
 def main():
     ap = argparse.ArgumentParser(description="Build the consensus review site's data files")
-    ap.add_argument("--battery", choices=BATTERIES, help="one battery (default: all)")
+    ap.add_argument("--battery", choices=PAGES, help="one page (default: all)")
     battery = ap.parse_args().battery
     # shared styling for the study sites (copied, like core.js; the copy is gitignored)
     shutil.copy(STUDY.parent.parent / "harness" / "viewer" / "base.css", VIEWS / "base.css")
-    for b in [battery] if battery else BATTERIES:
+    for b in [battery] if battery else PAGES:
         build(b)
-    print(f"open {VIEWS / 'index.html'} in a browser (?set=expanded, ?set=brands)")
+    print(f"open {VIEWS / 'index.html'} in a browser (?set=expanded, ?set=brands, ?set=choose)")
 
 
 if __name__ == "__main__":

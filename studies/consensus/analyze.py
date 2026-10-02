@@ -130,7 +130,10 @@ def compound(reply, heads):
 # Each battery: its transcripts dir, its spec, and how a reply becomes a canonical answer.
 BATTERIES = {"census": ("transcripts", "stimulus.json"),
              "expanded": ("transcripts-expanded", "stimulus_expanded.json"),
-             "brands": ("transcripts-brands", "stimulus_brands.json")}
+             "brands": ("transcripts-brands", "stimulus_brands.json"),
+             # the census and expanded questions with "Choose" for "Name" (a pick, not an example)
+             "choose_census": ("transcripts-choose", "perturb/stimulus_choose.json"),
+             "choose_expanded": ("transcripts-expanded-choose", "perturb/stimulus_expanded_choose.json")}
 
 
 def scorer(battery):
@@ -161,16 +164,18 @@ def load(study_dir, battery="census", paths=None):
     return out
 
 
-COMBINED = ("census", "expanded")   # same template and scoring: together, one 96-category census
+# Batteries read together as one 96-category set (same template and scoring).
+COMBINED = {"combined": ("census", "expanded"), "choose": ("choose_census", "choose_expanded")}
+VARIANT_TABLE = {"census": "census", "expanded": "expanded", "choose_census": "census", "choose_expanded": "expanded"}
 
 
 def merge_variants(ans, study_dir, battery):
     """The variant merge, in place (answer_variants.json: "variants" for the census, "expanded" for the expanded
     battery). A variant mapped to null is a fragment, not an answer."""
-    if battery not in ("census", "expanded"):
+    if battery not in VARIANT_TABLE:
         return ans
     var = json.loads((study_dir / "answer_variants.json").read_text())
-    var = var["variants"] if battery == "census" else var["expanded"]["variants"]
+    var = var["variants"] if VARIANT_TABLE[battery] == "census" else var["expanded"]["variants"]
     for m in ans:
         for c in ans[m]:
             if c in var:
@@ -181,9 +186,9 @@ def merge_variants(ans, study_dir, battery):
 def answers(study_dir, battery="census"):
     """load(), the variant merge, then the plural merge within each category pool (cats/cat -> cat when both
     occur)."""
-    if battery == "combined":
+    if battery in COMBINED:
         out = {}
-        for b in COMBINED:
+        for b in COMBINED[battery]:
             for m, cats in answers(study_dir, b).items():
                 out.setdefault(m, {}).update(cats)
         return out

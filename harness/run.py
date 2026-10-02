@@ -40,6 +40,7 @@ API = "https://openrouter.ai/api/v1/chat/completions"
 HOSTS = {
     "openrouter": (API, "OPENROUTER_API_KEY"),
     "fireworks": ("https://api.fireworks.ai/inference/v1/chat/completions", "FIREWORKS_API_KEY"),
+    "deepinfra": ("https://api.deepinfra.com/v1/openai/chat/completions", "DEEPINFRA_API_KEY"),
 }
 REASONING_MODES = ("off", "low", "medium", "high")
 BACKENDS = ("openrouter", "agent_sdk")

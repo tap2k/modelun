@@ -58,6 +58,10 @@ Other batteries, each with its own spec, transcripts and scoring (`analyze.BATTE
   categories ("Name a soda brand. Reply with the name only."), 8 runs, reasoning off where the endpoint
   allows it. Scored by whole name with variant merging ([`brands.py`](brands.py)), not by last word.
   `transcripts-brands-default/` holds the five hybrid reasoning models at their default reasoning.
+- **Choose** ([`spec/perturb/`](spec/perturb/), `transcripts-choose/`, `transcripts-expanded-choose/`): the census
+  and expanded questions with "Choose" for "Name" ("Choose a fruit"), a pick rather than an example. 8 runs, 91
+  models, scored as the census; `probe_choose.py` compares the two verbs. `spec/perturb/` also holds the
+  14-model prompt-perturbation check (`probe_perturb.py`: a generic system prompt, a named identity, the verb).
 - **The census at other settings**: `transcripts-reasoning-off/` (8 runs, reasoning off) and
   `transcripts-extra/` (4 more runs at default) use the frozen 31-category spec.
 
@@ -195,7 +199,7 @@ cat spec/models.txt | xargs -P 8 -I{} python ../../harness/run.py --study . --ru
 python analyze.py
 python analyze.py --battery brands    # -> analysis_brands.json (also: expanded)
 
-# review site: index.html (census), ?set=expanded (census + expanded, 96 categories), ?set=brands
+# review site: index.html (census), ?set=expanded (census + expanded, 96 categories), ?set=brands, ?set=choose (the 96 with "Choose")
 python views/build.py
 ```
 

@@ -123,11 +123,11 @@ document.write('<script src="' + (SET ? 'data_' + encodeURIComponent(SET) + '.js
 <script>
 const D = window.SURP;
 if (!D) {
-  document.getElementById('main').textContent = `No data for battery "${SET}". Run views/build.py, or use ?set=expanded or ?set=brands.`;
+  document.getElementById('main').textContent = `No data for battery "${SET}". Run views/build.py, or use ?set=expanded, ?set=brands or ?set=choose.`;
   throw new Error(`no data file for battery ${SET}`);
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
-document.getElementById('sets').innerHTML = [["", "census"], ["expanded", "expanded"], ["brands", "brands"]]
+document.getElementById('sets').innerHTML = [["", "census"], ["expanded", "expanded"], ["brands", "brands"], ["choose", "choose"]]
   .map(([k, label]) => `<a class="${(SET || "") === k ? "on" : ""}" href="${k ? "index.html?set=" + k : "index.html"}">${label}</a>`).join("");
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -340,7 +340,7 @@ function category(id){
 /* ---------- method ---------- */
 function about(){
   const sets = [["", "census", "31 one-word categories"], ["expanded", "expanded", "the census plus 65 more categories"],
-                ["brands", "brands", "brand names"]];
+                ["brands", "brands", "brand names"], ["choose", "choose", "the 96 questions with \u201cChoose\u201d for \u201cName\u201d"]];
   const cur = SET || "";
   main.innerHTML = `<h2>method</h2>
   <p class="note"><b>Instrument.</b> Each model is asked short questions with many right one-word answers (“Name a
