@@ -43,7 +43,7 @@ validation (full history: [`../convergence/OBSERVATIONS.md`](../convergence/OBSE
 ## Spec
 
 - [`spec/stimulus.json`](spec/stimulus.json) — 31 categories, single-turn, no system prompt, frozen.
-- [`spec/models.json`](spec/models.json) — 70 models (the paper's 44 + wave 2, below): US frontier (multi-generation), Chinese labs,
+- [`spec/models.json`](spec/models.json) — 105 models (the paper's 44 + waves 2-4, below): US frontier (multi-generation), Chinese labs,
   enterprise, search-tuned, persona/roleplay, small open, plus an expansion wave of heirloom
   retro-tests and generation fillers (gpt-4o, gpt-4-turbo, wizardlm-2, sonnet-4.6, …). The
   **deepseek lineage**
@@ -57,15 +57,21 @@ Other batteries, each with its own spec, transcripts and scoring (`analyze.BATTE
 - **Brands** ([`spec/stimulus_brands.json`](spec/stimulus_brands.json), `transcripts-brands/`): 37 brand
   categories ("Name a soda brand. Reply with the name only."), 8 runs, reasoning off where the endpoint
   allows it. Scored by whole name with variant merging ([`brands.py`](brands.py)), not by last word.
-  `transcripts-brands-default/` holds the five hybrid reasoning models at their default reasoning.
+  [`spec/stimulus_brands_ext.json`](spec/stimulus_brands_ext.json) (`transcripts-brands-ext/`, 2026-10-02) adds
+  four: coffee brand, skincare, project-management tool, mobile carrier. `--battery brands_all` scores the 41
+  together. `transcripts-brands-default/` and `transcripts-brands-ext-default/` hold the 24 hybrid reasoning
+  models at their default reasoning.
 - **Choose** ([`spec/perturb/`](spec/perturb/), `transcripts-choose/`, `transcripts-expanded-choose/`): the census
-  and expanded questions with "Choose" for "Name" ("Choose a fruit"), a pick rather than an example. 8 runs, 91
-  models, scored as the census; `probe_choose.py` compares the two verbs. `spec/perturb/` also holds the
+  and expanded questions with "Choose" for "Name" ("Choose a fruit"), a pick rather than an example. 8 runs, 102
+  models, scored as the census; `probe_choose.py` compares the two verbs. The 41 brand questions were asked the
+  same way (`transcripts-brands-choose/`, `transcripts-brands-ext-choose/`, `--battery choose_brands_all`); the
+  consensus brand changes in 6 of 41 (Facebook to Instagram, Chrome to Firefox, Siri to Claude, Trello to Asana,
+  Heineken to Guinness, Venmo to PayPal). `spec/perturb/` also holds the
   14-model prompt-perturbation check (`probe_perturb.py`: a generic system prompt, a named identity, the verb).
 - **The census at other settings**: `transcripts-reasoning-off/` (8 runs, reasoning off) and
   `transcripts-extra/` (4 more runs at default) use the frozen 31-category spec.
 
-Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template wrappers and takes the first line that is an answer, accents fold, compound names in a few categories stay whole, and `answer_variants.json` merges spelling and naming variants in the census and expanded batteries, after a category-by-category review. v2's numbers reproduce from the `consensus-arxiv-v2` tag. The census and the expanded battery run at each route's default reasoning, as served, so they are comparable; only the brand battery turns reasoning off. The newer batteries cover 91 of the 94 census models; three have no OpenRouter endpoint any more.
+Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template wrappers and takes the first line that is an answer, accents fold, compound names in a few categories stay whole, and `answer_variants.json` merges spelling and naming variants in the census and expanded batteries, after a category-by-category review. v2's numbers reproduce from the `consensus-arxiv-v2` tag. The census and the expanded battery run at each route's default reasoning, as served, so they are comparable; only the brand battery turns reasoning off. The newer batteries cover 102 of the 105 census models; three (Claude 3 Haiku, Granite 4.1 8B, Hermes 4 70B) have no endpoint any more. Sonar was retired from the panel on 2026-10-02 (`not_run_after` in `spec/models.json`) and is absent from batteries run after that date.
 
 ## Waves
 
@@ -125,6 +131,14 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   cells; 94 models. It ranks 6th (2.69 bits), above Small 3.2 (2.08, 18th) and beside Nemo (3.01)
   and Mixtral 8x22B (2.86): the newest Mistral stays divergent. At temperature 0 it collapses to
   1.65, the persona-tail pattern.
+- **Wave 4 (2026-10-02, +11 models)** — Hermes 3 Llama 3.1 70B rejoins (DeepInfra now answers one-word
+  prompts cleanly), Granite 4.2 8B and 30B, Inkling and Inkling-Small (Thinking Machines), Seed 2.0 Pro,
+  MiMo V2.6 Pro, Ling 3.0 Flash, Phi-4, Muse Glimmer 30B and Hy4 Preview. Three are served by DeepInfra
+  directly (`run.py --host deepinfra`): Hermes 3 70B, Granite 4.2 30B and Seed 2.0 Pro. All batteries plus
+  pickword ran the same day; 105 models in `analysis.json`. Phi-4 ranks 1st (4.63 bits, 30% novel answers:
+  "Lacrosse", "Olympics", "N/A"), above Hermes 4 70B. The new labs sit in the concentrated half: Seed 2.0
+  Pro 1.13 (95th), Inkling 1.27, MiMo 1.27, Ling 1.32. Existing models' scores move negligibly with the
+  larger field (r=0.9995).
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
@@ -134,6 +148,14 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   wizardlm, mixtral) avoids the mode in prose 60–68% of the time, the conformist tail 15–30%. The
   effect exists without the clamp and the ranking mostly survives it. This is the census's
   validation; the convergence cross-check below is corroboration.
+  **At full scale (2026-10-02):** every census, expanded and brand category (137) asked free on the live
+  panel (`transcripts-clamp-free/`, `transcripts-clamp-ext/`, `transcripts-clamp-free-brands-ext/`). Free
+  replies are scored by first mention among the category's answers (whole-word regex, plurals, brand
+  aliases). Per model, Spearman 0.60 (n=94, p<0.0001), so the ranking survives. Per category, clamped and
+  free modal shares correlate at 0.80; 55 categories hold within 5 points, 26 strengthen and 30 weaken by
+  15 or more. The weakening is concentrated in name categories, where the one-word instruction favours the
+  most famous one-word name: painter is Picasso 59% clamped and 3% free, where Vincent van Gogh leads.
+  Brand answers hold without the clamp.
 - **Construct check vs open-ended convergence (`probe_convergence_xval.py`, 2026-09-07)** — census
   surprisal against the convergence study's embedding `uniqueness` (free-prose replies, 9 prompts)
   over the 18 shared models: Spearman 0.41 (p=0.09); 0.64 (p=0.007) without ernie, convergence's
@@ -199,7 +221,7 @@ cat spec/models.txt | xargs -P 8 -I{} python ../../harness/run.py --study . --ru
 python analyze.py
 python analyze.py --battery brands    # -> analysis_brands.json (also: expanded)
 
-# review site: index.html (census), ?set=expanded (census + expanded, 96 categories), ?set=brands, ?set=choose (the 96 with "Choose")
+# review site: index.html (census), ?set=expanded (census + expanded, 96 categories), ?set=brands (41), ?set=choose (the 96 with "Choose"), ?set=brands-choose
 python views/build.py
 ```
 

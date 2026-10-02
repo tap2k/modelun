@@ -133,13 +133,17 @@ BATTERIES = {"census": ("transcripts", "stimulus.json"),
              "brands": ("transcripts-brands", "stimulus_brands.json"),
              # the census and expanded questions with "Choose" for "Name" (a pick, not an example)
              "choose_census": ("transcripts-choose", "perturb/stimulus_choose.json"),
-             "choose_expanded": ("transcripts-expanded-choose", "perturb/stimulus_expanded_choose.json")}
+             "choose_expanded": ("transcripts-expanded-choose", "perturb/stimulus_expanded_choose.json"),
+             # four brand categories added 2026-10-02 (own spec, so the frozen 37 stay unchanged), and brand Choose
+             "brands_ext": ("transcripts-brands-ext", "stimulus_brands_ext.json"),
+             "choose_brands": ("transcripts-brands-choose", "perturb/stimulus_brands_choose.json"),
+             "choose_brands_ext": ("transcripts-brands-ext-choose", "perturb/stimulus_brands_ext_choose.json")}
 
 
 def scorer(battery):
     """(reply -> answer, plural_merge). Brands score whole names (brands.brand_name), whose alias table
     does the variant merging, so the census's one-word plural merge does not run on them."""
-    if battery == "brands":
+    if battery.startswith("brands") or battery.startswith("choose_brands"):
         from brands import brand_name
         return brand_name, False
     return norm, True
@@ -165,7 +169,8 @@ def load(study_dir, battery="census", paths=None):
 
 
 # Batteries read together as one 96-category set (same template and scoring).
-COMBINED = {"combined": ("census", "expanded"), "choose": ("choose_census", "choose_expanded")}
+COMBINED = {"combined": ("census", "expanded"), "choose": ("choose_census", "choose_expanded"),
+            "brands_all": ("brands", "brands_ext"), "choose_brands_all": ("choose_brands", "choose_brands_ext")}
 VARIANT_TABLE = {"census": "census", "expanded": "expanded", "choose_census": "census", "choose_expanded": "expanded"}
 
 

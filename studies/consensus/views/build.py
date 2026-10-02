@@ -69,17 +69,21 @@ def release_dates():
     return out
 
 
-TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery",
-          "choose": "choose battery (96 categories)"}
+TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery (41 categories)",
+          "choose": "choose battery (96 categories)", "brands-choose": "brand choose battery (41 categories)"}
 # the expanded page shows the census and the expanded battery together; the choose page, both with "Choose"
-SOURCE = {"expanded": "combined", "choose": "choose"}
-PAGES = ["census", "expanded", "brands", "choose"]
+SOURCE = {"expanded": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all"}
+PAGES = ["census", "expanded", "brands", "choose", "brands-choose"]
 NOTES = {"expanded": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
                      "battery, same template and scoring. Three models whose endpoints are gone (Claude 3 Haiku, Granite "
                      "4.1 8B, Hermes 4 70B) have census categories only.",
          "brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
-                   "the endpoint allows it; reasoning-only models ran at their default. For the five hybrid models whose "
-                   "answers change with reasoning, transcripts-brands-default/ holds the default-reasoning run.",
+                   "the endpoint allows it; reasoning-only models ran at their default. The 37 original categories plus "
+                   "four added on 2026-10-02 (coffee brand, skincare, project-management tool, mobile carrier). For the "
+                   "24 hybrid models, transcripts-brands-default/ and transcripts-brands-ext-default/ hold the "
+                   "default-reasoning runs.",
+         "brands-choose": "The 41 brand questions with \u201cChoose\u201d instead of \u201cName\u201d, scored as the brand "
+                          "battery. Compare with the brands page: the consensus brand changes in 6 of 41 categories.",
          "choose": "The 96 census and expanded questions with one word changed: \u201cChoose a fruit\u201d instead of "
                    "\u201cName a fruit\u201d, which asks for a pick rather than an example. 8 answers per model, scored as the "
                    "census. Compare with the expanded page to see which consensus answers change."}

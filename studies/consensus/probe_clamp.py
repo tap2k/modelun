@@ -1,26 +1,41 @@
 """
 probe_clamp.py — does the one-word clamp MANUFACTURE the convergence, or just extract it?
 
-For ten census categories spanning the convergence range, each asked clamped ("... Reply
-with one word only.") and free (bare), we ask: when the clamp is removed and models answer
-in prose, does the field's clamped-modal answer still dominate? We measure it robustly by
-substring presence (the clamped modal appearing anywhere in the free reply), which sidesteps
-the last-word normalizer's failure on sentences.
+Each category is asked clamped ("... Reply with one word only.", or "the name only" for brands) and free
+(the same question, bare). The clamped answers give the field's pool of answers for the category and its modal
+answer. A free reply in prose can name several candidates ("blue, red or green"), so it is scored three ways
+against that pool, by whole-word regex (plurals and, for brands, brands.py aliases included):
 
-If clamped-share ≈ free-presence, the monoculture is a property of what models CHOOSE, not of
-how we ASK — a direct rebuttal to "isn't this a one-word-prompt artifact?"
+  presence   the modal answer appears anywhere in the reply (the original measure; an upper bound when replies list)
+  first      the earliest-mentioned pool answer is the modal one (the prose analogue of the one-word choice; main)
+  single     the reply names exactly one pool answer (reported, with the modal share among those replies)
 
-Second check (per model): does the clamped RANKING survive in prose? For each model, the share
-of its free replies that do not contain the field's clamped-modal word ("free modal-avoid"),
-rank-correlated with its census surprisal. Written to probes/clamp_rank.json.
-    python studies/consensus/probe_clamp.py --transcripts studies/consensus/transcripts-clamp
+If the clamped modal share ≈ the free first-mention modal share, the convergence belongs to what models choose,
+not to how they are asked. Per model: the share of free replies whose first mention avoids the modal answer,
+rank-correlated with the model's clamped census surprisal (analysis.json).
+
+Data: transcripts-clamp/ (spec/clamp.json, 10 census categories), transcripts-clamp-ext/ (spec/clamp_ext.json,
+20 expanded categories across the convergence range plus 5 brand categories) and transcripts-clamp-free/
+(spec/clamp_free_all.json: the free question for every other census, expanded and brand category, 98). Where a
+category has no clamped re-ask, its pool is the battery's own one-word answers (analyze.answers: census, expanded,
+brands; 8 samples per model). Scene id = <category>_<clamp|free>, split on the last underscore; brand scenes start
+with brand_.
+
+    ../../.venv/bin/python probe_clamp.py      # -> probes/clamp_rank.json
 """
-import re
 import json
-import argparse
-from pathlib import Path
+import re
+import sys
 from collections import Counter
+from pathlib import Path
 
+import numpy as np
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from brands import ALIASES, brand_name  # noqa: E402
+
+DIRS = ["transcripts-clamp", "transcripts-clamp-ext", "transcripts-clamp-free", "transcripts-clamp-free-brands-ext"]
 WORD = re.compile(r'^[a-z\-]+$|^\d+$')
 PUNCT = re.compile(r'[*_`#>\[\]().,!?"\':;]')
 
@@ -34,79 +49,109 @@ def norm(ans):
     return words[-1] if words else None
 
 
+def patterns(cat, pool):
+    """Answer -> compiled whole-word regex, with a plural for words and the alias spellings for brands."""
+    out = {}
+    for a in pool:
+        if cat.startswith("brand_"):
+            forms = [a] + [k for k, v in ALIASES.items() if v == a]
+            out[a] = re.compile(r"\b(" + "|".join(re.escape(f) for f in forms) + r")\b", re.I)
+        else:
+            out[a] = re.compile(rf"\b{re.escape(a)}s?\b", re.I)
+    return out
+
+
+def mentions(reply, pats):
+    """Pool answers named in a reply, in order of first appearance."""
+    hits = sorted((m.start(), a) for a, p in pats.items() if (m := p.search(reply)))
+    return [a for _, a in hits]
+
+
+def load():
+    clamp, free = {}, {}
+    for d in DIRS:
+        for p in sorted((HERE / d).glob("*.json")):
+            dd = json.loads(p.read_text())
+            for sid, s in dd["scenes"].items():
+                cat, cond = sid.rsplit("_", 1)
+                for r in s["runs"]:
+                    reply = (r[0].get("reply") or "") if r else ""
+                    if not reply.strip():
+                        continue
+                    if cond == "clamp":
+                        t = brand_name(reply) if cat.startswith("brand_") else norm(reply)
+                        if t:
+                            clamp.setdefault(cat, {}).setdefault(dd["model"], []).append(t)
+                    else:
+                        free.setdefault(cat, {}).setdefault(dd["model"], []).append(reply)
+    return clamp, free
+
+
+def battery_pool(clamp, free):
+    """Categories with free replies but no clamped re-ask take the battery's one-word answers as their pool. Brand
+    categories use the 41-category brand battery; for the hybrid models (reasoning by default, off in the brand
+    battery) their default-reasoning brand answers are used instead, since the free replies ran at default."""
+    from analyze import answers, load
+    need = [c for c in free if c not in clamp]
+    if not need:
+        return
+    bats = {b: answers(HERE, b) for b in ("census", "expanded", "brands_all")}
+    for d in ("transcripts-brands-default", "transcripts-brands-ext-default"):
+        for m, cats in load(HERE, "brands", paths=sorted((HERE / d).glob("*.json"))).items():
+            bats["brands_all"].setdefault(m, {}).update(cats)
+    for c in need:
+        bat, key = ("brands_all", c[len("brand_"):]) if c.startswith("brand_") else (None, c)
+        sources = [bats[bat]] if bat else [bats["census"], bats["expanded"]]
+        for ans in sources:
+            for m, cats in ans.items():
+                if cats.get(key):
+                    clamp.setdefault(c, {}).setdefault(m, []).extend(cats[key])
+
+
 def main():
-    ap = argparse.ArgumentParser(description="One-word-clamp method-defense probe.")
-    ap.add_argument("--transcripts", default="studies/consensus/transcripts-clamp")
-    args = ap.parse_args()
-
-    # gather replies per scene
-    clamp_toks, free_replies = {}, {}
-    for p in sorted(Path(args.transcripts).glob("*.json")):
-        dd = json.loads(p.read_text())
-        for sid, s in dd["scenes"].items():
-            cat, cond = sid.rsplit("_", 1)
-            for r in s["runs"]:
-                if not r:
-                    continue
-                reply = r[0].get("reply")
-                if cond == "clamp":
-                    t = norm(reply)
-                    if t:
-                        clamp_toks.setdefault(cat, Counter())[t] += 1
-                else:
-                    free_replies.setdefault(cat, []).append((reply or "").lower())
-
-    cats = [c for c in clamp_toks if c in free_replies]
-    cats.sort(key=lambda c: -(clamp_toks[c].most_common(1)[0][1] / sum(clamp_toks[c].values())))
-
-    print(f"\n{'category':10} {'clamp modal':>12}  clamp-share  free-has-modal   (n free)")
-    print("-" * 62)
+    clamp, free = load()
+    battery_pool(clamp, free)
+    cats = [c for c in clamp if c in free]
+    pool = {c: Counter(x for xs in clamp[c].values() for x in xs) for c in cats}
+    modal = {c: pool[c].most_common(1)[0][0] for c in cats}
+    cats.sort(key=lambda c: -pool[c][modal[c]] / sum(pool[c].values()))
+    per_cat, first_by_model = {}, {}
+    print(f"\n{'category':24} {'modal':>14}  clamped  presence  first  single(share)  n")
     for c in cats:
-        pool = clamp_toks[c]
-        modal, cnt = pool.most_common(1)[0]
-        share = cnt / sum(pool.values())
-        frees = free_replies[c]
-        has = sum(1 for r in frees if re.search(rf'\b{re.escape(modal)}\b', r))
-        pres = has / len(frees) if frees else 0
-        print(f"{c:10} {modal:>12}  {share:9.0%}  {pres:11.0%}     ({len(frees)})")
-    print("-" * 62)
-    print("clamp-share ≈ free-has-modal  ⇒  the clamp extracts the mode, it does not create it.")
+        pats = patterns(c, [a for a, k in pool[c].items() if k >= 2 or a == modal[c]])
+        n = pres = first = single = single_modal = 0
+        for m, replies in free[c].items():
+            for r in replies:
+                ms = mentions(r, pats)
+                n += 1
+                pres += modal[c] in ms
+                if ms:
+                    first += ms[0] == modal[c]
+                    first_by_model.setdefault(m, []).append(ms[0] != modal[c])
+                if len(ms) == 1:
+                    single += 1
+                    single_modal += ms[0] == modal[c]
+        share = pool[c][modal[c]] / sum(pool[c].values())
+        per_cat[c] = {"modal": modal[c], "clamped_share": round(share, 3), "free_presence": round(pres / n, 3),
+                      "free_first": round(first / n, 3), "single_reply_share": round(single / n, 3),
+                      "modal_among_single": round(single_modal / single, 3) if single else None, "n_free": n}
+        print(f"{c:24} {modal[c]:>14}  {share:6.0%}  {pres / n:7.0%}  {first / n:5.0%}  "
+              f"{single / n:5.0%} ({(single_modal / single if single else 0):4.0%})  {n}")
 
-    # --- per-model: does the clamped ranking survive with the clamp removed? ---
-    import numpy as np
-    here = Path(__file__).resolve().parent
-    census = json.loads((here / "analysis.json").read_text())["per_model"]
-    modal = {c: clamp_toks[c].most_common(1)[0][0] for c in cats}
-    avoid = {}
-    for p in sorted(Path(args.transcripts).glob("*.json")):
-        dd = json.loads(p.read_text())
-        if dd["model"] not in census:
-            continue
-        hits = []
-        for sid, s in dd["scenes"].items():
-            cat, cond = sid.rsplit("_", 1)
-            if cond != "free" or cat not in modal:
-                continue
-            for r in s["runs"]:
-                reply = (r[0].get("reply") or "").lower() if r else ""
-                if reply:
-                    hits.append(0.0 if re.search(rf'\b{re.escape(modal[cat])}s?\b', reply) else 1.0)
-        if hits:
-            avoid[dd["model"]] = float(np.mean(hits))
-    ms = sorted(avoid)
-    x = np.array([census[m]["surprisal"] for m in ms]); y = np.array([avoid[m] for m in ms])
+    census = json.loads((HERE / "analysis.json").read_text())["per_model"]
+    ms = sorted(m for m in first_by_model if m in census and len(first_by_model[m]) >= 20)
+    x = np.array([census[m]["surprisal"] for m in ms])
+    y = np.array([np.mean(first_by_model[m]) for m in ms])
     rx, ry = np.argsort(np.argsort(x)), np.argsort(np.argsort(y))
-    rho = float(np.corrcoef(rx, ry)[0, 1]); r = float(np.corrcoef(x, y)[0, 1])
+    rho = float(np.corrcoef(rx, ry)[0, 1])
     rng = np.random.default_rng(7)
     pval = float(np.mean([abs(np.corrcoef(rx, rng.permutation(ry))[0, 1]) >= abs(rho) for _ in range(20000)]))
-    print(f"\nper-model: census surprisal (31 cats, clamped) vs free modal-avoid ({len(cats)} cats, prose), n={len(ms)}")
-    print(f"  spearman {rho:.2f} (perm p={pval:.4f})  pearson {r:.2f}")
-    order = sorted(ms, key=lambda m: -census[m]["surprisal"])
-    for m in order[:5] + ["..."] + order[-5:]:
-        print(f"  {m:26}{census[m]['surprisal']:6.2f} bits  {avoid[m]:4.0%} free-avoid" if m != "..." else "  ...")
-    (here / "probes/clamp_rank.json").write_text(json.dumps(
-        {"n": len(ms), "cats": cats, "spearman": rho, "perm_p": pval, "pearson": r,
-         "per_model": {m: {"surprisal": census[m]["surprisal"], "free_modal_avoid": avoid[m]} for m in ms}}, indent=1) + "\n")
+    print(f"\nper model: census surprisal vs free first-mention avoiding the modal answer ({len(cats)} categories), "
+          f"n={len(ms)}: spearman {rho:.2f} (perm p={pval:.4f})")
+    (HERE / "probes" / "clamp_rank.json").write_text(json.dumps(
+        {"n": len(ms), "categories": len(cats), "spearman_first_avoid": rho, "perm_p": pval, "per_category": per_cat,
+         "per_model": {m: {"surprisal": census[m]["surprisal"], "free_first_avoid": round(float(np.mean(first_by_model[m])), 3)}
+                       for m in ms}}, indent=1) + "\n")
 
 
 if __name__ == "__main__":

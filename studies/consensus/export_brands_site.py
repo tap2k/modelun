@@ -2,7 +2,7 @@
 
 Writes one JSON file: a simplified grid (key categories x one flagship model per lab), each category's top
 brands across the whole panel, top-brand shares by release half-year, and one open model's training ladder
-(OLMo 3.1 32B, base/SFT/DPO/RL, no system prompt) for "name a brand". Scoring is analyze.answers(study, "brands") (whole-name,
+(OLMo 3.1 32B, base/SFT/DPO/RL, no system prompt) for "name a brand". Scoring is analyze.answers(study, "brands_all") (41 categories, whole-name,
 brands.py); release dates come from views/build.release_dates().
 
     ../../.venv/bin/python export_brands_site.py OUT.json
@@ -35,10 +35,11 @@ def half(d):
 
 
 def main(out):
-    ans = answers(HERE, "brands")
+    ans = answers(HERE, "brands_all")
     dates = {m: str(d) for m, d in build.release_dates().items()}
     prompts = {s["id"]: s["turns"][0].split(" Reply with")[0]
-               for s in json.loads((HERE / "spec" / "stimulus_brands.json").read_text())["scenes"]}
+               for f in ("stimulus_brands.json", "stimulus_brands_ext.json")
+               for s in json.loads((HERE / "spec" / f).read_text())["scenes"]}
     grid = []
     for lab, m in MODELS:
         row = {"lab": lab, "model": m, "released": dates.get(m, "")[:7], "cells": {}}
