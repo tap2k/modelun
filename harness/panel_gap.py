@@ -11,7 +11,9 @@ Three questions, in order of how much a wrong answer costs:
    another is a row the matrix cannot use.
 3. What is new? Models in the catalog that no panel has seen.
 
-Reads each ``studies/<name>/spec/models.txt``; no study semantics live here.
+Reads each ``studies/<name>/spec/models.txt``; no study semantics live here. A roster entry in
+``spec/models.json`` carrying ``not_run_after`` (a model the study has stopped running, kept in the
+append-only roster) is left out of the MISSING and EXPIRING lists and shown under RETIRED.
 
     python3 harness/panel_gap.py                    # all studies with a panel
     python3 harness/panel_gap.py --study conduct consensus
@@ -50,6 +52,20 @@ def panels(names: list[str] | None) -> dict[str, set[str]]:
         if names and study not in names:
             continue
         out[study] = {l.strip() for l in spec.read_text().splitlines() if l.strip()}
+    return out
+
+
+def retired() -> dict[str, dict]:
+    """Slug -> its not_run_after record, from every study's spec/models.json that has one."""
+    out = {}
+    for spec in sorted((REPO / "studies").glob("*/spec/models.json")):
+        try:
+            entries = json.loads(spec.read_text()).get("models", [])
+        except (json.JSONDecodeError, AttributeError):
+            continue
+        for e in entries if isinstance(entries, list) else []:
+            if isinstance(e, dict) and e.get("not_run_after") and e.get("slug"):
+                out[e["slug"]] = e["not_run_after"]
     return out
 
 
@@ -119,10 +135,11 @@ def main() -> int:
         return 1
     union = set().union(*p.values())
     today = dt.date.today().isoformat()
+    stopped = retired()
 
     expiring = sorted(
         (catalog[m]["expiration_date"], m, sorted(s for s in p if m in p[s]))
-        for m in union & set(catalog)
+        for m in (union & set(catalog)) - set(stopped)
         if catalog[m].get("expiration_date")
     )
     vanished = sorted(
@@ -130,7 +147,7 @@ def main() -> int:
     )
     # A model one panel has and another does not, restricted to models still
     # runnable: a vanished model cannot be backfilled, so listing it is noise.
-    runnable = union & set(catalog)
+    runnable = (union & set(catalog)) - set(stopped)
     misaligned = {
         study: sorted(m for m in runnable - have if m not in vanished)
         for study, have in p.items()
@@ -149,6 +166,7 @@ def main() -> int:
             "expiring": [{"date": d, "model": m, "studies": s} for d, m, s in expiring],
             "vanished": [{"model": m, "studies": s} for m, s in vanished],
             "misaligned": misaligned,
+            "retired": [{"model": m, **r} for m, r in sorted(stopped.items())],
             "unseen": [{"released": d, "model": m} for d, m in unseen],
         }, indent=1))
         return 0
@@ -168,6 +186,12 @@ def main() -> int:
     for m, studies in vanished:
         print(f"  {m}   in: {', '.join(studies)}")
     if not vanished:
+        print("  none")
+
+    print(f"\n== RETIRED: kept in a roster, no longer run ({len(stopped)}) ==")
+    for m, r in sorted(stopped.items()):
+        print(f"  {m}   since {r.get('date', '?')}")
+    if not stopped:
         print("  none")
 
     print("\n== MISALIGNED: still runnable, missing from this panel ==")
