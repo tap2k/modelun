@@ -106,10 +106,28 @@ item here.
      are in `transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/` and
      `studies/language/transcripts_pickword_reasoning_off/`.
    - **Until decided:** run hybrids both ways (`studies/consensus/run_brands_panel.py` does).
-2. **The full census in every language.** The full panel through the census, expanded and brand
-   batteries in every language. Scope, open questions and a rough cost (about $1,000) are in
-   `studies/language/README.md` under "Planned". It needs translations, native review of them,
-   and a pilot first.
+2. **The full census in every language.**
+   - **Scope.** The full panel through all three Name batteries in every language: the census (31
+     categories), the expanded battery (65) and the brand battery (44). It would replace the
+     language study's deep run (15 categories, 5 languages) as the cross-language census.
+   - **Template.** The brand battery's five-model pilot in 21 languages:
+     `studies/consensus/transcripts-brands-lang-pilot/`, `build_brands_lang.py`, `brands_lang.py`
+     and `probes/brands_lang_pilot.json`. That is one prompt table per battery, one directory per
+     language, and a per-category alias table mapping every answer to one name across scripts.
+   - **Still to settle.**
+     - The language set: the brand pilot's 21, or pickword's 37 reported.
+     - How to ask for one word where words are not space-separated (zh, ja) or are
+       agglutinative (tr, ko, sw).
+     - A census scorer for non-Latin scripts. `analyze.norm()` keeps the last Latin token.
+     - The reasoning setting (item 1).
+   - **Before running.**
+     - Translations of the 96 census and expanded questions.
+     - Native review of those translations and of the brand prompts.
+     - A pilot on a few models.
+   - **Rough cost** for 20 languages beyond English on 105 models: census at 4 runs about $45,
+     expanded at 8 runs about $670, brands at 8 runs about $300, so about $1,000. These are the
+     English per-call costs times 1.5 for non-Latin tokenisation. Expanded is most of it,
+     because reasoning models answer it at length.
 3. **The brand gradient's clamped/free grid.**
    - **What is new.** Clamped Recommend and clamped one-turn pick were added on this branch
      (`spec/perturb/stimulus_brands_{recommend,pick}_clamp.json`). With them, every step from
