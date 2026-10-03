@@ -96,8 +96,19 @@ item here.
        `-default` files swapped in.
      - For every other model off and as served are the same, except GPT-6 Luna (about 13
        reasoning tokens per answer as served) and Kimi K2, which ignores off.
-   - **The check.** On the 24 hybrids the brand consensus differs between the two settings in
-     4 of 41 categories, and a model's own top brand is the same in 80% of model x category pairs.
+   - **The check (2026-10-03, the 24 hybrids, off vs as served).** The first figure is how often
+     a model gives the same top answer under both settings; the noise floor is the same comparison
+     between two as-served samples.
+     - **Census:** 79% against a noise floor of 77%. No real effect; the consensus differs in 2 of
+       31 categories.
+     - **Expanded:** 60% against a floor of 76%, at matched 4-run samples. A real effect: the
+       consensus differs in 13 of 65 (composer Bach to Mozart, villain Voldemort to Joker,
+       landmark Eiffel to Colosseum).
+     - **Pickword:** 16% against a floor of 25%. A real effect: the consensus differs in 24 of 46
+       languages (es sol to hola, hi शांति to नमस्ते).
+     - **Brands:** 80%, floor not measured. The consensus differs in 4 of 41.
+     - So the setting matters outside the core census. Whatever the default, expanded and pickword
+       need both settings for the hybrids.
    - **The case for as served:** it is what users get.
    - **The case for off:** a reasoning trace can pull an answer (in other languages, possibly
      toward English), and off is the cleaner reflex.
