@@ -17,6 +17,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 RUN = HERE.parents[1] / "harness" / "run.py"
 LANG = HERE.parent / "language"
+# No longer served on OpenRouter (404 as of 2026-10-03); Granite and Hermes have local runs (transcripts-local/).
+RETIRED = {"anthropic/claude-3-haiku", "ibm-granite/granite-4.1-8b", "nousresearch/hermes-4-70b"}
 BATTERIES = [  # study dir, spec, source dir (the 4-run original), out dir
     (HERE, "spec/stimulus.json", "transcripts", "transcripts-extra"),
     (LANG, "spec/pickword.json", "transcripts_pickword", "transcripts_pickword_extra"),
@@ -42,7 +44,7 @@ def settings(path):
 def commands():
     for study, spec, src, out in BATTERIES:
         for p in sorted((study / src).glob("*.json")):
-            if (study / out / p.name).exists():
+            if (study / out / p.name).exists() or json.loads(p.read_text())["slug"] in RETIRED:
                 continue
             yield study, ["python3", str(RUN), "--study", ".", "--spec", spec, "--out", out, "--runs", "4"] + settings(p)
 
