@@ -219,6 +219,17 @@ item here.
        `studies/language` was created. No remote session covers that window, so check the local
        Claude Code history on the Mac for that week before re-running one.
 
+8. **Models that left OpenRouter: run locally where possible (handoff, on the Mac).**
+   - **What happened.** Claude 3 Haiku, Granite 4.1 8B and Hermes 4 70B return 404 on
+     OpenRouter as of 2026-10-03, so they keep 4 census runs (no `transcripts-extra/`), and their
+     pickword extra runs fail.
+   - **Granite 4.1 8B has weights in `harness/ladders.json`** (`~/dev/models/granite-4.1-8b`), so
+     run its census extra and pickword extra locally with `harness/local.py`.
+   - **Write the output to `transcripts-local/`, per the gotcha below**, and stamp it as a local
+     run. A local checkpoint differs from the served model in quantization, chat template and
+     serving, so these runs sit beside the API runs; they are not merged into them.
+   - **Claude 3 Haiku and Hermes 4 70B** have no local route. Leave them at 4 runs.
+
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
   TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
