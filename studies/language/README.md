@@ -36,8 +36,8 @@ Pakistan/Eid, same spoken language).
 ## Planned: the full census in every language (decided 2026-10-03, not yet run)
 
 The intent is to run the full panel through all three Name batteries in every language:
-the census (31 categories), the expanded battery (65) and the brand battery (44), as served
-(no reasoning flag; see AGENTS.md). The deep run above covers 15 categories in 5 languages;
+the census (31 categories), the expanded battery (65) and the brand battery (44), with the
+reasoning setting still pending (AGENTS.md, Pending decisions). The deep run above covers 15 categories in 5 languages;
 this would replace it as the cross-language census.
 
 - **Precedent.** The brand battery's five-model pilot in 21 languages

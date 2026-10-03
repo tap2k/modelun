@@ -79,20 +79,54 @@ directory. `harness/panel_gap.py` diffs both against the live OpenRouter
 catalog, and flags models with an `expiration_date`, which are the only ones
 where waiting loses the data permanently.
 
-## Reasoning: run as served
+## Pending decisions: resolve at the next merge of `claude/brand-panel-languages`
 
-New runs send no `--reasoning` flag: each model answers as its route serves it, as
-the census, expanded, pickword and language batteries always have (decided
-2026-10-03). The brand batteries before that date ran `--reasoning off` where the
-endpoint allowed it; the 24 hybrids (accept off, reason by default; the models in
-`studies/consensus/transcripts-brands-ext-default/`) also have default-reasoning
-reruns in the `-default` directories, so the as-served brand panel is the off run
-with those files swapped in for the hybrids. For every other model off and as
-served are the same, except GPT-6 Luna (about 13 reasoning tokens per answer as
-served) and Kimi K2, which ignores off. Reasoning-off reruns of the hybrids
-(`transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/`,
-`studies/language/transcripts_pickword_reasoning_off/`) are a robustness check,
-not the headline.
+Raised 2026-10-03 and not settled. Whoever merges that branch into `main` settles each item with
+Tapan before or at the merge, records the outcome in the section it belongs to, and deletes the
+item here.
+
+1. **Reasoning default: as served or off.**
+   - **History.**
+     - The census, expanded, pickword and language batteries ran as served (no `--reasoning` flag).
+     - The brand batteries ran `--reasoning off` where the endpoint allowed it.
+     - The 24 hybrids (accept off, reason by default; the models in
+       `studies/consensus/transcripts-brands-ext-default/`) also have default-reasoning reruns in
+       the `-default` directories.
+     - So the brand panel can be read either way: as served is the off run with the hybrids'
+       `-default` files swapped in.
+     - For every other model off and as served are the same, except GPT-6 Luna (about 13
+       reasoning tokens per answer as served) and Kimi K2, which ignores off.
+   - **The check.** On the 24 hybrids the brand consensus differs between the two settings in
+     4 of 41 categories, and a model's own top brand is the same in 80% of model x category pairs.
+   - **The case for as served:** it is what users get.
+   - **The case for off:** a reasoning trace can pull an answer (in other languages, possibly
+     toward English), and off is the cleaner reflex.
+   - **Either way:** about 19 reasoning-only models cannot be switched off, so the panel stays mixed.
+   - **Robustness check:** reasoning-off reruns of the hybrids for census, expanded and pickword
+     are in `transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/` and
+     `studies/language/transcripts_pickword_reasoning_off/`.
+   - **Until decided:** run hybrids both ways (`studies/consensus/run_brands_panel.py` does).
+2. **The full census in every language.** The full panel through the census, expanded and brand
+   batteries in every language. Scope, open questions and a rough cost (about $1,000) are in
+   `studies/language/README.md` under "Planned". It needs translations, native review of them,
+   and a pilot first.
+3. **The brand gradient's clamped/free grid.**
+   - **What is new.** Clamped Recommend and clamped one-turn pick were added on this branch
+     (`spec/perturb/stimulus_brands_{recommend,pick}_clamp.json`). With them, every step from
+     Name to pick has a clamped form, and all but two-turn pick also has a free form.
+   - **Reconcile them** with the other session's free Choose, one-turn pick, two-turn pick and
+     Recommend-paraphrase runs, which were uncommitted on Tapan's Mac on 2026-10-03.
+   - **Rescore its headline counts as served** (Choose 6/41, Recommend 15/41, pick 28/41).
+4. **Review the cross-language brand material.**
+   - **The alias table** `studies/consensus/spec/brands_lang_aliases.json` was drafted by Claude
+     agents. The flagged calls are in the 2026-10-03 session (Asahi Super Dry into Asahi, BBC
+     language services kept apart, the Persian "پی" left unresolved).
+   - **The translated prompts** need a native check before the full panel. The notes are in
+     `studies/consensus/spec/brands_lang_notes.md`.
+5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
+   accepts off and uses reasoning tokens as served.
+6. **Look for an earlier census pilot in another language.** Tapan recalls one, but it is not in
+   git. Search sessions before 2026-09-29 and the private planning folder before re-running one.
 
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
