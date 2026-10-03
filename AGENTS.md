@@ -147,7 +147,7 @@ item here.
      `studies/consensus/spec/brands_lang_notes.md`.
 5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
    accepts off and uses reasoning tokens as served.
-7. **The shape of the standing panel.** The goals it serves, as drafted 2026-10-03 (confirm):
+6. **The shape of the standing panel.** The goals it serves, as drafted 2026-10-03 (confirm):
    - **Goals, in priority order:**
      1. A dated, cross-vendor archive of what production models default to, collected on release
         day and kept after retirement.
@@ -178,7 +178,7 @@ item here.
      - **One manifest.** `harness/cost.py` `BATTERY` becomes the single definition of the core
        tier (spec, runs, condition). `panel_gap.py` reports models missing any core instrument, and
        the release-day rule in this file points at it. Plain data, not a plugin API.
-8. **Look for an earlier census pilot in another language.**
+7. **Look for an earlier census pilot in another language.**
    - **The question.** Tapan recalls a pilot of the full census or expanded battery in another
      language. It is not in git (all 814 commits checked).
    - **Searched on 2026-10-03:** remote sessions from 2026-07-04 to 10-03. There was no run of the
