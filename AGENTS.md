@@ -79,6 +79,21 @@ directory. `harness/panel_gap.py` diffs both against the live OpenRouter
 catalog, and flags models with an `expiration_date`, which are the only ones
 where waiting loses the data permanently.
 
+## Reasoning: run as served
+
+New runs send no `--reasoning` flag: each model answers as its route serves it, as
+the census, expanded, pickword and language batteries always have (decided
+2026-10-03). The brand batteries before that date ran `--reasoning off` where the
+endpoint allowed it; the 24 hybrids (accept off, reason by default; the models in
+`studies/consensus/transcripts-brands-ext-default/`) also have default-reasoning
+reruns in the `-default` directories, so the as-served brand panel is the off run
+with those files swapped in for the hybrids. For every other model off and as
+served are the same, except GPT-6 Luna (about 13 reasoning tokens per answer as
+served) and Kimi K2, which ignores off. Reasoning-off reruns of the hybrids
+(`transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/`,
+`studies/language/transcripts_pickword_reasoning_off/`) are a robustness check,
+not the headline.
+
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
   TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
