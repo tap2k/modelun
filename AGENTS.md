@@ -79,11 +79,6 @@ directory. `harness/panel_gap.py` diffs both against the live OpenRouter
 catalog, and flags models with an `expiration_date`, which are the only ones
 where waiting loses the data permanently.
 
-## Open handoff
-
-[`HANDOFF.md`](HANDOFF.md) lists decisions raised on `claude/brand-panel-languages` and not yet
-settled. Resolve them at the next merge of that branch, then delete the file.
-
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
   TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
