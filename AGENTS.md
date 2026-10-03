@@ -143,8 +143,20 @@ item here.
      `studies/consensus/spec/brands_lang_notes.md`.
 5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
    accepts off and uses reasoning tokens as served.
-6. **Look for an earlier census pilot in another language.** Tapan recalls one, but it is not in
-   git. Search sessions before 2026-09-29 and the private planning folder before re-running one.
+6. **Look for an earlier census pilot in another language.**
+   - **The question.** Tapan recalls a pilot of the full census or expanded battery in another
+     language. It is not in git (all 814 commits checked).
+   - **Searched on 2026-10-03:** remote sessions from 2026-07-04 to 10-03. There was no run of the
+     31 or 65 categories in another language.
+   - **Closest finds:**
+     - The committed deep run (15 categories, 5 languages, commit 5f0f326, 2026-07-15).
+     - The 2026-09-30 decision to "hold the languages" until prompts are native-checked.
+     - The language coverage probe (2026-09-29), whose files are in the private folder
+       `consensus/language-census/`. The research queue there has the language census "PARKED
+       2026-09-13".
+   - **Where else to look.** An all-category pilot would date from about 2026-07-10 to 07-15, when
+       `studies/language` was created. No remote session covers that window, so check the local
+       Claude Code history on the Mac for that week before re-running one.
 
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
