@@ -95,11 +95,13 @@ def recommend_pass(pipeline, delete_cache):
     out = HERE / "probes" / f"verb_ladder_{pipeline}" / "recommend"
     spec = recommend_spec()
     for st in stages(pipeline):
-        if st["stage"] == "base":
+        f = tuned_framing(st)
+        path = local.path(out, st, f)
+        if st["stage"] == "base" or (path.exists() and len(json.loads(path.read_text())["scenes"]) == len(spec["scenes"])):
             continue
         model = local.load(st)
-        f = tuned_framing(st)
-        local.run(spec, st, f, RUNS, local.path(out, st, f), max_tokens=512, batch=16, model=model)
+        # batch 8: 512-token replies at batch 16 ran out of GPU memory on OLMo 3 7B DPO (2026-10-02)
+        local.run(spec, st, f, RUNS, path, max_tokens=512, batch=8, model=model)
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
