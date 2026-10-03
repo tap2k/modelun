@@ -64,7 +64,10 @@ MARKS = "".join(f"{chr(a)}-{chr(b)}" for a, b in (
     (0x20D0, 0x20FF), (0x3099, 0x309A), (0xFE20, 0xFE2F)))
 
 
-def brand_name(reply):
+def brand_name(reply, latin_only=True):
+    """latin_only drops other-script tokens from a name that has Latin letters, which cleans English answers
+    ("Cheerios麦片"); the cross-language battery passes False, since there a mixed name is the name
+    ("카카오 T", "Яндекс Go")."""
     if not reply:
         return None
     r = clean(unicodedata.normalize("NFKC", reply))          # wrappers, stop markers, last non-empty line
@@ -73,8 +76,9 @@ def brand_name(reply):
     if ":" in r and 0 < len(r.rsplit(":", 1)[1].split()) <= 5:  # "'s response:  Crest" -> "Crest"
         r = r.rsplit(":", 1)[1]
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)       # markdown and quotes before the debris cut
+    r = r.replace("\u200c", " ")                            # Persian zero-width non-joiner splits a name's parts
     r = re.split(rf"[^\w{MARKS}\s'&+!.,/・-]", r)[0]       # trailing debris ("Cheerios$postal...")
-    if re.search(r"[A-Za-z]", r):                            # Latin name with stray other-script tokens
+    if latin_only and re.search(r"[A-Za-z]", r):             # Latin name with stray other-script tokens
         r = " ".join(t for t in r.split() if not re.search(r"[^\x00-\u024f]", t))
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)
     r = re.sub(r"\s*\(.*?\)\s*", " ", r).strip().lower()
