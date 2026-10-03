@@ -106,6 +106,10 @@ item here.
      are in `transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/` and
      `studies/language/transcripts_pickword_reasoning_off/`.
    - **Until decided:** run hybrids both ways (`studies/consensus/run_brands_panel.py` does).
+   - **Recommended:** as served for the headline, plus a standing reasoning-off rerun of the
+     hybrids for each battery (about $5-10 a battery). The archive records what users get, and five
+     of six batteries already run that way; brands switch by swapping in the existing `-default`
+     files.
 2. **The full census in every language.**
    - **Scope.** The full panel through all three Name batteries in every language: the census (31
      categories), the expanded battery (65) and the brand battery (44). It would replace the
@@ -143,7 +147,38 @@ item here.
      `studies/consensus/spec/brands_lang_notes.md`.
 5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
    accepts off and uses reasoning tokens as served.
-6. **Look for an earlier census pilot in another language.**
+7. **The shape of the standing panel.** The goals it serves, as drafted 2026-10-03 (confirm):
+   - **Goals, in priority order:**
+     1. A dated, cross-vendor archive of what production models default to, collected on release
+        day and kept after retirement.
+     2. The same frozen instruments across models and over time.
+     3. A per-model profile across behaviours.
+     4. Audiences beyond ML (brands, languages).
+     5. Forkability.
+   - **Not goals:** a leaderboard, a quality ranking, a brand tracker.
+   - **Recommended:**
+     - **Roster.** Models join by rule, not taste: frontier releases from the major labs, the top
+       models by OpenRouter usage, notable open-weight families, every version of a tracked
+       lineage, and a few deliberate outliers. Append-only; a model with an expiration date goes
+       first.
+     - **Battery tiers.**
+       - Core: judge-free, every model on release day, about $1 a model. Census, expanded,
+         brands Name, pickword and suggestibility, plus the cross-language census once it is
+         piloted, native-checked and frozen.
+       - Extended: every model, may lag. Conduct and the brand verb grid.
+       - Probes: subsets only, never standing. Realism, paraphrase, perturbation, fingerprinting,
+         local ladders and reasoning-off reruns.
+       - An instrument enters the core only after a pilot and a frozen spec.
+     - **Runs.** 8 for every one-word battery. The census already has 4 + 4 in
+       `transcripts-extra/`. Pickword gets 4 more in `studies/language/transcripts_pickword_extra/`
+       (run 2026-10-03; it doubles as a re-snapshot); its original 4-run files stay as published.
+     - **Re-snapshots.** The census each quarter on every model still served, and on any alias
+       change. Store in dated directories and never overwrite.
+     - **Language set.** Fix it once (21 or 37) if cross-language work enters the core.
+     - **One manifest.** `harness/cost.py` `BATTERY` becomes the single definition of the core
+       tier (spec, runs, condition). `panel_gap.py` reports models missing any core instrument, and
+       the release-day rule in this file points at it. Plain data, not a plugin API.
+8. **Look for an earlier census pilot in another language.**
    - **The question.** Tapan recalls a pilot of the full census or expanded battery in another
      language. It is not in git (all 814 commits checked).
    - **Searched on 2026-10-03:** remote sessions from 2026-07-04 to 10-03. There was no run of the
