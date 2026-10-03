@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""run_brands_ext2.py — the three added brand categories (spec/stimulus_brands_ext2.json) on the full English panel.
+"""run_brands_panel.py — a brand spec on the full English panel, each model run as the brand battery ran it.
 
 Each model is run exactly as it was for the first brand extension: its slug, host, host model, provider pin,
-reasoning mode and max_tokens are read from its file in transcripts-brands-ext/, so the 44 English brand categories
-share one set of conditions. The hybrids that also have default-reasoning brand runs
-(transcripts-brands-ext-default/) get the same rerun into transcripts-brands-ext2-default/.
+reasoning mode and max_tokens are read from its file in transcripts-brands-ext/, so every brand question shares one
+set of conditions. The hybrids that also have default-reasoning brand runs (transcripts-brands-ext-default/) get
+the same rerun into <out>-default/.
 
-    python3 run_brands_ext2.py --dry-run     # print the commands
-    python3 run_brands_ext2.py               # 8 runs, 8 models at a time; ~101 models x 3 categories, about $1
+    python3 run_brands_panel.py spec/stimulus_brands_ext2.json transcripts-brands-ext2 --dry-run
+    python3 run_brands_panel.py spec/stimulus_brands_ext2.json transcripts-brands-ext2               # ~$1
+    python3 run_brands_panel.py spec/perturb/stimulus_brands_recommend_clamp.json transcripts-brands-recommend-clamp
+    python3 run_brands_panel.py spec/perturb/stimulus_brands_pick_clamp.json transcripts-brands-pick-clamp
 """
 import json, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -15,7 +17,6 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RUN = HERE.parents[1] / "harness" / "run.py"
-SPEC = "spec/stimulus_brands_ext2.json"
 
 
 def settings(path):
@@ -39,15 +40,15 @@ def settings(path):
     return args + [slug]
 
 
-def commands():
-    for src, out in (("transcripts-brands-ext", "transcripts-brands-ext2"),
-                     ("transcripts-brands-ext-default", "transcripts-brands-ext2-default")):
+def commands(spec, out):
+    for src, dst in (("transcripts-brands-ext", out), ("transcripts-brands-ext-default", out + "-default")):
         for p in sorted((HERE / src).glob("*.json")):
-            yield ["python3", str(RUN), "--study", ".", "--spec", SPEC, "--out", out, "--runs", "8"] + settings(p)
+            yield ["python3", str(RUN), "--study", ".", "--spec", spec, "--out", dst, "--runs", "8"] + settings(p)
 
 
 def main():
-    cmds = list(commands())
+    spec, out = sys.argv[1], sys.argv[2]
+    cmds = list(commands(spec, out))
     if "--dry-run" in sys.argv:
         for c in cmds:
             print(" ".join(c[2:]))
@@ -56,7 +57,7 @@ def main():
     def go(c):
         r = subprocess.run(c, cwd=HERE, capture_output=True, text=True)
         return c[-1], r.returncode
-    with ThreadPoolExecutor(8) as ex:
+    with ThreadPoolExecutor(int(dict(a.split("=") for a in sys.argv[3:] if "=" in a).get("--jobs", 12))) as ex:
         for slug, rc in ex.map(go, cmds):
             print(("ok  " if rc == 0 else "FAIL") + f" {slug}")
     print("run.py exits 0 on failed cells, so check the files for errors")
