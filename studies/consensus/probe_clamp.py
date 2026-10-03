@@ -62,9 +62,16 @@ def patterns(cat, pool):
 
 
 def mentions(reply, pats):
-    """Pool answers named in a reply, in order of first appearance."""
-    hits = sorted((m.start(), a) for a, p in pats.items() if (m := p.search(reply)))
-    return [a for _, a in hits]
+    """Pool answers named in a reply, in order of first appearance; at the same position the longer match wins
+    ("Amazon Web Services" is aws, not amazon), and an answer found only inside a longer one is dropped."""
+    hits = sorted(((m.start(), -len(m.group(0)), a, m.end()) for a, p in pats.items() if (m := p.search(reply))))
+    out, covered = [], -1
+    for start, _, a, end in hits:
+        if start < covered:
+            continue
+        out.append(a)
+        covered = end
+    return out
 
 
 def load():
