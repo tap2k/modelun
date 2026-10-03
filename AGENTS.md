@@ -109,6 +109,18 @@ item here.
      - **Brands:** 80%, floor not measured. The consensus differs in 4 of 41.
      - So the setting matters outside the core census. Whatever the default, expanded and pickword
        need both settings for the hybrids.
+     - **Direction: reasoning makes the hybrids more conventional, in every battery.** Compared
+       with the consensus of the other models, as served the hybrids:
+       - give the field's answer more often: census 59% to 62%, expanded 55% to 63%, pickword 10%
+         to 15%, brands 74% to 77%;
+       - repeat their own top answer more: census 74% to 82%, pickword 41% to 51%;
+       - give fewer distinct answers.
+
+       Thinking reaches the canonical answer (Mozart over Bach, the Joker over Voldemort); off
+       gives the first association. In pickword, reasoning pulls toward the language's greeting
+       (hola, नमस्ते, سلام). A hybrid's census divergence therefore depends on the setting.
+       Contrast this with the brand gradient, where a written-out list pulls the pick away from
+       the consensus.
    - **The case for as served:** it is what users get.
    - **The case for off:** a reasoning trace can pull an answer (in other languages, possibly
      toward English), and off is the cleaner reflex.
@@ -117,10 +129,11 @@ item here.
      are in `transcripts-reasoning-off/`, `transcripts-expanded-reasoning-off/` and
      `studies/language/transcripts_pickword_reasoning_off/`.
    - **Until decided:** run hybrids both ways (`studies/consensus/run_brands_panel.py` does).
-   - **Recommended:** as served for the headline, plus a standing reasoning-off rerun of the
-     hybrids for each battery (about $5-10 a battery). The archive records what users get, and five
-     of six batteries already run that way; brands switch by swapping in the existing `-default`
-     files.
+   - **Recommended:** both arms for the hybrids as part of the standing core, in every battery.
+     Report as served as the headline (what users get, and how five of six batteries already
+     run), with the off arm reported beside it; it is a measured effect, not a footnote. It costs
+     about $5-10 a battery, since only the hybrids need it. The brand batteries switch their
+     headline by swapping in the existing `-default` files.
 2. **The full census in every language.**
    - **Scope.** The full panel through all three Name batteries in every language: the census (31
      categories), the expanded battery (65) and the brand battery (44). It would replace the
@@ -179,8 +192,8 @@ item here.
          brands Name, pickword and suggestibility, plus the cross-language census once it is
          piloted, native-checked and frozen.
        - Extended: every model, may lag. Conduct and the brand verb grid.
-       - Probes: subsets only, never standing. Realism, paraphrase, perturbation, fingerprinting,
-         local ladders and reasoning-off reruns.
+       - Probes: subsets only, never standing. Realism, paraphrase, perturbation, fingerprinting
+         and local ladders. (The hybrids' second reasoning arm is part of the core; see item 1.)
        - An instrument enters the core only after a pilot and a frozen spec.
      - **Runs.** 8 for every one-word battery. The census already has 4 + 4 in
        `transcripts-extra/`. Pickword gets 4 more in `studies/language/transcripts_pickword_extra/`
