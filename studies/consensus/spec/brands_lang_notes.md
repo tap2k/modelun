@@ -1,6 +1,7 @@
 # Brand battery across languages: translator notes
 
-Machine translations (2026-10-03). Points flagged for native review, per language.
+Machine translations (2026-10-03). Points flagged for native review, per language. The translators also wrote a
+Recommend prompt per category; the battery kept only Name (the census question), so the Recommend notes are moot.
 
 ## zh
 
