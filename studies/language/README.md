@@ -33,6 +33,35 @@ Pakistan/Eid, same spoken language).
 - **Bake-off** — `spec/bakeoff_{en,hi,ur}.json`: festival vs holiday vs celebration wording;
   locked `festival` (cleanest Diwali/Eid split, least vacation-drift).
 
+## Planned: the full census in every language (decided 2026-10-03, not yet run)
+
+The intent is to run the full panel through all three Name batteries in every language:
+the census (31 categories), the expanded battery (65) and the brand battery (44), as served
+(no reasoning flag; see AGENTS.md). The deep run above covers 15 categories in 5 languages;
+this would replace it as the cross-language census.
+
+- **Precedent.** The brand battery's five-model pilot in 21 languages
+  (`studies/consensus/transcripts-brands-lang-pilot/`, `build_brands_lang.py`,
+  `brands_lang.py`, `probes/brands_lang_pilot.json`) is the template: one prompt table per
+  battery, one directory per language, a per-category alias table mapping every answer to one
+  name across scripts.
+- **Still to settle.**
+  - The language set: the brand pilot's 21, or pickword's 37 reported.
+  - How to ask for "one word" where words are not space-separated (zh, ja) or are
+    agglutinative (tr, ko, sw).
+  - A census scorer for non-Latin scripts. `analyze.norm()` keeps the last Latin token.
+- **Before running.**
+  - Translations of the 96 census and expanded questions.
+  - Native review of those translations and of the brand prompts
+    (`studies/consensus/spec/brands_lang_notes.md`).
+  - A pilot on a few models.
+- **Rough cost** for 20 languages beyond English on 105 models. These are the English
+  per-call costs times 1.5 for non-Latin tokenisation:
+  - Census at 4 runs: about $45.
+  - Expanded at 8 runs: about $670.
+  - Brands at 8 runs: about $300.
+  - Total: about $1,000. Expanded is most of it, because reasoning models answer it at length.
+
 ## Analysis
 
 - `analyze.py` — per-category modal / share / distinct, script-aware (`--lang en|es|hi|ur|mr`).
