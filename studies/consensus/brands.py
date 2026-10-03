@@ -43,6 +43,8 @@ ALIASES = {
     "nemetron 3 ultra": "nemotron 3 ultra", "hunyuan ai assistant": "hunyuan", "casiio": "casio",
     "corona extra": "corona", "microsoft azure": "azure", "google cloud platform": "google cloud",
     "nintendo entertainment system": "nes", "xbox series x": "xbox", "hermèscheap name": "hermès",
+    # the second extension (spec 1.0-brands-ext2): messaging app, ride-hailing, news outlet
+    "bbc news": "bbc", "the associated press": "associated press", "didi chuxing": "didi",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
