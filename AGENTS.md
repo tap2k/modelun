@@ -146,7 +146,9 @@ item here.
    - **The translated prompts** need a native check before the full panel. The notes are in
      `studies/consensus/spec/brands_lang_notes.md`.
 5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
-   accepts off and uses reasoning tokens as served.
+   accepts off and uses reasoning tokens as served. Luna was given default-reasoning reruns of
+   every brand battery on 2026-10-03, in the same `-default` directories, so it can join without
+   new runs. Kimi K2 needs none, because it ignores off.
 6. **The shape of the standing panel.** The goals it serves, as drafted 2026-10-03 (confirm):
    - **Goals, in priority order:**
      1. A dated, cross-vendor archive of what production models default to, collected on release
