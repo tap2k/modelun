@@ -106,13 +106,33 @@ a study README, the code), and deletes the item here. Delete this file when the 
        models by OpenRouter usage, notable open-weight families, every version of a tracked
        lineage, and a few deliberate outliers. Append-only; a model with an expiration date goes
        first.
-     - **Battery tiers.**
-       - Core: judge-free, every model on release day, about $1 a model. Census, expanded,
-         brands Name, pickword and suggestibility, plus the cross-language census once it is
-         piloted, native-checked and frozen.
-       - Extended: every model, may lag. Conduct and the brand verb grid.
-       - Probes: subsets only, never standing. Realism, paraphrase, perturbation, fingerprinting
-         and local ladders. (The hybrids' second reasoning arm is part of the core; see item 1.)
+     - **Battery tiers** (agreed in discussion 2026-10-03; confirm at the merge).
+       - **Core.** Every model on release day, judge-free, about $1 a model:
+         - census (31), expanded (65) and brands Name (44), each at 8 runs;
+         - pickword (44 languages) at 8 runs;
+         - suggestibility;
+         - both reasoning arms for the hybrids in each (item 1);
+         - later, the census, expanded and brand batteries in every language, once piloted,
+           native-checked and frozen (item 2).
+       - **Extended.** Every model, may lag: conduct (judged, multi-turn), structured (the census
+         asked in JSON), the brand verb grid (Choose, Recommend, one-turn pick, two-turn pick,
+         clamped and free), and the atlas once out of its pilot.
+       - **Probes.** Subsets, question-driven, never standing: perturbation, realism, the
+         Recommend paraphrase check, fingerprinting, the provider audit, channel control, the SDK
+         thinking check, temperature 0, the brand-language pilot.
+       - **Instrument checks.** Run once on the full panel to validate an instrument, then again
+         only when its version changes: the clamped/free checks (`transcripts-clamp*`),
+         temperature 0, prompt perturbation.
+       - **Re-snapshots.** The census each quarter, in dated directories (see below).
+       - **Local and open-weight.** Training-stage ladders (OLMo, Tulu, Nemotron), the local census,
+         and local stand-ins for retired models (`transcripts-local/`). Beside the panel, never in
+         it.
+       - **Concluded, meta or pilot.**
+         - Concluded: convergence, gujarati, and the language deep run (superseded by item 2).
+         - Meta, no runs: cross-instrument, which is why the core has to be uniform across models.
+         - Pilot: interview.
+       - **Still open:** suggestibility in the core only if it is truly judge-free; structured as
+         core or extended; retired models stay frozen, with local stand-ins where weights exist.
        - An instrument enters the core only after a pilot and a frozen spec.
      - **Runs.** 8 for every one-word battery. The census already has 4 + 4 in
        `transcripts-extra/`. Pickword gets 4 more in `studies/language/transcripts_pickword_extra/`
