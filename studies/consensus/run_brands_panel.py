@@ -10,6 +10,7 @@ the same rerun into <out>-default/.
     python3 run_brands_panel.py spec/stimulus_brands_ext2.json transcripts-brands-ext2               # ~$1
     python3 run_brands_panel.py spec/perturb/stimulus_brands_recommend_clamp.json transcripts-brands-recommend-clamp
     python3 run_brands_panel.py spec/perturb/stimulus_brands_pick_clamp.json transcripts-brands-pick-clamp
+    ... --skip-existing     # after an interruption: run only the models with no file yet
 """
 import json, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -43,6 +44,8 @@ def settings(path):
 def commands(spec, out):
     for src, dst in (("transcripts-brands-ext", out), ("transcripts-brands-ext-default", out + "-default")):
         for p in sorted((HERE / src).glob("*.json")):
+            if "--skip-existing" in sys.argv and (HERE / dst / p.name).exists():
+                continue                   # a restart after an interrupted batch: finished models are kept
             yield ["python3", str(RUN), "--study", ".", "--spec", spec, "--out", dst, "--runs", "8"] + settings(p)
 
 
