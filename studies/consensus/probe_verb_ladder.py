@@ -58,6 +58,13 @@ def main(pipeline, delete_cache):
         base = st["stage"] == "base"
         framing = "raw" if base else tuned_framing(st)
         jobs = [(f, 24 if base else 48) for f in NAME] + ([] if base else [(f, 48) for f in CHOOSE])
+        outs = [(local.path(out / Path(f).stem, st, framing), f) for f, _ in jobs]
+        if not base:
+            outs.append((local.path(out / "free_brands", st, framing), None))
+        if all(o.exists() and len(json.loads(o.read_text())["scenes"]) == len(
+                (json.loads((HERE / f).read_text()) if f else free_brand_spec())["scenes"]) for o, f in outs):
+            print(f"skip {st['label']}: already complete", flush=True)
+            continue
         t0 = time.time()
         model = local.load(st)
         print(f"loaded {st['label']} in {time.time() - t0:.0f}s", flush=True)

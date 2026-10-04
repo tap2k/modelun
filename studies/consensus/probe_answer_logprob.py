@@ -65,8 +65,13 @@ def score(model, tok, prefix, answer, raw):
 
 def main(pipeline, delete_cache):
     cand = candidates()
-    res = {"pipeline": pipeline, "categories": {}}
+    path = HERE / "probes" / f"answer_logprob_{pipeline}.json"
+    res = json.loads(path.read_text()) if path.exists() else {"pipeline": pipeline, "categories": {}}
+    done = {s for row in res["categories"].values() for s in row.get("name", {})}
     for st in stages(pipeline):
+        if st["stage"] in done:                          # resume: a stage already scored is skipped
+            print(f"skip {st['label']}: already scored", flush=True)
+            continue
         base = st["stage"] == "base"
         f = "raw" if base else tuned_framing(st)
         model, tok = local.load(st)
@@ -79,7 +84,7 @@ def main(pipeline, delete_cache):
                 z = sum(math.exp(x - m) for x in lps)
                 row.setdefault(verb, {})[st["stage"]] = {a: round(math.exp(x - m) / z, 4) for a, x in zip(cands, lps)}
         print(f"logprob {st['label']}: {len(cand)} categories", flush=True)
-        (HERE / "probes" / f"answer_logprob_{pipeline}.json").write_text(json.dumps(res, indent=1) + "\n")
+        path.write_text(json.dumps(res, indent=1) + "\n")
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
