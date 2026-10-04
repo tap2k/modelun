@@ -170,27 +170,29 @@ a study README, the code), and deletes the item here. Delete this file when the 
      A local checkpoint differs from the served model in quantization, chat template and serving,
      so local runs sit beside the API runs; they are not merged into them.
    - **Claude 3 Haiku** has no local route. Leave it at 4 runs.
-9. **Models to drop, or to run with reasoning off by default.** Drafted 2026-10-04 from the brand,
-   pickword and suggestibility runs of 2026-10-03.
+9. **Proposals, not decisions: which models to leave out of new batteries, or run with reasoning
+   off.** Drafted 2026-10-04 from the brand, pickword and suggestibility runs of 2026-10-03. The
+   existing batteries are complete, so nothing is retired or rerun. Consider these when a new
+   battery or instrument is added to the panel.
    - **Measures used:**
      - Failed cells after one retry at `--max-tokens 8192`.
      - The share of scenes that needed the 8192 retry because the reply was cut off at 1024.
        DeepInfra models that always run at 4096 are excluded from this measure.
      - Median reasoning tokens per answer, as served.
-   - **Drop** (mark dropped in `spec/models.json` with the reason; the roster stays append-only and
-     existing transcripts stay):
+   - **Candidates to leave out of new batteries.** If adopted, mark them in `spec/models.json` with
+     the reason. The roster stays append-only and existing transcripts stay.
      - **Claude 3 Haiku, Granite 4.1 8B, Hermes 4 70B.** Retired from OpenRouter (404). Granite
        and Hermes keep their local stand-ins (item 8).
      - **WizardLM-2 8x22B.** 7.8% of cells still fail after the retry, from empty replies plus rate
        limits. A 2024 model, with little added value.
      - **DeepSeek R1.** 11% of cells fail even at 8192, from empty replies with `stop`, and 43% of
-       scenes needed the 8192 retry. Superseded by V3.2 and V4 in the same lineage. Freeze it: keep
-       what exists and run nothing new.
+       scenes needed the 8192 retry. Superseded by V3.2 and V4 in the same lineage. One option is
+       to freeze it: keep what exists, run nothing new, and accept that its time series ends.
      - Sonar is already stopped.
-   - **Reasoning off as the standing arm** (heavy or unstable hybrids). Their as-served answers
-     are long, slow and often cut off. Run them with reasoning off in every battery, and as served
-     only for the core census (a cheap check of the reasoning effect). This is the exception to
-     item 1 if item 1 settles on as served.
+   - **Candidates for reasoning off as their default arm in new batteries** (heavy or unstable
+     hybrids). Their as-served answers are long, slow and often cut off. The proposal is reasoning
+     off in new batteries, and as served only for the core census (a cheap check of the reasoning
+     effect). This would be an exception to item 1 if item 1 settles on as served.
 
      | model | median reasoning tokens | scenes needing 8192 | note |
      |---|---|---|---|
@@ -204,7 +206,7 @@ a study README, the code), and deletes the item here. Delete this file when the 
      | Hy4 Preview | 241 | 19% | |
      | Granite 4.2 8B | 194 | 27% | |
 
-   - **Reasoning-only models that run long.** Off is not available, so keep them, but start at
-     `--max-tokens 8192` rather than retrying: Step 3.7 Flash (42% of scenes needed 8192), Muse
+   - **Reasoning-only models that run long.** Off is not available. The proposal is to start new
+     batteries at `--max-tokens 8192` rather than retrying: Step 3.7 Flash (42% of scenes needed 8192), Muse
      Glimmer 30B (37%), GLM 5.3 Flash (33%), Muse Spark 1.3 (26%).
    - **No action:** Kimi K2 ignores off, so its off runs are its as-served runs.
