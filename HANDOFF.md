@@ -263,11 +263,42 @@ Qwen 3.5 9B has 3-4 runaway-reasoning failures per file. Claude 3 Haiku, Granite
    Coupang). Global brands hold (Google, Tesla, Netflix).
 
 **Next:**
-1. **The other session** (`session_01TJ6nPUJLVpe86DCXoNpKoc`, on the Mac, logged out since
-   2026-10-03 14:53). Uncommitted in `studies/consensus/` are free Choose, one-turn pick, two-turn
-   pick and the Recommend paraphrase check. Its GPU queue (`weekend.sh`: Tulu 3 8B, then OLMo
-   32B, then Nemotron) writes to `probes/`. Commit those, then reconcile them with the clamped
-   grid (item 3).
+1. **The other session's work is now committed** (`a18ecd8` on `main`, merged here in `fd53785`):
+   - `transcripts-brands-pick/` (two-turn recommend then pick, 41 brands, 101 models),
+     `transcripts-brands-choose-free/`, `transcripts-brands-you-pick/` (one-turn "Which X would you pick?", free),
+     `transcripts-brands-recommend/` (free one-turn recommend, committed earlier in `f0e5e8d`), and
+     `transcripts-perturb/recommend2`, `recommend3` (two recommend paraphrases on the 14-model perturbation subset).
+   - Empty cells still in the files: pick 51, free Choose 138, one-turn pick 296 (mostly GLM 5.3, GLM 5.3 Flash,
+     GPT-5, DeepSeek R1). Refill with `run.py --resume --max-tokens 8192`.
+   - Scoring is not final. The scratch scorers (open-vocabulary pick extraction, brand collapsing, the gradient
+     table, the stage-ladder and log-probability readers) are in the planning folder,
+     `consensus/converging-on-serendipity/scoring-2026-10-03/`. `probe_recommend.py` (first mention over the
+     Name and Choose pools) is committed.
+   - Preliminary, free forms on the full panel (not yet rescored as served): the consensus brand differs from Name in
+     Choose 6, Recommend 15 and two-turn pick 28 of 41; free Choose about 8 and one-turn pick about 12 (79 models).
+     The clamped series above agrees (one-turn pick 12). Read: the conversation, not the verb, drives the shift.
+     Confounds to separate before claiming it (agreed with Tapan 2026-10-03, discuss before writing anything up):
+     where the pick sits in the model's own turn-1 list; the paraphrase floor (recommend2/3, unscored); by lab;
+     by category; reasoning arm; first-mention versus opening-brand scoring.
+   - **Stage ladders** (`probes/verb_ladder_<pipeline>/`, `probes/answer_logprob_<pipeline>.json`):
+     - OLMo 3 7B complete. Preliminary: Name fixes at SFT; Choose separates from Name at DPO and clearly at RL
+       against a split-half noise floor; DPO raises the Choose favourite's probability under the Choose prompt only.
+       Notes in the planning folder's `converging-on-serendipity/PLAN.md`.
+     - Tulu 3 8B complete, not yet scored. It is the same ladder as Samanta, Holtzman and West (arXiv:2606.29933),
+       who state SFT "nucleation" then "settling"; the 7B DPO gain for low-ranked favourites is the test of it.
+     - OLMo 3.1 32B: base only. Nemotron: final-stage recommend only. The first queue's conversions failed on a
+       dropped download. A fixed rerun (`scoring-2026-10-03/weekend2.sh`, log in the old session's scratch) was
+       started 2026-10-04 17:22 on the Mac: full `hf download`, convert from the local copy, check before use. The
+       probes skip completed stages. Expected: 32B overnight, Nemotron Monday.
+   - **Literature pass (2026-10-03).** Combined gap report `~/Desktop/projects/modelUN/GAP-REPORT-2026-10-03.md`
+     (about 160 papers added across the bibliographies). Claims that changed: the stage ladder must cite Samanta and
+     Fortier; IRIS (arXiv:2607.20860) pre-empts closed-set fingerprinting and a cross-provider audit; AgentProv
+     (arXiv:2609.00052) means each provider-audit mismatch needs the billed-token check before it counts (added to
+     `fingerprinting/PROVIDER-AUDIT-PLAN.md`); Jack et al. make a paraphrase floor necessary for the brand gradient.
+   - **Blind ranking of the program's results (2026-10-03,** four rankers: ML reviewer, journalist, practitioner,
+     strategist). Consistent top: the brand gradient, fingerprinting from meaning, the census; "APIs are not bare" top
+     for the journalist and practitioner. Agreed wording fixes and cuts are in that session; the brands page is
+     unchanged on purpose (Tapan: not shared yet, discuss later).
 2. **Local pickword** for Granite 4.1 8B and Hermes 4 70B (item 8).
 3. **The merge.** Open a PR to `main`, settle the items above, then delete this file. The only
    existing files the branch changes are `brands.py`, `harness/run.py` and
