@@ -349,3 +349,5 @@ do once the Mac refill is committed and merged:
 **Task 2: visualise the brand ladder.** Name, free Name, Choose, free Choose, one-turn pick, recommend, two-turn pick:
 per category (the running-shoe walk Nike to Brooks is the clearest example) and possibly per model. Likely home: the
 consensus viewer (`views/`) as a new page, and later the convovo.ai/brands page (unshared on purpose; discuss first).
+
+**Papers.** The plan for writing (three papers: the brand paper first, then census v3, then the serving audit) is in the planning folder, `~/Desktop/projects/modelUN/PAPER-PLAN-2026-10-04.md`.
