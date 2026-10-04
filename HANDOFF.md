@@ -210,3 +210,72 @@ a study README, the code), and deletes the item here. Delete this file when the 
      batteries at `--max-tokens 8192` rather than retrying: Step 3.7 Flash (42% of scenes needed 8192), Muse
      Glimmer 30B (37%), GLM 5.3 Flash (33%), Muse Spark 1.3 (26%).
    - **No action:** Kimi K2 ignores off, so its off runs are its as-served runs.
+
+## Session state (2026-10-04, head before this note `fdefc79`)
+
+For the next session: what the branch holds, what is open, and how to run. The numbered items above
+are the decisions to settle.
+
+**On the branch, all committed:**
+- **Core panel complete for 101 served models:**
+  - census at 8 runs (`transcripts` + `transcripts-extra`);
+  - expanded at 8;
+  - brands Name in 44 categories (41 + `spec/stimulus_brands_ext2.json`);
+  - pickword at 8 (`transcripts_pickword` + `transcripts_pickword_extra`);
+  - suggestibility (11 models appended to its `spec/models.txt`).
+- **Both reasoning arms for the 25 hybrids** (the 24 in `transcripts-brands-ext-default/` plus GPT-6
+  Luna):
+  - off: `transcripts-reasoning-off`, `transcripts-expanded-reasoning-off`,
+    `studies/language/transcripts_pickword_reasoning_off`;
+  - as served: the brand `-default` directories.
+- **Brand verb grid.** Clamped Recommend and clamped one-turn pick
+  (`spec/perturb/stimulus_brands_{recommend,pick}_clamp.json`), each with `-default` directories for
+  the hybrids. Free Recommend's as-served arm is `transcripts-brands-recommend-default`.
+- **Language pilot.** 5 models x 21 languages x 44 categories in
+  `transcripts-brands-lang-pilot/<lang>/`. Specs from `build_brands_lang.py`; scoring in
+  `brands_lang.py` with `spec/brands_lang_aliases.json` (agent-drafted, review it); the summary is
+  `probes/brands_lang_pilot.json`.
+- **Scorer.** `brands.brand_name` keeps Indic and Arabic marks, the katakana middle dot and the
+  Persian zero-width non-joiner. `latin_only=False` is for the cross-language battery. All 124,820
+  English cells score unchanged.
+- **Harness.** `run.py` saves after every scene (atomically) and has `--resume`.
+- **Runners.** `run_brands_panel.py` (each model with its `transcripts-brands-ext` settings; has
+  `--skip-existing`), `run_reasoning_off.py`, `run_extra.py` (skips the retired models),
+  `run_brands_lang_pilot.sh`.
+
+**Failures recorded in the files** (the models' own replies, persisting at `--max-tokens 8192`):
+
+| model | clamped pick | clamped Recommend | pickword extra |
+|---|---|---|---|
+| DeepSeek R1 | 51/328 | 58/328 | 20/184 |
+| WizardLM-2 | 49/328 | 34/328 | 12/184 |
+
+Qwen 3.5 9B has 3-4 runaway-reasoning failures per file. Claude 3 Haiku, Granite 4.1 8B and Hermes 4
+70B are retired from OpenRouter.
+
+**Preliminary readings (not written up; discuss with Tapan first):**
+1. **Reasoning makes the hybrids more conventional.** As served they move 3-8 points toward the
+   panel consensus. The effect is real on expanded and pickword, and within noise on the census.
+2. **The clamped verb series, as served** (99 models, 38 categories). The consensus brand differs
+   from Name in Choose 5, Pick 12 and Recommend 14. The other session's two-turn pick is 28/41,
+   so the conversation, not the verb, drives the shift.
+3. **The language pilot.** Where a home market exists, the home-market brand wins (Alipay, Jio,
+   Coupang). Global brands hold (Google, Tesla, Netflix).
+
+**Next:**
+1. **The other session** (`session_01TJ6nPUJLVpe86DCXoNpKoc`, on the Mac, logged out since
+   2026-10-03 14:53). Uncommitted in `studies/consensus/` are free Choose, one-turn pick, two-turn
+   pick and the Recommend paraphrase check. Its GPU queue (`weekend.sh`: Tulu 3 8B, then OLMo
+   32B, then Nemotron) writes to `probes/`. Commit those, then reconcile them with the clamped
+   grid (item 3).
+2. **Local pickword** for Granite 4.1 8B and Hermes 4 70B (item 8).
+3. **The merge.** Open a PR to `main`, settle the items above, then delete this file. The only
+   existing files the branch changes are `brands.py`, `harness/run.py` and
+   `studies/suggestibility/spec/models.txt`.
+4. **Running.**
+   - Launch long batches detached (`setsid nohup`) with `--resume`, never tied to a tool's time limit.
+   - Start hybrids and long-reasoning models at `--max-tokens 8192`.
+   - Commit a transcript only with zero failed cells, or state its failures in the commit message.
+   - OpenRouter credit was about $111 on 2026-10-04.
+5. **Keys.** The OpenRouter and DeepInfra keys used on 2026-10-03 were pasted into chat; rotate
+   them. No copy is in the repo.
