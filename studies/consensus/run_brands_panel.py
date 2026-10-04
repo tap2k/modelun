@@ -11,6 +11,7 @@ the same rerun into <out>-default/.
     python3 run_brands_panel.py spec/perturb/stimulus_brands_recommend_clamp.json transcripts-brands-recommend-clamp
     python3 run_brands_panel.py spec/perturb/stimulus_brands_pick_clamp.json transcripts-brands-pick-clamp
     ... --skip-existing     # after an interruption: run only the models with no file yet
+    ... --served-only --runs=4 --max-tokens=8192   # the hybrids' as-served arm alone (free forms run 4)
 """
 import json, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -41,12 +42,25 @@ def settings(path):
     return args + [slug]
 
 
+def option(name, default):
+    return dict(a.split("=", 1) for a in sys.argv[3:] if "=" in a).get(name, default)
+
+
 def commands(spec, out):
-    for src, dst in (("transcripts-brands-ext", out), ("transcripts-brands-ext-default", out + "-default")):
+    arms = (("transcripts-brands-ext", out), ("transcripts-brands-ext-default", out + "-default"))
+    for src, dst in arms[1:] if "--served-only" in sys.argv else arms:
         for p in sorted((HERE / src).glob("*.json")):
             if "--skip-existing" in sys.argv and (HERE / dst / p.name).exists():
                 continue                   # a restart after an interrupted batch: finished models are kept
-            yield ["python3", str(RUN), "--study", ".", "--spec", spec, "--out", dst, "--runs", "8"] + settings(p)
+            args = settings(p)
+            budget = option("--max-tokens", None)
+            if budget:                     # a raised budget replaces the one the brand-extension file recorded
+                if "--max-tokens" in args:
+                    i = args.index("--max-tokens")
+                    del args[i:i + 2]
+                args = ["--max-tokens", budget] + args
+            yield (["python3", str(RUN), "--study", ".", "--spec", spec, "--out", dst, "--resume",
+                    "--runs", option("--runs", "8")] + args)
 
 
 def main():
@@ -60,7 +74,7 @@ def main():
     def go(c):
         r = subprocess.run(c, cwd=HERE, capture_output=True, text=True)
         return c[-1], r.returncode
-    with ThreadPoolExecutor(int(dict(a.split("=") for a in sys.argv[3:] if "=" in a).get("--jobs", 12))) as ex:
+    with ThreadPoolExecutor(int(option("--jobs", 12))) as ex:
         for slug, rc in ex.map(go, cmds):
             print(("ok  " if rc == 0 else "FAIL") + f" {slug}")
     print("run.py exits 0 on failed cells, so check the files for errors")

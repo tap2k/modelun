@@ -4,7 +4,9 @@ Raised 2026-10-03 and not settled. Resolve at the next merge of that branch into
 Whoever merges settles each item with Tapan, records the outcome where it belongs (AGENTS.md,
 a study README, the code), and deletes the item here. Delete this file when the list is empty.
 
-1. **Reasoning default: as served or off.**
+1. **Reasoning default: as served or off.** *Settled 2026-10-04 with Tapan: as served is the headline, and the
+   hybrids' off arm is reported beside it. Still to do: the brand swap and the missing served arms (see Task 1
+   below), then record the rule in the README and delete this item.*
    - **History.**
      - The census, expanded, pickword and language batteries ran as served (no `--reasoning` flag).
      - The brand batteries ran `--reasoning off` where the endpoint allowed it.
@@ -328,10 +330,21 @@ Own default is in the turn-1 list 75% of the time and is the pick 25%. Cold one-
 29% no pick); after a list the field converges on a new winner (49%). Paraphrase floor small (rewordings agree with
 recommend's consensus in 39/41 and 34/41). Toyota holds at every level.
 
-**Task 1: housekeeping and organisation.** Organise all runs in the most intuitive way, with forking as the adoption
-path (AGENTS.md: no shared framework; contracts stay stable). Goal: a consolidated view of the data by program and
-by condition. `studies/consensus/` now has about 35 `transcripts-*` directories plus `probes/`; propose a layout (and
-a manifest, e.g. `harness/cost.py` BATTERY per item 6) before moving anything, and discuss with Tapan first.
+**Task 1: housekeeping and organisation.** *Step 1 done 2026-10-04:* `studies/consensus/spec/runs.json` lists every
+transcript directory (battery, form, clamped or free, arm, models, runs, tier, published tag), `check_runs.py` checks it
+against the files and writes the README "Runs" table, and `analyze.BATTERIES` reads from it. Agreed with Tapan, still to
+do once the Mac refill is committed and merged:
+- **Renames** (unpublished directories only; `transcripts/`, `transcripts-temp0/`, `transcripts-clamp/` stay, because
+  the paper links to `main`): `-reasoning-off` to `-off`; `brands-recommend` to `brands-recommend-free`;
+  `brands-you-pick` to `brands-pick1-free`; `brands-pick-clamp` to `brands-pick1-clamp`; `brands-pick` to
+  `brands-pick2-free`; `brands-choose` to `brands-choose-clamp`. Update `spec/runs.json` (ids stay), the scripts that
+  name them, and the planning folder's `grid.py`.
+- **Brand swap** (item 1): the 25 hybrids' `-default` files move into the main brand directories, and their off files
+  move out to `-off`, so every main directory is as served.
+- **Missing served arms:** free Choose, free one-turn pick and two-turn pick have no as-served run for the hybrids.
+- **Empty files:** 23 reasoning-only models in `transcripts-reasoning-off/` have every cell failed (400, off rejected).
+  They hold no answers; remove them in the rename commit.
+- The cost.py/panel_gap.py manifest (item 6) is deferred until a second study keeps a `spec/runs.json`.
 
 **Task 2: visualise the brand ladder.** Name, free Name, Choose, free Choose, one-turn pick, recommend, two-turn pick:
 per category (the running-shoe walk Nike to Brooks is the clearest example) and possibly per model. Likely home: the

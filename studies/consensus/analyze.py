@@ -127,17 +127,11 @@ def compound(reply, heads):
     return None
 
 
-# Each battery: its transcripts dir, its spec, and how a reply becomes a canonical answer.
-BATTERIES = {"census": ("transcripts", "stimulus.json"),
-             "expanded": ("transcripts-expanded", "stimulus_expanded.json"),
-             "brands": ("transcripts-brands", "stimulus_brands.json"),
-             # the census and expanded questions with "Choose" for "Name" (a pick, not an example)
-             "choose_census": ("transcripts-choose", "perturb/stimulus_choose.json"),
-             "choose_expanded": ("transcripts-expanded-choose", "perturb/stimulus_expanded_choose.json"),
-             # four brand categories added 2026-10-02 (own spec, so the frozen 37 stay unchanged), and brand Choose
-             "brands_ext": ("transcripts-brands-ext", "stimulus_brands_ext.json"),
-             "choose_brands": ("transcripts-brands-choose", "perturb/stimulus_brands_choose.json"),
-             "choose_brands_ext": ("transcripts-brands-ext-choose", "perturb/stimulus_brands_ext_choose.json")}
+# Each battery: its transcripts dir and its spec (relative to spec/), from the entries in spec/runs.json that
+# carry an "analyze" key. How a reply becomes a canonical answer is scorer() below.
+BATTERIES = {e["analyze"]: (e["dir"], e["spec"].removeprefix("spec/"))
+             for e in json.loads((Path(__file__).resolve().parent / "spec" / "runs.json").read_text())["runs"]
+             if "analyze" in e}
 
 
 def scorer(battery):

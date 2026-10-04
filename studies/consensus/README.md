@@ -71,6 +71,85 @@ Other batteries, each with its own spec, transcripts and scoring (`analyze.BATTE
 - **The census at other settings**: `transcripts-reasoning-off/` (8 runs, reasoning off) and
   `transcripts-extra/` (4 more runs at default) use the frozen 31-category spec.
 
+## Runs
+
+[`spec/runs.json`](spec/runs.json) lists every transcript directory: its battery, the form of the question, whether
+the answer was clamped to one word, the reasoning arm, the models, the runs and the tier. `check_runs.py` checks each
+entry against the files and writes the table below (`--index`). Refer to a run by its id; directory names may change,
+except for the three a published paper reports. Arms: `served` is as the endpoint serves it; `off` is reasoning off
+where the endpoint allows it, with reasoning-only models as served.
+
+<!-- runs:start -->
+**core**
+
+| id | directory | battery | form | wording | arm | models | runs |
+|---|---|---|---|---|---|---|---|
+| census | `transcripts/` (published) | census (31) | name | clamped | served | panel (105) | 4 |
+| census-extra | `transcripts-extra/` | census (31) | name | clamped | served | panel (102) | 4 |
+| census-off | `transcripts-reasoning-off/` | census (31) | name | clamped | off | panel (97) | 8 |
+| expanded | `transcripts-expanded/` | expanded (65) | name | clamped | served | panel (102) | 8 |
+| expanded-off | `transcripts-expanded-reasoning-off/` | expanded (65) | name | clamped | off | hybrids (25) | 8 |
+| brands | `transcripts-brands/` | brands (37) | name | clamped | off | panel (102) | 8 |
+| brands-served | `transcripts-brands-default/` | brands (37) | name | clamped | served | hybrids (25) | 8 |
+| brands-ext | `transcripts-brands-ext/` | brands (4) | name | clamped | off | panel (101) | 8 |
+| brands-ext-served | `transcripts-brands-ext-default/` | brands (4) | name | clamped | served | hybrids (25) | 8 |
+| brands-ext2 | `transcripts-brands-ext2/` | brands (3) | name | clamped | off | panel (101) | 8 |
+| brands-ext2-served | `transcripts-brands-ext2-default/` | brands (3) | name | clamped | served | hybrids (25) | 8 |
+
+**extended**
+
+| id | directory | battery | form | wording | arm | models | runs |
+|---|---|---|---|---|---|---|---|
+| census-choose | `transcripts-choose/` | census (31) | choose | clamped | served | panel (102) | 8 |
+| expanded-choose | `transcripts-expanded-choose/` | expanded (65) | choose | clamped | served | panel (102) | 8 |
+| brands-choose | `transcripts-brands-choose/` | brands (37) | choose | clamped | off | panel (101) | 8 |
+| brands-choose-served | `transcripts-brands-choose-default/` | brands (37) | choose | clamped | served | hybrids (25) | 8 |
+| brands-ext-choose | `transcripts-brands-ext-choose/` | brands (4) | choose | clamped | off | panel (101) | 8 |
+| brands-ext-choose-served | `transcripts-brands-ext-choose-default/` | brands (4) | choose | clamped | served | hybrids (25) | 8 |
+| brands-choose-free | `transcripts-brands-choose-free/` | brands (41) | choose | free | off | panel (101) | 4 |
+| brands-recommend-clamp | `transcripts-brands-recommend-clamp/` | brands (41) | recommend | clamped | off | panel (101) | 8 |
+| brands-recommend-clamp-served | `transcripts-brands-recommend-clamp-default/` | brands (41) | recommend | clamped | served | hybrids (25) | 8 |
+| brands-recommend-free | `transcripts-brands-recommend/` | brands (41) | recommend | free | off | panel (101) | 4 |
+| brands-recommend-free-served | `transcripts-brands-recommend-default/` | brands (41) | recommend | free | served | hybrids (25) | 4 |
+| brands-pick1-clamp | `transcripts-brands-pick-clamp/` | brands (41) | pick1 | clamped | off | panel (101) | 8 |
+| brands-pick1-clamp-served | `transcripts-brands-pick-clamp-default/` | brands (41) | pick1 | clamped | served | hybrids (25) | 8 |
+| brands-pick1-free | `transcripts-brands-you-pick/` | brands (41) | pick1 | free | off | panel (101) | 4 |
+| brands-pick2-free | `transcripts-brands-pick/` | brands (41) | pick2 | free | off | panel (101) | 4 |
+
+**check**
+
+| id | directory | battery | form | wording | arm | models | runs |
+|---|---|---|---|---|---|---|---|
+| census-temp0 | `transcripts-temp0/` (published) | census (31) | name | clamped | temp0 | panel (94) | 4 |
+| clamp | `transcripts-clamp/` (published) | census (10) | name | both | served | panel (105) | 4 |
+| clamp-ext | `transcripts-clamp-ext/` | mixed (25) | name | both | served | panel (101) | 4 |
+| free-all | `transcripts-clamp-free/` | mixed (98) | name | free | served | panel (101) | 4 |
+| free-brands-ext | `transcripts-clamp-free-brands-ext/` | brands (4) | name | free | served | panel (101) | 4 |
+
+**probe**
+
+| id | directory | battery | form | wording | arm | models | runs |
+|---|---|---|---|---|---|---|---|
+| perturb-base | `transcripts-perturb/base/` | census (31) | name | clamped | served | subset (14) | 8 |
+| perturb-choose | `transcripts-perturb/choose/` | census (31) | choose | clamped | served | subset (14) | 8 |
+| perturb-ava | `transcripts-perturb/ava/` | census (31) | name+persona | clamped | served | subset (14) | 8 |
+| perturb-sysgen | `transcripts-perturb/sysgen/` | census (31) | name+system | clamped | served | subset (14) | 8 |
+| perturb-recommend2 | `transcripts-perturb/recommend2/` | brands (41) | recommend | free | off | subset (14) | 4 |
+| perturb-recommend3 | `transcripts-perturb/recommend3/` | brands (41) | recommend | free | off | subset (14) | 4 |
+| realism | `transcripts-realism/` | brands (10) | name+recommend | both | served | subset (14) | 8 |
+| brands-lang-pilot | `transcripts-brands-lang-pilot/` | brands-lang (44) | name | clamped | off | subset (105) | 8 |
+
+**local**
+
+| id | directory | battery | form | wording | arm | models | runs |
+|---|---|---|---|---|---|---|---|
+| local-census | `transcripts-local/census/` | census (31) | name | clamped | served | subset (3) | 8 |
+| local-expanded | `transcripts-local/expanded/` | expanded (65) | name | clamped | served | subset (1) | 8 |
+| local-brands | `transcripts-local/brands/` | brands (37) | name | clamped | served | subset (1) | 8 |
+| local-choose | `transcripts-local/choose/` | census (31) | choose | clamped | served | subset (1) | 8 |
+| local-expanded-choose | `transcripts-local/expanded-choose/` | expanded (65) | choose | clamped | served | subset (1) | 8 |
+<!-- runs:end -->
+
 Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template wrappers and takes the first line that is an answer, accents fold, compound names in a few categories stay whole, and `answer_variants.json` merges spelling and naming variants in the census and expanded batteries, after a category-by-category review. v2's numbers reproduce from the `consensus-arxiv-v2` tag. The census and the expanded battery run at each route's default reasoning, as served, so they are comparable; only the brand battery turns reasoning off. The newer batteries cover 102 of the 105 census models; three (Claude 3 Haiku, Granite 4.1 8B, Hermes 4 70B) have no endpoint any more. Sonar was retired from the panel on 2026-10-02 (`not_run_after` in `spec/models.json`) and is absent from batteries run after that date.
 
 ## Waves
