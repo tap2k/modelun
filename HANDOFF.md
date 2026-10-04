@@ -310,3 +310,29 @@ Qwen 3.5 9B has 3-4 runaway-reasoning failures per file. Claude 3 Haiku, Granite
    - OpenRouter credit was about $111 on 2026-10-04.
 5. **Keys.** The OpenRouter and DeepInfra keys used on 2026-10-03 were pasted into chat; rotate
    them. No copy is in the repo.
+
+## Next session (set 2026-10-04 by Tapan)
+
+**Still running on the Mac** (in `~/dev/convovo/modelun`, branch `main`; do not switch branches in that folder until both finish):
+- GPU: OLMo 3.1 32B SFT/DPO/RL then Nemotron base/final, copied from the external drive with checksums
+  (`~/Desktop/projects/modelUN/consensus/converging-on-serendipity/scoring-2026-10-03/weekend3.sh` is the same queue;
+  the live copy and its log are in the old session's job scratch). Outputs land uncommitted in
+  `studies/consensus/probes/verb_ladder_{olmo31-32b,nemotron35-lightning}/` and `probes/answer_logprob_*.json`.
+- API: refill of the empty cells in `transcripts-brands-{you-pick,choose-free,pick}/` (about 20 model files).
+- Commit both from that folder when done.
+
+**The brand verb grid, scored** (scorer `scoring-2026-10-03/grid.py` in the planning folder; results discussed with Tapan
+2026-10-04, not yet written up). Consensus differs from one-word Name in 4/41 free Name, 6 Choose, 13 free Choose,
+15 one-turn pick, 15 recommend, 28 two-turn pick. Models keep their own one-word default 87, 76, 72, 43, 24, 46, 21%.
+Own default is in the turn-1 list 75% of the time and is the pick 25%. Cold one-turn pick scatters (top share 38%,
+29% no pick); after a list the field converges on a new winner (49%). Paraphrase floor small (rewordings agree with
+recommend's consensus in 39/41 and 34/41). Toyota holds at every level.
+
+**Task 1: housekeeping and organisation.** Organise all runs in the most intuitive way, with forking as the adoption
+path (AGENTS.md: no shared framework; contracts stay stable). Goal: a consolidated view of the data by program and
+by condition. `studies/consensus/` now has about 35 `transcripts-*` directories plus `probes/`; propose a layout (and
+a manifest, e.g. `harness/cost.py` BATTERY per item 6) before moving anything, and discuss with Tapan first.
+
+**Task 2: visualise the brand ladder.** Name, free Name, Choose, free Choose, one-turn pick, recommend, two-turn pick:
+per category (the running-shoe walk Nike to Brooks is the clearest example) and possibly per model. Likely home: the
+consensus viewer (`views/`) as a new page, and later the convovo.ai/brands page (unshared on purpose; discuss first).
