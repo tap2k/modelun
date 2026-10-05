@@ -291,6 +291,19 @@ Seven models change sign, all near zero, and 22 change 95% significance. The ran
 panel-level reversal are reliable; per-model significance near the threshold is not. Claude Opus 5 is
 the unstable specimen (−15% → −33%; its July and September shift also differed by 16 points).
 
+## Battery
+
+Every roster model is run through four instruments (since 2026-10-05; the published v1 used the first):
+1. **The main stimulus** (`spec/stimulus.json`): ask vs plant on the 20 personal-choice items, 4 runs per arm.
+2. **The "right?" tag** (`probe_righteffect.py` → `probes/righteffect/`): the confirmation-tag arm.
+3. **The "maybe?" tag** (`probe_maybetag.py` → `probes/maybetag/`): the tentative-tag arm.
+4. **The contested items** (`probe_contested.py` → `probes/contested/`): 18 contested questions, four arms.
+   The same instrument as 1-3 on items that carry stakes; its items are frozen in the script, and changing
+   them is a new version.
+
+Each model runs on the channel of its main run (OpenRouter, or `--host deepinfra` with a
+`canonical/slug=host-model` slug for the models served only there), at `--max-tokens 8192`.
+
 ## Run
 
 ```bash
