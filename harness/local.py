@@ -58,7 +58,20 @@ def stage(pipeline, name):
 def stages(pipeline):
     p = LADDERS[pipeline]
     shared = {k: v for k, v in p.items() if k not in ("stages", "note")}
-    return [{"pipeline": pipeline, "label": f"{pipeline}-{s['stage']}", **shared, **s} for s in p["stages"]]
+    return [local_copy({"pipeline": pipeline, "label": f"{pipeline}-{s['stage']}", **shared, **s}) for s in p["stages"]]
+
+
+# Pinned copies of Hub checkpoints (each with .revision and .sha256 files beside it). A stage whose weights name a
+# Hub repo loads the copy here when one exists, so every run uses the same revision and nothing downloads into
+# ~/.cache/huggingface; without the folder (drive not mounted) it falls back to the Hub.
+MODELS_DIR = Path(os.environ.get("MODELUN_MODELS", "/Volumes/My Passport/models"))
+
+
+def local_copy(st):
+    w = st["weights"]
+    if "/" in w and not w.startswith(("/", "~", ".")) and (MODELS_DIR / w.split("/")[-1]).is_dir():
+        return {**st, "weights": str(MODELS_DIR / w.split("/")[-1])}
+    return st
 
 
 def path(out_dir, st, framing):
@@ -110,7 +123,11 @@ def encode(tok, st, framing, q):
 
 
 @functools.cache
-def revision(repo):
+def revision(repo, weights=None):
+    """The revision the weights were taken at: a pinned local copy's .revision file, else the Hub's current one."""
+    pinned = Path(weights + ".revision") if weights else None
+    if pinned and pinned.is_file():
+        return pinned.read_text().strip()
     from huggingface_hub import model_info
     return model_info(repo).sha
 
@@ -191,7 +208,7 @@ def run(spec, st, framing, runs, out, max_tokens=None, batch=None, temperature=1
                 "spec_version": spec.get("spec_version") or spec.get("script_version"),
                 "host": "local-mlx", "pipeline": st["pipeline"], "stage": st["stage"], "framing": framing,
                 "weights": st["weights"], "quantization": st.get("quantization"),
-                "revision": revision(st["repo"]), "temperature": temperature, "max_tokens": max_tokens,
+                "revision": revision(st["repo"], st["weights"]), "temperature": temperature, "max_tokens": max_tokens,
                 **{k: st[k] for k in ("model_config", "chat_kwargs") if st.get(k)},
                 **({"system_prompt": sp} if sp else {}),
                 "example_prompt": tok.decode(encode(tok, st, framing, todo[0]["turns"][0])), "scenes": {}}
