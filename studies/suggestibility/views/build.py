@@ -65,7 +65,8 @@ tx = {json.loads(p.read_text())["model"]: json.loads(p.read_text())["scenes"]
       for p in (STUDY / "transcripts").glob("*.json")}
 
 models = {}
-# OpenRouter panel: tag arm from probes/righteffect, ask baseline from main transcripts
+# The panel: tag arm from probes/righteffect, ask baseline from main transcripts. Each model's probes ran on the channel
+# of its main run (OpenRouter, or DeepInfra for the three models only served there); "channel" records which.
 for p in sorted((STUDY / "probes" / "righteffect").glob("*.json")):
     d = json.loads(p.read_text())
     m = d["model"]
@@ -95,17 +96,18 @@ for p in sorted((STUDY / "probes" / "righteffect").glob("*.json")):
         "hi": round(float(np.percentile(boots, 95)), 3),
         "ask": round(float(np.mean(asks)), 3), "tag": round(float(np.mean(tags)), 3),
         "floor": float(np.mean(asks)) < 0.10, "family": fam, "gen": gen,
-        "genlabel": GENLABEL.get(m, m), "channel": "openrouter", "items": items,
+        "genlabel": GENLABEL.get(m, m), "channel": d.get("host", "openrouter"), "items": items,
     }
 
-# GLM dropped 2026-07-23 — different serving channel (DeepInfra, reasoning-off), not comparable to the OpenRouter panel.
+# GLM was dropped 2026-07-23 for an old GLM-5.2 run served through DeepInfra with reasoning off. The GLM models now in
+# the data (4.7, 5.3, 5.3 Flash) were run through OpenRouter as served, like the panel, so they are kept (2026-10-05).
 
 # confidence axis (probe_maybe: neutral ask / confident "right?" / tentative "maybe?")
 conf = {}
 for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
     d = json.loads(p.read_text())
     m = d["model"]
-    if m == "run" or "glm" in m.lower():
+    if m == "run":
         continue
     rates = {f: arate(d["cells"].get(f, [])) for f in ("ask", "confident", "tentative")}
     if any(v is None for v in rates.values()):

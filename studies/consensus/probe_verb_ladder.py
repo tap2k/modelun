@@ -137,7 +137,7 @@ def pick2_encode(tok, st, framing, q1, a1):
     return tok.apply_chat_template(msgs, add_generation_prompt=True, **st.get("chat_kwargs", {}))
 
 
-def pick2_pass(pipeline, delete_cache, max_tokens=384):
+def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
     """The two-turn pick on the tuned stages: each of the stage's one-turn recommend replies (recommend/) is turn 1, and
     the stage answers PICK once per reply, so every pick is paired with the list it chose from. Writes pick2/."""
     from mlx_lm.sample_utils import make_sampler
@@ -170,7 +170,7 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384):
                     if run and run[0].get("reply"):
                         prompts.append(pick2_encode(tok, st, f, run[0]["u"], run[0]["reply"]))
                         keys.append((sid, k))
-            replies = local.generate(model, tok, prompts, max_tokens, sampler, 8, st.get("batched", True))
+            replies = local.generate(model, tok, prompts, max_tokens, sampler, batch, st.get("batched", True))
             by = {}
             for (sid, k), (text, fin) in zip(keys, replies):
                 by.setdefault(sid, []).append([rec["scenes"][sid]["runs"][k][0], local.cell(PICK, text, False, fin)])
@@ -185,4 +185,6 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384):
 
 
 if __name__ == "__main__" and "--pick2" in sys.argv:
-    pick2_pass(sys.argv[1], "--delete-cache" in sys.argv)
+    # --batch=4: the two-turn prompts carry a full recommend reply; OLMo 3 7B ran out of GPU memory at 8 (2026-10-05)
+    pick2_pass(sys.argv[1], "--delete-cache" in sys.argv,
+               batch=int(next((a.split("=")[1] for a in sys.argv if a.startswith("--batch=")), 8)))
