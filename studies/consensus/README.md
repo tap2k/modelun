@@ -136,7 +136,7 @@ where the endpoint allows it, with reasoning-only models as served.
 
 | id | directory | battery | form | wording | arm | models | runs |
 |---|---|---|---|---|---|---|---|
-| census-temp0 | `transcripts-temp0/` (published) | census (31) | name | clamped | temp0 | panel (94) | 4 |
+| census-temp0 | `transcripts-temp0/` (published) | census (31) | name | clamped | temp0 | panel (95) | 4 |
 | clamp | `transcripts-clamp/` (published) | census (10) | name | both | served | panel (105) | 4 |
 | clamp-ext | `transcripts-clamp-ext/` | mixed (25) | name | both | served | panel (101) | 4 |
 | free-all | `transcripts-clamp-free/` | mixed (98) | name | free | served | panel (101) | 4 |
