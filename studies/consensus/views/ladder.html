@@ -117,14 +117,14 @@ function agree(ms, a, b) {
   return n ? {v: same / n, n} : null;
 }
 // for a free step: share of (model, category) pairs whose free replies mostly mention the clamped answer, and name no brand
-// each free reply against the model's clamped brand for the same verb: the brand it names first, a brand it names later in
-// the list, or no brand from the pool at all; the rest name only other brands
+// each free reply against the model's clamped brand for the same verb: the brand it names first, a brand it names anywhere
+// in the list (first included), or no brand from the pool at all
 function fate(ms, lv) {
   let first = 0, later = 0, none = 0, n = 0;
   for (const m of ms) for (const c of L.cats) {
     const d = ans(m, c, CLAMP[lv]); if (!d) continue;
     for (const l of (((L.lists || {})[m] || {})[c] || {})[lv] || []) {
-      n++; if (!l.length) none++; else if (l[0] === d) first++; else if (l.includes(d)) later++;
+      n++; if (!l.length) none++; else { first += l[0] === d; later += l.includes(d); }
     }
   }
   return n ? {first: first / n, later: later / n, none: none / n, n} : null;
@@ -141,8 +141,8 @@ function home() {
   const ms = L.models;
   let h = `<h2>the clamp: each verb asked freely, against the same verb clamped</h2>
   <p class="note">The free question drops "Reply with the name only." and nothing else. For every free reply, where is the brand
-  the model gives to the clamped question? <b>First</b>: the reply leads with it. <b>In the list</b>: the reply names it, but
-  after another brand. <b>No brand</b>: the reply names no brand at all. The rest of the replies name only other brands.
+  the model gives to the clamped question? <b>First</b>: the reply leads with it. <b>In the list</b>: the reply names it anywhere,
+  first included. <b>No brand</b>: the reply names no brand at all.
   The clamped brand is the model's most common answer over 8 runs; each free step has 4 runs per category, ${L.cats.length}
   categories. Click a model for its ladder.</p>
   <div class="twrap"><table class="t"><tr><th rowspan="2">model</th>${FREE.map(f => `<th colspan="3" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}</tr>
