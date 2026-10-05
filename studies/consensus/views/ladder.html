@@ -32,6 +32,9 @@
   table.t th,table.t td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
   table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;vertical-align:bottom}
   table.t th{cursor:help}
+  table.m td.n{width:62px;text-align:center;border:1px solid var(--bg)} table.m td.clamp{outline:2px solid var(--fg);outline-offset:-2px}
+  table.m td.n small{display:block;color:var(--mut);font-size:10.5px} table.m td.dg{color:var(--mut)}
+  td.b.cellr{cursor:pointer} td.b.cellr:hover{background:var(--panel2)} th.gap,td.gap{border-left:2px solid var(--line)}
   table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right}
   table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
   /* a cell naming a brand: a swatch carries the brand's color, the text stays in text ink */
@@ -59,11 +62,9 @@
 </head>
 <body>
 <header>
-  <h1>brand ladder <span class="sub">— does a model's one-word brand survive a real conversation?</span></h1>
+  <h1>brand ladder <span class="sub">— where the same model gives the same brand, and where it does not</span></h1>
   <nav id="nav">
-    <a href="#flow" data-v="flow">defaults</a>
-    <a href="#overview" data-v="overview">categories</a>
-    <a href="#models" data-v="models">models</a>
+    <a href="#" data-v="">agreement</a>
     <a href="#about" data-v="about">method</a>
     <a href="index.html?set=brands">brand battery</a>
   </nav>
@@ -79,26 +80,9 @@ const NP = L.no_pick, LV = L.levels, NAME = LV[0].id;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0) + '%';
 const label = c => c.replace(/_/g, ' ');
-const SLOTS = 6;
 
-/* per category: the field's top brand and share at each level, and a fixed brand -> color slot
-   (brands ranked by share pooled over all levels, so a brand keeps its color down the ladder) */
-const TOP = {}, SLOT = {};
-for (const c of L.cats) {
-  TOP[c] = {}; const pooled = {};
-  for (const lv of LV) {
-    const d = L.dist[c][lv.id].filter(([a]) => a !== NP), tot = d.reduce((s, [, n]) => s + n, 0);
-    TOP[c][lv.id] = d.length ? {a: d[0][0], share: d[0][1] / tot} : null;
-    for (const [a, n] of d) pooled[a] = (pooled[a] || 0) + n / tot;
-  }
-  SLOT[c] = {};
-  Object.entries(pooled).sort((x, y) => y[1] - x[1]).slice(0, SLOTS).forEach(([a], i) => SLOT[c][a] = i + 1);
-}
-const color = (c, a) => SLOT[c][a] ? `var(--s${SLOT[c][a]})` : 'var(--other)';
-const moves = c => LV.filter(lv => TOP[c][lv.id] && TOP[c][lv.id].a !== TOP[c][NAME].a).length;
 const modal = xs => { const k = {}; xs.forEach(x => k[x] = (k[x] || 0) + 1);
   const e = Object.entries(k).sort((a, b) => b[1] - a[1]); return e.length ? {a: e[0][0], n: e[0][1], of: xs.length} : null; };
-
 function tipAt(e, html) {
   tip.innerHTML = html; tip.style.display = 'block';
   tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + 'px';
@@ -110,214 +94,132 @@ function hover(sel, html) {
     el.addEventListener('mouseleave', () => tip.style.display = 'none');
   });
 }
-// column heads: each level's question, about a soda brand, or about category c on that category's pages
-// the question itself is the column's tooltip, so nine columns fit across the window
-const lvHead = c => LV.map(lv => `<th title="${esc(c ? lv.prompt.replace(/soda brand/g, label(c)) : lv.prompt)}">${esc(lv.label)}</th>`).join('');
 
-/* ---------- overview: the level summary and every category's walk ---------- */
-function overview() {
-  let h = `<h2>categories</h2>
-  <p class="note">The ${L.cats.length} brand questions asked ${LV.length} ways, each verb with a one-name instruction and without, from a one-word <b>Name</b> to a two-turn conversation
-  (recommend, then <b>“Which one would you pick?”</b>), to the same ${LV[0].models} models, every model as served.
-  Each cell is the field's most common brand at that level and its share. <b>Bold</b> marks a level whose top
-  brand differs from Name's. Categories that move most are first; click one for its full walk.</p>
-  <div class="twrap"><table class="t"><tr><th></th>${lvHead()}</tr>
-  <tr><td>top brand differs from Name</td>${LV.map(lv => `<td class="n">${lv.flips} / ${L.cats.length}</td>`).join('')}</tr>
-  <tr><td title="mean share of the most common brand">mean top share</td>${LV.map(lv => `<td class="n">${pct(lv.top_share)}</td>`).join('')}</tr>
-  <tr><td title="how often a model's answer equals its own most frequent one-word Name answer">own Name default kept</td>${LV.map(lv => `<td class="n">${pct(lv.retention)}</td>`).join('')}</tr>
-  <tr><td title="replies naming no brand">no brand named</td>${LV.map(lv => `<td class="n">${pct(lv.no_pick)}</td>`).join('')}</tr>
-  </table></div>
-  <h3>by category</h3>
-  <div class="twrap"><table class="t"><tr><th>category</th>${lvHead()}</tr>`;
-  for (const c of [...L.cats].sort((x, y) => moves(y) - moves(x) || x.localeCompare(y))) {
-    h += `<tr class="row" data-c="${esc(c)}"><td>${esc(label(c))}</td>`;
-    for (const lv of LV) {
-      const t = TOP[c][lv.id];
-      if (!t) { h += '<td class="b np">–</td>'; continue; }
-      const moved = lv.id !== NAME && t.a !== TOP[c][NAME].a;
-      h += `<td class="b ${moved ? 'moved' : ''}" title="${esc(t.a)} ${pct(t.share)}"><span class="sw" style="background:${color(c, t.a)}"></span>${esc(t.a)}<span class="sh">${pct(t.share)}</span></td>`;
-    }
-    h += '</tr>';
+/* The seven steps: three verbs clamped to a name, the same three asked freely, and the two-turn pick.
+   A model's answer at a step is its most common brand over the runs, for each category. */
+const STEPS = ["name", "choose", "recommend_clamp", "free_name", "free_choose", "recommend", "pick2"];
+const CLAMP = {free_name: "name", free_choose: "choose", recommend: "recommend_clamp"};   // free step -> same verb clamped
+const SHORT = {name: "Name", choose: "Choose", recommend_clamp: "Recommend", free_name: "Name", free_choose: "Choose",
+               recommend: "Recommend", pick2: "two-turn pick"};
+const GROUP = lv => lv === "pick2" ? "" : lv in CLAMP ? "free" : "clamped";
+const head = lv => `${GROUP(lv) ? `<small style="display:block;color:var(--mut);font-weight:400">${GROUP(lv)}</small>` : ""}${SHORT[lv]}`;
+const prompt = lv => LV.find(v => v.id === lv).prompt;
+const named = xs => (xs || []).filter(x => x !== NP);
+const ans = (m, c, lv) => { const xs = named(((L.per_model[m] || {})[c] || {})[lv]); return xs.length ? modal(xs).a : null; };
+const half = (xs, k) => named(xs.filter((_, i) => i % 2 === k));
+
+// agreement of two steps over (model, category) pairs where both name a brand; a == b is the split-half self-agreement
+function agree(ms, a, b) {
+  let same = 0, n = 0;
+  for (const m of ms) for (const c of L.cats) {
+    let x, y;
+    if (a === b) { const xs = ((L.per_model[m] || {})[c] || {})[a] || [], h0 = half(xs, 0), h1 = half(xs, 1);
+      x = h0.length ? modal(h0).a : null; y = h1.length ? modal(h1).a : null; }
+    else { x = ans(m, c, a); y = ans(m, c, b); }
+    if (x && y) { n++; same += x === y; }
   }
-  main.innerHTML = h + '</table></div>';
-  main.querySelectorAll('tr.row').forEach(r => r.addEventListener('click', () => location.hash = '#c/' + r.dataset.c));
+  return n ? {v: same / n, n} : null;
 }
-
-/* ---------- category: a stacked share bar per level, then each model's answer per level ---------- */
-let ONLY_MOVERS = true;
-function category(c) {
-  if (!L.dist[c]) { main.innerHTML = '<p class="note">Unknown category.</p>'; return; }
-  const named = Object.entries(SLOT[c]).sort((a, b) => a[1] - b[1]).map(([a]) => a);
-  let h = `<p class="crumb"><a href="#overview">categories</a> / ${esc(label(c))}</p>
-  <h2>${esc(label(c))}</h2>
-  <p class="note">Share of answers at each level. A brand keeps its color down the ladder; gray is every other brand,
-  hatched is a reply that named no brand. Hover a segment for the count.</p>
-  <div class="legend">${named.map(a => `<span><i style="background:${color(c, a)}"></i>${esc(a)}</span>`).join('')}
-    <span><i style="background:var(--other)"></i>other brands</span>
-    <span><i style="background:repeating-linear-gradient(135deg,var(--panel2) 0 3px,var(--panel) 3px 6px)"></i>no brand</span></div>`;
-  for (const lv of LV) {
-    const d = L.dist[c][lv.id], tot = d.reduce((s, [, n]) => s + n, 0);
-    const segs = [], other = {n: 0, k: 0}; let np = 0;
-    for (const [a, n] of d) { if (a === NP) np = n; else if (SLOT[c][a]) segs.push([a, n]); else { other.n += n; other.k++; } }
-    segs.sort((x, y) => SLOT[c][x[0]] - SLOT[c][y[0]]);
-    const seg = (cls, style, w, text, t) => `<i class="${cls}" style="${style}flex:${w} 1 0" data-t="${esc(t)}">${w / tot >= .08 ? esc(text) : ''}</i>`;
-    let bar = segs.map(([a, n]) => seg('', `background:${color(c, a)};`, n, `${a} ${pct(n / tot)}`, `${a}: ${n} of ${tot} answers (${pct(n / tot)})`)).join('');
-    if (other.n) bar += seg('', 'background:var(--other);', other.n, `other ${pct(other.n / tot)}`, `${other.k} other brands: ${other.n} of ${tot} (${pct(other.n / tot)})`);
-    if (np) bar += seg('np', '', np, `none ${pct(np / tot)}`, `no brand named: ${np} of ${tot} (${pct(np / tot)})`);
-    h += `<div class="lvl"><div class="lab">${esc(lv.label)}<small>${esc(lv.prompt.replace(/soda brand/g, label(c)))}</small></div><div class="bar">${bar}</div></div>`;
+// for a free step: share of (model, category) pairs whose free replies mostly mention the clamped answer, and name no brand
+function mentions(ms, lv) {
+  let men = 0, none = 0, n = 0;
+  for (const m of ms) for (const c of L.cats) {
+    const xs = ((L.per_model[m] || {})[c] || {})[lv]; if (!xs || !xs.length || !ans(m, c, CLAMP[lv])) continue;
+    n++; men += ((((L.own_mentioned || {})[m] || {})[c] || {})[lv] || 0) >= 0.5; none += !named(xs).length;
   }
-  const rows = L.models.map(m => ({m, cells: LV.map(lv => modal(L.per_model[m][c][lv.id]))}))
-    .filter(r => r.cells[0]);
-  const movers = rows.filter(r => r.cells.some(x => x && x.a !== r.cells[0].a));
-  const shown = ONLY_MOVERS ? movers : rows;
-  h += `<h3>each model's most frequent answer</h3>
-  <p class="note">Gray text is the model's own one-word Name answer; <b>bold</b> is a change from it.</p>
-  <div class="ctl"><a class="${ONLY_MOVERS ? 'on' : ''}" href="#" data-mv="1">models that change (${movers.length})</a>
-  <a class="${ONLY_MOVERS ? '' : 'on'}" href="#" data-mv="0">all models (${rows.length})</a></div>
-  <div class="twrap"><table class="t"><tr><th>model</th>${lvHead(c)}</tr>`;
-  for (const r of shown) {
-    h += `<tr><td class="mono"><a href="#m/${encodeURIComponent(r.m)}">${esc(r.m)}</a></td>`;
-    r.cells.forEach((x, i) => {
-      if (!x) { h += '<td class="b np">–</td>'; return; }
-      const cls = x.a === NP ? 'np' : (i && x.a !== r.cells[0].a ? 'moved' : 'same');
-      h += `<td class="b ${cls}" data-t="${esc(`${x.a}: ${x.n} of ${x.of} runs`)}"><span class="sw" style="background:${x.a === NP ? 'transparent' : color(c, x.a)}"></span>${esc(x.a === NP ? 'no brand' : x.a)}${x.n < x.of ? `<span class="sh">${x.n}/${x.of}</span>` : ''}</td>`;
+  return n ? {men: men / n, none: none / n} : null;
+}
+const shade = v => `background:rgba(57,135,229,${(0.06 + 0.85 * v).toFixed(2)})`;
+
+function matrix(ms) {
+  let h = `<div class="twrap"><table class="t m"><tr><th></th>${STEPS.map(lv => `<th title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
+  STEPS.forEach((a, i) => {
+    h += `<tr><th title="${esc(prompt(a))}" style="text-align:right">${head(a)}</th>`;
+    STEPS.forEach((b, j) => {
+      if (j > i) { h += "<td></td>"; return; }
+      const r = agree(ms, a, b);
+      const isClamp = CLAMP[a] === b || CLAMP[b] === a;
+      h += r == null ? '<td class="n">–</td>' : `<td class="n${i === j ? " dg" : ""}${isClamp ? " clamp" : ""}" style="${shade(r.v)}"
+        data-t="${esc(i === j ? `${SHORT[a]}${GROUP(a) ? " (" + GROUP(a) + ")" : ""} against itself: two halves of the runs give the same brand in ${pct(r.v)} of ${r.n} model × category pairs. The ceiling for this row.`
+          : `${SHORT[a]} ${GROUP(a)} and ${SHORT[b]} ${GROUP(b)} give the same brand in ${pct(r.v)} of ${r.n} model × category pairs.`)}">${pct(r.v)}</td>`;
     });
-    h += '</tr>';
+    h += "</tr>";
+  });
+  return h + "</table></div>";
+}
+function clampTable(ms) {
+  let h = `<div class="twrap"><table class="t"><tr><th>verb</th><th>same brand</th><th>free reply mentions the clamped brand</th><th>free reply names no brand</th><th>clamped against itself</th></tr>`;
+  for (const f of ["free_name", "free_choose", "recommend"]) {
+    const s = agree(ms, CLAMP[f], f), mt = mentions(ms, f), fl = agree(ms, CLAMP[f], CLAMP[f]);
+    h += `<tr><td>${SHORT[f]}</td><td class="n">${s ? pct(s.v) : "–"}</td><td class="n">${mt ? pct(mt.men) : "–"}</td>
+      <td class="n">${mt ? pct(mt.none) : "–"}</td><td class="n">${fl ? pct(fl.v) : "–"}</td></tr>`;
   }
-  main.innerHTML = h + '</table></div>';
-  main.querySelectorAll('[data-mv]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); ONLY_MOVERS = a.dataset.mv === '1'; category(c); }));
-  hover('.bar i, td.b[data-t]', el => esc(el.dataset.t));
+  return h + "</table></div>";
+}
+const PAIRS = [["name", "choose"], ["name", "recommend_clamp"], ["choose", "recommend_clamp"], ["recommend_clamp", "pick2"], ["name", "pick2"],
+               ["name", "free_name"], ["choose", "free_choose"], ["recommend_clamp", "recommend"]];
+function home() {
+  const ms = L.models;
+  let h = `<h2>how a model's brands relate across the verbs</h2>
+  <p class="note">Each cell: how often a model gives the <b>same brand</b> at two steps, for the same category, pooled over
+  ${ms.length} models and ${L.cats.length} categories. A model's brand at a step is its most common answer over the runs.
+  The diagonal is a step against itself (two halves of its runs), the most agreement that step can show.
+  <b>Outlined</b> cells are the clamp check: one verb asked freely against the same verb clamped.
+  Hover a cell for its count.</p>
+  ${matrix(ms)}
+  <h3>the clamp, verb by verb</h3>
+  <p class="note">"Mentions" counts a free reply that names the clamped brand anywhere, even after leading with another.</p>
+  ${clampTable(ms)}
+  <h3>by model</h3>
+  <p class="note">The same agreements per model, sorted by Name against the two-turn pick. Click a model to see its brands
+  category by category and read the replies.</p>
+  <div class="twrap"><table class="t"><tr><th>model</th>${PAIRS.map(([a, b], i) =>
+    `<th class="${i === 5 ? "gap" : ""}">${SHORT[a]}${GROUP(a) === "free" ? " free" : ""}<br>${a in CLAMP || b in CLAMP ? "free " : ""}${SHORT[b]}</th>`).join("")}</tr>`;
+  const rows = ms.map(m => ({m, r: PAIRS.map(([a, b]) => agree([m], a, b))}));
+  rows.sort((x, y) => (x.r[4] ? x.r[4].v : 2) - (y.r[4] ? y.r[4].v : 2));
+  for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map((z, i) =>
+    `<td class="n${i === 5 ? " gap" : ""}" style="${z ? shade(z.v) : ""}">${z ? pct(z.v) : "–"}</td>`).join("")}</tr>`;
+  main.innerHTML = h + "</table></div>";
+  main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#m/" + encodeURIComponent(r.dataset.m)));
+  hover("td[data-t]", el => esc(el.dataset.t));
 }
 
-/* ---------- models: how much each model keeps its own default, level by level ---------- */
-function retention(m) {
-  return LV.map(lv => { let k = 0, n = 0;
-    for (const c of L.cats) { const d = L.defaults[m][c], xs = L.per_model[m][c][lv.id];
-      if (d && xs.length) { k += xs.filter(x => x === d).length / xs.length; n++; } }
-    return n ? k / n : null; });
-}
-function models() {
-  const rows = L.models.map(m => ({m, r: retention(m)})).sort((a, b) => (b.r[LV.length - 1] ?? -1) - (a.r[LV.length - 1] ?? -1));
-  let h = `<h2>models</h2>
-  <p class="note">How often each model's answer at a level equals its own one-word Name answer, averaged over the
-  categories. Sorted by the two-turn pick. Click a model for its answers category by category.</p>
-  <div class="twrap"><table class="t"><tr><th>model</th>${lvHead()}</tr>`;
-  for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map(x => `<td class="n">${x == null ? '–' : pct(x)}</td>`).join('')}</tr>`;
-  main.innerHTML = h + '</table></div>';
-  main.querySelectorAll('tr.row').forEach(r => r.addEventListener('click', () => location.hash = '#m/' + encodeURIComponent(r.dataset.m)));
-}
+const ROWCOL = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)", "var(--s5)", "var(--s6)"];
 function model(m) {
-  if (!L.per_model[m]) { main.innerHTML = '<p class="note">Unknown model.</p>'; return; }
-  let h = `<p class="crumb"><a href="#models">models</a> / <span class="mono">${esc(m)}</span></p>
-  <h2 class="mono">${esc(m)}</h2>
-  <p class="note">This model's most frequent answer per category and level. Gray is its one-word Name answer; <b>bold</b>
-  is a change from it. Click a category for the whole field.</p>
-  <div class="twrap"><table class="t"><tr><th>category</th>${lvHead()}</tr>`;
-  for (const c of L.cats) {
-    const cells = LV.map(lv => modal(L.per_model[m][c][lv.id]));
-    if (!cells[0]) continue;
-    h += `<tr class="row" data-c="${esc(c)}"><td>${esc(label(c))}</td>`;
-    cells.forEach((x, i) => {
-      if (!x) { h += '<td class="b np">–</td>'; return; }
-      const cls = x.a === NP ? 'np' : (i && x.a !== cells[0].a ? 'moved' : 'same');
-      h += `<td class="b ${cls}" data-t="${esc(`${x.a}: ${x.n} of ${x.of} runs`)}"><span class="sw" style="background:${x.a === NP ? 'transparent' : color(c, x.a)}"></span>${esc(x.a === NP ? 'no brand' : x.a)}${x.n < x.of ? `<span class="sh">${x.n}/${x.of}</span>` : ''}</td>`;
-    });
-    h += '</tr>';
-  }
-  main.innerHTML = h + '</table></div>';
-  main.querySelectorAll('tr.row').forEach(r => r.addEventListener('click', () => location.hash = '#c/' + r.dataset.c));
-  hover('td.b[data-t]', el => esc(el.dataset.t));
+  const rows = L.cats.map(c => { const a = STEPS.map(lv => ans(m, c, lv)), seen = [];
+    a.forEach(x => { if (x && !seen.includes(x)) seen.push(x); }); return {c, a, seen}; }).filter(r => r.seen.length);
+  rows.sort((x, y) => y.seen.length - x.seen.length || x.c.localeCompare(y.c));
+  let h = `<p class="crumb"><a href="#">agreement</a> / <span class="mono">${esc(m)}</span></p>
+  <h2 class="mono">${esc(m)}</h2>${matrix([m])}
+  <h3>brands by category</h3>
+  <p class="note">Within a row, one colour is one brand, so a run of the same colour is the same answer carried across steps.
+  Categories with the most different brands are first. Click a cell to read the replies.</p>
+  <div class="twrap"><table class="t"><tr><th>category</th>${STEPS.map(lv =>
+    `<th class="${lv === "free_name" || lv === "pick2" ? "gap" : ""}" title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
+  for (const r of rows) h += `<tr><td>${esc(label(r.c))}</td>` + r.a.map((x, i) => {
+    const g = STEPS[i] === "free_name" || STEPS[i] === "pick2" ? " gap" : "";
+    return x == null ? `<td class="b np cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}">no brand</td>`
+      : `<td class="b cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}" title="${esc(x)}"><span class="sw" style="background:${ROWCOL[r.seen.indexOf(x)] || "var(--other)"}"></span>${esc(x)}</td>`;
+  }).join("") + "</tr>";
+  main.innerHTML = h + `</table></div><div id="reader"></div>`;
+  main.querySelectorAll("td.cellr").forEach(td => td.addEventListener("click", () => readReplies(m, td.dataset.c, td.dataset.l)));
 }
 
-/* ---------- method ---------- */
 function about() {
   const t = L.two_turn;
   main.innerHTML = `<h2>method</h2>
-  <p class="note"><b>Levels.</b> ${LV.map(lv => `<b>${esc(lv.label)}</b>: “${esc(lv.prompt)}”`).join('; ')}.
-  Name and Choose are the one-word brand batteries (8 runs); free Name comes from the clamped-versus-free check (4 runs);
-  the others are 4 runs. Every model is as served; the 25 hybrid models' reasoning-off runs are kept separately.</p>
-  <p class="note"><b>Scoring a free reply.</b> Name and Choose score the whole reply as a brand name. Free Name and Recommend
-  take the first brand from the Name and Choose answer pools that the reply mentions. Free Choose and both picks take the
-  opening brand: the first bolded label or capitalised name in the first sentence, mapped onto the pool and the alias
-  table where possible, since a pick can be a brand no other answer named.</p>
-  <p class="note"><b>Two-turn pick.</b> Of ${t.n} replies with a pick, the model's own Name default was in its turn-1 list
+  <p class="note"><b>Steps.</b> ${STEPS.map(lv => `<b>${SHORT[lv]}${GROUP(lv) ? " " + GROUP(lv) : ""}</b>: “${esc(prompt(lv))}”`).join("; ")}.
+  Every model is as served.</p>
+  <p class="note"><b>Scoring a free reply.</b> Free Name and free Recommend take the first brand from the clamped answer pools
+  that the reply mentions. Free Choose and the two-turn pick take the brand the reply commits to. A clamped reply is the brand.</p>
+  <p class="note"><b>Two-turn pick.</b> Of ${t.n} replies with a pick, the model's own Name brand was in its turn-1 list
   ${pct(t.default_in_list)} of the time and was the pick ${pct(t.default_picked)}; the pick was the first brand listed
   ${pct(t.first_listed)}.</p>
-  <p class="note">Source: <code>studies/consensus/brand_ladder.py</code> for the scores and <code>views/build.py --ladder</code>
-  for this page.</p>`;
+  <p class="note">Source: <code>studies/consensus/brand_ladder.py</code>, built by <code>views/build.py --ladder</code>.</p>`;
 }
 
-/* ---------- flow: where each model's one-word default stops carrying forward ---------- */
-const FLOW = ["name", "choose", "recommend_clamp", "free_name", "free_choose", "recommend", "pick2"];
-const FREE_STEPS = new Set(["free_name", "free_choose", "recommend", "pick2"]);
-const STATES = {own: ["kept its own one-word brand", "var(--s1)"], demoted: ["mentions its own brand, but answers another", "#1baf7a"],
-                field: ["gives the field's brand for this step", "var(--s2)"], other: ["gives another brand", "var(--s6)"],
-                none: ["names no brand", "var(--other)"]};
-function flowState(m, c, lv) {
-  const xs = L.per_model[m][c][lv];
-  if (!xs || !xs.length) return null;
-  const named = xs.filter(x => x !== NP), own = L.defaults[m][c];
-  const ment = (((L.own_mentioned || {})[m] || {})[c] || {})[lv];
-  if (!named.length) return {s: ment >= 0.5 ? "demoted" : "none", a: null, ment};
-  const a = modal(named).a, top = TOP[c][lv] && TOP[c][lv].a;
-  if (a === own) return {s: "own", a, ment};
-  if (FREE_STEPS.has(lv) && ment >= 0.5) return {s: "demoted", a, ment};
-  return {s: a === top ? "field" : "other", a, ment};
-}
-function retention(m) {        // per step: share of categories where it kept its default, and where it at least mentions it
-  return FLOW.map(lv => { let own = 0, dem = 0, n = 0;
-    for (const c of L.cats) { if (!L.defaults[m] || !L.defaults[m][c]) continue; const st = flowState(m, c, lv);
-      if (!st) continue; n++; own += st.s === "own"; dem += st.s === "demoted"; }
-    return n ? {own: own / n, dem: dem / n, n} : null; });
-}
-function flow(arg) {
-  const lvs = FLOW.map(id => LV.find(v => v.id === id));
-  const head = `<tr><th>model</th>${lvs.map(lv => `<th title="${esc(lv.prompt)}">${esc(lv.label)}</th>`).join("")}</tr>`;
-  const cell = r => r == null ? '<td class="n">–</td>' :
-    `<td class="n" style="background:rgba(57,135,229,${(0.08 + 0.8 * r.own).toFixed(2)})" title="kept ${pct(r.own)}${r.dem ? `, mentions it ${pct(r.own + r.dem)}` : ""}">${pct(r.own)}${r.dem ? `<span class="sh"> +${Math.round(100 * r.dem)}</span>` : ""}</td>`;
-  if (arg) return flowModel(arg, lvs);
-  const rows = L.models.map(m => ({m, r: retention(m)})).filter(x => x.r[0]);
-  const pooled = FLOW.map((_, i) => { const v = rows.map(x => x.r[i]).filter(Boolean);
-    return {own: v.reduce((s, x) => s + x.own, 0) / v.length, dem: v.reduce((s, x) => s + x.dem, 0) / v.length}; });
-  rows.sort((a, b) => (b.r[6] ? b.r[6].own : -1) - (a.r[6] ? a.r[6].own : -1));
-  let h = `<h2>where defaults stop</h2>
-  <p class="note">Each cell is the share of the 44 brand questions on which the model still gives <b>its own one-word Name
-  brand</b> at that step: first the clamped verbs, then the same verbs asked freely, then the two-turn conversation.
-  Darker is kept. On the free steps, <b>+N</b> is the extra share where the reply still mentions the model's own brand but
-  answers another: the default was demoted down a list rather than dropped. Sorted by the two-turn pick. Click a model to
-  follow its categories.</p>
-  <div class="twrap"><table class="t">${head}
-  <tr><td><b>all models</b></td>${pooled.map(cell).join("")}</tr>`;
-  for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map(cell).join("")}</tr>`;
-  main.innerHTML = h + "</table></div>";
-  main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#flow/" + encodeURIComponent(r.dataset.m)));
-}
-function flowModel(m, lvs) {
-  if (!L.per_model[m]) { main.innerHTML = '<p class="note">Unknown model.</p>'; return; }
-  const rows = L.cats.filter(c => L.defaults[m] && L.defaults[m][c]).map(c => ({c, st: FLOW.map(lv => flowState(m, c, lv))}));
-  const firstDrop = r => { const i = r.st.findIndex(z => z && z.s !== "own"); return i < 0 ? 99 : i; };
-  rows.sort((a, b) => firstDrop(a) - firstDrop(b) || a.c.localeCompare(b.c));
-  let h = `<p class="crumb"><a href="#flow">where defaults stop</a> / <span class="mono">${esc(m)}</span></p>
-  <h2 class="mono">${esc(m)}</h2>
-  <p class="note">Each row is one category, read left to right: the brand this model gives at each step, coloured by what
-  happened to its one-word default. Categories that lose the default earliest are first.</p>
-  <div class="legend">${Object.entries(STATES).map(([k, [d, col]]) => `<span><i style="background:${col}"></i><b>${k}</b>: ${d}</span>`).join("")}</div>
-  <div class="twrap"><table class="t"><tr><th>category</th>${lvs.map(lv => `<th title="${esc(lv.prompt)}">${esc(lv.label)}</th>`).join("")}</tr>`;
-  for (const r of rows) {
-    h += `<tr><td><a href="#c/${esc(r.c)}">${esc(label(r.c))}</a></td>` + r.st.map((z, i) => z == null ? '<td class="b np">–</td>' :
-      `<td class="b cellr" data-c="${esc(r.c)}" data-l="${FLOW[i]}" style="cursor:pointer;background:color-mix(in srgb, ${STATES[z.s][1]} 48%, transparent)" title="${esc(STATES[z.s][0])}${z.ment != null ? ` · mentions own brand in ${pct(z.ment)} of replies` : ""} · click to read">${esc(z.a || "no brand")}</td>`).join("") + "</tr>";
-  }
-  main.innerHTML = h + `</table></div><div id="reader"><p class="note" style="margin-top:14px">Click a cell to read the replies.</p></div>`;
-  main.querySelectorAll("td.cellr").forEach(td => td.addEventListener("click", () => {
-    main.querySelectorAll("td.cellr").forEach(x => x.style.outline = "");
-    td.style.outline = "2px solid var(--fg)";
-    readReplies(m, td.dataset.c, td.dataset.l);
-  }));
-}
-
-/* the reading pane: the replies behind one cell, loaded per category from ladder_replies/<category>.js */
-window.LADDER_R = window.LADDER_R || {};
 function loadReplies(c, then) {
+  window.LADDER_R = window.LADDER_R || {};
   if (window.LADDER_R[c]) return then();
   const sc = document.createElement("script");
   sc.src = "ladder_replies/" + encodeURIComponent(c) + ".js";
@@ -338,18 +240,19 @@ function readReplies(m, c, lv) {
   box.innerHTML = '<p class="note">loading…</p>';
   loadReplies(c, () => {
     const runs = ((window.LADDER_R[c] || {})[m] || {})[lv] || [];
-    const st = flowState(m, c, lv), own = L.defaults[m][c], step = LV.find(v => v.id === lv);
+    const ref = CLAMP[lv] || "name", own = ans(m, c, ref), here = ans(m, c, lv);
     const groups = new Map();
     for (const run of runs) { const k = JSON.stringify(run.map(x => x.r)); groups.set(k, {run, n: (groups.get(k) || {n: 0}).n + 1}); }
-    let h = `<h3 style="margin-top:18px">${esc(m)} · ${esc(label(c))} · ${esc(step.label)}</h3>
-      <p class="note"><span style="background:var(--s1);color:#fff;border-radius:3px;padding:0 4px">${esc(own)}</span> is its one-word Name brand;
-      ${st && st.a && st.a !== own ? `<span style="background:var(--s2);color:#fff;border-radius:3px;padding:0 4px">${esc(st.a)}</span> is what it gives here.` : "here it keeps it."}
+    const tag = (x, col) => `<span style="background:${col};color:#fff;border-radius:3px;padding:0 4px">${esc(x)}</span>`;
+    let h = `<h3 style="margin-top:18px">${esc(m)} · ${esc(label(c))} · ${SHORT[lv]}${GROUP(lv) ? " " + GROUP(lv) : ""}</h3>
+      <p class="note">${own ? tag(own, "var(--s1)") + ` is its ${SHORT[ref]} clamped brand` : `no ${SHORT[ref]} clamped brand`};
+      ${lv === ref ? "" : here && here !== own ? tag(here, "var(--s2)") + " is what it gives here." : here ? "here it gives the same." : "here it names no brand."}
       ${runs.length} runs.</p>`;
     for (const {run, n} of groups.values()) {
       h += `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 10px;background:var(--panel)">`
         + (n > 1 ? `<div class="note" style="margin:0 0 6px">×${n} identical runs</div>` : "")
         + run.map((cell, i) => `<div style="margin:${i ? "10px" : "0"} 0 0"><div class="mono" style="color:var(--mut);font-size:12px">${esc(cell.u)}</div>
-           <div style="white-space:pre-wrap;font-size:13px;line-height:1.5">${cell.r == null ? "<i>failed run</i>" : mark(cell.r, own, st && st.a)}</div></div>`).join("")
+           <div style="white-space:pre-wrap;font-size:13px;line-height:1.5">${cell.r == null ? "<i>failed run</i>" : mark(cell.r, own, here)}</div></div>`).join("")
         + `</div>`;
     }
     box.innerHTML = h;
@@ -359,16 +262,12 @@ function readReplies(m, c, lv) {
 
 /* ---------- router ---------- */
 function route() {
-  const [v, arg] = (location.hash || '#flow').slice(1).split('/');
+  const [v, arg] = (location.hash || '#').slice(1).split('/');
   tip.style.display = 'none';
-  document.querySelectorAll('nav a[data-v]').forEach(a => a.classList.toggle('on',
-    a.dataset.v === v || (v === 'c' && a.dataset.v === 'overview') || (v === 'm' && a.dataset.v === 'models')));
-  if (v === 'c' && arg) category(decodeURIComponent(arg));
-  else if (v === 'm' && arg) model(decodeURIComponent(arg));
-  else if (v === 'models') models();
+  document.querySelectorAll('nav a[data-v]').forEach(a => a.classList.toggle('on', a.dataset.v === (v === 'm' ? '' : v)));
+  if (v === 'm' && arg) model(decodeURIComponent(arg));
   else if (v === 'about') about();
-  else if (v === 'overview') overview();
-  else flow(v === 'flow' && arg ? decodeURIComponent(arg) : null);
+  else home();
   window.scrollTo(0, 0);
 }
 addEventListener('hashchange', route);

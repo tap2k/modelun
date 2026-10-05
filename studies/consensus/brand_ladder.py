@@ -317,11 +317,19 @@ FREE = {"free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp
         "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), "__pick", "", 1)}
 
 
+# each free step's clamped counterpart: free X is read against clamped X (the clamp alone); the two-turn pick against Name
+BASE = {"free_name": "name", "free_choose": "choose", "recommend": "recommend_clamp", "pick2": "name"}
+
+
 def own_mentioned(cats):
-    """model -> category -> free step -> share of replies that mention the model's own one-word Name brand anywhere
-    (first mention or later), so a default that is demoted down a list can be told from one that is dropped."""
-    pats, dflt, out = pools()[4], defaults(), defaultdict(lambda: defaultdict(dict))
-    for lv, (ids, suffix, prefix, turn) in FREE.items():
+    """model -> category -> free step -> share of replies that mention the model's baseline answer anywhere (first
+    mention or later), so a baseline demoted down a list can be told from one that is dropped. The baseline is the
+    model's most frequent answer to the clamped counterpart (BASE): free Choose against clamped Choose, and so on."""
+    lv = levels()
+    base = {k: {m: {c: (Counter(x for x in xs if x != NO_PICK).most_common(1) or [(None, 0)])[0][0] for c, xs in cs.items()}
+                for m, cs in lv[b].items()} for k, b in BASE.items()}
+    pats, out = pools()[4], defaultdict(lambda: defaultdict(dict))
+    for lvl, (ids, suffix, prefix, turn) in FREE.items():
         hits = defaultdict(lambda: [0, 0])
         for r in ids:
             for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
@@ -330,7 +338,7 @@ def own_mentioned(cats):
                     if not sid.endswith(suffix):
                         continue
                     c = sid[: -len(suffix)].removeprefix(prefix)
-                    d = dflt.get(x["model"], {}).get(c)
+                    d = base[lvl].get(x["model"], {}).get(c)
                     if c not in cats or not d:
                         continue
                     for run in sc["runs"]:
@@ -339,7 +347,7 @@ def own_mentioned(cats):
                             h[1] += 1
                             h[0] += d in mentions(run[turn]["reply"], pats[c])
         for (m, c), (k, n) in hits.items():
-            out[m][c][lv] = round(k / n, 2)
+            out[m][c][lvl] = round(k / n, 2)
     return out
 
 
@@ -391,7 +399,7 @@ def blob():
                         "flips": rows[k]["flips"], "top_share": round(rows[k]["top_share"], 3),
                         "retention": round(rows[k]["retention"], 3), "no_pick": round(rows[k]["no_pick"], 3)}
                        for k in LEVELS],
-            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": own_mentioned(set(cats)),
+            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": own_mentioned(set(cats)), "base": BASE,
             "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK}
 
 
