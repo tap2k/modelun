@@ -23,19 +23,19 @@
   nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent}
   nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
   nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
-  main{padding:20px 22px;max-width:1400px}
+  main{padding:20px 22px;max-width:none}        /* full window width (base.css caps main at 1180px): nine columns */
   .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:92ch} .note b{color:var(--fg)}
   h2{font-size:19px;margin:0 0 10px} h3{margin:24px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-size:11.5px}
   .crumb{font-size:12.5px;margin:0 0 14px}
   .twrap{overflow-x:auto;max-width:100%}
   table.t{border-collapse:collapse;font-size:13px}
-  table.t th,table.t td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  table.t th,table.t td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
   table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;vertical-align:bottom}
-  table.t th .p{display:block;text-transform:none;letter-spacing:0;font-weight:400;font-size:11px;white-space:normal;max-width:150px}
+  table.t th{cursor:help}
   table.t td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right}
   table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
   /* a cell naming a brand: a swatch carries the brand's color, the text stays in text ink */
-  td.b{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+  td.b{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;max-width:128px;overflow:hidden;text-overflow:ellipsis}
   td.b .sw{display:inline-block;width:4px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:7px;background:var(--other)}
   td.b .sh{color:var(--mut);margin-left:6px}
   td.b.same{color:var(--mut)} td.b.np{color:var(--mut);font-style:italic}
@@ -110,7 +110,8 @@ function hover(sel, html) {
   });
 }
 // column heads: each level's question, about a soda brand, or about category c on that category's pages
-const lvHead = c => LV.map(lv => `<th>${esc(lv.label)}<span class="p">${esc(c ? lv.prompt.replace(/soda brand/g, label(c)) : lv.prompt)}</span></th>`).join('');
+// the question itself is the column's tooltip, so nine columns fit across the window
+const lvHead = c => LV.map(lv => `<th title="${esc(c ? lv.prompt.replace(/soda brand/g, label(c)) : lv.prompt)}">${esc(lv.label)}</th>`).join('');
 
 /* ---------- overview: the level summary and every category's walk ---------- */
 function overview() {
@@ -133,7 +134,7 @@ function overview() {
       const t = TOP[c][lv.id];
       if (!t) { h += '<td class="b np">–</td>'; continue; }
       const moved = lv.id !== NAME && t.a !== TOP[c][NAME].a;
-      h += `<td class="b ${moved ? 'moved' : ''}"><span class="sw" style="background:${color(c, t.a)}"></span>${esc(t.a)}<span class="sh">${pct(t.share)}</span></td>`;
+      h += `<td class="b ${moved ? 'moved' : ''}" title="${esc(t.a)} ${pct(t.share)}"><span class="sw" style="background:${color(c, t.a)}"></span>${esc(t.a)}<span class="sh">${pct(t.share)}</span></td>`;
     }
     h += '</tr>';
   }
