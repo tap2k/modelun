@@ -127,17 +127,13 @@ def compound(reply, heads):
     return None
 
 
-# Each battery: its transcripts dir, its spec, and how a reply becomes a canonical answer.
-BATTERIES = {"census": ("transcripts", "stimulus.json"),
-             "expanded": ("transcripts-expanded", "stimulus_expanded.json"),
-             "brands": ("transcripts-brands", "stimulus_brands.json"),
-             # the census and expanded questions with "Choose" for "Name" (a pick, not an example)
-             "choose_census": ("transcripts-choose", "perturb/stimulus_choose.json"),
-             "choose_expanded": ("transcripts-expanded-choose", "perturb/stimulus_expanded_choose.json"),
-             # four brand categories added 2026-10-02 (own spec, so the frozen 37 stay unchanged), and brand Choose
-             "brands_ext": ("transcripts-brands-ext", "stimulus_brands_ext.json"),
-             "choose_brands": ("transcripts-brands-choose", "perturb/stimulus_brands_choose.json"),
-             "choose_brands_ext": ("transcripts-brands-ext-choose", "perturb/stimulus_brands_ext_choose.json")}
+# Each battery: its transcripts dirs and its spec (relative to spec/), from the entries in spec/runs.json that
+# carry an "analyze" key (one battery or a list). A battery named by several entries reads them all: census8 is the
+# census's runs 1-4 (transcripts/) and 5-8 (transcripts-extra/). How a reply becomes an answer is scorer() below.
+BATTERIES = {}
+for _e in json.loads((Path(__file__).resolve().parent / "spec" / "runs.json").read_text())["runs"]:
+    for _b in ([_e["analyze"]] if isinstance(_e.get("analyze"), str) else _e.get("analyze", [])):
+        BATTERIES.setdefault(_b, ([], _e["spec"].removeprefix("spec/")))[0].append(_e["dir"])
 
 
 def scorer(battery):
@@ -154,24 +150,26 @@ def load(study_dir, battery="census", paths=None):
     files to read instead of the battery's directory (a local checkpoint, a temp-0 rerun)."""
     normf, _ = scorer(battery)
     out = {}
-    for p in paths if paths is not None else sorted((study_dir / BATTERIES[battery][0]).glob("*.json")):
+    paths = paths if paths is not None else [p for d in BATTERIES[battery][0] for p in sorted((study_dir / d).glob("*.json"))]
+    for p in paths:
         d = json.loads(p.read_text())
-        scenes = {}
+        scenes = out.setdefault(d["model"], {})                # a second directory adds runs to the same model
         for sid, sc in d["scenes"].items():
             heads = HEADS.get(sid) if normf is norm else None
             toks = [(heads and compound(run[0].get("reply"), heads)) or normf(run[0].get("reply"))
                     for run in sc["runs"] if run]
             toks = [t for t in toks if t]
             if toks:
-                scenes[sid] = toks
-        out[d["model"]] = scenes
+                scenes.setdefault(sid, []).extend(toks)
     return out
 
 
 # Batteries read together as one 96-category set (same template and scoring).
-COMBINED = {"combined": ("census", "expanded"), "choose": ("choose_census", "choose_expanded"),
-            "brands_all": ("brands", "brands_ext"), "choose_brands_all": ("choose_brands", "choose_brands_ext")}
-VARIANT_TABLE = {"census": "census", "expanded": "expanded", "choose_census": "census", "choose_expanded": "expanded"}
+COMBINED = {"combined": ("census8", "expanded"), "choose": ("choose_census", "choose_expanded"),
+            "brands_all": ("brands", "brands_ext", "brands_ext2"), "choose_brands_all": ("choose_brands", "choose_brands_ext",
+                                                                     "choose_brands_ext2")}
+VARIANT_TABLE = {"census": "census", "census8": "census", "expanded": "expanded", "choose_census": "census",
+                 "choose_expanded": "expanded"}
 
 
 def merge_variants(ans, study_dir, battery):

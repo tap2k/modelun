@@ -96,16 +96,12 @@ def load():
 
 def battery_pool(clamp, free):
     """Categories with free replies but no clamped re-ask take the battery's one-word answers as their pool. Brand
-    categories use the 41-category brand battery; for the hybrid models (reasoning by default, off in the brand
-    battery) their default-reasoning brand answers are used instead, since the free replies ran at default."""
-    from analyze import answers, load
+    categories use the 41-category brand battery, which like the free replies holds every model as served."""
+    from analyze import answers
     need = [c for c in free if c not in clamp]
     if not need:
         return
     bats = {b: answers(HERE, b) for b in ("census", "expanded", "brands_all")}
-    for d in ("transcripts-brands-default", "transcripts-brands-ext-default"):
-        for m, cats in load(HERE, "brands", paths=sorted((HERE / d).glob("*.json"))).items():
-            bats["brands_all"].setdefault(m, {}).update(cats)
     for c in need:
         bat, key = ("brands_all", c[len("brand_"):]) if c.startswith("brand_") else (None, c)
         sources = [bats[bat]] if bat else [bats["census"], bats["expanded"]]

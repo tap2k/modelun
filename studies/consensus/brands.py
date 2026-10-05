@@ -12,7 +12,7 @@ import unicodedata
 from analyze import JUNK, ACK, clean
 
 # Variant -> canonical name. Spellings and full vs. short names of one brand. Console product lines
-# merge into their family (PlayStation 5 -> playstation); iPhone stays separate from Apple.
+# merge into their family (PlayStation 5 -> playstation), and iPhone merges into Apple.
 ALIASES = {
     "coke": "coca-cola", "coca cola": "coca-cola", "cocacola": "coca-cola", "iphone": "apple",
     "mcdonalds": "mcdonald's", "mc donald's": "mcdonald's",
@@ -43,6 +43,24 @@ ALIASES = {
     "nemetron 3 ultra": "nemotron 3 ultra", "hunyuan ai assistant": "hunyuan", "casiio": "casio",
     "corona extra": "corona", "microsoft azure": "azure", "google cloud platform": "google cloud",
     "nintendo entertainment system": "nes", "xbox series x": "xbox", "hermèscheap name": "hermès",
+    # the second extension (spec 1.0-brands-ext2): messaging app, ride-hailing, news outlet
+    "bbc news": "bbc", "the associated press": "associated press", "didi chuxing": "didi",
+    # near-miss scan of 2026-10-05 over Name and Choose (44 + 44 categories, 101 models): misspellings (Inkling
+    # Small with reasoning off writes lindit, lindux, lindtl), product lines into their brand, corporate suffixes.
+    # Left apart on purpose: bran flakes / corn flakes, cheerios / cheetos, nemotron 3 ultra / super,
+    # qantas airways / qatar airways (it merges into qantas), google cloud ai / google.
+    "lindit": "lindt", "lindux": "lindt", "lindtl": "lindt", "lindor": "lindt", "lindt lindor": "lindt",
+    "lindt excellence 70": "lindt", "lindt excellence": "lindt",
+    "starbbucks": "starbucks", "telsa": "tesla", "cheeros": "cheerios", "laroche-posay": "la roche-posay",
+    "qantas airways": "qantas", "sierra nevada pale ale": "sierra nevada", "kellogg's special k": "special k",
+    "deepseek chat": "deepseek", "deepseek-r1": "deepseek", "deepseek-ai": "deepseek",
+    "hunyuan assistant": "hunyuan", "claude by anthropic": "claude",
+    "chase sapphire preferred": "chase", "chase sapphire": "chase", "verizon wireless": "verizon",
+    "hilton worldwide holdings inc": "hilton", "hilton hotels corporation": "hilton",
+    "marriott hotels and resorts": "marriott", "marriott hotels": "marriott", "jw marriott": "marriott",
+    "adidas superstar": "adidas", "adidas nova boost": "adidas", "adidas yeezy": "adidas",
+    "walmart supermarkets": "walmart", "crest pro-health": "crest", "crest pro-health acid balance": "crest",
+    "lego group": "lego", "nintendo gamecube": "nintendo", "nintendo wii": "nintendo",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
@@ -52,9 +70,20 @@ LEAD_IN = re.compile(r"^(?:(?:sure|okay|ok)[!,.]?\s+)?(?:(?:the (?:brand|name|an
 # Not an answer at all: talk about the task, or reasoning leaking into the reply.
 NON_ANSWER = re.compile(r"^(?:i'll|i will|i think|let me|\d+\.)|user's request")
 DASHES = str.maketrans({"’": "'", "‐": "-", "–": "-"})
+# Combining marks (Unicode M*: Devanagari and Bengali vowel signs, Arabic harakat) are not \w, so without them a
+# Hindi name is cut at its first vowel sign; with them the whole name stays. The katakana middle dot joins a
+# name's parts (コカ・コーラ). Neither occurs in Latin answers, so English scores are unchanged.
+MARKS = "".join(f"{chr(a)}-{chr(b)}" for a, b in (
+    (0x0300, 0x036F), (0x0483, 0x0489), (0x0591, 0x05C7), (0x0610, 0x061A), (0x064B, 0x065F), (0x0670, 0x0670),
+    (0x06D6, 0x06ED), (0x0900, 0x0903), (0x093A, 0x094F), (0x0951, 0x0957), (0x0962, 0x0963), (0x0981, 0x0983),
+    (0x09BC, 0x09D7), (0x09E2, 0x09E3), (0x1AB0, 0x1AFF), (0x1DC0, 0x1DFF),
+    (0x20D0, 0x20FF), (0x3099, 0x309A), (0xFE20, 0xFE2F)))
 
 
-def brand_name(reply):
+def brand_name(reply, latin_only=True):
+    """latin_only drops other-script tokens from a name that has Latin letters, which cleans English answers
+    ("Cheerios麦片"); the cross-language battery passes False, since there a mixed name is the name
+    ("카카오 T", "Яндекс Go")."""
     if not reply:
         return None
     r = clean(unicodedata.normalize("NFKC", reply))          # wrappers, stop markers, last non-empty line
@@ -63,12 +92,13 @@ def brand_name(reply):
     if ":" in r and 0 < len(r.rsplit(":", 1)[1].split()) <= 5:  # "'s response:  Crest" -> "Crest"
         r = r.rsplit(":", 1)[1]
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)       # markdown and quotes before the debris cut
-    r = re.split(r"[^\w\s'&+!.,/-]", r)[0]                  # trailing debris ("Cheerios$postal...")
-    if re.search(r"[A-Za-z]", r):                            # Latin name with stray other-script tokens
+    r = r.replace("\u200c", " ")                            # Persian zero-width non-joiner splits a name's parts
+    r = re.split(rf"[^\w{MARKS}\s'&+!.,/・-]", r)[0]       # trailing debris ("Cheerios$postal...")
+    if latin_only and re.search(r"[A-Za-z]", r):             # Latin name with stray other-script tokens
         r = " ".join(t for t in r.split() if not re.search(r"[^\x00-\u024f]", t))
     r = re.sub(r"[*_`\"“”]", "", r).translate(DASHES)
     r = re.sub(r"\s*\(.*?\)\s*", " ", r).strip().lower()
-    r = re.sub(r"^[^\w]+|[^\w'&+!]+$", "", INVISIBLE.sub("", r)).rstrip("!").strip()
+    r = re.sub(rf"^[^\w]+|[^\w{MARKS}'&+!]+$", "", INVISIBLE.sub("", r)).rstrip("!").strip()
     if NON_ANSWER.search(r):
         return None
     r = LEAD_IN.sub("", r)

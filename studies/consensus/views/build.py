@@ -8,8 +8,9 @@ transcripts are single-turn one-word answers, so the generic arc renderer (core.
 nothing and is not copied — the view is one hash-routed index.html with no deps.
 
     python studies/consensus/views/build.py                    # every page in PAGES
-    python studies/consensus/views/build.py --battery brands   # one battery
-    open studies/consensus/views/index.html                    # census; ?set=expanded or ?set=brands for the others
+    python studies/consensus/views/build.py --battery brands   # one battery (brands and brands-choose only this way)
+    python studies/consensus/views/build.py --ladder           # the brand ladder page (views/ladder.html), only on request
+    open studies/consensus/views/index.html                    # Name; ?set=choose for Choose
 """
 
 import argparse
@@ -48,11 +49,14 @@ VENDOR = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "x-a
           "qwen": "Qwen", "z-ai": "Z.ai", "mistralai": "Mistral", "minimax": "MiniMax",
           "cohere": "Cohere", "baidu": "Baidu", "tencent": "Tencent", "stepfun": "StepFun",
           "nvidia": "NVIDIA", "ibm-granite": "IBM", "microsoft": "Microsoft", "writer": "Writer",
-          "perplexity": "Perplexity", "nousresearch": "Nous", "gryphe": "Gryphe"}
+          "perplexity": "Perplexity", "nousresearch": "Nous", "gryphe": "Gryphe",
+          "thinkingmachines": "Thinking Machines", "bytedance-seed": "ByteDance", "inclusionai": "inclusionAI",
+          "xiaomi": "Xiaomi"}
 
 
 def release_dates():
-    """label -> release date: the ECI file carried in cross-instrument, else conduct's looked-up dates."""
+    """label -> release date: the ECI file carried in cross-instrument, else conduct's and then this study's
+    looked-up dates (spec/release-dates.tsv)."""
     xi = STUDY.parent / "cross-instrument"
     eci = {r["Model"]: r["date"] for r in csv.DictReader((xi / "eci_scores_2026-09-13.csv").open())}
     out = {}
@@ -62,31 +66,54 @@ def release_dates():
         ours, theirs = ln.split("\t")[:2]
         if eci.get(theirs):
             out[ours] = eci[theirs]
-    for ln in (STUDY.parent / "conduct" / "spec" / "release-dates.tsv").read_text().splitlines():
-        p = ln.split("\t")
-        if not ln.startswith("#") and len(p) >= 2:
-            out.setdefault(p[0], p[1][:10])
+    for f in (STUDY.parent / "conduct" / "spec" / "release-dates.tsv", STUDY / "spec" / "release-dates.tsv"):
+        for ln in f.read_text().splitlines():
+            p = ln.split("\t")
+            if not ln.startswith("#") and len(p) >= 2:
+                out.setdefault(p[0], p[1][:10])
     return out
 
 
-TITLES = {"census": "one-word census", "expanded": "census + expanded battery (96 categories)", "brands": "brand battery (41 categories)",
-          "choose": "choose battery (96 categories)", "brands-choose": "brand choose battery (41 categories)"}
-# the expanded page shows the census and the expanded battery together; the choose page, both with "Choose"
-SOURCE = {"expanded": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all"}
-PAGES = ["census", "expanded", "brands", "choose", "brands-choose"]
-NOTES = {"expanded": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
+TITLES = {"census": "one-word census (96 categories)", "brands": "brand battery (44 categories)",
+          "choose": "one-word census with \u201cChoose\u201d (96 categories)", "brands-choose": "brand choose battery (44 categories)"}
+# the census page is the 31 census and 65 expanded questions together (8 runs each); the choose page, both with "Choose"
+SOURCE = {"census": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all"}
+PAGES = ["census", "choose"]
+# not shared yet: built only when named (--battery brands), so the Pages deploy does not publish them
+PRIVATE = ["brands", "brands-choose"]
+# a Choose page shows each category's Name answer beside its Choose answer: the same questions with "Name"
+NAME_OF = {"choose": "combined", "brands-choose": "brands_all"}
+NOTES = {"census": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
                      "battery, same template and scoring. Three models whose endpoints are gone (Claude 3 Haiku, Granite "
                      "4.1 8B, Hermes 4 70B) have census categories only.",
-         "brands": "Brand answers are scored by whole name with variant merging (brands.py). Reasoning was off where "
-                   "the endpoint allows it; reasoning-only models ran at their default. The 37 original categories plus "
-                   "four added on 2026-10-02 (coffee brand, skincare, project-management tool, mobile carrier). For the "
-                   "24 hybrid models, transcripts-brands-default/ and transcripts-brands-ext-default/ hold the "
-                   "default-reasoning runs.",
-         "brands-choose": "The 41 brand questions with \u201cChoose\u201d instead of \u201cName\u201d, scored as the brand "
-                          "battery. Compare with the brands page: the consensus brand changes in 6 of 41 categories.",
+         "brands": "Brand answers are scored by whole name with variant merging (brands.py). Every model is as "
+                   "served. The 37 original categories, four added on 2026-10-02 (coffee brand, skincare, "
+                   "project-management tool, mobile carrier) and three on 2026-10-03 (ride hailing, messaging app, "
+                   "news outlet). The 25 hybrid models' reasoning-off runs are in "
+                   "transcripts-brands-off/ and transcripts-brands-ext-off/.",
+         "brands-choose": "The 44 brand questions with \u201cChoose\u201d instead of \u201cName\u201d, scored as the brand "
+                          "battery. The questions page shows each category's Name brand beside its Choose brand.",
          "choose": "The 96 census and expanded questions with one word changed: \u201cChoose a fruit\u201d instead of "
                    "\u201cName a fruit\u201d, which asks for a pick rather than an example. 8 answers per model, scored as the "
                    "census. Compare with the expanded page to see which consensus answers change."}
+
+
+# the 31 questions of the original census, tagged on the 96-question pages
+CENSUS = {s["id"] for s in json.loads((STUDY / "spec" / "stimulus.json").read_text())["scenes"]}
+
+
+def name_modal(src, cats):
+    """category -> [the field's most common answer under Name, its share], for the categories a Choose page asks."""
+    pool = {}
+    for cs in answers(STUDY, src).values():
+        for c, xs in cs.items():
+            pool.setdefault(c, Counter()).update(xs)
+    out = {}
+    for c in cats:
+        if pool.get(c):
+            a, n = pool[c].most_common(1)[0]
+            out[c] = [a, round(n / sum(pool[c].values()), 3)]
+    return out
 
 
 def build(battery):
@@ -96,7 +123,7 @@ def build(battery):
     pm, pc = result["per_model"], result["per_category"]
 
     # the actual prompt text per category (the clean question, sans one-word clamp)
-    specs = [BATTERIES[b][1] for b in COMBINED.get(src, (battery,))]
+    specs = [BATTERIES[b][1] for b in COMBINED.get(src, (src,))]
     scenes = [s for f in specs for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]]
     prompts = {s["id"]: s["turns"][0].split(" Reply with")[0].strip() for s in scenes}
     prompts_full = {s["id"]: s["turns"][0].strip() for s in scenes}
@@ -161,12 +188,14 @@ def build(battery):
     blob = {
         "battery": battery, "title": TITLES.get(battery, battery), "note": NOTES.get(battery),
         "models": [{"label": m, "vendor": VENDOR.get(slug.get(m, "").split("/")[0], slug.get(m, "").split("/")[0]),
-                    "released": dates.get(m), **{k: pm[m].get(k) for k in
+                    "released": dates.get(m), "runs": max(len(xs) for xs in ans[m].values()), "n_cats": len(ans[m]),
+                    **{k: pm[m].get(k) for k in
                     ("surprisal", "modal_avoid", "novel_rate", "self_distinct", "type",
                      "origin", "open", "family", "ci90")}} for m in models],
-        "cats": [{"id": c, "prompt": prompts.get(c, ""), "prompt_full": prompts_full.get(c, ""), "modal": pc[c]["modal"],
+        "cats": [{"id": c, "census": c in CENSUS, "prompt": prompts.get(c, ""), "prompt_full": prompts_full.get(c, ""), "modal": pc[c]["modal"],
                   "share": pc[c]["modal_share"], "eff": dists[c]["eff"],
                   "n_distinct": pc[c]["n_distinct"]} for c in cats],
+        "name_modal": name_modal(NAME_OF[battery], cats) if battery in NAME_OF else None,
         "grid": grid,
         "cat_surp": cat_surp,
         "dists": dists,
@@ -177,15 +206,29 @@ def build(battery):
     print(f"wrote {out}  ({len(models)} models, {len(cats)} categories, {out.stat().st_size // 1024}KB)")
 
 
+def build_ladder():
+    """views/data_ladder.js for ladder.html. Not in the default build, so the page is not deployed until asked for."""
+    import brand_ladder
+    out = VIEWS / "data_ladder.js"
+    out.write_text("window.LADDER = " + json.dumps(brand_ladder.blob(), ensure_ascii=False, separators=(",", ":")) + ";\n")
+    print(f"wrote {out}  ({out.stat().st_size // 1024}KB)")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Build the consensus review site's data files")
-    ap.add_argument("--battery", choices=PAGES, help="one page (default: all)")
-    battery = ap.parse_args().battery
+    ap.add_argument("--battery", choices=PAGES + PRIVATE, help="one page (default: every page in PAGES)")
+    ap.add_argument("--ladder", action="store_true", help="build only the brand ladder page's data")
+    args = ap.parse_args()
+    battery = args.battery
     # shared styling for the study sites (copied, like core.js; the copy is gitignored)
     shutil.copy(STUDY.parent.parent / "harness" / "viewer" / "base.css", VIEWS / "base.css")
+    if args.ladder:
+        build_ladder()
+        print(f"open {VIEWS / 'ladder.html'} in a browser")
+        return
     for b in [battery] if battery else PAGES:
         build(b)
-    print(f"open {VIEWS / 'index.html'} in a browser (?set=expanded, ?set=brands, ?set=choose)")
+    print(f"open {VIEWS / 'index.html'} in a browser (?set=choose for Choose)")
 
 
 if __name__ == "__main__":

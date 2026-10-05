@@ -149,8 +149,22 @@ def iter_scenes(spec):
                 yield reg["name"], scene
 
 
+def save(path, data):
+    """Write the model's file atomically (temp file, then rename), so a killed run never leaves a torn file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    os.replace(tmp, path)
+
+
+def complete(entry, runs, reasoning):
+    """A stored scene that already holds this many runs, under the same thinking mode, with no failed cell."""
+    return (entry is not None and len(entry.get("runs", [])) == runs and entry.get("reasoning_mode") == reasoning
+            and all(c.get("reply") and not c.get("error") for r in entry["runs"] for c in r))
+
+
 def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None, reasoning=None,
-            backend="openrouter", effort=None, host="openrouter"):
+            backend="openrouter", effort=None, host="openrouter", resume=False):
     backend = pick_backend(slug, backend)
     # canonical=host_id: the file and vendor come from the canonical slug, the request goes to the host's id
     host_model = None
@@ -182,6 +196,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
     for reg_name, scene in iter_scenes(spec):
         if scene_ids and scene["id"] not in scene_ids:
             continue
+        if resume and complete(data["scenes"].get(scene["id"]), runs, reasoning):
+            continue                       # --resume: a restart keeps the scenes an interrupted run finished
         runs_out = []
         for run in range(runs):
             try:
@@ -205,11 +221,11 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         if backend == "agent_sdk":         # per cell too, so a scene stands alone
             entry.update(agent_sdk.stamp(model_id, effort))
         data["scenes"][scene["id"]] = entry
+        save(path, data)                   # after every scene: an interrupted run loses at most the scene in flight
 
     if backend == "agent_sdk":                # re-stamp: the CLI version is known only after the first call
         data.update(agent_sdk.stamp(model_id, effort))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    save(path, data)
     print(f"→ {path}")
 
 
@@ -231,6 +247,8 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=None, help="override the spec's output budget for this run; stamped on each scene it applies to")
     ap.add_argument("--reasoning", choices=REASONING_MODES, default=None,
                     help="request a thinking mode (off | low | medium | high); default sends nothing and takes the route's default")
+    ap.add_argument("--resume", action="store_true",
+                    help="skip scenes the file already holds with --runs runs, the same thinking mode and no failed cell (restart after an interruption)")
     args = ap.parse_args()
 
     backends = {pick_backend(m, args.backend) for m in args.models}
@@ -246,7 +264,7 @@ def main():
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
         run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens, args.reasoning,
-                args.backend, args.effort, args.host)
+                args.backend, args.effort, args.host, args.resume)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,390 @@
+{
+  "model": "grok-4.6",
+  "slug": "x-ai/grok-4.6",
+  "spec_version": "1.0-brands-ext2-choose-free",
+  "temperature": 1.0,
+  "max_tokens": 1024,
+  "scenes": {
+    "messaging_app__choosefree": {
+      "subtitle": "messaging_app__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the strongest default pick for most people: end-to-end encryption on by default (including metadata minimization), open-source, no ads or data harvesting for advertising, disappearing messages, and a clean interface. The user base is large enough that many contacts already have it or will install it.\n\n**Quick alternatives if Signal doesn't fit:**\n- **WhatsApp** — Best network effects (almost everyone already has it). E2EE for messages, but Meta collects more metadata.\n- **iMessage** — Seamless if you and your contacts are all on Apple devices.\n- **Telegram** — Feature-rich (channels, bots, large groups) but only secret chats are fully E2EE by default.\n\nIf you tell me your priorities (privacy, group size, work vs personal, specific platforms, or who your contacts already use), I can refine the recommendation.",
+            "reasoning": "The user wants a recommendation for a messaging app.\n\nI'll ask about platform, privacy, and features before recommending an app.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 792,
+              "total_tokens": 1003,
+              "cost": 0.004982,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.004982,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.004752
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 613,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the strongest default pick for most people who care about actual privacy rather than marketing. End-to-end encryption is on by default for everything (1:1, groups, voice, video, disappearing messages). The protocol is open, audited, and widely respected. Metadata collection is minimized compared to WhatsApp, Telegram, or iMessage. No ads, no engagement farming, no phone-number-required discovery in the same way others do it.\n\nCaveats, because nothing is perfect:\n- Network effects suck. If your contacts aren't on it, you still end up using something else.\n- Telegram wins on features, bots, huge groups, and speed (but default chats are *not* E2EE).\n- WhatsApp is ubiquitous and also E2EE, but it's Meta, the backup-to-cloud story is weaker, and metadata still flows.\n- iMessage is convenient in the Apple bubble and has strong encryption *when both sides are Apple*, but it is not cross-platform and Apple still holds keys in some cases.\n\nIf your priority is \"everyone I know already uses it\" rather than \"I don't want a company reading my metadata,\" just use whatever the group already standardized on. Convenience usually beats ideology. If you tell me the actual constraints (platforms, group size, need for disappearing messages, whether you hate giving out a phone number, etc.), the answer can change.",
+            "reasoning": "The user wants a recommendation for a messaging app.\n\nThis appears to be a prompt for a messaging app recommendation. Signal, WhatsApp, Telegram, and iMessage are the main options under consideration.\n\nI will ask for context first. Then I will recommend a specific app.\n\nSignal is the most private option. WhatsApp is owned by Meta. Telegram lacks end-to-end encryption by default. I will recommend Signal.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 867,
+              "total_tokens": 1078,
+              "cost": 0.005432,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.005432,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.005202
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 580,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the strongest default choice for most people who care about actual privacy: end-to-end encryption by default (not just in \"secret chats\"), open-source, run by a non-profit, and it doesn't collect or sell your data/metadata the way Meta products do. The protocol is well-audited, it works well on both mobile and desktop, and group chats/voice/video are solid.\n\nWhatsApp is more convenient purely because of network effects (almost everyone already has it), but you're trusting Meta. Telegram has nicer features and channels but defaults to weaker encryption. iMessage is fine inside the Apple ecosystem.\n\nIf you tell me your priorities (maximum privacy vs. features vs. \"everyone I know already uses it\" vs. work vs. specific platforms), I can adjust the pick.",
+            "reasoning": "The user wants a recommendation for a messaging app.\n\nI'm weighing Signal, WhatsApp, Telegram, and iMessage. I'll ask what matters most before recommending.\n\nI'm now leaning toward Signal as the top recommendation, given its strong privacy and open-source credentials. I'll structure a clear response with specific reasons.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 948,
+              "total_tokens": 1159,
+              "cost": 0.005918,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.005918,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.005688
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 781,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the strongest default pick for most people: fully end-to-end encrypted (including metadata minimization), open-source, no ads or data harvesting, and simple enough that non-technical contacts will actually use it. WhatsApp is a close second for reach if you need compatibility with people who won't switch, but Signal wins on privacy and trust. Telegram is fine for large public channels but weaker on encryption defaults.\n\nIf you have specific needs (groups, desktop, business, etc.), give more details and I’ll adjust.",
+            "reasoning": "The user wants a recommendation for a messaging app.\n\nI'll recommend a messaging app based on privacy and features. Signal is a strong candidate.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 357,
+              "total_tokens": 568,
+              "cost": 0.002372,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.002372,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.002142
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 249,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "ride_hailing__choosefree": {
+      "subtitle": "ride_hailing__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber.**\n\nIt's the most widely available globally, with the largest driver network in most markets, strong safety features (like ride tracking and SOS), and the most mature app ecosystem. Lyft is a solid US-only alternative if you prefer that, but Uber wins on coverage and options (including UberX, Comfort, and sometimes cheaper pool/shared rides).",
+            "reasoning": "The user wants a ride-hailing app recommendation.\n\nConsidering Uber as the most well-known option. The query seems open-ended, so I may need to explain my choice.",
+            "usage": {
+              "prompt_tokens": 214,
+              "completion_tokens": 557,
+              "total_tokens": 771,
+              "cost": 0.003578,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.003578,
+                "upstream_inference_prompt_cost": 0.000236,
+                "upstream_inference_completions_cost": 0.003342
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 484,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber.**\n\nIt's the most globally available option with the largest driver network, consistent app experience across countries, and extras like UberX, Comfort, Black, and sometimes scooters/bikes depending on the city. Lyft is a strong US-centric alternative (often cheaper or with better driver ratings in some markets), while Grab, Bolt, Didi, or Careem dominate in specific regions.\n\nIf you have a location, budget, or preference (cheapest, luxury, eco, accessibility), I can refine the pick.",
+            "reasoning": "The user wants a ride-hailing app recommendation.\n\nI'm weighing Uber, Lyft, Grab, and Didi as options.",
+            "usage": {
+              "prompt_tokens": 214,
+              "completion_tokens": 518,
+              "total_tokens": 732,
+              "cost": 0.003344,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.003344,
+                "upstream_inference_prompt_cost": 0.000236,
+                "upstream_inference_completions_cost": 0.003108
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 411,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber.**\n\nIt's the most widely available globally, with solid coverage in most cities, reliable driver supply, and extra options like UberX, Comfort, Green, and even some micromobility/public transit integrations. Availability, pricing, and wait times still vary a lot by location and time of day—Lyft, Grab, Bolt, or local alternatives can be better (or cheaper) depending on where you are.\n\nIf you tell me your city or what you care about most (price, safety features, EV options, accessibility, etc.), I can refine the recommendation.",
+            "reasoning": "The user wants a ride-hailing app recommendation.\n\nThe request is vague. I should ask for clarification before recommending an app.",
+            "usage": {
+              "prompt_tokens": 214,
+              "completion_tokens": 496,
+              "total_tokens": 710,
+              "cost": 0.003212,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.003212,
+                "upstream_inference_prompt_cost": 0.000236,
+                "upstream_inference_completions_cost": 0.002976
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 380,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber** is the most practical default for most people due to its global availability, large driver network, and consistent app experience across cities.\n\n**Quick comparison of common options:**\n- **Uber**: Best overall coverage (especially internationally), more vehicle types (including premium and shared), reliable in dense urban areas. Watch surge pricing.\n- **Lyft**: Strong in the US/Canada, often slightly cheaper or with better driver ratings in some cities, more “friendly” branding. Limited outside North America.\n- **Grab / Bolt / Careem / Didi / inDrive**: Regional leaders that frequently beat Uber on price and availability in their home markets (Southeast Asia, parts of Europe/Africa, Middle East, China, etc.).\n\n**How to decide quickly:**\n1. Check which apps actually have drivers in your current city (download 2–3 and compare wait times + prices for the same trip).\n2. Factor in payment methods, safety features (share trip, SOS), and any local promotions.\n3. If you travel a lot, Uber usually requires the least switching.\n\nIf you tell me your city or typical use case (airport runs, daily commute, cost vs. speed, etc.), I can give a more specific recommendation.",
+            "reasoning": "The user wants a ride-hailing app recommendation.\n\nI need more context to recommend an app. Location and preferences matter.\n\nI'll compare the main options rather than picking one. Uber is widely available, but local preferences and market share vary.",
+            "usage": {
+              "prompt_tokens": 214,
+              "completion_tokens": 744,
+              "total_tokens": 958,
+              "cost": 0.0047,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0047,
+                "upstream_inference_prompt_cost": 0.000236,
+                "upstream_inference_completions_cost": 0.004464
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 492,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "news_outlet__choosefree": {
+      "subtitle": "news_outlet__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "**BBC News.**\n\nStraightforward global coverage with reasonably clear sourcing. What do you want me to do with it—headlines, a specific story, comparison to another outlet, or something else?",
+            "reasoning": "The user wants me to choose a news outlet.\n\nThe request is vague. I need to ask for clarification on what they want to do with the news outlet.\n\nI'm weighing specific news outlets. The New York Times, BBC, or Reuters would be neutral choices. The Babylon Bee offers a satirical alternative. I'm also considering whether the user wants me to adopt that outlet's tone or style.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 650,
+              "total_tokens": 861,
+              "cost": 0.004322,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.004322,
+                "upstream_inference_prompt_cost": 0.000422,
+                "upstream_inference_completions_cost": 0.0039
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 611,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Reuters.",
+            "reasoning": "The user asked to choose a news outlet.\n\nI'm considering which news outlet to recommend.\n\nI'm weighing major outlets like Reuters, The Guardian, and the Wall Street Journal. I'll pick one and wait for further instructions.\n\nI've chosen Reuters for its reputation for factual reporting.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 449,
+              "total_tokens": 660,
+              "cost": 0.002924,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.002924,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.002694
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 446,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "**Reuters.**\n\nIt's a solid, relatively straightforward wire service with global reach and a reputation for factual reporting over heavy opinion. What would you like me to do with it—pull recent headlines, summarize a story, compare coverage on a topic, or something else?",
+            "reasoning": "The user wants me to choose a news outlet.\n\nThe request is vague. I'll ask for clarification or pick an outlet to engage.\n\nI'll select Reuters for its neutral, factual reporting. I'll ask what they'd like me to do with it.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 519,
+              "total_tokens": 730,
+              "cost": 0.003344,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.003344,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.003114
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 465,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "**BBC News.**\n\nIt's widely regarded as relatively reliable for international coverage, with a generally high factual-reporting score from independent raters. What would you like me to do with it (summarize recent stories, compare coverage, etc.)?",
+            "reasoning": "The user wants me to choose a news outlet.\n\nI'll ask for more context before selecting a news outlet.\n\nI'll select Reuters as a neutral, reliable source. I'll ask what they'd like to do with it.",
+            "usage": {
+              "prompt_tokens": 211,
+              "completion_tokens": 413,
+              "total_tokens": 624,
+              "cost": 0.002708,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.002708,
+                "upstream_inference_prompt_cost": 0.00023,
+                "upstream_inference_completions_cost": 0.002478
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 364,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    }
+  }
+}
