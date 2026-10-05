@@ -95,12 +95,13 @@ function hover(sel, html) {
   });
 }
 
-/* The seven steps: three verbs clamped to a name, the same three asked freely, and the two-turn pick.
+/* The seven steps: each verb clamped to a name and then asked freely, side by side, and the two-turn pick.
    A model's answer at a step is its most common brand over the runs, for each category. */
-const STEPS = ["name", "choose", "recommend_clamp", "free_name", "free_choose", "recommend", "pick2"];
+const STEPS = ["name", "free_name", "choose", "free_choose", "recommend_clamp", "recommend", "pick2"];
 const CLAMP = {free_name: "name", free_choose: "choose", recommend: "recommend_clamp"};   // free step -> same verb clamped
 const SHORT = {name: "Name", choose: "Choose", recommend_clamp: "Recommend", free_name: "Name", free_choose: "Choose",
                recommend: "Recommend", pick2: "two-turn pick"};
+const GAP = lv => ["choose", "recommend_clamp", "pick2"].includes(lv) ? " gap" : "";
 const GROUP = lv => lv === "pick2" ? "" : lv in CLAMP ? "free" : "clamped";
 const head = lv => `${GROUP(lv) ? `<small style="display:block;color:var(--mut);font-weight:400">${GROUP(lv)}</small>` : ""}${SHORT[lv]}`;
 const prompt = lv => LV.find(v => v.id === lv).prompt;
@@ -132,14 +133,14 @@ function mentions(ms, lv) {
 const shade = v => `background:rgba(57,135,229,${(0.06 + 0.85 * v).toFixed(2)})`;
 
 function matrix(ms) {
-  let h = `<div class="twrap"><table class="t m"><tr><th></th>${STEPS.map(lv => `<th title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
+  let h = `<div class="twrap"><table class="t m"><tr><th></th>${STEPS.map(lv => `<th class="${GAP(lv)}" title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
   STEPS.forEach((a, i) => {
     h += `<tr><th title="${esc(prompt(a))}" style="text-align:right">${head(a)}</th>`;
     STEPS.forEach((b, j) => {
-      if (j > i) { h += "<td></td>"; return; }
+      if (j > i) { h += `<td class="${GAP(b).trim()}"></td>`; return; }
       const r = agree(ms, a, b);
       const isClamp = CLAMP[a] === b || CLAMP[b] === a;
-      h += r == null ? '<td class="n">–</td>' : `<td class="n${i === j ? " dg" : ""}${isClamp ? " clamp" : ""}" style="${shade(r.v)}"
+      h += r == null ? `<td class="n${GAP(b)}">–</td>` : `<td class="n${GAP(b)}${i === j ? " dg" : ""}${isClamp ? " clamp" : ""}" style="${shade(r.v)}"
         data-t="${esc(i === j ? `${SHORT[a]}${GROUP(a) ? " (" + GROUP(a) + ")" : ""} against itself: two halves of the runs give the same brand in ${pct(r.v)} of ${r.n} model × category pairs. The ceiling for this row.`
           : `${SHORT[a]} ${GROUP(a)} and ${SHORT[b]} ${GROUP(b)} give the same brand in ${pct(r.v)} of ${r.n} model × category pairs.`)}">${pct(r.v)}</td>`;
     });
@@ -156,29 +157,46 @@ function clampTable(ms) {
   }
   return h + "</table></div>";
 }
-const PAIRS = [["name", "choose"], ["name", "recommend_clamp"], ["choose", "recommend_clamp"], ["recommend_clamp", "pick2"], ["name", "pick2"],
-               ["name", "free_name"], ["choose", "free_choose"], ["recommend_clamp", "recommend"]];
+const PAIRS = [["name", "free_name"], ["choose", "free_choose"], ["recommend_clamp", "recommend"],
+               ["name", "choose"], ["name", "recommend_clamp"], ["choose", "recommend_clamp"], ["recommend_clamp", "pick2"], ["name", "pick2"]];
 function home() {
   const ms = L.models;
+  const A = (a, b) => agree(ms, a, b).v, M = f => mentions(ms, f).men;
   let h = `<h2>how a model's brands relate across the verbs</h2>
-  <p class="note">Each cell: how often a model gives the <b>same brand</b> at two steps, for the same category, pooled over
-  ${ms.length} models and ${L.cats.length} categories. A model's brand at a step is its most common answer over the runs.
-  The diagonal is a step against itself (two halves of its runs), the most agreement that step can show.
-  <b>Outlined</b> cells are the clamp check: one verb asked freely against the same verb clamped.
-  Hover a cell for its count.</p>
+  <p class="note">The question on this page: when the same model is asked for a brand in different ways, does it give the same
+  brand? Each number is the share of model × category pairs where it does, pooled over ${ms.length} models and ${L.cats.length}
+  categories. A step asked twice (two halves of its runs) agrees ${pct(Math.min(...STEPS.slice(0, 6).map(x => A(x, x))))}–${pct(Math.max(...STEPS.slice(0, 6).map(x => A(x, x))))}
+  with itself, so that is the most any pair can show.</p>
+  <div style="border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 14px;margin:0 0 18px;max-width:92ch;font-size:13.5px">
+  <b>What it shows</b>
+  <ol style="margin:6px 0 0;padding-left:20px">
+  <li><b>The clamp barely changes Name.</b> Asked freely, a model leads with its one-word Name brand ${pct(A("name", "free_name"))} of the time
+  (against ${pct(A("name", "name"))} for Name asked twice).</li>
+  <li><b>The clamp changes Choose and Recommend more</b> (${pct(A("choose", "free_choose"))} and ${pct(A("recommend_clamp", "recommend"))} same brand),
+  but the free reply still mentions the clamped brand ${pct(M("free_choose"))} and ${pct(M("recommend"))} of the time. Freed, the model leads with
+  another brand and keeps the clamped one in the list.</li>
+  <li><b>With the clamp held, the verb moves the brand step by step.</b> Name and Choose agree ${pct(A("name", "choose"))}, Choose and
+  Recommend ${pct(A("choose", "recommend_clamp"))}, Name and Recommend ${pct(A("name", "recommend_clamp"))}.</li>
+  <li><b>The two-turn pick is furthest from Name</b> (${pct(A("name", "pick2"))}; the pick agrees with itself ${pct(A("pick2", "pick2"))}).
+  It is closest to Recommend (${pct(A("recommend_clamp", "pick2"))} clamped, ${pct(A("recommend", "pick2"))} free). The brand a model ends up
+  picking in conversation is closer to its recommendation than to its one-word default.</li>
+  </ol></div>
+  <h3>every pair of steps</h3>
+  <p class="note">Each verb's clamped and free versions sit side by side; the <b>outlined</b> cells compare the two. The diagonal
+  is each step against itself. Hover a cell for its count.</p>
   ${matrix(ms)}
   <h3>the clamp, verb by verb</h3>
   <p class="note">"Mentions" counts a free reply that names the clamped brand anywhere, even after leading with another.</p>
   ${clampTable(ms)}
   <h3>by model</h3>
-  <p class="note">The same agreements per model, sorted by Name against the two-turn pick. Click a model to see its brands
+  <p class="note">The same agreements per model: the clamp check for each verb, then the verb pairs and the pick, sorted by Name against the two-turn pick. Click a model to see its brands
   category by category and read the replies.</p>
   <div class="twrap"><table class="t"><tr><th>model</th>${PAIRS.map(([a, b], i) =>
-    `<th class="${i === 5 ? "gap" : ""}">${SHORT[a]}${GROUP(a) === "free" ? " free" : ""}<br>${a in CLAMP || b in CLAMP ? "free " : ""}${SHORT[b]}</th>`).join("")}</tr>`;
+    `<th class="${i === 3 || i === 6 ? "gap" : ""}">${i < 3 ? SHORT[a] + "<br>clamped / free" : SHORT[a] + "<br>" + SHORT[b]}</th>`).join("")}</tr>`;
   const rows = ms.map(m => ({m, r: PAIRS.map(([a, b]) => agree([m], a, b))}));
-  rows.sort((x, y) => (x.r[4] ? x.r[4].v : 2) - (y.r[4] ? y.r[4].v : 2));
+  rows.sort((x, y) => (x.r[7] ? x.r[7].v : 2) - (y.r[7] ? y.r[7].v : 2));
   for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map((z, i) =>
-    `<td class="n${i === 5 ? " gap" : ""}" style="${z ? shade(z.v) : ""}">${z ? pct(z.v) : "–"}</td>`).join("")}</tr>`;
+    `<td class="n${i === 3 || i === 6 ? " gap" : ""}" style="${z ? shade(z.v) : ""}">${z ? pct(z.v) : "–"}</td>`).join("")}</tr>`;
   main.innerHTML = h + "</table></div>";
   main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#m/" + encodeURIComponent(r.dataset.m)));
   hover("td[data-t]", el => esc(el.dataset.t));
@@ -195,9 +213,9 @@ function model(m) {
   <p class="note">Within a row, one colour is one brand, so a run of the same colour is the same answer carried across steps.
   Categories with the most different brands are first. Click a category to read all its replies in order, or a cell for one step.</p>
   <div class="twrap"><table class="t"><tr><th>category</th>${STEPS.map(lv =>
-    `<th class="${lv === "free_name" || lv === "pick2" ? "gap" : ""}" title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
+    `<th class="${GAP(lv)}" title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
   for (const r of rows) h += `<tr><td><a href="#" class="seq" data-c="${esc(r.c)}">${esc(label(r.c))}</a></td>` + r.a.map((x, i) => {
-    const g = STEPS[i] === "free_name" || STEPS[i] === "pick2" ? " gap" : "";
+    const g = GAP(STEPS[i]);
     return x == null ? `<td class="b np cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}">no brand</td>`
       : `<td class="b cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}" title="${esc(x)}"><span class="sw" style="background:${ROWCOL[r.seen.indexOf(x)] || "var(--other)"}"></span>${esc(x)}</td>`;
   }).join("") + "</tr>";
