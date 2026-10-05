@@ -115,7 +115,7 @@ const lvHead = c => LV.map(lv => `<th>${esc(lv.label)}<span class="p">${esc(c ? 
 /* ---------- overview: the level summary and every category's walk ---------- */
 function overview() {
   let h = `<h2>categories</h2>
-  <p class="note">The ${L.cats.length} brand questions asked seven ways, from a one-word <b>Name</b> to a two-turn conversation
+  <p class="note">The ${L.cats.length} brand questions asked ${LV.length} ways, each verb with a one-name instruction and without, from a one-word <b>Name</b> to a two-turn conversation
   (recommend, then <b>“Which one would you pick?”</b>), to the same ${LV[0].models} models, every model as served.
   Each cell is the field's most common brand at that level and its share. <b>Bold</b> marks a level whose top
   brand differs from Name's. Categories that move most are first; click one for its full walk.</p>
@@ -195,7 +195,7 @@ function retention(m) {
     return n ? k / n : null; });
 }
 function models() {
-  const rows = L.models.map(m => ({m, r: retention(m)})).sort((a, b) => (b.r[6] ?? -1) - (a.r[6] ?? -1));
+  const rows = L.models.map(m => ({m, r: retention(m)})).sort((a, b) => (b.r[LV.length - 1] ?? -1) - (a.r[LV.length - 1] ?? -1));
   let h = `<h2>models</h2>
   <p class="note">How often each model's answer at a level equals its own one-word Name answer, averaged over the
   categories. Sorted by the two-turn pick. Click a model for its answers category by category.</p>

@@ -1,14 +1,16 @@
 """brand_ladder.py — the brand verb ladder: does a model's one-word brand default survive as the question gets
 more like a real conversation?
 
-Seven levels, the same 44 brand categories and the same panel, every model as served (spec/runs.json ids; each
+Nine levels, the same 44 brand categories and the same panel, every model as served (spec/runs.json ids; each
 level reads the 41-category run and its brands-ext2-* run for the three categories added on 2026-10-03):
 
   name         "Name a soda brand. Reply with the name only."   brands, -ext, -ext2       whole-name scorer
   free_name    "Name a soda brand."                              free-all, free-brands-ext(2), clamp-ext   first mention
   choose       "Choose a soda brand. Reply with the name only."  brands-choose, -ext-, -ext2-choose   whole-name scorer
   free_choose  "Choose a soda brand."                            brands-(ext2-)choose-free     committed brand
+  pick1_clamp  "Which soda brand would you pick? Reply with the name only."   brands-(ext2-)pick1-clamp   whole-name
   pick1        "Which soda brand would you pick?"                brands-(ext2-)pick1-free      committed brand
+  recommend_clamp "Can you recommend a soda brand? Reply with the name only."  brands-(ext2-)recommend-clamp  whole-name
   recommend    "Can you recommend a soda brand?"                 brands-(ext2-)recommend-free  first mention
   pick2        recommend, then "Which one would you pick?"       brands-(ext2-)pick2-free      committed brand, turn 2
 
@@ -36,17 +38,22 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from analyze import answers                       # noqa: E402
+from analyze import answers, load as load_clamped  # noqa: E402
 from brands import ALIASES, brand_name            # noqa: E402
 from probe_clamp import mentions, patterns        # noqa: E402
 
 RUNS = {e["id"]: e for e in json.loads((HERE / "spec" / "runs.json").read_text())["runs"]}
-LEVELS = ["name", "free_name", "choose", "free_choose", "pick1", "recommend", "pick2"]
+# each verb clamped (one name) then free; the two-turn pick is free only
+LEVELS = ["name", "free_name", "choose", "free_choose", "pick1_clamp", "pick1", "recommend_clamp", "recommend", "pick2"]
 LABELS = {"name": "Name", "free_name": "free Name", "choose": "Choose", "free_choose": "free Choose",
-          "pick1": "one-turn pick", "recommend": "Recommend", "pick2": "two-turn pick"}
+          "pick1_clamp": "pick", "pick1": "free pick", "recommend_clamp": "Recommend", "recommend": "free Recommend",
+          "pick2": "two-turn pick"}
 PROMPTS = {"name": "Name a soda brand. Reply with the name only.", "free_name": "Name a soda brand.",
            "choose": "Choose a soda brand. Reply with the name only.", "free_choose": "Choose a soda brand.",
-           "pick1": "Which soda brand would you pick?", "recommend": "Can you recommend a soda brand?",
+           "pick1_clamp": "Which soda brand would you pick? Reply with the name only.",
+           "pick1": "Which soda brand would you pick?",
+           "recommend_clamp": "Can you recommend a soda brand? Reply with the name only.",
+           "recommend": "Can you recommend a soda brand?",
            "pick2": "Can you recommend a soda brand? … Which one would you pick?"}
 NO_PICK = "<no pick>"
 
@@ -212,12 +219,19 @@ def free_name():
     return out
 
 
+def clamped(run_ids):
+    """A clamped level (one name asked for), scored like Name: the whole reply as a brand name, with the aliases."""
+    return load_clamped(HERE, "brands", paths=[f for r in run_ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))])
+
+
 @lru_cache(None)
 def levels():
     name, choose = pools()[:2]
     lv = {"name": name, "free_name": free_name(), "choose": choose,
           "free_choose": load(["brands-choose-free", "brands-ext2-choose-free"], "__choosefree", 0, "open"),
+          "pick1_clamp": clamped(["brands-pick1-clamp", "brands-ext2-pick1-clamp"]),
           "pick1": load(["brands-pick1-free", "brands-ext2-pick1-free"], "__youpick", 0, "open"),
+          "recommend_clamp": clamped(["brands-recommend-clamp", "brands-ext2-recommend-clamp"]),
           "recommend": load(["brands-recommend-free", "brands-ext2-recommend-free"], "__recommend", 0, "first"),
           "pick2": load(["brands-pick2-free", "brands-ext2-pick2-free"], "__pick", 1, "open")}
     grid = {c for cats in lv["pick2"].values() for c in cats}      # the categories every level asks (44)
