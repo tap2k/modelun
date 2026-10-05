@@ -4,9 +4,9 @@ Raised 2026-10-03 and not settled. Resolve at the next merge of that branch into
 Whoever merges settles each item with Tapan, records the outcome where it belongs (AGENTS.md,
 a study README, the code), and deletes the item here. Delete this file when the list is empty.
 
-1. **Reasoning default: as served or off.** *Settled 2026-10-04 with Tapan: as served is the headline, and the
-   hybrids' off arm is reported beside it. Still to do: the brand swap and the missing served arms (see Task 1
-   below), then record the rule in the README and delete this item.*
+1. **Reasoning default: as served or off.** *Settled and done 2026-10-05: as served is the headline in every
+   battery; the hybrids' off arm sits in the `-off` directories. Recorded in the consensus README. Delete this item at
+   the merge; the history below is kept for the paper.*
    - **History.**
      - The census, expanded, pickword and language batteries ran as served (no `--reasoning` flag).
      - The brand batteries ran `--reasoning off` where the endpoint allowed it.
@@ -55,7 +55,9 @@ a study README, the code), and deletes the item here. Delete this file when the 
      run), with the off arm reported beside it; it is a measured effect, not a footnote. It costs
      about $5-10 a battery, since only the hybrids need it. The brand batteries switch their
      headline by swapping in the existing `-default` files.
-2. **The full census in every language.**
+2. **The full census in every language.** *Deferred 2026-10-04 (Tapan): pending until the current papers are
+   written. Decide it then, together with the everyday atlas, as part of the final shape of the panel battery
+   (item 6).*
    - **Scope.** The full panel through all three Name batteries in every language: the census (31
      categories), the expanded battery (65) and the brand battery (44). It would replace the
      language study's deep run (15 categories, 5 languages) as the cross-language census.
@@ -84,17 +86,21 @@ a study README, the code), and deletes the item here. Delete this file when the 
    - **Reconcile them** with the other session's free Choose, one-turn pick, two-turn pick and
      Recommend-paraphrase runs, which were uncommitted on Tapan's Mac on 2026-10-03.
    - **Rescore its headline counts as served** (Choose 6/41, Recommend 15/41, pick 28/41).
-4. **Review the cross-language brand material.**
+4. **Review the cross-language brand material.** *Deferred 2026-10-04 with item 2: needed only before languages run
+   on the full panel.*
    - **The alias table** `studies/consensus/spec/brands_lang_aliases.json` was drafted by Claude
      agents. The flagged calls are in the 2026-10-03 session (Asahi Super Dry into Asahi, BBC
      language services kept apart, the Persian "پی" left unresolved).
    - **The translated prompts** need a native check before the full panel. The notes are in
      `studies/consensus/spec/brands_lang_notes.md`.
-5. **The hybrid list.** Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
+5. **The hybrid list.** *Settled 2026-10-04: GPT-6 Luna is the 25th hybrid. Rule: a model that accepts reasoning off
+   and uses reasoning tokens as served is a hybrid. The list is `hybrids` in `studies/consensus/spec/runs.json`;
+   delete this item once the swap commit lands.* Whether GPT-6 Luna joins the 24, and the rule for adding a model: it
    accepts off and uses reasoning tokens as served. Luna was given default-reasoning reruns of
    every brand battery on 2026-10-03, in the same `-default` directories, so it can join without
    new runs. Kimi K2 needs none, because it ignores off.
-6. **The shape of the standing panel.** The goals it serves, as drafted 2026-10-03 (confirm):
+6. **The shape of the standing panel.** *2026-10-04 (Tapan): the tiers below stand as the current status; the final
+   shape is decided after the current papers, with item 2 and the everyday atlas.* The goals it serves, as drafted 2026-10-03 (confirm):
    - **Goals, in priority order:**
      1. A dated, cross-vendor archive of what production models default to, collected on release
         day and kept after retirement.
@@ -145,7 +151,10 @@ a study README, the code), and deletes the item here. Delete this file when the 
      - **One manifest.** `harness/cost.py` `BATTERY` becomes the single definition of the core
        tier (spec, runs, condition). `panel_gap.py` reports models missing any core instrument, and
        the release-day rule in this file points at it. Plain data, not a plugin API.
-7. **Look for an earlier census pilot in another language.**
+7. **Look for an earlier census pilot in another language.** *Closed 2026-10-04: none found. Local Claude Code
+   history only reaches back to 2026-08-27. The likely source of the memory is the 2026-07-20 blog post "Every
+   Language Has Its Own Serendipity", which says "We redid the One-Word Census in 44 languages"; that was pickword
+   (one question, 44 languages), not the 31 categories. Delete this item at the merge.*
    - **The question.** Tapan recalls a pilot of the full census or expanded battery in another
      language. It is not in git (all 814 commits checked).
    - **Searched on 2026-10-03:** remote sessions from 2026-07-04 to 10-03. There was no run of the
@@ -173,7 +182,9 @@ a study README, the code), and deletes the item here. Delete this file when the 
      so local runs sit beside the API runs; they are not merged into them.
    - **Claude 3 Haiku** has no local route. Leave it at 4 runs.
 9. **Proposals, not decisions: which models to leave out of new batteries, or run with reasoning
-   off.** Drafted 2026-10-04 from the brand, pickword and suggestibility runs of 2026-10-03. The
+   off.** *Settled 2026-10-04: (a) yes, the five are marked `not_run_after` in `studies/consensus/spec/models.json`;
+   (b) no, they stay as served like every model; (c) yes, recorded in the consensus README "Run" section. Delete this
+   item at the merge.* Drafted 2026-10-04 from the brand, pickword and suggestibility runs of 2026-10-03. The
    existing batteries are complete, so nothing is retired or rerun. Consider these when a new
    battery or instrument is added to the panel.
    - **Measures used:**
@@ -330,24 +341,30 @@ Own default is in the turn-1 list 75% of the time and is the pick 25%. Cold one-
 29% no pick); after a list the field converges on a new winner (49%). Paraphrase floor small (rewordings agree with
 recommend's consensus in 39/41 and 34/41). Toyota holds at every level.
 
-**Task 1: housekeeping and organisation.** *Step 1 done 2026-10-04:* `studies/consensus/spec/runs.json` lists every
-transcript directory (battery, form, clamped or free, arm, models, runs, tier, published tag), `check_runs.py` checks it
-against the files and writes the README "Runs" table, and `analyze.BATTERIES` reads from it. Agreed with Tapan, still to
-do once the Mac refill is committed and merged:
-- **Renames** (unpublished directories only; `transcripts/`, `transcripts-temp0/`, `transcripts-clamp/` stay, because
-  the paper links to `main`): `-reasoning-off` to `-off`; `brands-recommend` to `brands-recommend-free`;
-  `brands-you-pick` to `brands-pick1-free`; `brands-pick-clamp` to `brands-pick1-clamp`; `brands-pick` to
-  `brands-pick2-free`; `brands-choose` to `brands-choose-clamp`. Update `spec/runs.json` (ids stay), the scripts that
-  name them, and the planning folder's `grid.py`.
-- **Brand swap** (item 1): the 25 hybrids' `-default` files move into the main brand directories, and their off files
-  move out to `-off`, so every main directory is as served.
-- **Missing served arms:** free Choose, free one-turn pick and two-turn pick have no as-served run for the hybrids.
-- **Empty files:** 23 reasoning-only models in `transcripts-reasoning-off/` have every cell failed (400, off rejected).
-  They hold no answers; remove them in the rename commit.
+**Task 1: organisation. Done 2026-10-05.**
+- `studies/consensus/spec/runs.json` lists all 49 transcript directories (battery, form, clamped or free, arm, models,
+  runs, tier, published tag) and the 25 hybrids. `check_runs.py` checks it against the files (0 problems) and writes
+  the README "Runs" table; `analyze.BATTERIES` reads from it. Scripts and pages refer to a run by its manifest id.
+- Renamed (unpublished only): `-reasoning-off` to `-off`; brand verb grid to `brands-{choose,recommend,pick1}-{clamp,free}`
+  and `brands-pick2-free`. Swapped: every brand main directory holds every model as served; the hybrids' reasoning-off
+  files are in `<dir>-off/`. Removed: the 23 answerless reasoning-only files in `transcripts-off/`.
+- New runs: the hybrids' as-served arm of free Choose, one-turn pick and two-turn pick; brand Choose on the three
+  `ext2` categories (so Choose covers the 44). Failures left: Nemotron 3 Super, 10 cells of two-turn pick and 2 of
+  `ext2` Choose, after retries.
 - The cost.py/panel_gap.py manifest (item 6) is deferred until a second study keeps a `spec/runs.json`.
+- Running overnight 2026-10-05: the verb grid on the three `ext2` categories (free Name, free Choose, Recommend free and
+  clamped, one-turn pick free and clamped, two-turn pick), so the ladder covers 44. Then add their manifest entries and
+  move `brand_ladder.py` from 41 to 44 categories.
 
-**Task 2: visualise the brand ladder.** Name, free Name, Choose, free Choose, one-turn pick, recommend, two-turn pick:
-per category (the running-shoe walk Nike to Brooks is the clearest example) and possibly per model. Likely home: the
-consensus viewer (`views/`) as a new page, and later the convovo.ai/brands page (unshared on purpose; discuss first).
+**Task 2: the brand ladder. Built 2026-10-05, not deployed.** `studies/consensus/brand_ladder.py` (the committed
+successor to the planning folder's `grid.py`) scores seven levels by manifest id; free replies are reduced to the brand
+the reply commits to (hand-checked: 80-85% agreement on unseen samples, against 68% for the old opening-brand rule).
+`views/ladder.html`, built only with `views/build.py --ladder`. The brand pages (`?set=brands`, `?set=brands-choose`)
+are likewise built only on request, and their landing-page cards are removed; they go public only when Tapan decides.
+
+**Viewer (2026-10-05).** The census page is the 96 questions at 8 runs (`census8` + expanded), with a Name/Choose toggle;
+the 31 census questions carry a tag, the three retired models a "31 questions, 4 runs" label. Every model has a release
+date (`spec/release-dates.tsv` for the ten the other sources lacked). Open question for the paper rewrite: surprisal is
+relative to the panel on the page, so adding a model moves every score; consider a frozen, dated reference panel.
 
 **Papers.** The plan for writing (three papers: the brand paper first, then census v3, then the serving audit) is in the planning folder, `~/Desktop/projects/modelUN/PAPER-PLAN-2026-10-04.md`.

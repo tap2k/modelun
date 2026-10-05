@@ -45,6 +45,22 @@ ALIASES = {
     "nintendo entertainment system": "nes", "xbox series x": "xbox", "hermèscheap name": "hermès",
     # the second extension (spec 1.0-brands-ext2): messaging app, ride-hailing, news outlet
     "bbc news": "bbc", "the associated press": "associated press", "didi chuxing": "didi",
+    # near-miss scan of 2026-10-05 over Name and Choose (44 + 44 categories, 101 models): misspellings (Inkling
+    # Small with reasoning off writes lindit, lindux, lindtl), product lines into their brand, corporate suffixes.
+    # Left apart on purpose: bran flakes / corn flakes, cheerios / cheetos, nemotron 3 ultra / super,
+    # qantas airways / qatar airways (it merges into qantas), google cloud ai / google.
+    "lindit": "lindt", "lindux": "lindt", "lindtl": "lindt", "lindor": "lindt", "lindt lindor": "lindt",
+    "lindt excellence 70": "lindt", "lindt excellence": "lindt",
+    "starbbucks": "starbucks", "telsa": "tesla", "cheeros": "cheerios", "laroche-posay": "la roche-posay",
+    "qantas airways": "qantas", "sierra nevada pale ale": "sierra nevada", "kellogg's special k": "special k",
+    "deepseek chat": "deepseek", "deepseek-r1": "deepseek", "deepseek-ai": "deepseek",
+    "hunyuan assistant": "hunyuan", "claude by anthropic": "claude",
+    "chase sapphire preferred": "chase", "chase sapphire": "chase", "verizon wireless": "verizon",
+    "hilton worldwide holdings inc": "hilton", "hilton hotels corporation": "hilton",
+    "marriott hotels and resorts": "marriott", "marriott hotels": "marriott", "jw marriott": "marriott",
+    "adidas superstar": "adidas", "adidas nova boost": "adidas", "adidas yeezy": "adidas",
+    "walmart supermarkets": "walmart", "crest pro-health": "crest", "crest pro-health acid balance": "crest",
+    "lego group": "lego", "nintendo gamecube": "nintendo", "nintendo wii": "nintendo",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")

@@ -3,15 +3,14 @@
 
 Each model is run exactly as it was for the first brand extension: its slug, host, host model, provider pin,
 reasoning mode and max_tokens are read from its file in transcripts-brands-ext/, so every brand question shares one
-set of conditions. The hybrids that also have default-reasoning brand runs (transcripts-brands-ext-default/) get
-the same rerun into <out>-default/.
+set of conditions. That directory holds every model as served, so <out>/ does too. The hybrids (spec/runs.json) also
+have a reasoning-off file in transcripts-brands-ext-off/, and get the same rerun with those settings into <out>-off/.
 
     python3 run_brands_panel.py spec/stimulus_brands_ext2.json transcripts-brands-ext2 --dry-run
     python3 run_brands_panel.py spec/stimulus_brands_ext2.json transcripts-brands-ext2               # ~$1
     python3 run_brands_panel.py spec/perturb/stimulus_brands_recommend_clamp.json transcripts-brands-recommend-clamp
-    python3 run_brands_panel.py spec/perturb/stimulus_brands_pick_clamp.json transcripts-brands-pick-clamp
     ... --skip-existing     # after an interruption: run only the models with no file yet
-    ... --served-only --runs=4 --max-tokens=8192   # the hybrids' as-served arm alone (free forms run 4)
+    ... --runs=4 --max-tokens=8192   # free forms run 4; a raised budget for every model
 """
 import json, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -47,9 +46,11 @@ def option(name, default):
 
 
 def commands(spec, out):
-    arms = (("transcripts-brands-ext", out), ("transcripts-brands-ext-default", out + "-default"))
-    for src, dst in arms[1:] if "--served-only" in sys.argv else arms:
+    retired = {e["label"] for e in json.loads((HERE / "spec" / "models.json").read_text())["models"] if e.get("not_run_after")}
+    for src, dst in (("transcripts-brands-ext", out), ("transcripts-brands-ext-off", out + "-off")):
         for p in sorted((HERE / src).glob("*.json")):
+            if p.stem in retired:
+                continue                   # marked not_run_after in spec/models.json: new batteries skip it
             if "--skip-existing" in sys.argv and (HERE / dst / p.name).exists():
                 continue                   # a restart after an interrupted batch: finished models are kept
             args = settings(p)

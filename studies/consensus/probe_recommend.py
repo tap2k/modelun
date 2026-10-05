@@ -1,6 +1,6 @@
 """probe_recommend.py — does the brand a model names in the census match the brand it recommends?
 
-transcripts-brands-recommend/ holds one turn, "Can you recommend a soda brand?", for the 41 brand categories (spec/
+transcripts-brands-recommend-free/ holds one turn, "Can you recommend a soda brand?", for the 41 brand categories (spec/
 stimulus_brands_recommend.json, 4 runs, reasoning off where the endpoint allows it). A reply is scored by its first-
 mentioned brand among the Name and Choose batteries' answers (probe_clamp.patterns: whole-word regex with brands.py aliases; answers
 that repeat a word of the question are dropped). Compared
@@ -40,7 +40,7 @@ def main():
     pats = {c: patterns("brand_" + c, [a for a, k in p.items() if k >= 2 and not re.search(rf"\b{re.escape(a)}\b", asked.get(c, ""))])
             for c, p in pool.items()}
     rec, listed, n_replies = {}, 0, 0
-    for f in sorted((HERE / "transcripts-brands-recommend").glob("*.json")):
+    for f in sorted((HERE / "transcripts-brands-recommend-free").glob("*.json")):
         d = json.loads(f.read_text())
         for sid, s in d["scenes"].items():
             c = sid.removesuffix("__recommend")

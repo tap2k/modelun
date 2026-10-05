@@ -41,7 +41,7 @@ def spec_of(entry):
     return s.get("spec_version") or s.get("script_version"), {sc["id"] for sc in s["scenes"]}
 
 
-def check(entry, tags):
+def check(entry, tags, hybrids):
     """(problems, notes, files read). A problem is a disagreement with the manifest; a note is a fact the files
     record that a reader should know (failed cells, files with no answer at all)."""
     out, notes, fs = [], [], files(entry)
@@ -54,6 +54,7 @@ def check(entry, tags):
             out.append(f"published tag {t} does not exist")
     version, scenes = spec_of(entry)
     bad_version, extra, missing, runs, modes, temps, failed, empty = Counter(), set(), 0, Counter(), Counter(), Counter(), 0, []
+    hybrid_modes = Counter()
     for f in fs:
         d = json.loads(f.read_text())
         want = {s for s in scenes if s.endswith("__" + f.parent.name)} if entry.get("layout") else scenes
@@ -66,6 +67,8 @@ def check(entry, tags):
         for sc in d["scenes"].values():
             runs[len(sc["runs"])] += 1
             modes[sc.get("reasoning_mode")] += 1
+            if f.stem in hybrids:
+                hybrid_modes[sc.get("reasoning_mode")] += 1
         n = sum(1 for cell in cells if cell.get("error"))
         failed += n
         if cells and n == len(cells):
@@ -81,14 +84,14 @@ def check(entry, tags):
     arm, other = entry["arm"], set(modes) - {None, "off"}
     if other:
         out.append(f"reasoning_mode {sorted(other)} present")
-    if arm == "served" and modes.get("off"):
-        out.append(f"arm served but {modes['off']} scenes ran reasoning off")
-    if arm == "off" and not modes.get("off"):
-        out.append("arm off but no scene ran reasoning off")
+    if arm == "served" and hybrid_modes.get("off"):
+        out.append(f"arm served but {hybrid_modes['off']} hybrid scenes ran reasoning off")
+    if arm == "off" and (not modes.get("off") or set(hybrid_modes) - {"off"}):
+        out.append(f"arm off but reasoning_mode is {dict(modes)} (hybrids {dict(hybrid_modes)})")
     if set(temps) != {0.0 if arm == "temp0" else 1.0}:
         out.append(f"temperature {dict(temps)} does not fit arm {arm}")
-    if entry["models"] == "hybrids" and len(fs) > 26:
-        out.append(f"models hybrids but {len(fs)} files")
+    if entry["models"] == "hybrids" and {f.stem for f in fs} - set(hybrids):
+        out.append(f"models hybrids but files for {sorted({f.stem for f in fs} - set(hybrids))}")
     if empty:
         notes.append(f"{len(empty)} files with no answer at all (every cell failed): {', '.join(sorted(empty))}")
     if failed:
@@ -139,11 +142,12 @@ def main():
     ap.add_argument("--index", action="store_true", help="rewrite the README run table")
     args = ap.parse_args()
     entries = manifest()
+    hybrids = set(json.loads(MANIFEST.read_text()).get("hybrids", []))
     ids = Counter(e["id"] for e in entries)
     tags = set(subprocess.run(["git", "tag"], cwd=HERE, capture_output=True, text=True).stdout.split())
     problems, counts = 0, {}
     for e in entries:
-        out, notes, counts[e["id"]] = check(e, tags)
+        out, notes, counts[e["id"]] = check(e, tags, hybrids)
         if ids[e["id"]] > 1:
             out.append("duplicate id")
         problems += len(out)

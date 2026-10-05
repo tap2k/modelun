@@ -103,7 +103,7 @@
 <body>
 <header>
   <h1>consensus <span class="sub">— which models give answers the field doesn't?</span></h1>
-  <span class="sets" id="sets"></span>
+  <span class="sets" id="verb" title="the verb each question is asked with"></span>
   <nav id="nav">
     <a href="#board" data-v="board">scorecard</a>
     <a href="#grid" data-v="grid">grid</a>
@@ -116,19 +116,28 @@
 <div id="tip" role="tooltip"></div>
 
 <script>
-// one page per battery: ?set=expanded or ?set=brands loads data_<set>.js; no set loads the census (data.js)
+// one page per battery: ?set=choose loads data_choose.js; no set loads the census (data.js)
 const SET = new URLSearchParams(location.search).get('set');
 document.write('<script src="' + (SET ? 'data_' + encodeURIComponent(SET) + '.js' : 'data.js') + '"><\/script>');
 </script>
 <script>
 const D = window.SURP;
 if (!D) {
-  document.getElementById('main').textContent = `No data for battery "${SET}". Run views/build.py, or use ?set=expanded, ?set=brands, ?set=choose or ?set=brands-choose.`;
+  document.getElementById('main').textContent = `No data for battery "${SET}". Run views/build.py, or use ?set=choose.`;
   throw new Error(`no data file for battery ${SET}`);
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
-document.getElementById('sets').innerHTML = [["", "census"], ["expanded", "expanded"], ["brands", "brands"], ["choose", "choose"], ["brands-choose", "brands choose"]]
-  .map(([k, label]) => `<a class="${(SET || "") === k ? "on" : ""}" href="${k ? "index.html?set=" + k : "index.html"}">${label}</a>`).join("");
+// one toggle picks the verb: "Name a fruit" or "Choose a fruit", within the census pages (no set / ?set=choose) or
+// the brand pages (?set=brands / ?set=brands-choose, built only on request and not deployed).
+const FAMILY = [[["", "Name"], ["choose", "Choose"]], [["brands", "Name"], ["brands-choose", "Choose"]]]
+  .find(f => f.some(([k]) => k === (SET || "")));
+const pageUrl = k => (k ? "index.html?set=" + k : "index.html") + location.hash;
+if (FAMILY) {
+  document.getElementById('verb').innerHTML = FAMILY.map(([k, label]) =>
+    `<a class="${k === (SET || "") ? "on" : ""}" data-k="${k}" href="${pageUrl(k)}">${label}</a>`).join("");
+  // keep the current view (scorecard, grid, a question) when the toggle switches page
+  document.querySelectorAll('#verb a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); location.href = pageUrl(a.dataset.k); }));
+} else document.getElementById('verb').remove();
 const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = x => (x*100).toFixed(0)+'%';
@@ -141,6 +150,11 @@ for (const m of D.models) for (const c of D.cats) {
   if (cell) cell.sort((a,b)=> b.n-a.n || RK[b.st]-RK[a.st]);
 }
 const MAXS = Math.max(...D.models.map(m=>m.surprisal));
+const MAXR = Math.max(...D.models.map(m=>m.runs||0));   // runs per question; a model with fewer is flagged
+// a model retired before the full battery (Claude 3 Haiku, Granite 4.1 8B, Hermes 4 70B): fewer runs, so its
+// self-distinct is not comparable, or far fewer questions (a lone unanswered question is not flagged)
+const short = m => (m.runs < MAXR || m.n_cats < 0.9 * D.cats.length)
+  ? `<span class="chip" title="retired before the full battery: its score rests on fewer answers, and its self-distinct is not comparable">${m.n_cats < 0.9 * D.cats.length ? m.n_cats + ' questions, ' : ''}${m.runs} runs</span>` : '';
 
 /* ---------- order + provider filter (state lives in the hash query: #grid?o=release&p=Anthropic,Google) ---------- */
 const RANK = new Map(D.models.map((m,i)=>[m.label,i+1]));   // field rank by surprisal, whatever the order
@@ -193,7 +207,7 @@ function board(){
     if(r.g){ h += `<tr class="grp"><td colspan="8">${esc(r.g)}<span>${r.n}</span></td></tr>`; continue; }
     const m = r.m, ci = m.ci90||[m.surprisal,m.surprisal];
     h += `<tr class="row" data-m="${esc(m.label)}"><td class="n">${RANK.get(m.label)}</td>
-      <td><span class="mono">${esc(m.label)}</span></td><td class="n">${esc(m.released||'–')}</td>
+      <td><span class="mono">${esc(m.label)}</span>${short(m)}</td><td class="n">${esc(m.released||'–')}</td>
       <td class="n">${m.surprisal.toFixed(2)}</td>
       <td><div class="cibar"><span class="ci" style="left:${X(ci[0])}%;width:${X(ci[1])-X(ci[0])}%"></span><span class="pt" style="left:${X(m.surprisal)}%"></span></div></td>
       <td class="n">${pct(m.novel_rate)}</td><td class="n">${pct(m.modal_avoid)}</td>
@@ -208,7 +222,7 @@ function grid(){
   let h = `<h2>models &times; answers</h2>
   <p class="note"><b>Unhighlighted cells are the modal answer; color is a model breaking from it.</b>
   Rows follow the order below; columns are most-converged first. Dashes appear only when a model's
-  4 runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
+  ${MAXR} runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
   <div class="legend">
     <span class="k"><span class="dot m"></span>consensus</span>
     <span class="k"><span class="dot o"></span>off-modal</span>
@@ -276,7 +290,7 @@ function model(label){
     ).join('<span class="arr">→</span>') + '</div>';
   }
   h += `<h3>answers by category (same fixed order on every model page, so pages compare row-for-row)</h3>
-  <table class="t"><tr><th>category</th><th>its answers (4 runs)</th><th>field modal</th><th>divergence</th></tr>`;
+  <table class="t"><tr><th>category</th><th>its answers (${m.runs} runs)</th><th>field modal</th><th>divergence</th></tr>`;
   // fixed global scale so the same bar length means the same thing on EVERY model page
   const SMAX = Math.max(...Object.values(D.cat_surp).flatMap(o=>Object.values(o)));
   const rows = D.cats.filter(c=>D.grid[label][c.id]);
@@ -292,24 +306,37 @@ function model(label){
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
 }
 
+/* a Choose page: the same question's most common answer under "Name", bold where it differs */
+const NAME_FLIPS = D.name_modal ? D.cats.filter(c => D.name_modal[c.id] && D.name_modal[c.id][0] !== c.modal).length : 0;
+function nameCell(c){
+  if(!D.name_modal) return '';
+  const nm = D.name_modal[c.id];
+  if(!nm) return '<td>–</td>';
+  const diff = nm[0] !== c.modal;
+  return `<td class="mono" style="color:${diff?'var(--fg)':'var(--mut)'};font-weight:${diff?650:400}">${esc(nm[0])} ${pct(nm[1])}</td>`;
+}
+
 /* ---------- questions list ---------- */
 function questions(){
   let h = `<h2>questions</h2>
   <p class="note">The ${D.cats.length} prompts, each a “Name a ___” with a wide space of valid one-word answers,
   sent identically to every model with no system prompt. Sorted most-converged first — <b>modal share</b> is
   how much of the field piles onto the single most-common answer, <b>≈ in play</b> is the effective number of
-  distinct answers (entropy). Click a question for its full field distribution.</p>
+  distinct answers (entropy). Click a question for its full field distribution.
+  ${D.name_modal ? `<b>Under “Name”</b> is the same question asked with “Name” instead of “Choose”: the field's answer changes in
+  <b>${NAME_FLIPS} of ${D.cats.length}</b> categories (bold).` : ''}</p>
   <table class="t"><tr><th>#</th><th>question</th>
     <th title="the field's single most-common answer">field modal</th>
     <th title="share of all answers landing on that modal answer — higher = more converged">modal share</th>
-    <th title="effective number of distinct answers actually in play (2^entropy)">≈ in play</th></tr>`;
+    <th title="effective number of distinct answers actually in play (2^entropy)">≈ in play</th>
+    ${D.name_modal ? '<th title="the field\'s most common answer to the same question with “Name”; bold where it differs">under “Name”</th>' : ''}</tr>`;
   D.cats.forEach((c,i)=>{
     const q = c.prompt || `Name a ${c.id.replace('_',' ')}.`;
     h += `<tr class="row" data-c="${esc(c.id)}"><td class="n">${i+1}</td>
-      <td>${esc(q)}</td>
+      <td>${esc(q)}${c.census ? '<span class="chip" title="one of the 31 questions of the original census">census</span>' : ''}</td>
       <td class="mono" style="color:var(--mut)">${esc(c.modal)}</td>
       <td class="n">${pct(c.share)}</td>
-      <td class="n">${c.eff}</td></tr>`;
+      <td class="n">${c.eff}</td>${nameCell(c)}</tr>`;
   });
   main.innerHTML = h + '</table>';
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#c/'+r.dataset.c));
@@ -339,8 +366,8 @@ function category(id){
 
 /* ---------- method ---------- */
 function about(){
-  const sets = [["", "census", "31 one-word categories"], ["expanded", "expanded", "the census plus 65 more categories"],
-                ["brands", "brands", "brand names"], ["choose", "choose", "the 96 questions with \u201cChoose\u201d for \u201cName\u201d"]];
+  const sets = [["", "Name", "the 96 questions with \u201cName a fruit\u201d"],
+                ["choose", "Choose", "the same 96 with \u201cChoose a fruit\u201d"]];
   const cur = SET || "";
   main.innerHTML = `<h2>method</h2>
   <p class="note"><b>Instrument.</b> Each model is asked short questions with many right one-word answers (“Name a
@@ -351,7 +378,7 @@ function about(){
   its re-asks of the same question. The 90% interval resamples the question categories.</p>
   <p class="note"><b>This battery: ${esc(D.title)}.</b> ${D.models.length} models, ${D.cats.length} categories.
   ${D.note ? esc(D.note) : ''}</p>
-  <p class="note"><b>Batteries.</b> ${sets.map(([k, label, what]) => k === cur
+  <p class="note"><b>Pages.</b> ${sets.map(([k, label, what]) => k === cur
       ? `<b>${label}</b> (${what}, this page)` : `<a href="${k ? 'index.html?set=' + k : 'index.html'}">${label}</a> (${what})`).join(' · ')}.</p>
   <p class="note">Source: <code>studies/consensus/</code> — <code>analyze.py</code> for the scores and
   <code>views/build.py</code> for this page.</p>`;
