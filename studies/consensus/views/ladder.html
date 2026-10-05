@@ -109,7 +109,8 @@ function hover(sel, html) {
     el.addEventListener('mouseleave', () => tip.style.display = 'none');
   });
 }
-const lvHead = () => LV.map(lv => `<th>${esc(lv.label)}<span class="p">${esc(lv.prompt)}</span></th>`).join('');
+// column heads: each level's question, about a soda brand, or about category c on that category's pages
+const lvHead = c => LV.map(lv => `<th>${esc(lv.label)}<span class="p">${esc(c ? lv.prompt.replace(/soda brand/g, label(c)) : lv.prompt)}</span></th>`).join('');
 
 /* ---------- overview: the level summary and every category's walk ---------- */
 function overview() {
@@ -171,7 +172,7 @@ function category(c) {
   <p class="note">Gray text is the model's own one-word Name answer; <b>bold</b> is a change from it.</p>
   <div class="ctl"><a class="${ONLY_MOVERS ? 'on' : ''}" href="#" data-mv="1">models that change (${movers.length})</a>
   <a class="${ONLY_MOVERS ? '' : 'on'}" href="#" data-mv="0">all models (${rows.length})</a></div>
-  <div class="twrap"><table class="t"><tr><th>model</th>${lvHead()}</tr>`;
+  <div class="twrap"><table class="t"><tr><th>model</th>${lvHead(c)}</tr>`;
   for (const r of shown) {
     h += `<tr><td class="mono"><a href="#m/${encodeURIComponent(r.m)}">${esc(r.m)}</a></td>`;
     r.cells.forEach((x, i) => {
