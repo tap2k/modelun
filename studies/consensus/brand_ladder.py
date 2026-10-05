@@ -224,6 +224,10 @@ def clamped(run_ids):
     return load_clamped(HERE, "brands", paths=[f for r in run_ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))])
 
 
+# sonar answers from a live web search, not model memory (spec/models.json); the brand analysis leaves it out
+EXCLUDE = {"sonar"}
+
+
 @lru_cache(None)
 def levels():
     name, choose = pools()[:2]
@@ -235,7 +239,8 @@ def levels():
           "recommend": load(["brands-recommend-free", "brands-ext2-recommend-free"], "__recommend", 0, "first"),
           "pick2": load(["brands-pick2-free", "brands-ext2-pick2-free"], "__pick", 1, "open")}
     grid = {c for cats in lv["pick2"].values() for c in cats}      # the categories every level asks (44)
-    return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items()} for k, d in lv.items()}
+    return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items() if m not in EXCLUDE}
+            for k, d in lv.items()}
 
 
 def defaults():
@@ -398,8 +403,7 @@ def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()
     cats = sorted(rows["name"]["field"])
-    # sonar answers from a live web search, not model memory (spec/models.json); the page leaves it out
-    models = sorted(set().union(*lv.values()) - {"sonar"})
+    models = sorted(set().union(*lv.values()))
     dist = {c: {k: [[a, n] for a, n in rows[k]["field"].get(c, Counter()).most_common()] for k in LEVELS} for c in cats}
     per_model = {m: {c: {k: lv[k].get(m, {}).get(c, []) for k in LEVELS} for c in cats} for m in models}
     om, lists = own_mentioned(set(cats))
