@@ -1,0 +1,390 @@
+{
+  "model": "claude-opus-5",
+  "slug": "anthropic/claude-opus-5",
+  "spec_version": "1.0-brands-ext2-choose-free",
+  "temperature": 1.0,
+  "max_tokens": 1024,
+  "scenes": {
+    "messaging_app__choosefree": {
+      "subtitle": "messaging_app__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's end-to-end encrypted by default, collects almost no metadata, is free, nonprofit, open source, and does everything a normal person needs — texts, voice/video calls, groups, disappearing messages, decent desktop app.\n\nThe one honest caveat: messaging apps live or die on who else is on them. If nobody you talk to uses Signal, the best app in the world is useless. So:\n\n- **Your friends are all on WhatsApp** → use WhatsApp. Same encryption protocol as Signal, just owned by Meta and leakier on metadata. Fine tradeoff for convenience.\n- **You're deep in Apple's world and everyone you know is too** → iMessage is already there and good.\n- **You want communities, hobbies, gaming, or many-to-many chat** → Discord.\n- **Work** → Slack or Teams, and that's not really your choice to make.\n- **You actually care about privacy and have any say in it** → Signal, and spend the five minutes convincing a few people to join you.\n\nIf you tell me who you're trying to reach and what matters to you — privacy, international reach, group size, platform — I can be more specific.",
+            "reasoning": "This is a bare, context-free request to pick a messaging app. Rather than hedging, I'll just be decisive and recommend Signal as the solid default for privacy-conscious users, while leaving room for them to specify other priorities like group features or broader adoption.\n\nThe honest insight here is that network effects dominate this choice — the best app is really whichever one your contacts use. I'll give a clear pick, a short rationale, and a quick decision guide for alternatives, keeping the format tight prose rather than an elaborate table.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 669,
+              "total_tokens": 684,
+              "cost": 0.0168,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0168,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.016725
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 296,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nReasoning: it's end-to-end encrypted by default for everything — texts, groups, voice, video — not just in a special mode you have to remember to enable. The protocol is open source and independently audited, and it's good enough that WhatsApp and others licensed it. Signal is run by a nonprofit with no ad business, so there's no incentive to mine your metadata. You can now use a username instead of exposing your phone number.\n\nThe one real catch is network effect: the best messenger is partly whichever one your people already use. If your whole circle is on WhatsApp, the content of those messages is encrypted with the same protocol — the tradeoff is that Meta still sees a lot of metadata about who you talk to and when.\n\nOne thing worth flagging if Telegram was on your list: its ordinary chats are *not* end-to-end encrypted. Only \"Secret Chats\" are, and those are one-to-one and tucked away in the UI. It's an excellent platform for large communities and broadcasting, but it's often chosen for privacy reasons it doesn't actually deliver.\n\nHappy to pick differently if you have constraints — an all-Apple household points toward iMessage, work compliance requirements change things, and self-hosting would point toward Matrix.",
+            "reasoning": "The request is bare-bones, just \"choose a messaging app,\" with no details about needs or platform. I should actually commit to a pick rather than hedge with a wishy-washy comparison of all the options.\n\nWeighing the real candidates: Signal stands out for default end-to-end encryption, open-source auditing, and a nonprofit model free of ad-driven data harvesting, though its network is smaller. WhatsApp uses the same encryption protocol for content but is owned by Meta and collects more metadata for advertising purposes, despite its huge reach.\n\niMessage is strong within the Apple ecosystem but falls back to insecure SMS outside it, while Telegram is commonly mistaken for a privacy app when its default chats aren't actually end-to-end encrypted — I want to correct that misconception. Matrix/Element offers decentralization and self-hosting at the cost of UX polish, and Discord/Slack aren't really comparable since they serve a different purpose than personal messaging.\n\nIf I had to commit to one answer, it'd be Signal — best balance of strong defaults, no surveillance business model, and usable enough for everyday people, which is why security professionals actually use it themselves. I should keep the format tight: lead with the pick, give brief reasoning, flag the main tradeoff (network effects — people go where their contacts are), and offer to adjust if they have constraints like an all-Apple household or work compliance needs. No giant comparison table, since that defeats the purpose of being asked to just choose.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 1681,
+              "total_tokens": 1696,
+              "cost": 0.0421,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0421,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.042025
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 1278,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the best default choice: end-to-end encrypted by design, free, no ads, no data harvesting, open source, and it covers everything most people need — text, voice/video calls, group chats, disappearing messages, file sharing — on iOS, Android, Windows, Mac, and Linux.\n\nIf your priority is different, though:\n\n- **Everyone you know already uses it** → WhatsApp. Also E2E encrypted, but owned by Meta and it collects metadata.\n- **You and your contacts are all on Apple** → iMessage. Seamless, encrypted, zero setup.\n- **Huge groups, channels, bots, media sharing** → Telegram. Just know chats aren't encrypted by default.\n- **Work/team coordination** → Slack or Microsoft Teams.\n- **Community hangouts, voice chat, gaming** → Discord.\n\nThe real constraint is usually who you're trying to reach, not the app's features. If you tell me who you're messaging and what for, I can narrow it down further.",
+            "reasoning": "This is a bare request with no context, so I'll just commit to a clear pick rather than hedge. Signal seems like the strongest default—great privacy, free, cross-platform—and I'll briefly flag WhatsApp as the alternative when network effects matter more.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 551,
+              "total_tokens": 566,
+              "cost": 0.01385,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.01385,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.013775
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 218,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal.**\n\nIt's the best default pick: end-to-end encrypted by design (not as an opt-in mode), free, no ads, no data harvesting, works on iOS, Android, and desktop, and handles everything you'd actually want — texts, voice/video calls, groups, disappearing messages, decent file sharing.\n\nThe one thing that would change my answer is who you need to talk to, since a messaging app is only as useful as the people on it:\n\n- **Your contacts are international or mostly non-US** → WhatsApp. Same encryption protocol as Signal, far bigger network, but Meta collects metadata.\n- **Everyone you message has an iPhone** → iMessage. Zero friction, already installed. Breaks down the moment an Android user joins.\n- **You want huge groups, channels, or bots** → Telegram. But know that chats aren't encrypted by default, so treat it as a social platform rather than a private one.\n- **It's for a work team** → Slack or Teams, which is a different category of tool entirely.\n\nIf you tell me what you're using it for and who's on the other end, I can be more specific.",
+            "reasoning": "The request is terse and ambiguous, but since they're asking me to choose, I should be decisive rather than offering a sprawling comparison. I'll pick Signal as a solid default for privacy and accessibility, give a brief justification, note what could change the recommendation, and offer to refine if they share more context.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 626,
+              "total_tokens": 641,
+              "cost": 0.015725,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.015725,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.01565
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 270,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "ride_hailing__choosefree": {
+      "subtitle": "ride_hailing__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Pick: Uber** — it's the safest default if you have no other constraints. Widest global coverage, most predictable app experience, upfront pricing, and good safety features (share trip, driver ratings, in-app emergency).\n\nIf your situation is more specific, these beat it:\n\n| Situation | Better pick |\n|---|---|\n| US, want cheaper + friendlier driver pay | **Lyft** (often undercuts Uber on short city trips) |\n| Southeast Asia | **Grab** |\n| China | **DiDi** |\n| Europe (esp. Eastern/Baltic) | **Bolt** — usually cheapest |\n| Germany/Ireland, want licensed taxis | **FreeNow** |\n| India | **Ola** or **Uber** (compare both) |\n| Middle East | **Careem** |\n| Latin America | **DiDi** (cheap) or **Cabify** (nicer cars) |\n| Price-sensitive, willing to negotiate | **inDrive** (you name the fare) |\n\nPractical tip: install two options for your area. Surge pricing is uncorrelated enough that checking both takes 20 seconds and often saves 20–40%.\n\nTell me your city and what you care about most (price, speed, comfort, driver treatment) and I'll narrow it to one.",
+            "reasoning": "This is a terse request, so rather than overthinking it I'll just make a decision and give a concrete answer with brief reasoning, noting it can vary by location — Uber works well as a solid default pick.\n\n",
+            "usage": {
+              "prompt_tokens": 18,
+              "completion_tokens": 742,
+              "total_tokens": 760,
+              "cost": 0.01864,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.01864,
+                "upstream_inference_prompt_cost": 9e-05,
+                "upstream_inference_completions_cost": 0.01855
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 318,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber.**\n\nIt's the default pick for one main reason: coverage. It operates in ~70 countries and 10,000+ cities, so one app and one saved payment method work whether you're home or traveling. Pricing is competitive, wait times are usually shortest (biggest driver pool), and the safety features (share trip, PIN verification, in-app emergency button) are solid.\n\nWhen something else beats it:\n\n| Situation | Better choice |\n|---|---|\n| US, want cheaper fares / better driver reputation | Lyft (worth having both to price-compare) |\n| Europe | Bolt (usually cheaper), or Free Now for licensed taxis |\n| Southeast Asia | Grab (rides + food + payments in one) |\n| India | Ola or Uber — compare both, auto-rickshaws often cheapest |\n| Brazil / LatAm | 99 or DiDi |\n| Middle East | Careem |\n| Want to haggle on price | inDrive |\n| Airport runs, fixed price | Often a local taxi app or pre-booked car |\n\nPractical advice: install Uber plus whichever local rival dominates where you are, and check both before booking — surge pricing on one often isn't matched by the other, and the gap can be 30–50%.\n\nIf you tell me your city or what you care most about (cost, speed, accessibility, cash payment), I can narrow it to one.",
+            "reasoning": "This is quite terse and ambiguous, so I'll just make a decisive pick rather than asking too many clarifying questions. I'll go with Uber given its broad global coverage, then briefly mention regional alternatives like Lyft, Bolt, Grab, Didi, and Ola depending on location.\n\n",
+            "usage": {
+              "prompt_tokens": 18,
+              "completion_tokens": 717,
+              "total_tokens": 735,
+              "cost": 0.018015,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.018015,
+                "upstream_inference_prompt_cost": 9e-05,
+                "upstream_inference_completions_cost": 0.017925
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 271,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Pick: Uber.**\n\nIf I have to choose one without knowing where you are, Uber is the safest bet — it operates in roughly 70 countries, so it's the one app most likely to work whether you're home or traveling, and it handles payment, fare estimates, and airport pickups consistently across markets.\n\n**When something else is the better choice:**\n\n| Where you are | Strong alternative |\n|---|---|\n| US / Canada | Lyft — often cheaper, comparable coverage in major cities |\n| Latin America | DiDi (Mexico, Colombia, Chile), 99 (Brazil) |\n| Southeast Asia | Grab — rides plus food/payments, dominant locally |\n| India | Ola, or Rapido for cheap bike taxis |\n| Europe | Bolt (cheaper, strong in Eastern/Northern Europe), FreeNow for licensed taxis |\n| Africa | Bolt, inDrive (lets you negotiate fares) |\n| Middle East | Careem (Uber-owned, better local integration) |\n| Dense US cities | Curb or a local taxi app — sometimes faster at airports/hotels |\n\n**Practical advice:** install two in whatever city you're in and compare prices before each ride. Surge pricing rarely hits both apps at once, and the gap can be 30–50% during peak times or after events.\n\nIf you tell me your city and what you care about most — lowest price, reliability, accessibility, wheelchair access, driver pay — I can narrow it to one.",
+            "reasoning": "This is a vague prompt, so I'll give a decisive pick while acknowledging regional variation matters since ride-hailing availability differs by location. I'll go with Uber as the default recommendation since it has the widest global coverage, then mention regional alternatives briefly.\n\n",
+            "usage": {
+              "prompt_tokens": 18,
+              "completion_tokens": 834,
+              "total_tokens": 852,
+              "cost": 0.02094,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.02094,
+                "upstream_inference_prompt_cost": 9e-05,
+                "upstream_inference_completions_cost": 0.02085
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 342,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber.**\n\nIf you only install one, make it that one — it works in roughly 70 countries and thousands of cities, so the same app and saved payment method cover your home city, your next work trip, and most airports you'll land at. That coverage advantage outweighs the modest price differences between apps.\n\nWorth overriding that choice if:\n\n- **You're in the US/Canada and price-sensitive** — install Lyft too and price-check both; the cheaper option flips depending on city, time of day, and current promos.\n- **Southeast Asia** — Grab is the default (and handles food, payments, and more).\n- **Europe** — Bolt is usually cheaper; Free Now is better if you'd rather have a licensed taxi.\n- **India** — Ola and Rapido (bikes/autos) often beat Uber on price and availability.\n- **Middle East** — Careem has deeper local coverage.\n- **Latin America** — DiDi and inDrive are typically cheaper; 99 in Brazil.\n- **Accessibility or a fixed-price airport run** — compare Uber Reserve against a local taxi service, which can be more reliable for scheduled pickups.\n\nPractical move: keep Uber as your default and one local app as a backup, then compare fares whenever surge pricing hits.",
+            "reasoning": "This is a vague, open-ended request with no context about location or preferences, so I should just commit to a concrete recommendation rather than hedge, while noting what factors could change the answer. I'm thinking through what's actually known about the major ride-hailing apps worldwide to pick a sensible default.\n\nUber stands out as the most universally useful choice given its massive footprint across roughly 70 countries and thousands of cities, with Lyft as a solid US/Canada-only alternative, and regional leaders like Bolt, Grab, Didi, Ola, Careem, inDrive, and others dominating in their specific markets.\n\nI want to keep my answer tight — a clear pick with the coverage reasoning, then a compact breakdown of when another app makes more sense regionally, staying around 150-200 words with a light caveat that pricing and availability can shift over time.\n\n",
+            "usage": {
+              "prompt_tokens": 18,
+              "completion_tokens": 1322,
+              "total_tokens": 1340,
+              "cost": 0.03314,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.03314,
+                "upstream_inference_prompt_cost": 9e-05,
+                "upstream_inference_completions_cost": 0.03305
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 910,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "news_outlet__choosefree": {
+      "subtitle": "news_outlet__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Reuters.\n\nI'll go with it because it's a wire service — the emphasis is on straight reporting of events rather than commentary, its material gets picked up and scrutinized by outlets across the political spectrum, and its style tends toward \"here's what happened and who said what\" over interpretation.\n\nThat said, \"best outlet\" depends a lot on what you're after. If you tell me the purpose — a specific topic, a debate exercise, something with a clear editorial voice, local coverage, non-US perspective — I can pick something better suited.",
+            "reasoning": "\"Choose a news outlet\" is open-ended, so I'm weighing whether to ask for clarification or just commit to a pick. I think the better move is to actually make a choice since that's what was asked, while being clear it's somewhat arbitrary and offering to adjust based on what they actually need it for.\n\nReuters feels like a defensible pick — wire service, fact-focused, relatively low editorial slant, widely used. I'll go with that, explain briefly why, and then check what they need it for in case they want something more specific like opinion, local, or tech-focused coverage instead. Keeping it short.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 455,
+              "total_tokens": 470,
+              "cost": 0.01145,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.01145,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.011375
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 287,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Reuters.\n\nI picked it because, if the goal is a general-purpose outlet, a wire service is a good default: it's built around straight event reporting rather than commentary, it has wide international coverage, and its business model (selling copy to other outlets across the political spectrum) pushes it toward a fairly plain style.\n\nThat said, I'm guessing at what you want this for. Some alternatives depending on the purpose:\n\n- **Something to analyze or critique** — a more opinionated outlet gives you more to work with (e.g., Fox News, MSNBC, The Guardian).\n- **Depth on a single story** — The New York Times, The Washington Post, or The Atlantic for longer-form work.\n- **International or non-US perspective** — Al Jazeera, BBC, Le Monde, Nikkei.\n- **A specific beat** — Bloomberg for markets, Politico for US politics, Nature or Science for research news.\n\nTell me what it's for and I'll pick more usefully.",
+            "reasoning": "\"Choose a news outlet\" is vague—could be for a game, a writing exercise, or analysis. I think the most useful approach is to actually pick one and explain my reasoning, while acknowledging I'm guessing at their intent and leaving room for clarification.\n\nI'll go with Reuters as my default pick, citing its reputation as a straight-reporting wire service, and mention a few alternatives depending on what they're actually after—keeping the response brief.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 584,
+              "total_tokens": 599,
+              "cost": 0.014675,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.014675,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.0146
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 267,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Reuters.\n\nIf I'm picking one outlet cold, I'd go with Reuters: it's a wire service, so its core product is factual dispatches rather than commentary, it has unusually broad international coverage, and its business model (selling news to other outlets across the political spectrum) gives it a structural incentive toward neutrality.\n\nA few alternatives depending on what you actually want:\n\n- **AP** — essentially the same case as Reuters, stronger on US domestic and local coverage\n- **The Economist** — if you want analysis and synthesis rather than breaking news, with an explicit classical-liberal editorial stance\n- **BBC News** — good international breadth, free, though its UK-centric framing shows\n- **Financial Times / Wall Street Journal news pages** — if business and economics are the priority\n\nThat said, I'd push back gently on the premise of a single outlet. Any one source has blind spots in what it chooses to cover at all, which is harder to notice than bias in how it covers things. Two or three sources with different vantage points beats one \"best\" one.\n\nWhat's the context — are you looking for a daily habit, researching something specific, or is this for a project?",
+            "reasoning": "\"Choose a news outlet\" is vague enough that I should just pick one and explain my reasoning rather than deflect — I'll go with Reuters for its reputation on straight news reporting, while noting I could suggest alternatives depending on what they're actually looking for.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 539,
+              "total_tokens": 554,
+              "cost": 0.01355,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.01355,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.013475
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 173,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "**Reuters.**\n\nIf I have to pick one with no other context, I'd go with Reuters: it's a wire service, so its business model rewards getting facts right and fast rather than cultivating an ideological audience, and its coverage is genuinely global rather than US- or UK-centric.\n\nThat said, \"best\" depends on what you're after:\n\n- **Breadth of straight news:** Reuters, AP\n- **Depth and analysis:** The Economist, Financial Times, The Atlantic\n- **Investigative work:** ProPublica, The New York Times, The Washington Post\n- **International/non-Western perspective:** Al Jazeera, BBC World Service, Le Monde\n\nAnd one caveat worth stating: no single outlet is sufficient. Even careful ones make editorial choices about what counts as a story, which framing is \"neutral,\" and whose expertise to trust. Reading two or three outlets with different priors tends to beat optimizing for one.\n\nWere you asking for a recommendation, or do you need an outlet picked for some specific task — like a writing exercise, a citation, or a media-bias comparison? I can be more useful with a bit more to go on.",
+            "reasoning": "This request is vague with no context, but rather than hedging I should just make a choice. I'll go with Reuters as a solid default for factual, low-editorializing wire reporting, then mention alternatives and ask what they actually need it for.\n\n",
+            "usage": {
+              "prompt_tokens": 15,
+              "completion_tokens": 580,
+              "total_tokens": 595,
+              "cost": 0.014575,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.014575,
+                "upstream_inference_prompt_cost": 7.5e-05,
+                "upstream_inference_completions_cost": 0.0145
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 211,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    }
+  }
+}

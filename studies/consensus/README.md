@@ -119,6 +119,18 @@ where the endpoint allows it, with reasoning-only models as served.
 | brands-pick1-free-off | `transcripts-brands-pick1-free-off/` | brands (41) | pick1 | free | off | hybrids (25) | 4 |
 | brands-pick2-free | `transcripts-brands-pick2-free/` | brands (41) | pick2 | free | served | panel (101) | 4 |
 | brands-pick2-free-off | `transcripts-brands-pick2-free-off/` | brands (41) | pick2 | free | off | hybrids (25) | 4 |
+| brands-ext2-choose-free | `transcripts-brands-ext2-choose-free/` | brands (3) | choose | free | served | panel (99) | 4 |
+| brands-ext2-choose-free-off | `transcripts-brands-ext2-choose-free-off/` | brands (3) | choose | free | off | hybrids (25) | 4 |
+| brands-ext2-recommend-free | `transcripts-brands-ext2-recommend-free/` | brands (3) | recommend | free | served | panel (99) | 4 |
+| brands-ext2-recommend-free-off | `transcripts-brands-ext2-recommend-free-off/` | brands (3) | recommend | free | off | hybrids (25) | 4 |
+| brands-ext2-recommend-clamp | `transcripts-brands-ext2-recommend-clamp/` | brands (3) | recommend | clamped | served | panel (99) | 8 |
+| brands-ext2-recommend-clamp-off | `transcripts-brands-ext2-recommend-clamp-off/` | brands (3) | recommend | clamped | off | hybrids (25) | 8 |
+| brands-ext2-pick1-free | `transcripts-brands-ext2-pick1-free/` | brands (3) | pick1 | free | served | panel (99) | 4 |
+| brands-ext2-pick1-free-off | `transcripts-brands-ext2-pick1-free-off/` | brands (3) | pick1 | free | off | hybrids (25) | 4 |
+| brands-ext2-pick1-clamp | `transcripts-brands-ext2-pick1-clamp/` | brands (3) | pick1 | clamped | served | panel (99) | 8 |
+| brands-ext2-pick1-clamp-off | `transcripts-brands-ext2-pick1-clamp-off/` | brands (3) | pick1 | clamped | off | hybrids (25) | 8 |
+| brands-ext2-pick2-free | `transcripts-brands-ext2-pick2-free/` | brands (3) | pick2 | free | served | panel (99) | 4 |
+| brands-ext2-pick2-free-off | `transcripts-brands-ext2-pick2-free-off/` | brands (3) | pick2 | free | off | hybrids (25) | 4 |
 
 **check**
 
@@ -129,6 +141,7 @@ where the endpoint allows it, with reasoning-only models as served.
 | clamp-ext | `transcripts-clamp-ext/` | mixed (25) | name | both | served | panel (101) | 4 |
 | free-all | `transcripts-clamp-free/` | mixed (98) | name | free | served | panel (101) | 4 |
 | free-brands-ext | `transcripts-clamp-free-brands-ext/` | brands (4) | name | free | served | panel (101) | 4 |
+| free-brands-ext2 | `transcripts-clamp-free-brands-ext2/` | brands (3) | name | free | served | panel (99) | 4 |
 
 **probe**
 

@@ -1,15 +1,16 @@
 """brand_ladder.py — the brand verb ladder: does a model's one-word brand default survive as the question gets
 more like a real conversation?
 
-Seven levels, the same 41 brand categories and the same panel, every model as served (spec/runs.json ids):
+Seven levels, the same 44 brand categories and the same panel, every model as served (spec/runs.json ids; each
+level reads the 41-category run and its brands-ext2-* run for the three categories added on 2026-10-03):
 
-  name         "Name a soda brand. Reply with the name only."   brands + brands-ext       whole-name scorer
-  free_name    "Name a soda brand."                              free-all, free-brands-ext, clamp-ext   first mention
-  choose       "Choose a soda brand. Reply with the name only."  brands-choose + brands-ext-choose     whole-name scorer
-  free_choose  "Choose a soda brand."                            brands-choose-free        committed brand
-  pick1        "Which soda brand would you pick?"                brands-pick1-free         committed brand
-  recommend    "Can you recommend a soda brand?"                 brands-recommend-free     first mention
-  pick2        recommend, then "Which one would you pick?"       brands-pick2-free         committed brand, turn 2
+  name         "Name a soda brand. Reply with the name only."   brands, -ext, -ext2       whole-name scorer
+  free_name    "Name a soda brand."                              free-all, free-brands-ext(2), clamp-ext   first mention
+  choose       "Choose a soda brand. Reply with the name only."  brands-choose, -ext-, -ext2-choose   whole-name scorer
+  free_choose  "Choose a soda brand."                            brands-(ext2-)choose-free     committed brand
+  pick1        "Which soda brand would you pick?"                brands-(ext2-)pick1-free      committed brand
+  recommend    "Can you recommend a soda brand?"                 brands-(ext2-)recommend-free  first mention
+  pick2        recommend, then "Which one would you pick?"       brands-(ext2-)pick2-free      committed brand, turn 2
 
 A free reply is reduced to one brand in one of two ways. "First mention" (free Name, Recommend) is the first brand
 from the Name and Choose answer pools that the reply names. "Committed brand" (free Choose, both picks) is the brand
@@ -181,11 +182,12 @@ def committed(c, reply):
     return NO_PICK
 
 
-def load(run_id, suffix, turn, how):
-    """model -> category -> [answers] from one manifest entry; how = 'open' or 'first'."""
+def load(run_ids, suffix, turn, how):
+    """model -> category -> [answers] from one or more manifest entries; how = 'open' or 'first'."""
     pool = pools()[2]
     out = defaultdict(lambda: defaultdict(list))
-    for f in sorted((HERE / RUNS[run_id]["dir"]).glob("*.json")):
+    run_ids = [run_ids] if isinstance(run_ids, str) else run_ids
+    for f in [f for r in run_ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))]:
         x = json.loads(f.read_text())
         for sid, s in x["scenes"].items():
             if not sid.endswith(suffix):
@@ -203,7 +205,7 @@ def load(run_id, suffix, turn, how):
 
 def free_name():
     out = defaultdict(lambda: defaultdict(list))
-    for run_id in ("free-all", "free-brands-ext", "clamp-ext"):
+    for run_id in ("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"):
         for m, cats in load(run_id, "_free", 0, "first").items():
             for c, xs in cats.items():
                 out[m][c].extend(xs)
@@ -214,11 +216,11 @@ def free_name():
 def levels():
     name, choose = pools()[:2]
     lv = {"name": name, "free_name": free_name(), "choose": choose,
-          "free_choose": load("brands-choose-free", "__choosefree", 0, "open"),
-          "pick1": load("brands-pick1-free", "__youpick", 0, "open"),
-          "recommend": load("brands-recommend-free", "__recommend", 0, "first"),
-          "pick2": load("brands-pick2-free", "__pick", 1, "open")}
-    grid = {c for cats in lv["pick2"].values() for c in cats}      # the 41 categories every level asks
+          "free_choose": load(["brands-choose-free", "brands-ext2-choose-free"], "__choosefree", 0, "open"),
+          "pick1": load(["brands-pick1-free", "brands-ext2-pick1-free"], "__youpick", 0, "open"),
+          "recommend": load(["brands-recommend-free", "brands-ext2-recommend-free"], "__recommend", 0, "first"),
+          "pick2": load(["brands-pick2-free", "brands-ext2-pick2-free"], "__pick", 1, "open")}
+    grid = {c for cats in lv["pick2"].values() for c in cats}      # the categories every level asks (44)
     return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items()} for k, d in lv.items()}
 
 
@@ -263,7 +265,7 @@ def two_turn_list():
     """Two-turn pick: share of picks that are the model's default, and whether the default was in its turn-1 list."""
     pool, pats, dflt = pools()[2], pools()[4], defaults()
     in_list = picked = first_listed = n = 0
-    for f in sorted((HERE / RUNS["brands-pick2-free"]["dir"]).glob("*.json")):
+    for f in [f for r in ("brands-pick2-free", "brands-ext2-pick2-free") for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))]:
         x = json.loads(f.read_text())
         for sid, s in x["scenes"].items():
             c = sid.removesuffix("__pick")

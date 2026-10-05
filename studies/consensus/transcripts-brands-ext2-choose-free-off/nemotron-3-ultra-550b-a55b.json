@@ -1,0 +1,381 @@
+{
+  "model": "nemotron-3-ultra-550b-a55b",
+  "slug": "nvidia/nemotron-3-ultra-550b-a55b",
+  "spec_version": "1.0-brands-ext2-choose-free",
+  "temperature": 1.0,
+  "max_tokens": 1024,
+  "scenes": {
+    "messaging_app__choosefree": {
+      "subtitle": "messaging_app__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "There isn't a single \"best\" app—it depends entirely on **who you are talking to** and **what you value most** (privacy, features, cross-platform support, etc.).\n\nHere is a breakdown to help you decide:\n\n---\n\n### 1. If **Privacy & Security** are your #1 priority\n*   **🥇 Signal**\n    *   **Why:** Gold standard for encryption (open source, non-profit, zero metadata collection). Disappearing messages, screen security, sealed sender.\n    *   **Best for:** Journalists, activists, sensitive conversations, anyone wanting max privacy.\n    *   **Downside:** Requires phone number to sign up; smaller user base (hard to convince friends to switch); no cloud backup (chats tied to device).\n\n### 2. If you want **Feature-Rich + Privacy + Usability** (The \"Sweet Spot\")\n*   **🥈 Telegram (Secret Chats) / Threema / Session**\n    *   **Telegram (Cloud Chats):** Insane features (huge groups, channels, bots, file sharing up to 2GB, usernames—no phone number needed for contacts), multi-device sync. *Default chats are NOT end-to-end encrypted (E2EE). You must start a \"Secret Chat\" for E2EE.*\n    *   **Threema:** Paid ($), Swiss-based, no phone number/email required (ID based), fully E2EE, open source, GDPR compliant.\n    *   **Session:** Decentralized, no phone number, onion routing (hides IP), fork of Signal protocol.\n\n### 3. If you need **Cross-Platform Ubiquity** (Everyone already has it)\n*   **WhatsApp**\n    *   **Why:** 2B+ users. Default E2EE (Signal protocol). Voice/Video calls, Communities, Channels, payments (in some regions).\n    *   **Downside:** Owned by Meta (data sharing concerns, collects metadata); mandatory phone number; backup to Google Drive/iCloud is *not* E2EE by default (must enable \"End-to-End Encrypted Backup\").\n*   **iMessage (Apple Only) / Google Messages (RCS)**\n    *   **Best if:** All your contacts are on iOS (iMessage) or Android (RCS).\n    *   **RCS:** The new standard replacing SMS. Supports typing indicators, high-res media, E2EE (only Google-to-Google Messages currently).\n\n### 4. If you are a **Power User / Tech Enthusiast / Want Decentralization**\n*   **Matrix (Element / FluffyChat)**\n    *   **Why:** Federated/Decentralized (run your own server). Bridges to Discord, Slack, WhatsApp, Signal, Telegram. Fully E2EE. Open standard.\n    *   **Downside:** Steeper learning curve; UX can be clunky; server maintenance if self-hosting.\n\n### 5. For **Work / Communities / Gaming**\n*   **Discord:** Best for communities, voice chat, servers, bots. *Not E2EE.*\n*   **Slack / Microsoft Teams / Mattermost:** Professional workflows, threads, integrations. Mattermost is self-hostable/open-source.\n\n---\n\n### 🧭 Quick Decision Matrix\n\n| Your Situation | Recommended App |\n| :--- | :--- |\n| **\"I just want the most secure chat possible.\"** | **Signal** |\n| **\"I want privacy but need usernames, huge files, and multi-device sync.\"** | **Telegram (Secret Chats)** or **Threema** |\n| **\"I need to talk to my grandma/uncle/non-tech friends *right now*.\"** | **WhatsApp** (or **iMessage** / **RCS**) |\n| **\"I hate giving out my phone number.\"** | **Telegram**, **Session**, **Threema**, **Matrix**, **Wire** |\n| **\"I want to own my data / run my own server.\"** | **Matrix (Element)** or **XMPP (Conversations)** |\n| **\"I need to coordinate a large community/server.\"** | **Discord** or **Matrix** |\n\n---\n\n### 💡 My Personal Recommendation (The \"Pragmatic Privacy\" Stack)\nMost people can't move everyone to one app. Run **two**:\n1.  **Signal** → For close friends, family, sensitive stuff (True E2EE, minimal metadata).\n2.  **WhatsApp / Telegram / iMessage** → For the \"everyone else\" group chats, work, acquaintances.\n\n---\n\n**What is your specific use case?** (e.g., *\"Chatting with Android/iOS mix family,\"* *\"Activist group coordination,\"* *\"Gaming community,\"* *\"Avoiding Meta/Google entirely\"*?) Tell me and I’ll give you a specific pick.",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 1048,
+              "total_tokens": 1070,
+              "cost": 0.0025284,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0025284,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0025152
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "Since I don't know your specific needs (privacy, cross-platform support, features, user base), there is no single \"correct\" answer. Here is a breakdown of the top contenders by category to help you decide:\n\n### 1. Best for Privacy & Security\n*   **Signal:** The gold standard. Open source, end-to-end encryption (E2EE) by default for everything (messages, calls, metadata), non-profit ownership, minimal data collection. **Choose this if privacy is your #1 priority.**\n*   **Threema:** Paid upfront ($3–$5), Swiss-based, no phone number required (uses Threema ID), fully anonymous. **Choose this if you want metadata protection and anonymity.**\n\n### 2. Best \"All-Rounder\" (Features + User Base)\n*   **WhatsApp:** 2B+ users. E2EE by default. Excellent voice/video calls, status updates, payments (in some regions), business tools. **Choose this if you need to message *everyone* (family, friends, businesses abroad) on one app.**\n*   **Telegram:** Cloud-based (syncs instantly across unlimited devices), massive groups (200k+), channels, bots, huge file sizes (2GB), usernames (hide phone number). **Choose this for communities, large file sharing, and multi-device convenience.** *Note: E2EE is NOT default; you must use \"Secret Chats\" for that.*\n\n### 3. Best for Apple Ecosystem\n*   **iMessage (Messages):** Seamless SMS/E2EE hybrid, high-quality media sharing, effects, FaceTime integration. **Choose this if you and your contacts are 90%+ on iPhone/iPad/Mac.** (Green bubble friction with Android remains an issue, though RCS support in iOS 18 improves media quality).\n\n### 4. Best for Android/Google Ecosystem\n*   **Google Messages (RCS):** The default on most Androids. Upgrades SMS to \"Chat features\" (typing indicators, high-res media, E2EE for 1-on-1). **Choose this if you want a zero-setup, standard messaging experience on Android.**\n\n### 5. Best for Discord/Community/Voice Chat\n*   **Discord:** Servers, persistent voice channels, streaming, bots, roles. **Choose this for gaming, study groups, hobby communities, or hanging out in voice chat.**\n\n### 6. Best for Decentralized / No Central Server\n*   **Session:** Fork of Signal, no phone number, routes via onion network (Lokinet), decentralized storage. **Choose this for maximum censorship resistance and metadata shredding.**\n*   **Matrix (Element):** Open protocol, federated (like email), bridges to Slack/Discord/IRC. **Choose this if you want to own your data/server or connect disparate chat networks.**\n\n---\n\n### Quick Decision Matrix\n\n| If your main constraint is... | Pick this |\n| :--- | :--- |\n| **\"I need to message my grandma and my international clients.\"** | **WhatsApp** |\n| **\"I refuse to give a corporation my metadata.\"** | **Signal** |\n| **\"I use iPhone, my family uses iPhone.\"** | **iMessage** |\n| **\"I run a 5,000 person community / share 1GB videos.\"** | **Telegram** |\n| **\"I want to talk via voice while gaming.\"** | **Discord** |\n| **\"I don't want to use a phone number.\"** | **Threema** or **Session** |\n| **\"I want to host my own server.\"** | **Matrix (Element)** |\n\n---\n\n**My recommendation for most people:**\n> **Install Signal.** Use it as your primary secure channel for close friends/family. Keep **WhatsApp** (or your regional dominant app) installed for the \"rest of the world\" contacts who won't switch.\n\n**Which of these factors matters most to you?** (e.g., \"None of my friends will switch apps,\" \"I need to hide my phone number,\" \"I need desktop app without phone connected\").",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 880,
+              "total_tokens": 902,
+              "cost": 0.0021252,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0021252,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.002112
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "Since I don't know your specific needs, I'll break this down by **category** so you can pick the best fit for your situation.\n\n### 🏆 **Best All-Rounders (Feature-rich & Popular)**\n*   **WhatsApp** – Best if you need to message almost *everyone* (huge global user base). Good features, but owned by Meta (data privacy concerns) and requires a phone number.\n*   **Telegram** – Best for **features, speed, and large groups/channels**. Cloud-based (syncs instantly across all devices), huge file limits (2GB+), bots, and usernames (hide your phone number). *Default chats are not end-to-end encrypted (E2EE); use \"Secret Chats\" for that.*\n*   **iMessage** – **Best if you live in the Apple ecosystem.** Seamless, E2EE, high-quality media, no phone number needed (uses Apple ID). Useless if your friends/family use Android.\n\n---\n\n### 🔒 **Best for Privacy & Security (The \"Gold Standard\")**\n*   **Signal** – **Top pick for privacy purists.** Open source, non-profit, E2EE on *everything* by default (calls, video, groups, stickers). Minimal metadata collection. Fewer \"fun\" features (stories, bots), but the most secure architecture.\n*   **Session** – **Best for anonymity.** No phone number/email required. Routes traffic through a decentralized onion-routing network (like Tor). Slower, smaller user base.\n*   **Threema** – **Best paid option (one-time fee).** Swiss-based, no phone number needed (uses Threema ID), fully audited, GDPR compliant. Popular in Europe/Gov sectors.\n\n---\n\n### 💼 **Best for Work & Communities**\n*   **Slack** – Industry standard for professional teams. Great integrations, threads, huddles. Free tier has message history limits.\n*   **Discord** – Best for **communities, gaming, or large social servers.** Voice channels, roles, bots, threads. Not E2EE; designed for public/semi-public spaces, not 1-on-1 privacy.\n*   **Microsoft Teams** – Best if your org uses Microsoft 365. Heavy, but deeply integrated with Office apps.\n*   **Element (Matrix)** – **Best decentralized/open-source alternative to Slack/Discord.** You can host your own server. E2EE by default. Steeper learning curve.\n\n---\n\n### 🌍 **Regional Dominance (Use these if your contacts are there)**\n*   **WeChat** – Mainland China (Super-app: payments, social, everything).\n*   **LINE** – Japan, Taiwan, Thailand.\n*   **KakaoTalk** – South Korea.\n*   **Viber** – Eastern Europe, parts of Middle East/SE Asia.\n\n---\n\n### 🤔 **How to Decide: Ask Yourself These 3 Questions**\n1.  **\"What do my contacts use?\"** (Network effect > Features. You can't message yourself.)\n2.  **\"What is my threat model?\"**\n    *   *Hiding from ISP/Government/Advertisers?* → **Signal / Session / SimpleX.**\n    *   *Hiding phone number from strangers?* → **Telegram (username) / Signal (username beta) / Threema.**\n    *   *Just don't want Meta reading ads?* → **Signal / Telegram / iMessage.**\n3.  **\"Do I need multi-device independence?\"**\n    *   *Phone dies/lost, still need chat on laptop/tablet?* → **Telegram, Signal (linked devices), Element, iMessage, WhatsApp (linked devices).**\n\n---\n\n### 💡 **My Personal Recommendations**\n| Scenario | Recommendation |\n| :--- | :--- |\n| **Daily driver for mixed contacts** | **WhatsApp** (pragmatism) + **Signal** (for close circle/family) |\n| **Privacy maximalist** | **Signal** (easiest) or **Session/SimpleX** (hardest/anonymity) |\n| **Power user / Tech enthusiast** | **Telegram** (features) + **Element/Matrix** (decentralized) |\n| **Apple household** | **iMessage** (don't overthink it) |\n| **Community/Server admin** | **Discord** (social) or **Element/Slack** (professional) |\n\n**Which category fits you best?** Tell me your OS (iOS/Android), who you message (family/friends/work/strangers), and your main concern (privacy/features/simplicity), and I'll give you a single definitive answer.",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 1013,
+              "total_tokens": 1035,
+              "cost": 0.0024444,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0024444,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0024312
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "There is no single \"best\" app—it depends entirely on **who you are talking to** and **what you prioritize** (privacy, features, ecosystem, or SMS replacement).\n\nHere is a breakdown to help you choose:\n\n---\n\n### 1. If **Privacy & Security** are #1\n*   **🥇 Signal**\n    *   **Best for:** Journalists, activists, anyone wanting zero metadata collection.\n    *   **Pros:** Open source, non-profit funded, Sealed Sender (hides *who* is talking to *whom*), disappearing messages, local encrypted backups only.\n    *   **Cons:** Requires phone number to sign up (though usernames are rolling out), smaller user base, no cloud backup to Google Drive/iCloud (harder to migrate phones).\n\n*   **🥈 Threema**\n    *   **Best for:** Maximum anonymity (no phone number/email required), Swiss jurisdiction.\n    *   **Cons:** Paid app (~$5), very small user base outside Europe.\n\n---\n\n### 2. If You Want **Privacy + Mass Adoption (The \"Network Effect\")**\n*   **🥇 WhatsApp**\n    *   **Best for:** Talking to almost everyone globally (2B+ users).\n    *   **Pros:** E2E encryption by default (Signal Protocol), voice/video calls, Communities, Channels, passkeys support.\n    *   **Cons:** Owned by Meta (collects metadata: IP, contacts, usage patterns), closed source, forces cloud backups (unencrypted by default unless you toggle \"E2E Encrypted Backup\").\n\n*   **🥈 iMessage (Apple Only)**\n    *   **Best for:** People fully inside the Apple ecosystem.\n    *   **Pros:** Seamless SMS/MMS fallback, great media quality, E2E encryption (if Advanced Data Protection is on), no phone number needed (uses Apple ID).\n    *   **Cons:** **Green bubbles** (SMS fallback) are unencrypted; lock-in; RCS support (iOS 18) improves media but *still not E2E encrypted* cross-platform.\n\n---\n\n### 3. If You Want **Features, Cloud Sync & Multi-Device**\n*   **🥇 Telegram (Cloud Chats) / Telegram Secret Chats**\n    *   **Best for:** Large groups (200k+), channels (broadcasting), file sharing (2GB/file), usernames (no phone number sharing), desktop/tablet apps that work independently of phone.\n    *   **⚠️ Critical Warning:** **Default chats are NOT End-to-End Encrypted.** They are \"Cloud Chats\" stored on Telegram servers. You **must** start a \"Secret Chat\" (mobile only, 1-on-1) for E2EE.\n    *   **Pros:** Incredible UX, bots, mini-apps, stories, premium features.\n\n*   **🥈 Discord / Slack / Matrix (Element)**\n    *   **Best for:** Communities, gaming, work, or decentralized federated chat (Matrix).\n\n---\n\n### 4. If You Just Want **SMS/RCS Replacement (No Account Needed)**\n*   **Google Messages (Android) / Apple Messages (iOS)**\n    *   **Best for:** Texting phone numbers natively.\n    *   **Current State:** RCS (Rich Communication Services) is now the standard.\n    *   **Encryption:** E2EE works **Android-to-Android (Google Messages)**. **Not yet standardized for Android↔iOS** (Apple implemented RCS in iOS 18 but without the Google E2EE extension).\n\n---\n\n### 🧭 Quick Decision Matrix\n\n| Your Situation | Recommended Choice |\n| :--- | :--- |\n| **\"I need to talk to my grandma in another country.\"** | **WhatsApp** (She already has it). |\n| **\"I'm organizing a protest / discussing medical/legal issues.\"** | **Signal** (or **Session/SimpleX** for no phone number). |\n| **\"I hate giving out my phone number.\"** | **Telegram** (Username), **Signal** (Usernames rolling out), **Threema**, **Matrix/Element**. |\n| **\"I use Android, wife uses iPhone, we want high-res photos & encryption.\"** | **WhatsApp** or **Signal**. (iMessage RCS is not E2EE yet). |\n| **\"I run a 5,000 person community / need bots / file server.\"** | **Telegram** or **Discord** / **Matrix**. |\n| **\"I want FOSS (Free Open Source Software) only.\"** | **Signal**, **Matrix (Element/FluffyChat)**, **Conversations (XMPP)**, **SimpleX**. |\n\n---\n\n### 💡 My \"Real World\" Strategy (The Hybrid Approach)\nMost people cannot convince their entire contact list to switch. **Use 2 apps:**\n1.  **Signal** → For close family, partner, sensitive chats (True Privacy).\n2.  **WhatsApp / iMessage / Telegram** → For everyone else (The \"Network Layer\").\n\n---\n\n**Which scenario fits you best?** Tell me:\n1.  **OS:** iOS / Android / Desktop / Linux?\n2.  **Contacts:** Are they tech-savvy? All Apple? Global?\n3.  **Dealbreakers:** \"Must have no phone number,\" \"Must have cloud backup,\" \"Must be open source,\" \"Must support SMS\"?",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 1192,
+              "total_tokens": 1214,
+              "cost": 0.002874,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.002874,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0028608
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192,
+      "reasoning_mode": "off"
+    },
+    "ride_hailing__choosefree": {
+      "subtitle": "ride_hailing__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "I cannot choose a ride-hailing app for you because the best option depends entirely on **where you are located** and **what you prioritize** (price, speed, luxury, safety features, etc.).\n\nHere is a quick guide to help you decide based on the major global players:\n\n### **1. If you are in the United States / Canada:**\n*   **Uber:** Largest network, shortest wait times, most vehicle options (UberX, Comfort, Black, XL).\n*   **Lyft:** Often slightly cheaper or similar pricing; historically strong on driver treatment/tipping culture; good \"Scheduled Rides\" reliability.\n\n### **2. If you are in Europe:**\n*   **Bolt:** Very competitive pricing, widely available across Eastern/Western Europe and Africa.\n*   **Free Now (formerly MyTaxi):** Strong in Germany, Spain, Ireland, UK; integrates licensed black cabs/taxis.\n*   **Uber:** Available in major capitals (London, Paris, Berlin, Madrid, Amsterdam), but often more expensive or restricted to professional drivers (Uber Black/Van).\n\n### **3. If you are in Latin America:**\n*   **Uber:** Dominant in major cities (Mexico City, São Paulo, Buenos Aires, Bogotá).\n*   **DiDi:** Huge in Mexico, Brazil, Colombia, Chile; often cheaper than Uber with aggressive promos.\n*   **Cabify / Beat:** Strong in specific countries (Cabify in Spain/Chile/Colombia/Peru; Beat in Greece/Latin America).\n\n### **4. If you are in Southeast Asia:**\n*   **Grab:** The \"Super App\" dominant in Singapore, Malaysia, Indonesia, Thailand, Vietnam, Philippines. Offers food delivery, payments, and bikes too.\n*   **Gojek:** Major rival to Grab in Indonesia; also strong in Vietnam (as GoViet) and Singapore.\n*   **Blue Bird / Taxi Apps:** In Indonesia, the **Blue Bird** app is often preferred for safety/reliability over ride-hailing.\n\n### **5. If you are in the Middle East / North Africa:**\n*   **Careem (owned by Uber):** Dominant in UAE, Saudi Arabia, Egypt, Pakistan, Jordan.\n*   **Uber:** Operates alongside Careem in many Gulf cities.\n*   **Yango:** Growing fast in GCC and North Africa (often cheaper).\n\n### **6. If you are in India / South Asia:**\n*   **Ola:** Homegrown giant, huge fleet (Auto, Bike, Sedan, SUV).\n*   **Uber:** Strong in metros; often better app UX.\n*   **Rapido / Namma Yatri:** Best for **bike taxis (motorcycles)** and auto-rickshaws (cheapest/fastest in traffic).\n\n### **7. If you are in China:**\n*   **DiDi Chuxing:** The only major option (Uber sold China ops to DiDi). Requires Chinese phone number/WeChat/Alipay usually.\n\n---\n\n### **Decision Matrix: How to Choose Right Now**\n\n| Priority | Choose This |\n| :--- | :--- |\n| **Lowest Price** | **Bolt, DiDi, inDrive** (inDrive lets you *negotiate* the fare with the driver). |\n| **Shortest Wait Time / Availability** | **Uber** or **Grab** (usually largest driver supply). |\n| **Safety Features (Share trip, SOS button, Audio recording)** | **Uber, Lyft, Careem, Grab** (most mature safety toolkits). |\n| **Luxury / Business Travel** | **Uber Black / Comfort, Blacklane, Wheely, Carey/Free Now (Business class).** |\n| **Paying Cash** | **Bolt, DiDi, Careem, inDrive, Local Taxi Apps** (Uber/Lyft often require card/Apple Pay in West). |\n| **Motorcycle / Tuk-Tuk / Auto-Rickshaw** | **Grab, Gojek, Rapido, inDrive, Bolt (select regions), Ola.** |\n| **Ethical / Driver-Owned** | **Namma Yatri (India), Eva (Canada), CoopCycle (Europe), Arcade City (Web3).** |\n\n---\n\n### **My Recommendation:**\n**Open the App Store / Play Store and search \"Ride.\"** Download the **top 2 apps** shown for your current GPS location.\n1.  **Compare the ETA** (Time to pickup).\n2.  **Compare the Price** for your destination.\n3.  **Check for Promos** (New user codes often give 50% off first ride).\n\n**Which city/country are you in right now?** If you tell me, I can give you the specific top 2 recommendations for that exact market.",
+            "usage": {
+              "prompt_tokens": 24,
+              "completion_tokens": 1026,
+              "total_tokens": 1050,
+              "cost": 0.0024768,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0024768,
+                "upstream_inference_prompt_cost": 1.44e-05,
+                "upstream_inference_completions_cost": 0.0024624
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "Since I don't know your location, the \"best\" app depends entirely on **where you are right now**.\n\nHere are the dominant players by region. **Pick the one that operates in your city:**\n\n### 🌎 **Global / Western Markets**\n*   **Uber** – Widest global coverage (70+ countries). Best for: Airport rides, UberX (standard), Uber Black (luxury), and integrated transit/trains in some cities.\n*   **Lyft** – **USA & Canada only.** Often cheaper than Uber in the US; strong driver satisfaction ratings.\n*   **Bolt** – Strong in **Europe, Africa, Latin America, & parts of Asia**. Often cheaper than Uber; good \"Green\" (EV) options.\n\n### 🇨🇳 **China**\n*   **DiDi (滴滴出行)** – The undisputed market leader. Offers English interface. Requires a Chinese phone number (or international roaming) to register.\n\n### 🇮🇳 **India**\n*   **Ola** – Massive network; offers Auto-rickshaws, Bikes, and Cars.\n*   **Uber** – Strong in major metros; reliable for airport transfers.\n*   **Rapido** – Best for **Bike Taxis** (cheapest/fastest in traffic).\n*   **Namma Yatri / Drife** – **Zero-commission, open-network (ONDC)** apps. Drivers keep 100% fare; often cheaper for you, better for drivers. (Primarily Bangalore/major metros expanding).\n\n### 🇸🇬 **Southeast Asia (Grab Region)**\n*   **Grab** – Dominant in **Singapore, Malaysia, Indonesia, Thailand, Vietnam, Philippines, Cambodia, Myanmar**. \"Super App\" (food, groceries, payments, insurance).\n*   **Gojek** – **Indonesia** leader (also Vietnam, Singapore). Strong for 2-wheeler rides (GoRide) and services (GoSend, GoClean).\n*   **Blue Bird / Maxim / inDrive** – Popular alternatives in specific countries (e.g., Blue Bird for trusted taxis in Indonesia; inDrive for \"negotiate your fare\" model).\n\n### 🇧🇷 **Latin America**\n*   **Uber** – Dominant in Brazil, Mexico, Colombia, Argentina, Chile.\n*   **99 (formerly 99Taxis)** – **Brazil** specific. Huge market share; integrates taxis + private cars.\n*   **DiDi** – Strong in Mexico, Colombia, Chile, Peru, Costa Rica.\n*   **Cabify** – **Spain, Portugal, Latam (Mexico, Colombia, Peru, Chile, Argentina, Ecuador, Uruguay, Panama).** Focus on corporate/quality.\n\n### 🇦🇪 **Middle East / North Africa**\n*   **Careem** (Owned by Uber) – **UAE, Saudi Arabia, Egypt, Jordan, Pakistan, Morocco.** Deep local integration; \"Captain\" model.\n*   **Uber** – Operates alongside Careem in many Gulf cities.\n*   **Bolt** – Growing fast in UAE, Egypt, Kenya, Nigeria, South Africa.\n\n### 🌍 **Africa**\n*   **Bolt** – Leader in **Nigeria, Kenya, South Africa, Ghana, Tunisia, Uganda.**\n*   **Uber** – Strong in South Africa, Nigeria, Kenya, Egypt, Ghana.\n*   **inDrive** – Very popular in **Nigeria, Egypt, South Africa, Kenya** (fare negotiation model).\n*   **Little / SWVL** – Regional players (Kenya/Egypt) for buses/shuttles.\n\n### 🇷🇺 **Russia / CIS / Eastern Europe**\n*   **Yandex Go (Яндекс Go)** – **Russia, Belarus, Kazakhstan, Uzbekistan, Armenia, Georgia, etc.** Dominant \"Super App\" (Taxi, Drive, Delivery, Maps).\n*   **Maxim** – Widely used in Russia/CIS as a cheaper alternative.\n\n---\n\n### 🤔 **How to decide *right now* (Decision Matrix)**\n\n| If your priority is... | Choose... |\n| :--- | :--- |\n| **Lowest Price** | **inDrive** (negotiate fare), **Bolt**, **Rapido (India bikes)**, **Local Taxi Apps** |\n| **Speed / Availability** | **Uber** / **Grab** / **DiDi** / **Yandex** (largest fleets) |\n| **Safety Features** | **Uber** / **Lyft** / **Careem** (best in-app emergency buttons, ride verification, audio recording) |\n| **Driver Welfare / Ethics** | **Namma Yatri / Drife (India)**, **Co-op ride apps (various EU cities)**, **Lyft** (historically better driver pay rep) |\n| **Luxury / Business** | **Uber Black / Comfort**, **Blacklane**, **Wheely**, **Cabify** |\n| **Motorcycle / Tuk-Tuk / Auto** | **Grab (GrabBike)**, **Gojek (GoRide)**, **Rapido**, **Ola Auto**, **inDrive** |\n| **No Surge / Fixed Price** | **inDrive**, **Yandex Go**, **Traditional Taxi Apps (FreeNow, Bolt Taxi category)** |\n\n---\n\n### 💡 **Pro Tip: The \"Multi-App\" Strategy**\n**Don't pick just one.** Download the **top 2 apps for your current city**.\n1.  Open both.\n2.  Enter your destination.\n3.  Compare **Price** + **ETA** + **Car Type**.\n4.  Book the winner.\n5.  *Delete the loser later if storage is tight.*\n\n**Tell me your current City/Country, and I will tell you exactly which 2 apps to download.**",
+            "usage": {
+              "prompt_tokens": 23,
+              "completion_tokens": 1278,
+              "total_tokens": 1301,
+              "cost": 0.0028231,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0028231,
+                "upstream_inference_prompt_cost": 1.15e-05,
+                "upstream_inference_completions_cost": 0.0028116
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "I cannot choose for you personally because the \"best\" app depends entirely on **where you are located** and **what you prioritize** (price, luxury, safety features, bike/scooter options, etc.).\n\nHere is a quick guide to help you choose the right one for your situation:\n\n### 1. By Region (The biggest factor)\n*   **USA & Canada:** **Uber** or **Lyft** (duopoly in most cities).\n*   **Latin America:** **Uber**, **DiDi**, **Cabify**, or **99** (Brazil).\n*   **Europe:** **Uber**, **Bolt**, **Free Now** (Germany/Spain/UK), **Cabify** (Spain/Latam), **Yandex Go** (Eastern Europe/CA).\n*   **Southeast Asia:** **Grab** (dominant), **Gojek** (Indonesia/Vietnam), **inDrive** (growing fast).\n*   **Middle East:** **Careem** (owned by Uber, dominant in GCC), **Uber**.\n*   **India:** **Uber**, **Ola**, **Rapido** (bike taxis), **Namma Yatri** (open network/ONDC).\n*   **China:** **DiDi Chuxing** (requires Chinese phone number/app store usually).\n*   **Africa:** **Bolt**, **Uber**, **inDrive**, **Little** (Kenya), **Vaya** (Zimbabwe).\n\n---\n\n### 2. By Priority\n| If you want... | Best Options |\n| :--- | :--- |\n| **Lowest Price / Negotiation** | **inDrive** (you set the fare, driver accepts/counters), **Bolt** (often cheaper than Uber). |\n| **Best Safety Features** | **Uber** / **Lyft** (extensive background checks, RideCheck, \"Share Trip,\" 911 button integration). |\n| **Luxury / Premium Cars** | **Uber Black / Comfort**, **Lyft Lux / Black**, **Blacklane** (pre-booked chauffeur), **Wheely** (London/Dubai). |\n| **Motorcycle / Tuk-Tuk / Auto-Rickshaw** | **Grab** / **Gojek** / **Rapido** / **inDrive** / **Uber Moto** (where available). |\n| **Women-Only Drivers/Riders** | **Safr** (US - limited), **Shebah** (Australia), **Women on Wheels** (Pakistan), **Pink Taxi** (various), or **Uber Women Rider Preference** (select markets). |\n| **No Surge Pricing / Flat Fares** | **inDrive** (peer-to-peer negotiation), **Via** (shared rides, fixed routes), **Local Taxi Apps** (e.g., **Curb**, **Arro**, **Free Now** for regulated taxis). |\n| **Eco-Friendly / EV Only** | **Uber Green** / **Lyft Green Mode**, **Freenow** (EU), **BluSmart** (India - 100% EV). |\n\n---\n\n### 3. \"Pro Tips\" for Choosing Right Now\n1.  **Open 2–3 Apps Simultaneously:** Compare **price** and **ETA (wait time)** side-by-side before booking. Prices fluctuate by the minute.\n2.  **Check for Promos:** New user codes (often 50% off first 1-2 rides) exist for almost every app.\n3.  **Airport Pickups:** Check the airport website. Some airports ban specific apps or have designated \"App Ride\" zones where only specific operators (or traditional taxis) can pick up.\n4.  **Data Privacy:** If you avoid Uber/Google ecosystem, **Bolt**, **inDrive**, or local taxi apps (like **Curb** in US) often collect less behavioral data.\n\n---\n\n### **Recommendation Strategy:**\n**Tell me:**\n1.  **Your City/Country.**\n2.  **Your Need:** (Cheapest? Fastest? Safest? Motorcycle? Luxury? Accessibility/Wheelchair?)\n3.  **One-time or Daily Commute?**\n\n...and I will give you a specific **Top 3 ranking** for your exact scenario.",
+            "usage": {
+              "prompt_tokens": 24,
+              "completion_tokens": 925,
+              "total_tokens": 949,
+              "cost": 0.0022344,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0022344,
+                "upstream_inference_prompt_cost": 1.44e-05,
+                "upstream_inference_completions_cost": 0.00222
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "I cannot choose one for myself, but I can help **you** choose the best one based on where you are and what you need.\n\n### **The \"Big Two\" (Global Coverage)**\n*   **Uber:** Widest global availability. Good for: variety of ride types (X, Comfort, Black, Green), scheduled rides, and integrated delivery (Uber Eats).\n*   **Lyft:** US & Canada only. Good for: generally friendlier driver culture, upfront pricing transparency, and often slightly cheaper shared rides.\n\n---\n\n### **Choose by Region (The Local Leaders)**\n| Region | Best App(s) | Why? |\n| :--- | :--- | :--- |\n| **USA / Canada** | **Uber, Lyft** | Duopoly; compare both for price/ETA. |\n| **Latin America** | **Uber, DiDi, Cabify, 99 (Brazil), Beat (Chile/Colombia/Peru)** | DiDi often cheaper; Cabify premium; 99 dominates Brazil. |\n| **Europe** | **Bolt, FreeNow, Uber, Cabify** | **Bolt** is usually cheaper than Uber in Eastern/Central Europe. **FreeNow** aggregates taxis (Germany, Spain, UK, etc.). |\n| **UK** | **Uber, Bolt, FreeNow, Ola** | Bolt is very competitive on price; FreeNow for black cabs. |\n| **Middle East / North Africa** | **Careem (Uber-owned), Uber, Hala (Dubai taxi)** | Careem is the regional giant; Hala integrates official taxis. |\n| **Southeast Asia** | **Grab, Gojek, Maxim, inDrive** | **Grab** is the \"Super App\" (food, pay, rides). **inDrive** lets you **negotiate the fare** with the driver. |\n| **India / South Asia** | **Uber, Ola, Rapido (bikes), Namma Yatri (Bangalore - zero commission)** | Ola has strong auto-rickshaw integration; Namma Yatri is driver-owned. |\n| **China** | **DiDi (滴滴出行), CaoCao, T3** | **DiDi** is the only real option for foreigners (English interface available). |\n| **Africa** | **Bolt, Uber, Yango, inDrive, Little (Kenya), Vaya (Zimbabwe)** | Bolt dominates in Nigeria, Kenya, SA, Ghana, Egypt. inDrive popular for fare negotiation. |\n| **Russia / CIS** | **Yandex Go (Яндекс Го), Maxim, inDrive** | Yandex Go is the dominant \"Super App\" (taxi, delivery, transit). |\n\n---\n\n### **Choose by Need**\n| Need | Best Option |\n| :--- | :--- |\n| **Cheapest Price** | **inDrive** (negotiate fare), **Bolt**, **Maxim**, or local taxi aggregators. |\n| **Premium / Luxury** | **Uber Black / Comfort**, **Lyft Lux / Black**, **Wheely** (UK/Europe/Dubai), **Blacklane** (pre-booked chauffeur global). |\n| **Safety Features** | **Uber** / **Lyft** (Share Trip, RideCheck, 911 button), **Bolt** (SOS button, audio recording). |\n| **Accessibility (Wheelchair)** | **Uber WAV / Assist**, **Lyft Access**, **Via** (paratransit partners), local non-emergency medical transport (NEMT). |\n| **No Surge / Fixed Price** | **inDrive** (you set price), **Bolt** (often lower surge), Scheduled rides on Uber/Lyft. |\n| **Eco-Friendly (EV/Hybrid)** | **Uber Green**, **Lyft Green Mode**, **Bolt Green**, **FreeNow** (Electric taxi filter). |\n| **Motorcycle / Tuk-Tuk** | **Grab / Gojek / Maxim / inDrive / Rapido** (Asia/Africa/LatAm). |\n\n---\n\n### **Pro Tip: Use an Aggregator**\nIf you are in a major city (especially US, UK, EU), download **one aggregator app** to compare prices/ETAs across Uber, Lyft, Bolt, FreeNow, etc., instantly:\n*   **RideGuru** (Web/App)\n*   **Bellhop** (App)\n*   **Obhai** (App - simple comparison)\n*   **Google Maps / Apple Maps / Citymapper** (Built-in \"Ride Services\" tab)\n\n---\n\n### **Quick Decision Flowchart**\n1.  **Where are you?** (Determines *which apps work*).\n2.  **Do you want the absolute cheapest?** → Check **inDrive** (bid your price) or **Bolt**.\n3.  **Do you want reliability/safety features globally?** → **Uber**.\n4.  **Do you need a Taxi (not a private car)?** → **FreeNow**, **Curb**, **Arro**, **Hala**, or local taxi apps.\n5.  **Do you need a Bike/Auto/Tuk-Tuk?** → **Rapido**, **Grab**, **Gojek**, **Maxim**, **inDrive**.\n\n**Tell me your current city (or destination), and I will give you the specific top 3 recommendations.**",
+            "usage": {
+              "prompt_tokens": 23,
+              "completion_tokens": 1171,
+              "total_tokens": 1194,
+              "cost": 0.0025877,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0025877,
+                "upstream_inference_prompt_cost": 1.15e-05,
+                "upstream_inference_completions_cost": 0.0025762
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192,
+      "reasoning_mode": "off"
+    },
+    "news_outlet__choosefree": {
+      "subtitle": "news_outlet__choosefree",
+      "run_date": "2026-10-05",
+      "runs": [
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "I don't have a default preference or affiliation with any specific news outlet. \n\nTo give you the best recommendation, **what are you looking for?**\n\n*   **General \"Wire Service\" / Breaking News:** **Associated Press (AP)** or **Reuters** (widely considered the most neutral, fact-based sources for raw reporting).\n*   **US National Politics & Policy:** **The New York Times**, **The Washington Post**, **Politico**, or **The Wall Street Journal** (news section).\n*   **International / Global Focus:** **BBC (UK)**, **Al Jazeera (Qatar)**, **The Guardian (UK)**, **Deutsche Welle (Germany)**, **France 24**, or **NHK (Japan)**.\n*   **Business & Finance:** **The Wall Street Journal**, **Financial Times**, **Bloomberg**.\n*   **Long-form / Investigative:** **The New Yorker**, **The Atlantic**, **ProPublica**, **Frontline (PBS)**.\n*   **Conservative Perspective:** **The Wall Street Journal** (Opinion/Edit), **National Review**, **The Dispatch**, **Fox News** (straight news vs. opinion hosts differ).\n*   **Liberal/Progressive Perspective:** **The Guardian** (US edition), **Mother Jones**, **The Nation**, **MSNBC** (opinion programming).\n*   **Centrist / \"All Sides\" Aggregators:** **AllSides**, **Ground News**, **The Flip Side** (newsletter), **1440** (newsletter).\n\n**My advice:** For a balanced view, read the **straight news reporting** (not opinion/editorials) from **two outlets with different editorial leanings** (e.g., *The Wall Street Journal* and *The New York Times*, or *BBC* and *Al Jazeera*).\n\n**Which specific topic or region are you interested in right now?** I can suggest the best specific outlet for that beat.",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 411,
+              "total_tokens": 433,
+              "cost": 0.0009996,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0009996,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0009864
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Here are a few major news outlets across different categories so you can choose the one that best fits your needs:\n\n### **Major US Legacy Outlets**\n*   **The New York Times** – In-depth reporting, investigations, international coverage, cooking/games.\n*   **The Washington Post** – Strong political/national security focus, investigative journalism.\n*   **The Wall Street Journal** – Business, finance, and markets focus; high-quality general news.\n*   **Los Angeles Times** – Strong West Coast, entertainment, and international Pacific coverage.\n\n### **Wire Services (Primary Sources)**\n*   **Associated Press (AP)** – Non-profit, cooperative, fact-based, straight news. Used by most other outlets.\n*   **Reuters** – Global focus, financial markets, straight news reporting.\n\n### **Broadcast / Cable**\n*   **NPR (National Public Radio)** – Audio-first, long-form storytelling, member-supported.\n*   **PBS NewsHour** – Long-form TV/video journalism, deep dives, civil discourse.\n*   **BBC News (UK)** – Strong international perspective, global correspondents.\n*   **CNN / Fox News / MSNBC** – 24-hour cable news cycles (opinion-heavy in prime time).\n\n### **Digital-First / Non-Profit**\n*   **ProPublica** – Non-profit investigative journalism (public interest focus).\n*   **The Texas Tribune** – Non-profit state-level news model (Texas politics/policy).\n*   **Axios** – \"Smart Brevity\" format (bullet points, short reads).\n*   **The 19th*** – Non-profit covering gender, politics, and policy.\n\n### **International Perspectives**\n*   **The Guardian (UK)** – Left-leaning, strong climate/culture/US coverage, free (with donation model).\n*   **Al Jazeera English (Qatar)** – Strong Global South/conflict zone coverage.\n*   **Deutsche Welle (Germany)** – European perspective, strong fact-checking.\n*   **France 24** – French/international perspective, multilingual.\n\n### **Aggregators & Newsletters (Good for \"Skimming\")**\n*   **Ground News** – Shows blindspot/ bias ratings for every story.\n*   **1440 / Morning Brew / The Skimm** – Daily email digests.\n\n---\n\n**Which one should you pick?**\n*   **For \"Just the facts\" / Wire copy:** **AP News** or **Reuters**.\n*   **For deep dives & narrative writing:** **The New Yorker**, **The Atlantic**, **ProPublica**.\n*   **For a global view (non-US centric):** **BBC**, **Al Jazeera**, **The Guardian**.\n*   **For business/markets:** **WSJ**, **Financial Times**, **Bloomberg**.\n*   **For audio/commute:** **NPR (Up First podcast)**, **The Daily (NYT)**, **Today, Explained (Vox)**.\n\n**Do you have a specific topic (tech, politics, science, local) or format (audio, text, video) in mind? I can give a more specific recommendation.**",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 663,
+              "total_tokens": 685,
+              "cost": 0.0016044,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0016044,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0015912
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "I don't have a default preference. **Which news outlet would you like me to use?** \n\nHere are a few options depending on what you need:\n\n*   **Wire Services (Fast, factual, widely syndicated):** **Associated Press (AP), Reuters, Agence France-Presse (AFP)**\n*   **Major US Newspapers (Deep reporting, investigations):** **The New York Times, The Washington Post, The Wall Street Journal**\n*   **Major US Broadcast/TV:** **PBS NewsHour, NPR, CNN, Fox News, MSNBC**\n*   **International/Global Perspective:** **BBC (UK), The Guardian (UK), Al Jazeera (Qatar), Deutsche Welle (Germany), France 24 (France), CBC (Canada), NHK (Japan)**\n*   **Business/Finance Focus:** **Bloomberg, Financial Times, The Economist**\n*   **Non-Profit/Non-Partisan Fact-Checking:** **ProPublica, The Texas Tribune, CalMatters**\n\n**Just tell me a specific outlet (e.g., \"Use the BBC\") or a category (e.g., \"Use a wire service\"), and I will tailor the response accordingly.**",
+            "usage": {
+              "prompt_tokens": 21,
+              "completion_tokens": 252,
+              "total_tokens": 273,
+              "cost": 0.0005649,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0005649,
+                "upstream_inference_prompt_cost": 1.05e-05,
+                "upstream_inference_completions_cost": 0.0005544
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "There are hundreds of reputable news outlets globally. To give you the best recommendation, **what are you looking for?**\n\nHere are a few categories to help you choose:\n\n### 1. **Major International Wire Services** (Fast, factual, feed other outlets)\n*   **Associated Press (AP)** – US-based, non-profit, cooperative. Widely considered the \"gold standard\" for neutral breaking news.\n*   **Reuters** – UK-based (Thomson Reuters). Strong on business, finance, and international affairs. Very neutral, \"just the facts\" style.\n*   **Agence France-Presse (AFP)** – French-based. Excellent coverage of Africa, Europe, and the Middle East.\n\n### 2. **Legacy Print / Digital Giants** (Deep reporting, investigations, analysis)\n*   **The New York Times** (US) – Top-tier investigative journalism, global bureaus, strong arts/culture. (Paywall).\n*   **The Washington Post** (US) – Strong on US politics, national security, technology. (Paywall).\n*   **The Wall Street Journal** (US) – **News side** is highly respected for business/economy; *Editorial page is conservative*. (Paywall).\n*   **The Guardian** (UK) – Reader-funded (no paywall), progressive editorial stance, strong on environment, inequality, global south.\n*   **The Economist** (UK) – Weekly magazine format. Centrist/Classical Liberal. Excellent global synthesis and data journalism. (Paywall).\n*   **Financial Times** (UK) – Best for global business, finance, economics, and geopolitics. (Paywall).\n\n### 3. **Public Broadcasters** (Mandated impartiality, tax/license funded)\n*   **BBC News** (UK) – Massive global reach, video/audio focus. Accused of bias by both left and right (usually a sign of balance).\n*   **NPR (National Public Radio)** (US) – Strong audio storytelling, US culture/politics.\n*   **PBS NewsHour** (US) – Long-form, calm, interview-heavy video journalism.\n*   **CBC** (Canada) / **ABC** (Australia) / **NHK** (Japan) / **France 24** (France) – Excellent for regional perspectives.\n\n### 4. **Non-Profit / Investigative Focused**\n*   **ProPublica** (US) – Pulitzer-winning investigative journalism. Focus on accountability.\n*   **The Intercept** – Adversarial journalism, national security, civil liberties. (Left-leaning).\n*   **Bellingcat** – Open-source intelligence (OSINT) investigations.\n\n### 5. **Region-Specific Leaders**\n*   **Al Jazeera English** (Qatar) – Best on-the-ground coverage of Global South, Middle East, Africa. (State-funded, editorial independence generally respected for English desk).\n*   **Deutsche Welle (DW)** (Germany) – Strong European perspective, fact-checking focus.\n*   **South China Morning Post** (Hong Kong) – Best English-language access to China business/politics. (Owned by Alibaba).\n\n---\n\n### **How to Decide:**\n| If you want... | Try... |\n| :--- | :--- |\n| **Pure headlines / Wire copy** | **AP News** or **Reuters** (Free, fast, minimal opinion) |\n| **Deep US Politics** | **NYT**, **WaPo**, **Politico**, **Axios** |\n| **Global Business/Econ** | **FT**, **WSJ**, **Bloomberg**, **The Economist** |\n| **Long-form Audio/Video** | **NPR**, **PBS**, **BBC**, **DW** |\n| **Investigative/Accountability** | **ProPublica**, **The Intercept**, **ICIJ** |\n| **Non-US Centric View** | **The Guardian**, **Al Jazeera**, **BBC**, **FT** |\n\n**Recommendation for a \"Daily Diet\":**\nMost media literacy experts suggest a **\"Triangulation Method\"**:\n1.  **One Wire Service** (AP/Reuters) for breaking facts.\n2.  **One Legacy Paper** (NYT/Guardian/FT) for context/investigations.\n3.  **One Public Broadcaster** (BBC/NPR/PBS) for broadcast perspective.\n4.  **One Outlet with a Different Editorial Lens** (e.g., if you read left-leaning, add *WSJ News* or *The Economist*; if right-leaning, add *Guardian* or *ProPublica*).\n\n**Which category fits your need right now?**",
+            "usage": {
+              "prompt_tokens": 22,
+              "completion_tokens": 999,
+              "total_tokens": 1021,
+              "cost": 0.0024108,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0024108,
+                "upstream_inference_prompt_cost": 1.32e-05,
+                "upstream_inference_completions_cost": 0.0023976
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192,
+      "reasoning_mode": "off"
+    }
+  }
+}
