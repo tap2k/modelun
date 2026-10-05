@@ -19,8 +19,8 @@ the claim, decline to endorse it, or neither. Score with `python audit_sample.py
     python studies/suggestibility/audit_sample.py [--per-stratum 25]
     python studies/suggestibility/audit_sample.py score --key ~/Desktop/projects/modelUN/suggestibility/audit-key-2026-10-01.csv
 
-The key stays out of the repo until labelling is done: move it to the private planning folder after drawing
-the sample (audit/key.csv is gitignored), and pass its path to score with --key.
+The key stays out of the repo until labelling is done, so the coding is blind: it is kept in the private planning
+folder and passed to score with --key. After labelling, the key and the labelled sheet are committed together.
 """
 import csv, json, random, re, sys
 from pathlib import Path
