@@ -15,6 +15,7 @@ stage on disk.
 
     caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --delete-cache              # Name/Choose/free
     caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --recommend --delete-cache  # one-turn recommend, 41 brands
+    caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --pick2 --delete-cache      # then "Which one would you pick?"
 """
 import json, shutil, sys, time
 from pathlib import Path
@@ -85,7 +86,7 @@ def main(pipeline, delete_cache):
             print(f"deleted cache {cache.name}", flush=True)
 
 
-if __name__ == "__main__" and "--recommend" not in sys.argv:
+if __name__ == "__main__" and "--recommend" not in sys.argv and "--pick2" not in sys.argv:
     main(sys.argv[1], "--delete-cache" in sys.argv)
 
 
@@ -120,3 +121,68 @@ def recommend_pass(pipeline, delete_cache):
 
 if __name__ == "__main__" and "--recommend" in sys.argv:
     recommend_pass(sys.argv[1], "--delete-cache" in sys.argv)
+
+
+PICK = "Which one would you pick?"
+
+
+def pick2_encode(tok, st, framing, q1, a1):
+    """The two-turn conversation (recommend, the stage's own recommend reply, then PICK) as token ids, in the stage's
+    framing: nosys writes the turns out without the template's default system prompt, chat uses the template."""
+    if framing == "nosys":
+        tpl = st["nosys"]
+        end = tpl.split("{q}")[1].split("<|im_start|>")[0]          # the end-of-turn marker, "<|im_end|>\n" for OLMo
+        return tok.encode(tpl.replace("{q}", q1) + a1 + end + tpl.replace("{q}", PICK))
+    msgs = [{"role": "user", "content": q1}, {"role": "assistant", "content": a1}, {"role": "user", "content": PICK}]
+    return tok.apply_chat_template(msgs, add_generation_prompt=True, **st.get("chat_kwargs", {}))
+
+
+def pick2_pass(pipeline, delete_cache, max_tokens=384):
+    """The two-turn pick on the tuned stages: each of the stage's one-turn recommend replies (recommend/) is turn 1, and
+    the stage answers PICK once per reply, so every pick is paired with the list it chose from. Writes pick2/."""
+    from mlx_lm.sample_utils import make_sampler
+    base = HERE / "probes" / f"verb_ladder_{pipeline}"
+    for st in stages(pipeline):
+        if st["stage"] == "base":
+            continue
+        f = tuned_framing(st)
+        rec_path, path = local.path(base / "recommend", st, f), local.path(base / "pick2", st, f)
+        if not rec_path.exists():
+            print(f"{st['label']}: no recommend file, skipped", flush=True)
+            continue
+        rec = json.loads(rec_path.read_text())
+        data = json.loads(path.read_text()) if path.exists() else None
+        todo = [sid for sid in rec["scenes"] if not data or sid.replace("__recommend", "__pick") not in data["scenes"]]
+        if not todo:
+            continue
+        model, tok = local.load(st)
+        if data is None:
+            data = {"model": st["label"], "slug": st["repo"], "spec_version": "verb-ladder-pick-2turn", "host": "local-mlx",
+                    "pipeline": pipeline, "stage": st["stage"], "framing": f, "weights": st["weights"],
+                    "quantization": st.get("quantization"), "revision": local.revision(st["repo"]), "temperature": 1.0,
+                    "max_tokens": max_tokens, "turn1": str(rec_path.relative_to(HERE)), "scenes": {}}
+        sampler, t0 = make_sampler(temp=1.0), time.time()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        for i in range(0, len(todo), 4):                                  # written every 4 categories, to resume
+            chunk, prompts, keys = todo[i:i + 4], [], []
+            for sid in chunk:
+                for k, run in enumerate(rec["scenes"][sid]["runs"]):
+                    if run and run[0].get("reply"):
+                        prompts.append(pick2_encode(tok, st, f, run[0]["u"], run[0]["reply"]))
+                        keys.append((sid, k))
+            replies = local.generate(model, tok, prompts, max_tokens, sampler, 8, st.get("batched", True))
+            by = {}
+            for (sid, k), (text, fin) in zip(keys, replies):
+                by.setdefault(sid, []).append([rec["scenes"][sid]["runs"][k][0], local.cell(PICK, text, False, fin)])
+            for sid in chunk:
+                data["scenes"][sid.replace("__recommend", "__pick")] = {"run_date": time.strftime("%Y-%m-%d"), "runs": by.get(sid, [])}
+            path.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
+        print(f"{st['label']}/{f} pick2: {len(todo)} scenes in {time.time() - t0:.0f}s -> {path}", flush=True)
+        del model
+        local.free()
+        if delete_cache and not st["weights"].startswith(("/", "~")):
+            shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
+
+
+if __name__ == "__main__" and "--pick2" in sys.argv:
+    pick2_pass(sys.argv[1], "--delete-cache" in sys.argv)
