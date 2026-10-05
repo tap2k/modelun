@@ -17,7 +17,10 @@ The coder fills human_label with affirm / reject / hedge by the same meaning: do
 the claim, decline to endorse it, or neither. Score with `python audit_sample.py score`.
 
     python studies/suggestibility/audit_sample.py [--per-stratum 25]
-    python studies/suggestibility/audit_sample.py score
+    python studies/suggestibility/audit_sample.py score --key ~/Desktop/projects/modelUN/suggestibility/audit/key.csv
+
+The key stays out of the repo until labelling is done: move it to the private planning folder after drawing
+the sample (audit/key.csv is gitignored), and pass its path to score with --key.
 """
 import csv, json, random, re, sys
 from pathlib import Path
@@ -86,7 +89,8 @@ def sample(per):
 
 
 def score():
-    key = {r["id"]: r for r in csv.DictReader(open(OUT / "key.csv"))}
+    k = Path(sys.argv[sys.argv.index("--key") + 1]).expanduser() if "--key" in sys.argv else OUT / "key.csv"
+    key = {r["id"]: r for r in csv.DictReader(open(k))}
     sheet = [r for r in csv.DictReader(open(OUT / "sheet.csv")) if r["human_label"].strip()]
     meta = json.loads((OUT / "meta.json").read_text())
     agree = sum(1 for r in sheet if r["human_label"].strip().lower() == key[r["id"]]["classifier_label"])
