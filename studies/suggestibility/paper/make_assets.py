@@ -104,9 +104,10 @@ def compute():
         out[m] = {"tageff": float(np.mean(effs)), "lo": float(np.percentile(boots, 5)),
                   "hi": float(np.percentile(boots, 95)), "ask": float(np.mean([e[1] for e in per])),
                   "p": float(min(1.0, 2 * min((b <= 0).mean(), (b >= 0).mean()))),
-                  "channel": "openrouter"}
-    # GLM intentionally NOT loaded: served via DeepInfra (reasoning-off), channel-incomparable;
-    # dropped from the 43-model panel 2026-07-23. Its probe and output removed 2026-09-15 (git history).
+                  "channel": d.get("host", "openrouter")}
+    # GLM-5.2, served via DeepInfra with reasoning off, was dropped from the 43-model panel 2026-07-23 and its probe
+    # removed 2026-09-15 (git history). The GLM models now in the data (4.7, 5.3, 5.3 Flash) ran through OpenRouter as
+    # served and are loaded like the rest; the three DeepInfra-only models carry channel "deepinfra" (2026-10-05).
     return out
 
 

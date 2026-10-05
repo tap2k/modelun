@@ -139,7 +139,7 @@ for _e in json.loads((Path(__file__).resolve().parent / "spec" / "runs.json").re
 def scorer(battery):
     """(reply -> answer, plural_merge). Brands score whole names (brands.brand_name), whose alias table
     does the variant merging, so the census's one-word plural merge does not run on them."""
-    if battery.startswith("brands") or battery.startswith("choose_brands"):
+    if battery.startswith(("brands", "choose_brands", "recommend_brands")):
         from brands import brand_name
         return brand_name, False
     return norm, True
@@ -167,7 +167,8 @@ def load(study_dir, battery="census", paths=None):
 # Batteries read together as one 96-category set (same template and scoring).
 COMBINED = {"combined": ("census8", "expanded"), "choose": ("choose_census", "choose_expanded"),
             "brands_all": ("brands", "brands_ext", "brands_ext2"), "choose_brands_all": ("choose_brands", "choose_brands_ext",
-                                                                     "choose_brands_ext2")}
+                                                                     "choose_brands_ext2"),
+            "recommend_brands_all": ("brands_recommend", "brands_ext2_recommend")}
 VARIANT_TABLE = {"census": "census", "census8": "census", "expanded": "expanded", "choose_census": "census",
                  "choose_expanded": "expanded"}
 

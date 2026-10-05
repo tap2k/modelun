@@ -129,7 +129,7 @@ if (!D) {
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
 // one toggle picks the verb: "Name a fruit" or "Choose a fruit", within the census pages (no set / ?set=choose) or
 // the brand pages (?set=brands / ?set=brands-choose, built only on request and not deployed).
-const FAMILY = [[["", "Name"], ["choose", "Choose"]], [["brands", "Name"], ["brands-choose", "Choose"]]]
+const FAMILY = [[["", "Name"], ["choose", "Choose"]], [["brands", "Name"], ["brands-choose", "Choose"], ["brands-recommend", "Recommend"]]]
   .find(f => f.some(([k]) => k === (SET || "")));
 const pageUrl = k => (k ? "index.html?set=" + k : "index.html") + location.hash;
 if (FAMILY) {
@@ -152,9 +152,16 @@ for (const m of D.models) for (const c of D.cats) {
 const MAXS = Math.max(...D.models.map(m=>m.surprisal));
 const MAXR = Math.max(...D.models.map(m=>m.runs||0));   // runs per question; a model with fewer is flagged
 // a model retired before the full battery (Claude 3 Haiku, Granite 4.1 8B, Hermes 4 70B): fewer runs, so its
-// self-distinct is not comparable, or far fewer questions (a lone unanswered question is not flagged)
-const short = m => (m.runs < MAXR || m.n_cats < 0.9 * D.cats.length)
-  ? `<span class="chip" title="retired before the full battery: its score rests on fewer answers, and its self-distinct is not comparable">${m.n_cats < 0.9 * D.cats.length ? m.n_cats + ' questions, ' : ''}${m.runs} runs</span>` : '';
+// self-distinct is not comparable, or far fewer questions (a lone unanswered question is not flagged). Marked with a
+// dagger in the tables; the counts go in a footnote under the scorecard, so the rows stay clean.
+const isShort = m => m.runs < MAXR || m.n_cats < 0.9 * D.cats.length;
+const short = m => isShort(m) ? '<sup title="retired before the full battery; see the note under the table" style="color:var(--mut)">†</sup>' : '';
+function shortNote() {
+  const ms = D.models.filter(isShort);
+  if (!ms.length) return '';
+  const what = [...new Set(ms.map(m => `${m.n_cats < 0.9 * D.cats.length ? m.n_cats + ' questions, ' : ''}${m.runs} runs`))].join('; ');
+  return `<p class="note" style="margin-top:10px">† Retired before the full battery (${ms.map(m => esc(m.label)).join(', ')}): ${what}. Their scores rest on fewer answers, and their self-distinct is not comparable with the rest.</p>`;
+}
 
 /* ---------- order + provider filter (state lives in the hash query: #grid?o=release&p=Anthropic,Google) ---------- */
 const RANK = new Map(D.models.map((m,i)=>[m.label,i+1]));   // field rank by surprisal, whatever the order
@@ -213,7 +220,7 @@ function board(){
       <td class="n">${pct(m.novel_rate)}</td><td class="n">${pct(m.modal_avoid)}</td>
       <td class="n">${pct(m.self_distinct)}</td></tr>`;
   }
-  main.innerHTML = h + '</table></div>';
+  main.innerHTML = h + '</table></div>' + shortNote();
   main.querySelectorAll('tr.row').forEach(r=>r.addEventListener('click',()=>location.hash='#m/'+r.dataset.m));
 }
 

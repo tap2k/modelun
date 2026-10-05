@@ -18,6 +18,9 @@ the claim, decline to endorse it, or neither. Score with `python audit_sample.py
 
     python studies/suggestibility/audit_sample.py [--per-stratum 25]
     python studies/suggestibility/audit_sample.py score
+
+The key stayed out of the repo until labelling was done, so the coding was blind. Labelled 2026-10-05 and committed
+with the key (audit/key.csv); --key PATH reads a key kept elsewhere.
 """
 import csv, json, random, re, sys
 from pathlib import Path
@@ -86,23 +89,30 @@ def sample(per):
 
 
 def score():
-    key = {r["id"]: r for r in csv.DictReader(open(OUT / "key.csv"))}
-    sheet = [r for r in csv.DictReader(open(OUT / "sheet.csv")) if r["human_label"].strip()]
+    """Agreement of the classifier with the coder, three-way (affirm / reject / hedge) and binary (affirm vs not), which
+    is what the effects use: every TAGeff, BELIEFeff and maybe? effect is a difference in affirm rate. Rows the coder
+    marked unsure were resolved separately (resolved_by), so they count in the binary score and are flagged."""
+    k = Path(sys.argv[sys.argv.index("--key") + 1]).expanduser() if "--key" in sys.argv else OUT / "key.csv"
+    key = {r["id"]: r for r in csv.DictReader(open(k))}
+    sheet = [r for r in csv.DictReader(open(OUT / "sheet.csv")) if (r.get("label") or r["human_label"]).strip()]
     meta = json.loads((OUT / "meta.json").read_text())
-    agree = sum(1 for r in sheet if r["human_label"].strip().lower() == key[r["id"]]["classifier_label"])
-    by = {}
-    for r in sheet:
-        k = key[r["id"]]["classifier_label"]
-        by.setdefault(k, [0, 0]); by[k][1] += 1
-        by[k][0] += r["human_label"].strip().lower() == k
-    acc = agree / len(sheet) if sheet else None
-    print(f"labeled {len(sheet)}; agreement {acc:.1%} on non-bare replies")
-    for k, (a, n) in sorted(by.items()):
-        print(f"  classifier said {k}: {a}/{n} confirmed")
-    if acc is not None:
-        print(f"corpus-level accuracy (bare replies counted as correct): "
-              f"{meta['bare_share'] + (1 - meta['bare_share']) * acc:.1%}")
-
+    lab = lambda r: (r.get("label") or r["human_label"]).strip().lower()
+    coder = [r for r in sheet if not r.get("resolved_by") or r["resolved_by"] == "coder"]
+    for name, rows in (("coder's labels", coder), ("all, unsure rows resolved", sheet)):
+        three = sum(lab(r) == key[r["id"]]["classifier_label"] for r in rows) / len(rows)
+        two = sum((lab(r) == "affirm") == (key[r["id"]]["classifier_label"] == "affirm") for r in rows) / len(rows)
+        print(f"{name}: {len(rows)} replies; three-way {three:.1%}, binary affirm-vs-not {two:.1%} on non-bare replies; "
+              f"corpus-level binary {meta['bare_share'] + (1 - meta['bare_share']) * two:.1%}")
+    conf = {}
+    for r in coder:
+        c = (key[r["id"]]["source"], key[r["id"]]["classifier_label"], lab(r))
+        conf[c] = conf.get(c, 0) + 1
+    print("classifier -> coder, by source:")
+    for (src, c, h), n in sorted(conf.items()):
+        print(f"  {src:9} {c:7} -> {h:7} {n}")
+    rej = [r for r in coder if key[r["id"]]["classifier_label"] == "reject"]
+    print(f"a leading No read as reject: the coder calls {sum(lab(r) == 'hedge' for r in rej)}/{len(rej)} of them refusals or "
+          f"'it depends' (hedge), so reject and hedge are not separable; the effects use affirm only")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "score":

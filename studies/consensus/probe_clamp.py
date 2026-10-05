@@ -50,14 +50,16 @@ def norm(ans):
 
 
 def patterns(cat, pool):
-    """Answer -> compiled whole-word regex, with a plural for words and the alias spellings for brands."""
+    """Answer -> compiled whole-word regex, with a plural for words and the alias spellings for brands. An apostrophe
+    matches a curly one (McDonald’s is mcdonald's)."""
+    q = lambda f: re.escape(f).replace("'", "['\u2018\u2019]")
     out = {}
     for a in pool:
         if cat.startswith("brand_"):
             forms = [a] + [k for k, v in ALIASES.items() if v == a]
-            out[a] = re.compile(r"\b(" + "|".join(re.escape(f) for f in forms) + r")\b", re.I)
+            out[a] = re.compile(r"\b(" + "|".join(q(f) for f in forms) + r")\b", re.I)
         else:
-            out[a] = re.compile(rf"\b{re.escape(a)}s?\b", re.I)
+            out[a] = re.compile(rf"\b{q(a)}s?\b", re.I)
     return out
 
 

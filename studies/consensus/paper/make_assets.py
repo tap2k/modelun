@@ -5,8 +5,12 @@ from analysis.json + transcripts. Run from studies/consensus/paper/:
 
 Outputs: figs/*.pdf, gen/scorecard_table.tex, gen/stats.json. main.tex quotes only
 numbers that appear in gen/stats.json, so the paper is recomputable end-to-end.
+
+    ../../../.venv/bin/python make_assets.py --v3   # the v3 draft: 96 questions x 8 runs x the current panel,
+                                                     # into figs-v3/ and gen-v3/ (v2's figs/ and gen/ untouched)
 """
 
+import re
 import sys
 import json
 from pathlib import Path
@@ -20,7 +24,11 @@ import matplotlib.pyplot as plt
 HERE = Path(__file__).resolve().parent
 STUDY = HERE.parent
 sys.path.insert(0, str(STUDY))
-from analyze import answers  # transcripts -> scored answers (variant + plural merge)
+from analyze import answers, analyze  # transcripts -> scored answers (variant + plural merge)
+
+V3 = "--v3" in sys.argv
+FIGS, GEN = (HERE / "figs-v3", HERE / "gen-v3") if V3 else (HERE / "figs", HERE / "gen")
+RUNS = 8 if V3 else 4
 
 BLUE, AMBER, GRAY, GRID = "#2a78d6", "#b07500", "#52514e", "#d9d8d4"
 plt.rcParams.update({
@@ -31,19 +39,23 @@ plt.rcParams.update({
     "pdf.fonttype": 42,
 })
 
-(HERE / "figs").mkdir(exist_ok=True)
-(HERE / "gen").mkdir(exist_ok=True)
+FIGS.mkdir(exist_ok=True)
+GEN.mkdir(exist_ok=True)
 
-analysis = json.loads((STUDY / "analysis.json").read_text())
+if V3:   # the census and expanded questions together, 8 runs (analyze.py battery "combined")
+    ans = answers(STUDY, "combined")
+    analysis = analyze(STUDY, "combined", ans=ans)
+else:
+    analysis = json.loads((STUDY / "analysis.json").read_text())
+    ans = answers(STUDY)
 pm, pc = analysis["per_model"], analysis["per_category"]
 
-ans = answers(STUDY)
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
 
 stats = {"n_models": analysis["n_models"], "n_categories": analysis["n_categories"]}
 stats["n_valid_answers"] = sum(v["n_answers"] for v in pm.values())
-stats["n_cells_attempted"] = analysis["n_models"] * analysis["n_categories"] * 4
+stats["n_cells_attempted"] = analysis["n_models"] * analysis["n_categories"] * RUNS
 
 # ---------------------------------------------------------------- display names
 def disp(label):
@@ -63,7 +75,7 @@ def disp(label):
 order = sorted(pm, key=lambda m: -pm[m]["surprisal"])
 
 # ---------------------------------------------------------------- fig 1: scorecard
-fig, ax = plt.subplots(figsize=(5.6, 6.4))
+fig, ax = plt.subplots(figsize=(5.6, 6.4 * max(1, len(order) / 44)))
 ys = np.arange(len(order))[::-1]
 for y, m in zip(ys, order):
     v = pm[m]
@@ -79,12 +91,12 @@ ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.6)
 ax.set_axisbelow(True)
 ax.set_ylim(-0.8, len(order) - 0.2)
 fig.tight_layout()
-fig.savefig(HERE / "figs" / "scorecard.pdf")
+fig.savefig(FIGS / "scorecard.pdf")
 plt.close(fig)
 
 # ---------------------------------------------------------------- fig 2: substrate
 cat_rows = sorted(pc.items(), key=lambda kv: -kv[1]["modal_share"])
-fig, ax = plt.subplots(figsize=(5.6, 5.4))
+fig, ax = plt.subplots(figsize=(5.6, 5.4 * max(1, len(cat_rows) / 31)))
 ys = np.arange(len(cat_rows))[::-1]
 for y, (c, v) in zip(ys, cat_rows):
     hi = v["modal_share"] >= 0.8
@@ -103,7 +115,7 @@ ax.set_xlabel("share of the whole field's answers taken by the modal answer")
 ax.spines[["top", "right", "left"]].set_visible(False)
 ax.tick_params(axis="y", length=0)
 fig.tight_layout()
-fig.savefig(HERE / "figs" / "substrate.pdf")
+fig.savefig(FIGS / "substrate.pdf")
 plt.close(fig)
 
 stats["categories_ge80"] = [
@@ -129,17 +141,23 @@ WALKS = [
     ("DeepSeek", ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash"],
      ["v3-0324", "v3.2", "v4-flash"]),
 ]
-fig, axes = plt.subplots(2, 4, figsize=(7.0, 3.3), sharey=True)
+if V3:   # every tracked lineage in release order, as the viewer draws it (views/build.py WALKS)
+    WALKS = []
+    for fam, labels in re.findall(r'"(\w+)": \[([^\]]*)\]', (STUDY / "views" / "build.py").read_text().split("WALKS = {", 1)[1].split("}", 1)[0]):
+        ls = [l for l in re.findall(r'"([^"]+)"', labels) if l in pm]
+        if len(ls) > 1:
+            WALKS.append((fam.capitalize(), ls, [l.split("-", 1)[-1] if "-" in l else l for l in ls]))
+fig, axes = plt.subplots(3 if V3 else 2, 3 if V3 else 4, figsize=(7.0, 5.0 if V3 else 3.3), sharey=True)
 for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
     xs = np.arange(len(labels))
     vals = [pm[l]["surprisal"] for l in labels]
     axi.plot(xs, vals, "-o", color=BLUE, lw=1.4, ms=3.5)
-    if name == "Claude":  # fable-5 plotted beside its mainline generation
+    if name == "Claude" and not V3:  # fable-5 plotted beside its mainline generation
         axi.plot([4], [pm["claude-fable-5"]["surprisal"]], "o", ms=4, color=AMBER)
         axi.annotate("fable", (4, pm["claude-fable-5"]["surprisal"]),
                      textcoords="offset points", xytext=(2, 5),
                      fontsize=6.5, color=AMBER, ha="right")
-    if name == "GPT":  # 5.6 premium tiers (terra, sol) break up off the mainline (luna)
+    if name == "GPT" and not V3:  # 5.6 premium tiers (terra, sol) break up off the mainline (luna)
         gx = len(labels) - 1
         for sib, lab, dy in [("gpt-5.6-terra", "terra", -4), ("gpt-5.6-sol", "sol", 5)]:
             axi.plot([gx], [pm[sib]["surprisal"]], "o", ms=4, color=AMBER)
@@ -149,7 +167,8 @@ for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
     axi.set_title(name, fontsize=8)
     axi.set_xticks(xs)
     axi.set_xticklabels(ticks, fontsize=6, rotation=45, ha="right")
-    axi.set_ylim(0.9, 3.0)
+    if not V3:
+        axi.set_ylim(0.9, 3.0)
     axi.spines[["top", "right"]].set_visible(False)
     axi.grid(axis="y", color=GRID, lw=0.5, alpha=0.6)
     axi.set_axisbelow(True)
@@ -158,7 +177,7 @@ for axi in axes.flat[len(WALKS):]:
 for axi in axes[:, 0]:
     axi.set_ylabel("surprisal (bits)", fontsize=7)
 fig.tight_layout()
-fig.savefig(HERE / "figs" / "walks.pdf")
+fig.savefig(FIGS / "walks.pdf")
 plt.close(fig)
 
 # ------------------------------------------------- fig 4 + stats: runner-up consensus
@@ -193,11 +212,11 @@ ax.set_xlabel("share of the field's non-modal answers taken by the runner-up")
 ax.spines[["top", "right", "left"]].set_visible(False)
 ax.tick_params(axis="y", length=0)
 fig.tight_layout()
-fig.savefig(HERE / "figs" / "runnerup.pdf")
+fig.savefig(FIGS / "runnerup.pdf")
 plt.close(fig)
 
 # ---------------------------------------------------- human vs model concentration
-hn_path = STUDY / "probes" / "humannorms.json"
+hn_path = STUDY / "probes" / ("humannorms_v3.json" if V3 else "humannorms.json")   # v3: analyze_humannorms.py --v3
 if hn_path.exists():
     hn = json.loads(hn_path.read_text())
     hrows = hn["per_category"]  # sorted by model share desc
@@ -223,7 +242,7 @@ if hn_path.exists():
     ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, fontsize=7.5,
               frameon=False, columnspacing=1.5, handletextpad=0.5, borderaxespad=0)
     fig.tight_layout()
-    fig.savefig(HERE / "figs" / "humannorms.pdf", bbox_inches="tight")
+    fig.savefig(FIGS / "humannorms.pdf", bbox_inches="tight")
     plt.close(fig)
 
 # ---------------------------------------------------------------- scorecard table
@@ -237,7 +256,7 @@ for i, m in enumerate(order, 1):
         f"{v['self_distinct']:.0%} \\\\".replace("%", "\\%"))
 # \bottomrule lives in this file: a booktabs rule straight after \input hits a
 # TeX alignment edge case (Misplaced \noalign) at the file boundary
-(HERE / "gen" / "scorecard_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+(GEN / "scorecard_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 # ---------------------------------------------------------------- quoted stats
 def pool_of(c):
@@ -276,6 +295,8 @@ stats["headline"] = {disp(m): {"surprisal": round(pm[m]["surprisal"], 2),
 NEWEST = ["claude-sonnet-5", "claude-opus-4.8", "gpt-5", "gpt-5.5", "qwen3-235b-a22b-2507"]
 OLDEST = ["gpt-3.5-turbo", "claude-3-haiku", "gpt-4-turbo", "gemini-2.5-flash",
           "qwen-2.5-72b-instruct"]
+if V3:   # each lineage's newest and oldest member
+    NEWEST, OLDEST = [ls[-1] for _, ls, _ in WALKS], [ls[0] for _, ls, _ in WALKS]
 peaked = {c for c, v in pc.items() if v["modal_share"] >= 0.8}
 diffuse = {c for c, v in pc.items() if v["modal_share"] <= 0.4}
 
@@ -304,15 +325,16 @@ med = float(np.median([v["surprisal"] for v in pm.values()]))
 stats["median_surprisal"] = round(med, 2)
 HEIRLOOMS = ["hermes-4-70b", "wizardlm-2-8x22b", "mixtral-8x22b-instruct",
              "mythomax-l2-13b", "gpt-4o-mini-2024-07-18", "gpt-4o"]
-stats["heirlooms_above_median"] = {disp(m): pm[m]["surprisal"] > med for m in HEIRLOOMS}
+stats["heirlooms_above_median"] = {disp(m): pm[m]["surprisal"] > med for m in HEIRLOOMS if m in pm}
 
 # prompt list for Appendix B, from the frozen stimulus. The shared "Reply with one
 # word only." suffix is factored into the appendix preamble, not repeated per item.
-stim = json.loads((STUDY / "spec" / "stimulus.json").read_text())
 SUFFIX = " Reply with one word only."
-prompt_lines = [f"\\item {s['turns'][0].replace(SUFFIX, '')}" for s in stim["scenes"]]
-(HERE / "gen" / "prompts.tex").write_text("\n".join(prompt_lines) + "\n")
+prompt_lines = [f"\\item {s['turns'][0].replace(SUFFIX, '')}"
+                for f in (["stimulus.json", "stimulus_expanded.json"] if V3 else ["stimulus.json"])
+                for s in json.loads((STUDY / "spec" / f).read_text())["scenes"]]
+(GEN / "prompts.tex").write_text("\n".join(prompt_lines) + "\n")
 
-(HERE / "gen" / "stats.json").write_text(json.dumps(stats, indent=1) + "\n")
-print("assets written:", *[p.name for p in sorted((HERE / 'figs').glob('*.pdf'))],
+(GEN / "stats.json").write_text(json.dumps(stats, indent=1) + "\n")
+print("assets written:", *[p.name for p in sorted(FIGS.glob('*.pdf'))],
       "gen/scorecard_table.tex gen/stats.json")

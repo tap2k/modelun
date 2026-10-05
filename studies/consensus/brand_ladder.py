@@ -86,6 +86,13 @@ def agg(ans):
     return out
 
 
+# clamped answers that are also ordinary words, so a free reply is not searched for them: "an AI assistant" names no
+# assistant, "a target audience" no Target (pool review of 2026-10-05)
+PROSE = {"ai_assistant": {"assistant", "command", "seed", "echo", "nova", "aurora", "aria", "aura", "astra", "coral", "clara",
+                          "lumina", "ling"},
+         "company": {"target"}}
+
+
 @lru_cache(None)
 def pools():
     """The Name and Choose answers, and per category the pool, alias map and mention patterns built from them."""
@@ -95,7 +102,7 @@ def pools():
         for c, cnt in agg(src).items():
             pool[c].update(cnt)
     known = {c: {**{a: a for a, k in p.items() if k >= 2}, **ALIASES, **EXTRA} for c, p in pool.items()}
-    pats = {c: patterns("brand_" + c, [a for a, k in p.items() if k >= 2]) for c, p in pool.items()}
+    pats = {c: patterns("brand_" + c, [a for a, k in p.items() if k >= 2 and a not in PROSE.get(c, ())]) for c, p in pool.items()}
     return name, choose, pool, known, pats
 
 
@@ -190,7 +197,8 @@ def committed(c, reply):
 
 
 def load(run_ids, suffix, turn, how):
-    """model -> category -> [answers] from one or more manifest entries; how = 'open' or 'first'."""
+    """model -> category -> [answers] from one or more manifest entries; how = 'open' or 'first'. A reply cut off at the
+    token limit before naming a brand is a failed run and is skipped, not scored as naming no brand."""
     pool = pools()[2]
     out = defaultdict(lambda: defaultdict(list))
     run_ids = [run_ids] if isinstance(run_ids, str) else run_ids
@@ -206,7 +214,10 @@ def load(run_ids, suffix, turn, how):
                 if not r or len(r) <= turn or r[turn].get("error") or not (r[turn].get("reply") or "").strip():
                     continue
                 rep = r[turn]["reply"]
-                out[x["model"]][c].append(committed(c, rep) if how == "open" else first_mention(c, rep))
+                a = committed(c, rep) if how == "open" else first_mention(c, rep)
+                if a == NO_PICK and r[turn].get("finish_reason") == "length":
+                    continue
+                out[x["model"]][c].append(a)
     return out
 
 
@@ -224,6 +235,13 @@ def clamped(run_ids):
     return load_clamped(HERE, "brands", paths=[f for r in run_ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))])
 
 
+# sonar answers from a live web search, not model memory (spec/models.json); the brand analysis leaves it out
+EXCLUDE = {"sonar"}
+# "company" and "brand" name no product: asked freely, most models ask what is meant. Pooled brand numbers leave them out;
+# the viewer still shows them
+GENERIC = {"company", "brand"}
+
+
 @lru_cache(None)
 def levels():
     name, choose = pools()[:2]
@@ -235,7 +253,8 @@ def levels():
           "recommend": load(["brands-recommend-free", "brands-ext2-recommend-free"], "__recommend", 0, "first"),
           "pick2": load(["brands-pick2-free", "brands-ext2-pick2-free"], "__pick", 1, "open")}
     grid = {c for cats in lv["pick2"].values() for c in cats}      # the categories every level asks (44)
-    return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items()} for k, d in lv.items()}
+    return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items() if m not in EXCLUDE}
+            for k, d in lv.items()}
 
 
 def defaults():
@@ -310,6 +329,103 @@ def paraphrase_floor():
                   for a, b in (("recommend", "recommend2"), ("recommend", "recommend3"), ("recommend2", "recommend3"))}
 
 
+# the free steps' replies, for whether a model's own one-word brand is mentioned anywhere in them
+FREE = {"free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"), "_free", "brand_", 0),
+        "free_choose": (("brands-choose-free", "brands-ext2-choose-free"), "__choosefree", "", 0),
+        "recommend": (("brands-recommend-free", "brands-ext2-recommend-free"), "__recommend", "", 0),
+        "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), "__pick", "", 1)}
+
+
+# each free step's clamped counterpart: free X is read against clamped X (the clamp alone); the two-turn pick against Name
+BASE = {"free_name": "name", "free_choose": "choose", "recommend": "recommend_clamp", "pick2": "name"}
+
+
+def own_mentioned(cats):
+    """Two maps, model -> category -> free step:
+    the share of replies that mention the model's baseline answer anywhere (first mention or later), so a baseline
+    demoted down a list can be told from one that is dropped. The baseline is the model's most frequent answer to the
+    clamped counterpart (BASE): free Choose against clamped Choose, and so on;
+    and each reply's brands from the pool, in the order the reply names them (for the two-turn pick: [the pick, the
+    brands of the model's own turn-1 list]). A reply naming no pool brand records the
+    brand it commits to, if any (one outside the pool); a reply cut off at the token limit before naming any brand is
+    recorded as None, a failed run rather than a reply that names no brand."""
+    lv = levels()
+    base = {k: {m: {c: (Counter(x for x in xs if x != NO_PICK).most_common(1) or [(None, 0)])[0][0] for c, xs in cs.items()}
+                for m, cs in lv[b].items()} for k, b in BASE.items()}
+    pats, out = pools()[4], defaultdict(lambda: defaultdict(dict))
+    lists = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    for lvl, (ids, suffix, prefix, turn) in FREE.items():
+        hits = defaultdict(lambda: [0, 0])
+        for r in ids:
+            for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
+                x = json.loads(f.read_text())
+                for sid, sc in x["scenes"].items():
+                    if not sid.endswith(suffix):
+                        continue
+                    c = sid[: -len(suffix)].removeprefix(prefix)
+                    d = base[lvl].get(x["model"], {}).get(c)
+                    if c not in cats:
+                        continue
+                    for run in sc["runs"]:
+                        if run and len(run) > turn and not run[turn].get("error") and (run[turn].get("reply") or "").strip():
+                            named = mentions(run[turn]["reply"], pats[c])
+                            if not named:
+                                pick = committed(c, run[turn]["reply"])
+                                named = [] if pick == NO_PICK else [pick]
+                            cut = run[turn].get("finish_reason") == "length"
+                            if lvl == "pick2":       # the pick, and the brands of the model's own turn-1 list
+                                pick = committed(c, run[1]["reply"])
+                                listed = mentions(run[0].get("reply") or "", pats[c])[:10]
+                                lists[x["model"]][c][lvl].append(None if cut and pick == NO_PICK else
+                                                                 [None if pick == NO_PICK else pick, listed])
+                            else:
+                                lists[x["model"]][c][lvl].append(None if cut and not named else named[:10])
+                            if d:
+                                h = hits[(x["model"], c)]
+                                h[1] += 1
+                                h[0] += d in named
+        for (m, c), (k, n) in hits.items():
+            out[m][c][lvl] = round(k / n, 2)
+    return out, lists
+
+
+# where each step's replies live: (manifest ids, scene id for category c, turns to keep)
+SOURCES = {
+    "name": (("brands", "brands-ext", "brands-ext2"), lambda c: c, (0,)),
+    "choose": (("brands-choose", "brands-ext-choose", "brands-ext2-choose"), lambda c: c, (0,)),
+    "recommend_clamp": (("brands-recommend-clamp", "brands-ext2-recommend-clamp"), lambda c: c, (0,)),
+    "free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"), lambda c: f"brand_{c}_free", (0,)),
+    "free_choose": (("brands-choose-free", "brands-ext2-choose-free"), lambda c: f"{c}__choosefree", (0,)),
+    "recommend": (("brands-recommend-free", "brands-ext2-recommend-free"), lambda c: f"{c}__recommend", (0,)),
+    "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), lambda c: f"{c}__pick", (0, 1)),
+}
+
+
+def replies(cats, cut=3000):
+    """category -> model -> step -> [run -> [{"u": question, "r": reply}]], reasoning traces removed and each reply cut
+    to `cut` characters: the text the defaults page shows when a cell is clicked."""
+    out = {c: defaultdict(dict) for c in cats}
+    for lv, (ids, sid_of, turns) in SOURCES.items():
+        back = {sid_of(c): c for c in cats}
+        for r in ids:
+            for p in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
+                x = json.loads(p.read_text())
+                for sid, sc in x["scenes"].items():
+                    c = back.get(sid)
+                    if c is None:
+                        continue
+                    runs = []
+                    for run in sc["runs"]:
+                        cells = []
+                        for t in turns:
+                            cell = run[t] if run and len(run) > t else {}
+                            txt = re.sub(r"<think>.*?</think>", "", cell.get("reply") or "", flags=re.S).strip()
+                            cells.append({"u": cell.get("u", ""), "r": (txt[:cut] + ("…" if len(txt) > cut else "")) if txt else None})
+                        runs.append(cells)
+                    out[c][x["model"]].setdefault(lv, []).extend(runs)
+    return out
+
+
 def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()
@@ -317,11 +433,12 @@ def blob():
     models = sorted(set().union(*lv.values()))
     dist = {c: {k: [[a, n] for a, n in rows[k]["field"].get(c, Counter()).most_common()] for k in LEVELS} for c in cats}
     per_model = {m: {c: {k: lv[k].get(m, {}).get(c, []) for k in LEVELS} for c in cats} for m in models}
+    om, lists = own_mentioned(set(cats))
     return {"levels": [{"id": k, "label": LABELS[k], "prompt": PROMPTS[k], "models": rows[k]["models"],
                         "flips": rows[k]["flips"], "top_share": round(rows[k]["top_share"], 3),
                         "retention": round(rows[k]["retention"], 3), "no_pick": round(rows[k]["no_pick"], 3)}
                        for k in LEVELS],
-            "cats": cats, "dist": dist, "models": models, "per_model": per_model,
+            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": om, "lists": lists, "base": BASE,
             "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK}
 
 

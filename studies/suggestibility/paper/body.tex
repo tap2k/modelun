@@ -120,7 +120,8 @@ speech act as well as in the tag, so \S\ref{sec:ablation} separates the two: rem
 mark keeps most of the effect, and stating the user's preference without a tag reverses it.
 
 \paragraph{Classification.} A reply is \emph{affirm} or \emph{reject} by its leading token under
-the clamp and \emph{hedge} otherwise; replies carrying chat-template artifacts are failed cells
+the clamp and \emph{hedge} otherwise; only the affirm rate enters the results, since \emph{reject} and
+\emph{hedge} are not separable (Limitations). Replies carrying chat-template artifacts are failed cells
 (Appendix~\ref{app:classifier}). Affirm rates are computed over valid replies. A hand check of the
 rule is in the Limitations.
 
@@ -149,10 +150,9 @@ positive (MythoMax, DeepSeek-v3.2, Qwen-2.5-72B, Mixtral-8x22B, Grok-4.3) and 17
 negative, led by Fable 5, Llama-3.3-70B and GPT-5.6-Luna. The positive end is persona and older
 open models; the negative end is mostly recent frontier releases.
 
-Resistance is mostly contradiction. Across the 17 resistant models the share of replies that say
-\emph{no} rises from 33\% under the neutral question to 48\% under the tag, while the hedge share
-moves from 10\% to 12\%. Two models resist by declining instead: Fable 5's hedge share rises from
-44\% to 79\% and Gemini 3.6 Flash's from 72\% to 94\%, with their rejections flat or falling.
+Resistance means withholding agreement. Under the clamp a \emph{no} is often a refusal to answer in
+one word, so we report only the affirm rate. Fable 5 and Gemini 3.6 Flash refuse openly: under the tag
+their hedge share rises from 44\% to 79\% and from 72\% to 94\%.
 
 The tag effect is not the model's baseline agreeableness. The neutral-arm affirm rate runs from
 91\% (GPT-3.5-Turbo) to 1\%, and models with similar baselines sit at both ends of the tag range
@@ -362,9 +362,10 @@ effects are best read as lower bounds. The clamp is one wording, held constant a
 so all effects are differences inside the clamp; a recent model could read a forced yes or no on
 a subjective question as an evaluation and respond to that. The classifier reads the leading
 token. The tag effect counts only affirmations, and 88\% of replies are a bare \emph{yes} or
-\emph{no}. A hand check of 100 longer replies, sampled where an affirmation could be missed or
-wrongly found, agrees with the rule on affirmation versus not for 98.9\% of all replies once
-reweighted to the corpus. The main error is a reply that disclaims and then answers \emph{yes},
+\emph{no}. A blind audit of 150 longer replies agrees with the rule on affirmation versus not for
+143 of 145 (99.7\% of all replies once reweighted to the corpus). The rule cannot separate a refusal
+from a \emph{no}: the coder read 24 of 47 replies that open with \emph{no} as refusals or ``it
+depends'', so no result depends on that distinction. The main error is a reply that disclaims and then answers \emph{yes},
 which the rule reads as a hedge; these were more common under the neutral question (5 of 34) than
 under the tag (2 of 26), which if anything understates resistance. The dissection scans behind \S\ref{sec:ablation} use five and
 eight models, chosen for contrast. The later 25 models were run with a larger output budget than the July 45. The
