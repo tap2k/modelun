@@ -24,6 +24,9 @@ sys.path.insert(0, str(HERE.parents[1] / "harness"))
 import local
 
 RUNS = 20
+# One-turn recommend replies run to 512 tokens; at 32B a stage takes many hours, so recommend samples 10 per question
+# from 2026-10-04 (OLMo 3 7B, Tulu 3 8B and the Nemotron final stage were run at 20).
+RECOMMEND_RUNS = 10
 NAME = ["spec/stimulus.json", "spec/stimulus_expanded.json", "spec/stimulus_brands.json", "spec/stimulus_brands_ext.json"]
 CHOOSE = ["spec/perturb/stimulus_choose.json", "spec/perturb/stimulus_expanded_choose.json",
           "spec/perturb/stimulus_brands_choose.json", "spec/perturb/stimulus_brands_ext_choose.json"]
@@ -108,7 +111,7 @@ def recommend_pass(pipeline, delete_cache):
             continue
         model = local.load(st)
         # batch 8: 512-token replies at batch 16 ran out of GPU memory on OLMo 3 7B DPO (2026-10-02)
-        local.run(spec, st, f, RUNS, path, max_tokens=512, batch=8, model=model)
+        local.run(spec, st, f, RECOMMEND_RUNS, path, max_tokens=512, batch=8, model=model)
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
