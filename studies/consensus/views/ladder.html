@@ -31,7 +31,6 @@
   table.t{border-collapse:collapse;font-size:13px}
   table.t th,table.t td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
   table.t th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;vertical-align:bottom}
-  table.t th{cursor:help}
   table.m td.n{width:62px;text-align:center;border:1px solid var(--bg)} table.m td.clamp{outline:2px solid var(--fg);outline-offset:-2px}
   table.m td.n small{display:block;color:var(--mut);font-size:10.5px} table.m td.dg{color:var(--mut)}
   td.b.cellr{cursor:pointer} td.b.cellr:hover{background:var(--panel2)} th.gap,td.gap{border-left:2px solid var(--line)}
@@ -118,43 +117,41 @@ function agree(ms, a, b) {
   return n ? {v: same / n, n} : null;
 }
 // for a free step: share of (model, category) pairs whose free replies mostly mention the clamped answer, and name no brand
-function mentions(ms, lv) {
-  let men = 0, none = 0, n = 0;
+// each free reply against the model's clamped brand for the same verb: the brand it names first, a brand it names later in
+// the list, or no brand from the pool at all; the rest name only other brands
+function fate(ms, lv) {
+  let first = 0, later = 0, none = 0, n = 0;
   for (const m of ms) for (const c of L.cats) {
-    const xs = ((L.per_model[m] || {})[c] || {})[lv]; if (!xs || !xs.length || !ans(m, c, CLAMP[lv])) continue;
-    n++; men += ((((L.own_mentioned || {})[m] || {})[c] || {})[lv] || 0) >= 0.5; none += !named(xs).length;
+    const d = ans(m, c, CLAMP[lv]); if (!d) continue;
+    for (const l of (((L.lists || {})[m] || {})[c] || {})[lv] || []) {
+      n++; if (!l.length) none++; else if (l[0] === d) first++; else if (l.includes(d)) later++;
+    }
   }
-  return n ? {men: men / n, none: none / n} : null;
+  return n ? {first: first / n, later: later / n, none: none / n, n} : null;
 }
 const shade = v => `background:rgba(57,135,229,${(0.06 + 0.85 * v).toFixed(2)})`;
-
-function clampTable(ms) {
-  let h = `<div class="twrap"><table class="t"><tr><th>verb</th><th>same brand</th><th>free reply mentions the clamped brand</th><th>free reply names no brand</th></tr>`;
-  for (const f of ["free_name", "free_choose", "recommend"]) {
-    const s = agree(ms, CLAMP[f], f), mt = mentions(ms, f);
-    h += `<tr><td>${SHORT[f]}</td><td class="n">${s ? pct(s.v) : "–"}</td><td class="n">${mt ? pct(mt.men) : "–"}</td>
-      <td class="n">${mt ? pct(mt.none) : "–"}</td></tr>`;
-  }
-  return h + "</table></div>";
-}
 const FREE = ["free_name", "free_choose", "recommend"];
+const COLS = [["first", "first"], ["later", "in the list"], ["none", "no brand"]];
+function fateCells(ms) {
+  return FREE.map(f => { const r = fate(ms, f);
+    return COLS.map(([k], i) => r == null ? `<td class="n${i ? "" : " gap"}">–</td>`
+      : `<td class="n${i ? "" : " gap"}" style="${k === "none" ? "" : shade(r[k])}">${pct(r[k])}</td>`).join(""); }).join("");
+}
 function home() {
   const ms = L.models;
-  let h = `<h2>the clamp: each verb asked freely against the same verb clamped</h2>
-  <p class="note">Removing "Reply with the name only." and nothing else. <b>Same brand</b>: the share of model × category pairs
-  where the free reply leads with the brand the model gives clamped (each step's brand is its most common over the runs).
-  <b>Mentions</b>: the free reply names the clamped brand anywhere, even after leading with another. Pooled over
-  ${ms.length} models and ${L.cats.length} categories.</p>
-  ${clampTable(ms)}
-  <h3>by model</h3>
-  <p class="note">Same brand, clamped against free, for each verb; lowest first. Click a model for its ladder: every category
-  through every step, and the replies.</p>
-  <div class="twrap"><table class="t"><tr><th>model</th>${FREE.map(f => `<th>${SHORT[f]}<br>clamped / free</th>`).join("")}</tr>`;
-  const rows = ms.map(m => ({m, r: FREE.map(f => agree([m], CLAMP[f], f))}));
-  const mean = r => { const v = r.filter(Boolean); return v.length ? v.reduce((a, x) => a + x.v, 0) / v.length : 2; };
-  rows.sort((x, y) => mean(x.r) - mean(y.r));
-  for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map(z =>
-    `<td class="n" style="${z ? shade(z.v) : ""}">${z ? pct(z.v) : "–"}</td>`).join("")}</tr>`;
+  let h = `<h2>the clamp: each verb asked freely, against the same verb clamped</h2>
+  <p class="note">The free question drops "Reply with the name only." and nothing else. For every free reply, where is the brand
+  the model gives to the clamped question? <b>First</b>: the reply leads with it. <b>In the list</b>: the reply names it, but
+  after another brand. <b>No brand</b>: the reply names no brand at all. The rest of the replies name only other brands.
+  The clamped brand is the model's most common answer over 8 runs; each free step has 4 runs per category, ${L.cats.length}
+  categories. Click a model for its ladder.</p>
+  <div class="twrap"><table class="t"><tr><th rowspan="2">model</th>${FREE.map(f => `<th colspan="3" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}</tr>
+  <tr>${FREE.map(() => COLS.map(([, l], i) => `<th class="${i ? "" : "gap"}">${l}</th>`).join("")).join("")}</tr>
+  <tr><td><b>all ${ms.length} models</b></td>${fateCells(ms)}</tr>`;
+  const rows = ms.map(m => ({m, f: FREE.map(f => fate([m], f))}));
+  const mean = r => { const v = r.filter(Boolean); return v.length ? v.reduce((a, x) => a + x.first, 0) / v.length : 2; };
+  rows.sort((x, y) => mean(x.f) - mean(y.f));
+  for (const {m} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${fateCells([m])}</tr>`;
   main.innerHTML = h + "</table></div>";
   main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#m/" + encodeURIComponent(r.dataset.m)));
 }
@@ -165,8 +162,7 @@ function model(m) {
     a.forEach(x => { if (x && !seen.includes(x)) seen.push(x); }); return {c, a, seen}; }).filter(r => r.seen.length);
   rows.sort((x, y) => y.seen.length - x.seen.length || x.c.localeCompare(y.c));
   let h = `<p class="crumb"><a href="#">clamp</a> / <span class="mono">${esc(m)}</span></p>
-  <h2 class="mono">${esc(m)}</h2>${clampTable([m])}
-  <h3>the ladder</h3>
+  <h2 class="mono">${esc(m)}</h2>
   <p class="note">Within a row, one colour is one brand, so a run of the same colour is the same answer carried across steps.
   Categories with the most different brands are first. Hover a cell for every run: a clamped step's answers, or the brands each free reply names, in order. Click a category to read all its replies in order, or a cell for one step.</p>
   <div class="twrap"><table class="t"><tr><th>category</th>${STEPS.map(lv =>
