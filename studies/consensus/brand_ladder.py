@@ -310,42 +310,6 @@ def paraphrase_floor():
                   for a, b in (("recommend", "recommend2"), ("recommend", "recommend3"), ("recommend2", "recommend3"))}
 
 
-# where each level's replies live: (manifest ids, scene id for category c, turn)
-SOURCES = {
-    "name": (("brands", "brands-ext", "brands-ext2"), lambda c: c, 0),
-    "free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"), lambda c: f"brand_{c}_free", 0),
-    "choose": (("brands-choose", "brands-ext-choose", "brands-ext2-choose"), lambda c: c, 0),
-    "free_choose": (("brands-choose-free", "brands-ext2-choose-free"), lambda c: f"{c}__choosefree", 0),
-    "pick1_clamp": (("brands-pick1-clamp", "brands-ext2-pick1-clamp"), lambda c: c, 0),
-    "pick1": (("brands-pick1-free", "brands-ext2-pick1-free"), lambda c: f"{c}__youpick", 0),
-    "recommend_clamp": (("brands-recommend-clamp", "brands-ext2-recommend-clamp"), lambda c: c, 0),
-    "recommend": (("brands-recommend-free", "brands-ext2-recommend-free"), lambda c: f"{c}__recommend", 0),
-    "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), lambda c: f"{c}__pick", 1),
-}
-
-
-def replies(cats, cut=400):
-    """category -> model -> level -> [reply text per run, reasoning trace removed, cut to `cut` characters]: what the
-    viewer shows on hover. None for a run that failed."""
-    out = {c: defaultdict(dict) for c in cats}
-    sid_to_cat = {lv: {f(c): c for c in cats} for lv, (_, f, _) in SOURCES.items()}
-    for lv, (ids, _, turn) in SOURCES.items():
-        for r in ids:
-            for p in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
-                x = json.loads(p.read_text())
-                for sid, sc in x["scenes"].items():
-                    c = sid_to_cat[lv].get(sid)
-                    if c is None:
-                        continue
-                    texts = []
-                    for run in sc["runs"]:
-                        cell = run[turn] if run and len(run) > turn else {}
-                        t = re.sub(r"<think>.*?</think>", "", cell.get("reply") or "", flags=re.S).strip()
-                        texts.append((t[:cut] + ("…" if len(t) > cut else "")) if t else None)
-                    out[c][x["model"]][lv] = texts
-    return out
-
-
 def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()
