@@ -210,8 +210,16 @@ def build_ladder():
     """views/data_ladder.js for ladder.html. Not in the default build, so the page is not deployed until asked for."""
     import brand_ladder
     out = VIEWS / "data_ladder.js"
-    out.write_text("window.LADDER = " + json.dumps(brand_ladder.blob(), ensure_ascii=False, separators=(",", ":")) + ";\n")
+    data = brand_ladder.blob()
+    out.write_text("window.LADDER = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n")
     print(f"wrote {out}  ({out.stat().st_size // 1024}KB)")
+    # the replies behind every cell, one file per category, loaded by the page when it needs them
+    d = VIEWS / "ladder_replies"
+    d.mkdir(exist_ok=True)
+    for c, by_model in brand_ladder.replies(data["cats"]).items():
+        (d / f"{c}.js").write_text("(window.LADDER_R = window.LADDER_R || {})[" + json.dumps(c) + "] = "
+                                   + json.dumps(by_model, ensure_ascii=False, separators=(",", ":")) + ";\n")
+    print(f"wrote {d}/  ({sum(f.stat().st_size for f in d.glob('*.js')) // 1024}KB in {len(data['cats'])} files)")
 
 
 def main():
