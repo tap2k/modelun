@@ -322,13 +322,16 @@ BASE = {"free_name": "name", "free_choose": "choose", "recommend": "recommend_cl
 
 
 def own_mentioned(cats):
-    """model -> category -> free step -> share of replies that mention the model's baseline answer anywhere (first
-    mention or later), so a baseline demoted down a list can be told from one that is dropped. The baseline is the
-    model's most frequent answer to the clamped counterpart (BASE): free Choose against clamped Choose, and so on."""
+    """Two maps, model -> category -> free step:
+    the share of replies that mention the model's baseline answer anywhere (first mention or later), so a baseline
+    demoted down a list can be told from one that is dropped. The baseline is the model's most frequent answer to the
+    clamped counterpart (BASE): free Choose against clamped Choose, and so on;
+    and each reply's brands from the pool, in the order the reply names them."""
     lv = levels()
     base = {k: {m: {c: (Counter(x for x in xs if x != NO_PICK).most_common(1) or [(None, 0)])[0][0] for c, xs in cs.items()}
                 for m, cs in lv[b].items()} for k, b in BASE.items()}
     pats, out = pools()[4], defaultdict(lambda: defaultdict(dict))
+    lists = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for lvl, (ids, suffix, prefix, turn) in FREE.items():
         hits = defaultdict(lambda: [0, 0])
         for r in ids:
@@ -339,16 +342,19 @@ def own_mentioned(cats):
                         continue
                     c = sid[: -len(suffix)].removeprefix(prefix)
                     d = base[lvl].get(x["model"], {}).get(c)
-                    if c not in cats or not d:
+                    if c not in cats:
                         continue
                     for run in sc["runs"]:
                         if run and len(run) > turn and not run[turn].get("error") and (run[turn].get("reply") or "").strip():
-                            h = hits[(x["model"], c)]
-                            h[1] += 1
-                            h[0] += d in mentions(run[turn]["reply"], pats[c])
+                            named = mentions(run[turn]["reply"], pats[c])
+                            lists[x["model"]][c][lvl].append(named[:10])
+                            if d:
+                                h = hits[(x["model"], c)]
+                                h[1] += 1
+                                h[0] += d in named
         for (m, c), (k, n) in hits.items():
             out[m][c][lvl] = round(k / n, 2)
-    return out
+    return out, lists
 
 
 # where each step's replies live: (manifest ids, scene id for category c, turns to keep)
@@ -395,11 +401,12 @@ def blob():
     models = sorted(set().union(*lv.values()))
     dist = {c: {k: [[a, n] for a, n in rows[k]["field"].get(c, Counter()).most_common()] for k in LEVELS} for c in cats}
     per_model = {m: {c: {k: lv[k].get(m, {}).get(c, []) for k in LEVELS} for c in cats} for m in models}
+    om, lists = own_mentioned(set(cats))
     return {"levels": [{"id": k, "label": LABELS[k], "prompt": PROMPTS[k], "models": rows[k]["models"],
                         "flips": rows[k]["flips"], "top_share": round(rows[k]["top_share"], 3),
                         "retention": round(rows[k]["retention"], 3), "no_pick": round(rows[k]["no_pick"], 3)}
                        for k in LEVELS],
-            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": own_mentioned(set(cats)), "base": BASE,
+            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": om, "lists": lists, "base": BASE,
             "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK}
 
 
