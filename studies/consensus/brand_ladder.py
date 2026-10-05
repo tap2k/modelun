@@ -398,7 +398,8 @@ def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()
     cats = sorted(rows["name"]["field"])
-    models = sorted(set().union(*lv.values()))
+    # sonar answers from a live web search, not model memory (spec/models.json); the page leaves it out
+    models = sorted(set().union(*lv.values()) - {"sonar"})
     dist = {c: {k: [[a, n] for a, n in rows[k]["field"].get(c, Counter()).most_common()] for k in LEVELS} for c in cats}
     per_model = {m: {c: {k: lv[k].get(m, {}).get(c, []) for k in LEVELS} for c in cats} for m in models}
     om, lists = own_mentioned(set(cats))
