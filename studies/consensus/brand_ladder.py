@@ -343,6 +343,43 @@ def own_mentioned(cats):
     return out
 
 
+# where each step's replies live: (manifest ids, scene id for category c, turns to keep)
+SOURCES = {
+    "name": (("brands", "brands-ext", "brands-ext2"), lambda c: c, (0,)),
+    "choose": (("brands-choose", "brands-ext-choose", "brands-ext2-choose"), lambda c: c, (0,)),
+    "recommend_clamp": (("brands-recommend-clamp", "brands-ext2-recommend-clamp"), lambda c: c, (0,)),
+    "free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"), lambda c: f"brand_{c}_free", (0,)),
+    "free_choose": (("brands-choose-free", "brands-ext2-choose-free"), lambda c: f"{c}__choosefree", (0,)),
+    "recommend": (("brands-recommend-free", "brands-ext2-recommend-free"), lambda c: f"{c}__recommend", (0,)),
+    "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), lambda c: f"{c}__pick", (0, 1)),
+}
+
+
+def replies(cats, cut=3000):
+    """category -> model -> step -> [run -> [{"u": question, "r": reply}]], reasoning traces removed and each reply cut
+    to `cut` characters: the text the defaults page shows when a cell is clicked."""
+    out = {c: defaultdict(dict) for c in cats}
+    for lv, (ids, sid_of, turns) in SOURCES.items():
+        back = {sid_of(c): c for c in cats}
+        for r in ids:
+            for p in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
+                x = json.loads(p.read_text())
+                for sid, sc in x["scenes"].items():
+                    c = back.get(sid)
+                    if c is None:
+                        continue
+                    runs = []
+                    for run in sc["runs"]:
+                        cells = []
+                        for t in turns:
+                            cell = run[t] if run and len(run) > t else {}
+                            txt = re.sub(r"<think>.*?</think>", "", cell.get("reply") or "", flags=re.S).strip()
+                            cells.append({"u": cell.get("u", ""), "r": (txt[:cut] + ("…" if len(txt) > cut else "")) if txt else None})
+                        runs.append(cells)
+                    out[c][x["model"]].setdefault(lv, []).extend(runs)
+    return out
+
+
 def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()

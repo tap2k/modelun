@@ -304,11 +304,57 @@ function flowModel(m, lvs) {
   <div class="legend">${Object.entries(STATES).map(([k, [d, col]]) => `<span><i style="background:${col}"></i><b>${k}</b>: ${d}</span>`).join("")}</div>
   <div class="twrap"><table class="t"><tr><th>category</th>${lvs.map(lv => `<th title="${esc(lv.prompt)}">${esc(lv.label)}</th>`).join("")}</tr>`;
   for (const r of rows) {
-    h += `<tr class="row" data-c="${esc(r.c)}"><td>${esc(label(r.c))}</td>` + r.st.map(z => z == null ? '<td class="b np">–</td>' :
-      `<td class="b" style="background:color-mix(in srgb, ${STATES[z.s][1]} 48%, transparent)" title="${esc(STATES[z.s][0])}${z.ment != null ? ` · mentions own brand in ${pct(z.ment)} of replies` : ""}">${esc(z.a || "no brand")}</td>`).join("") + "</tr>";
+    h += `<tr><td><a href="#c/${esc(r.c)}">${esc(label(r.c))}</a></td>` + r.st.map((z, i) => z == null ? '<td class="b np">–</td>' :
+      `<td class="b cellr" data-c="${esc(r.c)}" data-l="${FLOW[i]}" style="cursor:pointer;background:color-mix(in srgb, ${STATES[z.s][1]} 48%, transparent)" title="${esc(STATES[z.s][0])}${z.ment != null ? ` · mentions own brand in ${pct(z.ment)} of replies` : ""} · click to read">${esc(z.a || "no brand")}</td>`).join("") + "</tr>";
   }
-  main.innerHTML = h + "</table></div>";
-  main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#c/" + r.dataset.c));
+  main.innerHTML = h + `</table></div><div id="reader"><p class="note" style="margin-top:14px">Click a cell to read the replies.</p></div>`;
+  main.querySelectorAll("td.cellr").forEach(td => td.addEventListener("click", () => {
+    main.querySelectorAll("td.cellr").forEach(x => x.style.outline = "");
+    td.style.outline = "2px solid var(--fg)";
+    readReplies(m, td.dataset.c, td.dataset.l);
+  }));
+}
+
+/* the reading pane: the replies behind one cell, loaded per category from ladder_replies/<category>.js */
+window.LADDER_R = window.LADDER_R || {};
+function loadReplies(c, then) {
+  if (window.LADDER_R[c]) return then();
+  const sc = document.createElement("script");
+  sc.src = "ladder_replies/" + encodeURIComponent(c) + ".js";
+  sc.onload = then;
+  sc.onerror = () => { document.getElementById("reader").innerHTML = '<p class="note">No reply file; run views/build.py --ladder.</p>'; };
+  document.head.appendChild(sc);
+}
+function mark(text, own, ans) {
+  let t = esc(text);
+  const hi = (b, col) => { if (!b) return; const re = new RegExp("\\b(" + b.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")\\b", "gi");
+    t = t.replace(re, `<b style="background:${col};color:#fff;border-radius:3px;padding:0 3px">$1</b>`); };
+  hi(own, "var(--s1)");
+  if (ans && ans !== own) hi(ans, "var(--s2)");
+  return t;
+}
+function readReplies(m, c, lv) {
+  const box = document.getElementById("reader");
+  box.innerHTML = '<p class="note">loading…</p>';
+  loadReplies(c, () => {
+    const runs = ((window.LADDER_R[c] || {})[m] || {})[lv] || [];
+    const st = flowState(m, c, lv), own = L.defaults[m][c], step = LV.find(v => v.id === lv);
+    const groups = new Map();
+    for (const run of runs) { const k = JSON.stringify(run.map(x => x.r)); groups.set(k, {run, n: (groups.get(k) || {n: 0}).n + 1}); }
+    let h = `<h3 style="margin-top:18px">${esc(m)} · ${esc(label(c))} · ${esc(step.label)}</h3>
+      <p class="note"><span style="background:var(--s1);color:#fff;border-radius:3px;padding:0 4px">${esc(own)}</span> is its one-word Name brand;
+      ${st && st.a && st.a !== own ? `<span style="background:var(--s2);color:#fff;border-radius:3px;padding:0 4px">${esc(st.a)}</span> is what it gives here.` : "here it keeps it."}
+      ${runs.length} runs.</p>`;
+    for (const {run, n} of groups.values()) {
+      h += `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 10px;background:var(--panel)">`
+        + (n > 1 ? `<div class="note" style="margin:0 0 6px">×${n} identical runs</div>` : "")
+        + run.map((cell, i) => `<div style="margin:${i ? "10px" : "0"} 0 0"><div class="mono" style="color:var(--mut);font-size:12px">${esc(cell.u)}</div>
+           <div style="white-space:pre-wrap;font-size:13px;line-height:1.5">${cell.r == null ? "<i>failed run</i>" : mark(cell.r, own, st && st.a)}</div></div>`).join("")
+        + `</div>`;
+    }
+    box.innerHTML = h;
+    box.scrollIntoView({behavior: "smooth", block: "start"});
+  });
 }
 
 /* ---------- router ---------- */
