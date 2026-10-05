@@ -193,15 +193,16 @@ function model(m) {
   <h2 class="mono">${esc(m)}</h2>${matrix([m])}
   <h3>brands by category</h3>
   <p class="note">Within a row, one colour is one brand, so a run of the same colour is the same answer carried across steps.
-  Categories with the most different brands are first. Click a cell to read the replies.</p>
+  Categories with the most different brands are first. Click a category to read all its replies in order, or a cell for one step.</p>
   <div class="twrap"><table class="t"><tr><th>category</th>${STEPS.map(lv =>
     `<th class="${lv === "free_name" || lv === "pick2" ? "gap" : ""}" title="${esc(prompt(lv))}">${head(lv)}</th>`).join("")}</tr>`;
-  for (const r of rows) h += `<tr><td>${esc(label(r.c))}</td>` + r.a.map((x, i) => {
+  for (const r of rows) h += `<tr><td><a href="#" class="seq" data-c="${esc(r.c)}">${esc(label(r.c))}</a></td>` + r.a.map((x, i) => {
     const g = STEPS[i] === "free_name" || STEPS[i] === "pick2" ? " gap" : "";
     return x == null ? `<td class="b np cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}">no brand</td>`
       : `<td class="b cellr${g}" data-c="${esc(r.c)}" data-l="${STEPS[i]}" title="${esc(x)}"><span class="sw" style="background:${ROWCOL[r.seen.indexOf(x)] || "var(--other)"}"></span>${esc(x)}</td>`;
   }).join("") + "</tr>";
   main.innerHTML = h + `</table></div><div id="reader"></div>`;
+  main.querySelectorAll("a.seq").forEach(a => a.addEventListener("click", e => { e.preventDefault(); readReplies(m, a.dataset.c, STEPS); }));
   main.querySelectorAll("td.cellr").forEach(td => td.addEventListener("click", () => readReplies(m, td.dataset.c, td.dataset.l)));
 }
 
@@ -235,25 +236,32 @@ function mark(text, own, ans) {
   if (ans && ans !== own) hi(ans, "var(--s2)");
   return t;
 }
-function readReplies(m, c, lv) {
+// the replies of one step, or of every step in order when lvs is the whole sequence
+function readReplies(m, c, lvs) {
+  if (!Array.isArray(lvs)) lvs = [lvs];
   const box = document.getElementById("reader");
   box.innerHTML = '<p class="note">loading…</p>';
   loadReplies(c, () => {
-    const runs = ((window.LADDER_R[c] || {})[m] || {})[lv] || [];
-    const ref = CLAMP[lv] || "name", own = ans(m, c, ref), here = ans(m, c, lv);
-    const groups = new Map();
-    for (const run of runs) { const k = JSON.stringify(run.map(x => x.r)); groups.set(k, {run, n: (groups.get(k) || {n: 0}).n + 1}); }
     const tag = (x, col) => `<span style="background:${col};color:#fff;border-radius:3px;padding:0 4px">${esc(x)}</span>`;
-    let h = `<h3 style="margin-top:18px">${esc(m)} · ${esc(label(c))} · ${SHORT[lv]}${GROUP(lv) ? " " + GROUP(lv) : ""}</h3>
-      <p class="note">${own ? tag(own, "var(--s1)") + ` is its ${SHORT[ref]} clamped brand` : `no ${SHORT[ref]} clamped brand`};
-      ${lv === ref ? "" : here && here !== own ? tag(here, "var(--s2)") + " is what it gives here." : here ? "here it gives the same." : "here it names no brand."}
-      ${runs.length} runs.</p>`;
-    for (const {run, n} of groups.values()) {
-      h += `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 10px;background:var(--panel)">`
-        + (n > 1 ? `<div class="note" style="margin:0 0 6px">×${n} identical runs</div>` : "")
-        + run.map((cell, i) => `<div style="margin:${i ? "10px" : "0"} 0 0"><div class="mono" style="color:var(--mut);font-size:12px">${esc(cell.u)}</div>
-           <div style="white-space:pre-wrap;font-size:13px;line-height:1.5">${cell.r == null ? "<i>failed run</i>" : mark(cell.r, own, here)}</div></div>`).join("")
-        + `</div>`;
+    let h = lvs.length > 1 ? `<h2 style="margin-top:22px" class="mono">${esc(m)} · ${esc(label(c))}</h2>
+      <p class="note">Every step in order. In each, blue marks the brand it is read against (the clamped Name brand, or the same
+      verb clamped for a free step) and orange the brand the step gives instead.</p>` : "";
+    for (const lv of lvs) {
+      const runs = ((window.LADDER_R[c] || {})[m] || {})[lv] || [];
+      const ref = CLAMP[lv] || "name", own = ans(m, c, ref), here = ans(m, c, lv);
+      const groups = new Map();
+      for (const run of runs) { const k = JSON.stringify(run.map(x => x.r)); groups.set(k, {run, n: (groups.get(k) || {n: 0}).n + 1}); }
+      h += `<h3 style="margin-top:18px">${lvs.length > 1 ? "" : esc(m) + " · " + esc(label(c)) + " · "}${GROUP(lv) ? GROUP(lv) + " " : ""}${SHORT[lv]}</h3>
+        <p class="note">${own ? tag(own, "var(--s1)") + ` is its ${SHORT[ref]} clamped brand` : `no ${SHORT[ref]} clamped brand`};
+        ${lv === ref ? "" : here && here !== own ? tag(here, "var(--s2)") + " is what it gives here." : here ? "here it gives the same." : "here it names no brand."}
+        ${runs.length} runs.</p>`;
+      for (const {run, n} of groups.values()) {
+        h += `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 10px;background:var(--panel)">`
+          + (n > 1 ? `<div class="note" style="margin:0 0 6px">×${n} identical runs</div>` : "")
+          + run.map((cell, i) => `<div style="margin:${i ? "10px" : "0"} 0 0"><div class="mono" style="color:var(--mut);font-size:12px">${esc(cell.u)}</div>
+             <div style="white-space:pre-wrap;font-size:13px;line-height:1.5">${cell.r == null ? "<i>failed run</i>" : mark(cell.r, own, here)}</div></div>`).join("")
+          + `</div>`;
+      }
     }
     box.innerHTML = h;
     box.scrollIntoView({behavior: "smooth", block: "start"});
