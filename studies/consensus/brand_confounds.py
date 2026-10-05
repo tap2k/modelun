@@ -7,7 +7,8 @@
   3. by category: which categories move from Name, at which level, and which hold at every level
   4. paraphrase floor: free Recommend against two rewordings on the 14-model perturbation subset (as served)
 
-Everything as served, 44 categories, scored as brand_ladder.py scores it. Zero API calls. Writes
+Everything as served, scored as brand_ladder.py scores it; the pooled checks (1, 2, 4) leave out the two generic
+categories (brand_ladder.GENERIC), the by-category list keeps all 44. Zero API calls. Writes
 probes/brand_confounds.json.
 
     ../../.venv/bin/python brand_confounds.py
@@ -38,7 +39,7 @@ def list_position():
             x = json.loads(f.read_text())
             for sid, s in x["scenes"].items():
                 c = sid.removesuffix("__pick")
-                if c not in pats:
+                if c not in pats or c in B.GENERIC:
                     continue
                 for r in s["runs"]:
                     if not r or len(r) < 2 or any(t.get("error") or not (t.get("reply") or "").strip() for t in r[:2]):
@@ -110,8 +111,9 @@ def paraphrase(lv):
 
 def main():
     lv = B.levels()
-    out = {"list_position": list_position(), "by_lab": by_lab(lv), "by_category": by_category(lv),
-           "paraphrase": paraphrase(lv)}
+    pooled = {k: {m: {c: xs for c, xs in cs.items() if c not in B.GENERIC} for m, cs in d.items()} for k, d in lv.items()}
+    out = {"list_position": list_position(), "by_lab": by_lab(pooled), "by_category": by_category(lv),
+           "paraphrase": paraphrase(pooled)}
     (HERE / "probes" / "brand_confounds.json").write_text(json.dumps(out, indent=1) + "\n")
     lp = out["list_position"]
     print(f"1. two-turn pick, {lp['picks']} picks: " + ", ".join(f"{k} {v:.0%}" for k, v in sorted(lp["position"].items(), key=lambda kv: -kv[1]))

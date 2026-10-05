@@ -117,42 +117,69 @@ function agree(ms, a, b) {
   return n ? {v: same / n, n} : null;
 }
 // for a free step: share of (model, category) pairs whose free replies mostly mention the clamped answer, and name no brand
-// each free reply against the model's clamped brand for the same verb: the brand it names first, a brand it names anywhere
-// in the list (first included), or no brand from the pool at all
-function fate(ms, lv, cs = L.cats) {
-  let first = 0, later = 0, none = 0, n = 0;
+// "company" and "brand" name no product, so a free question about them mostly draws a clarifying question; they are
+// shown as rows but left out of every pooled number
+const GENERIC = ["company", "brand"], POOLED = L.cats.filter(c => !GENERIC.includes(c));
+// each free reply against the model's clamped brand for the same verb. first / in the list: shares of the replies that name
+// a brand (in the list includes first); no brand: share of all replies. A reply cut off at the token limit before naming a
+// brand (null) is a failed run and counts nowhere. base: share of the clamped runs that give the clamped brand.
+function fate(ms, lv, cs = POOLED) {
+  let first = 0, inl = 0, none = 0, n = 0, named_ = 0, bk = 0, bn = 0;
   for (const m of ms) for (const c of cs) {
     const d = ans(m, c, CLAMP[lv]); if (!d) continue;
+    const xs = named(((L.per_model[m] || {})[c] || {})[CLAMP[lv]]); bk += xs.filter(x => x === d).length; bn += xs.length;
     for (const l of (((L.lists || {})[m] || {})[c] || {})[lv] || []) {
-      n++; if (!l.length) none++; else { first += l[0] === d; later += l.includes(d); }
+      if (l == null) continue;
+      n++; if (!l.length) { none++; continue; }
+      named_++; first += l[0] === d; inl += l.includes(d);
     }
   }
-  return n ? {first: first / n, later: later / n, none: none / n, n} : null;
+  return n ? {base: bn ? bk / bn : null, first: named_ ? first / named_ : null, inl: named_ ? inl / named_ : null,
+              none: none / n, n, named: named_} : null;
+}
+// across models: each model's own rates, averaged, so every model counts once whatever its number of replies
+function fateAvg(ms, lv, cs) {
+  const rs = ms.map(m => fate([m], lv, cs)).filter(Boolean);
+  if (!rs.length) return null;
+  const avg = k => { const v = rs.map(r => r[k]).filter(x => x != null); return v.length ? v.reduce((a, x) => a + x, 0) / v.length : null; };
+  return {base: avg("base"), first: avg("first"), inl: avg("inl"), none: avg("none"),
+          n: rs.reduce((a, r) => a + r.n, 0), named: rs.reduce((a, r) => a + r.named, 0)};
 }
 const shade = v => `background:rgba(57,135,229,${(0.06 + 0.85 * v).toFixed(2)})`;
 const FREE = ["free_name", "free_choose", "recommend"];
-const COLS = [["first", "first"], ["later", "in the list"], ["none", "no brand"]];
-function fateCells(ms, cs) {
-  return FREE.map(f => { const r = fate(ms, f, cs);
-    return COLS.map(([k], i) => r == null ? `<td class="n${i ? "" : " gap"}">–</td>`
-      : `<td class="n${i ? "" : " gap"}" style="${k === "none" ? "" : shade(r[k])}">${pct(r[k])}</td>`).join(""); }).join("");
+const COLS = [["base", "clamped runs"], ["first", "first"], ["inl", "in the list"], ["none", "no brand"]];
+// thin: too few replies name a brand to read first / in the list
+function fateCells(ms, cs, thin) {
+  return FREE.map(f => { const r = ms.length > 1 ? fateAvg(ms, f, cs) : fate(ms, f, cs), few = r && thin(r);
+    return COLS.map(([k], i) => {
+      const g = i ? "" : " gap";
+      if (r == null || r[k] == null) return `<td class="n${g}">–</td>`;
+      const dim = few && (k === "first" || k === "inl");
+      const st = k === "none" ? "" : dim ? "color:var(--mut)" : k === "base" ? shade(r[k]) + ";color:var(--mut)" : shade(r[k]);
+      return `<td class="n${g}" style="${st}" title="${r.named} of ${r.n} replies name a brand">${pct(r[k])}</td>`;
+    }).join(""); }).join("");
 }
 function home(byCat) {
   const ms = L.models;
   let h = `<h2>the clamp: each verb asked freely, against the same verb clamped</h2>
-  <p class="note">The free question drops "Reply with the name only." and nothing else. For every free reply, where is the brand
-  the model gives to the clamped question? <b>First</b>: the reply leads with it. <b>In the list</b>: the reply names it anywhere,
-  first included. <b>No brand</b>: the reply names no brand at all.
-  The clamped brand is the model's most common answer over 8 runs; each free step has 4 runs per category.</p>
+  <p class="note">The free question drops "Reply with the name only." and nothing else. For each verb:
+  <b>clamped runs</b>: how often the clamped runs give the model's most common clamped brand, the baseline's own stability
+  and the ceiling for "first". <b>First</b>: of the free replies that name a brand, the share that lead with the clamped brand.
+  <b>In the list</b>: of those, the share that name it anywhere, first included. <b>No brand</b>: of all free replies, the share
+  that name no brand (mostly a clarifying question). Replies cut off at the token limit before naming a brand are failed runs and
+  left out. Grey: too few replies name a brand to read (fewer than 8 for a model, under a quarter for a category).
+  A row for many models (the first row, and each category) averages the models' own rates, so each model counts once.
+  Pooled numbers leave out the ${GENERIC.map(x => `"${x}"`).join(" and ")} categories, which name no product.</p>
   <div class="ctl"><a class="${byCat ? "" : "on"}" href="#">by model</a><a class="${byCat ? "on" : ""}" href="#cats">by category</a></div>
-  <div class="twrap"><table class="t"><tr><th rowspan="2">${byCat ? "category" : "model"}</th>${FREE.map(f => `<th colspan="3" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}</tr>
+  <div class="twrap"><table class="t"><tr><th rowspan="2">${byCat ? "category" : "model"}</th>${FREE.map(f => `<th colspan="4" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}</tr>
   <tr>${FREE.map(() => COLS.map(([, l], i) => `<th class="${i ? "" : "gap"}">${l}</th>`).join("")).join("")}</tr>
-  <tr><td><b>all ${ms.length} models, ${L.cats.length} categories</b></td>${fateCells(ms)}</tr>`;
+  <tr><td><b>all ${ms.length} models, ${POOLED.length} categories</b></td>${fateCells(ms, POOLED, () => false)}</tr>`;
   const keys = byCat ? L.cats : ms;
-  const rows = keys.map(k => ({k, f: FREE.map(f => byCat ? fate(ms, f, [k]) : fate([k], f))}));
-  const mean = r => { const v = r.filter(Boolean); return v.length ? v.reduce((a, x) => a + x.first, 0) / v.length : 2; };
+  const thin = byCat ? r => r.named < r.n / 4 : r => r.named < 8;
+  const rows = keys.map(k => ({k, f: FREE.map(f => byCat ? fateAvg(ms, f, [k]) : fate([k], f))}));
+  const mean = r => { const v = r.filter(x => x && x.first != null); return v.length ? v.reduce((a, x) => a + x.first, 0) / v.length : 2; };
   rows.sort((x, y) => mean(x.f) - mean(y.f));
-  for (const {k} of rows) h += `<tr class="row" data-h="${byCat ? "c" : "m"}/${esc(encodeURIComponent(k))}"><td class="${byCat ? "" : "mono"}">${esc(byCat ? label(k) : k)}</td>${byCat ? fateCells(ms, [k]) : fateCells([k])}</tr>`;
+  for (const {k} of rows) h += `<tr class="row" data-h="${byCat ? "c" : "m"}/${esc(encodeURIComponent(k))}"><td class="${byCat ? "" : "mono"}">${esc(byCat ? label(k) : k)}${byCat && GENERIC.includes(k) ? ' <span class="sh">(not pooled)</span>' : ""}</td>${byCat ? fateCells(ms, [k], thin) : fateCells([k], POOLED, thin)}</tr>`;
   main.innerHTML = h + `</table></div><p class="note" style="margin-top:10px">Lowest "first" share first. Click a ${byCat ? "category for every model's ladder on it" : "model for its ladder"}.</p>`;
   main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#" + r.dataset.h));
 }
@@ -188,7 +215,7 @@ function runsTip(m, c, lv) {
   const b = x => x === ref ? `<b style="color:var(--s1)">${esc(x)}</b>` : esc(x);
   let h = `<div style="color:var(--mut);margin:0 0 4px">${GROUP(lv) ? GROUP(lv) + " " : ""}${SHORT[lv]} · ${xs.length} runs</div>`;
   if (CLAMP[lv] && ls && ls.length) {
-    h += ls.map((l, i) => `<div>${i + 1}. ${l.length ? l.map(b).join(", ") : "<i>no brand from the pool</i>"}</div>`).join("");
+    h += ls.map((l, i) => `<div>${i + 1}. ${l == null ? "<i>cut off before naming a brand</i>" : l.length ? l.map(b).join(", ") : "<i>no brand</i>"}</div>`).join("");
     if (ref) h += `<div style="color:var(--mut);margin-top:4px"><b style="color:var(--s1)">${esc(ref)}</b> = its ${CLAMP[lv] ? SHORT[CLAMP[lv]] : "Name"} clamped brand</div>`;
   } else {
     const k = {}; xs.forEach(x => k[x] = (k[x] || 0) + 1);

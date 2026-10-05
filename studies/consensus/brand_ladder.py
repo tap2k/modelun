@@ -190,7 +190,8 @@ def committed(c, reply):
 
 
 def load(run_ids, suffix, turn, how):
-    """model -> category -> [answers] from one or more manifest entries; how = 'open' or 'first'."""
+    """model -> category -> [answers] from one or more manifest entries; how = 'open' or 'first'. A reply cut off at the
+    token limit before naming a brand is a failed run and is skipped, not scored as naming no brand."""
     pool = pools()[2]
     out = defaultdict(lambda: defaultdict(list))
     run_ids = [run_ids] if isinstance(run_ids, str) else run_ids
@@ -206,7 +207,10 @@ def load(run_ids, suffix, turn, how):
                 if not r or len(r) <= turn or r[turn].get("error") or not (r[turn].get("reply") or "").strip():
                     continue
                 rep = r[turn]["reply"]
-                out[x["model"]][c].append(committed(c, rep) if how == "open" else first_mention(c, rep))
+                a = committed(c, rep) if how == "open" else first_mention(c, rep)
+                if a == NO_PICK and r[turn].get("finish_reason") == "length":
+                    continue
+                out[x["model"]][c].append(a)
     return out
 
 
@@ -226,6 +230,9 @@ def clamped(run_ids):
 
 # sonar answers from a live web search, not model memory (spec/models.json); the brand analysis leaves it out
 EXCLUDE = {"sonar"}
+# "company" and "brand" name no product: asked freely, most models ask what is meant. Pooled brand numbers leave them out;
+# the viewer still shows them
+GENERIC = {"company", "brand"}
 
 
 @lru_cache(None)
@@ -331,7 +338,9 @@ def own_mentioned(cats):
     the share of replies that mention the model's baseline answer anywhere (first mention or later), so a baseline
     demoted down a list can be told from one that is dropped. The baseline is the model's most frequent answer to the
     clamped counterpart (BASE): free Choose against clamped Choose, and so on;
-    and each reply's brands from the pool, in the order the reply names them."""
+    and each reply's brands from the pool, in the order the reply names them. A reply naming no pool brand records the
+    brand it commits to, if any (one outside the pool); a reply cut off at the token limit before naming any brand is
+    recorded as None, a failed run rather than a reply that names no brand."""
     lv = levels()
     base = {k: {m: {c: (Counter(x for x in xs if x != NO_PICK).most_common(1) or [(None, 0)])[0][0] for c, xs in cs.items()}
                 for m, cs in lv[b].items()} for k, b in BASE.items()}
@@ -352,7 +361,11 @@ def own_mentioned(cats):
                     for run in sc["runs"]:
                         if run and len(run) > turn and not run[turn].get("error") and (run[turn].get("reply") or "").strip():
                             named = mentions(run[turn]["reply"], pats[c])
-                            lists[x["model"]][c][lvl].append(named[:10])
+                            if not named:
+                                pick = committed(c, run[turn]["reply"])
+                                named = [] if pick == NO_PICK else [pick]
+                            cut = run[turn].get("finish_reason") == "length"
+                            lists[x["model"]][c][lvl].append(None if cut and not named else named[:10])
                             if d:
                                 h = hits[(x["model"], c)]
                                 h[1] += 1

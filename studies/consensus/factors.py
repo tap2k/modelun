@@ -113,7 +113,7 @@ def off_brand(level):
 
 def main():
     random.seed(0)
-    lv = B.levels()
+    lv = {k: {m: {c: xs for c, xs in cs.items() if c not in B.GENERIC} for m, cs in d.items()} for k, d in B.levels().items()}
     g_name = {**{m: dict(c) for m, c in answers(HERE, "census8").items()}}
     for m, cats in answers(HERE, "expanded").items():
         g_name.setdefault(m, {}).update(cats)
@@ -148,7 +148,8 @@ def main():
     for lab, level in (("Name", "name"), ("Choose", "choose"), ("pick", "pick1_clamp"), ("Recommend", "recommend_clamp"),
                        ("free Choose", "free_choose"), ("free pick", "pick1"), ("free Recommend", "recommend"),
                        ("two-turn pick", "pick2")):
-        add("reasoning", "brands", lab, lv[level], off_brand(level), HYB)
+        off = {m: {c: xs for c, xs in cs.items() if c not in B.GENERIC} for m, cs in off_brand(level).items()}
+        add("reasoning", "brands", lab, lv[level], off, HYB)
 
     (HERE / "probes" / "factors.json").write_text(json.dumps(rows, indent=1) + "\n")
     print(f"{'factor':12} {'battery':9} {'contrast':30} {'models':>6} {'cats':>4}  {'consensus moved':>17}  {'own answer kept':>17}  {'no answer':>9}")
