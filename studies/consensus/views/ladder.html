@@ -146,6 +146,25 @@ function fateAvg(ms, lv, cs) {
   return {base: avg("base"), first: avg("first"), inl: avg("inl"), none: avg("none"),
           n: rs.reduce((a, r) => a + r.n, 0), named: rs.reduce((a, r) => a + r.named, 0)};
 }
+// the two-turn pick against the model's clamped Recommend brand, and against its own turn-1 list: same / listed / first
+// listed are shares of the runs that pick a brand; no pick is a share of all runs
+function pickFate(ms, cs = POOLED) {
+  const per = [];
+  for (const m of ms) { let same = 0, inl = 0, first = 0, none = 0, n = 0, k = 0;
+    for (const c of cs) { const d = ans(m, c, "recommend_clamp");
+      for (const r of (((L.lists || {})[m] || {})[c] || {}).pick2 || []) {
+        if (r == null) continue; n++;
+        if (r[0] == null) { none++; continue; }
+        k++; same += r[0] === d; inl += r[1].includes(r[0]); first += r[1][0] === r[0];
+      } }
+    if (n) per.push({same: k ? same / k : null, inl: k ? inl / k : null, first: k ? first / k : null, none: none / n, n, named: k});
+  }
+  if (!per.length) return null;
+  const avg = key => { const v = per.map(r => r[key]).filter(x => x != null); return v.length ? v.reduce((a, x) => a + x, 0) / v.length : null; };
+  return {same: avg("same"), inl: avg("inl"), first: avg("first"), none: avg("none"),
+          n: per.reduce((a, r) => a + r.n, 0), named: per.reduce((a, r) => a + r.named, 0)};
+}
+const PCOLS = [["same", "clamped Recommend"], ["inl", "from its list"], ["first", "first in its list"], ["none", "no pick"]];
 const shade = v => `background:rgba(57,135,229,${(0.06 + 0.85 * v).toFixed(2)})`;
 const FREE = ["free_name", "free_choose", "recommend"];
 const COLS = [["base", "clamped runs"], ["first", "first"], ["inl", "in the list"], ["none", "no brand"]];
@@ -158,7 +177,13 @@ function fateCells(ms, cs, thin) {
       const dim = few && (k === "first" || k === "inl");
       const st = k === "none" ? "" : dim ? "color:var(--mut)" : k === "base" ? shade(r[k]) + ";color:var(--mut)" : shade(r[k]);
       return `<td class="n${g}" style="${st}" title="${r.named} of ${r.n} replies name a brand">${pct(r[k])}</td>`;
-    }).join(""); }).join("");
+    }).join(""); }).join("") + (() => { const r = pickFate(ms, cs), few = r && thin(r);
+    return PCOLS.map(([k], i) => {
+      const g = i ? "" : " gap";
+      if (r == null || r[k] == null) return `<td class="n${g}">–</td>`;
+      const dim = few && k !== "none";
+      return `<td class="n${g}" style="${k === "none" ? "" : dim ? "color:var(--mut)" : shade(r[k])}" title="${r.named} of ${r.n} runs pick a brand">${pct(r[k])}</td>`;
+    }).join(""); })();
 }
 function home(byCat) {
   const ms = L.models;
@@ -169,11 +194,13 @@ function home(byCat) {
   <b>In the list</b>: of those, the share that name it anywhere, first included. <b>No brand</b>: of all free replies, the share
   that name no brand (mostly a clarifying question). Replies cut off at the token limit before naming a brand are failed runs and
   left out. Grey: too few replies name a brand to read (fewer than 8 for a model, under a quarter for a category).
-  A row for many models (the first row, and each category) averages the models' own rates, so each model counts once.
+  <b>Two-turn pick</b> (free Recommend, then "Which one would you pick?"): of the runs that pick a brand, the share picking the
+  model's clamped Recommend brand, a brand from its own turn-1 list, and the first brand of that list; no pick is a share of all
+  runs. A row for many models (the first row, and each category) averages the models' own rates, so each model counts once.
   Pooled numbers leave out the ${GENERIC.map(x => `"${x}"`).join(" and ")} categories, which name no product.</p>
   <div class="ctl"><a class="${byCat ? "" : "on"}" href="#">by model</a><a class="${byCat ? "on" : ""}" href="#cats">by category</a></div>
-  <div class="twrap"><table class="t"><tr><th rowspan="2">${byCat ? "category" : "model"}</th>${FREE.map(f => `<th colspan="4" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}</tr>
-  <tr>${FREE.map(() => COLS.map(([, l], i) => `<th class="${i ? "" : "gap"}">${l}</th>`).join("")).join("")}</tr>
+  <div class="twrap"><table class="t"><tr><th rowspan="2">${byCat ? "category" : "model"}</th>${FREE.map(f => `<th colspan="4" class="gap" style="text-align:center">${SHORT[f]}</th>`).join("")}<th colspan="4" class="gap" style="text-align:center">two-turn pick</th></tr>
+  <tr>${FREE.map(() => COLS.map(([, l], i) => `<th class="${i ? "" : "gap"}">${l}</th>`).join("")).join("")}${PCOLS.map(([, l], i) => `<th class="${i ? "" : "gap"}">${l}</th>`).join("")}</tr>
   <tr><td><b>all ${ms.length} models, ${POOLED.length} categories</b></td>${fateCells(ms, POOLED, () => false)}</tr>`;
   const keys = byCat ? L.cats : ms;
   const thin = byCat ? r => r.named < r.n / 4 : r => r.named < 8;
@@ -215,6 +242,11 @@ function runsTip(m, c, lv) {
   const ref = CLAMP[lv] ? ans(m, c, CLAMP[lv]) : lv === "pick2" ? ans(m, c, "name") : null;
   const b = x => x === ref ? `<b style="color:var(--s1)">${esc(x)}</b>` : esc(x);
   let h = `<div style="color:var(--mut);margin:0 0 4px">${GROUP(lv) ? GROUP(lv) + " " : ""}${SHORT[lv]} · ${xs.length} runs</div>`;
+  if (lv === "pick2" && ls && ls.length) {
+    h += ls.map((r, i) => `<div>${i + 1}. ${r == null ? "<i>cut off</i>" : `picks ${r[0] == null ? "<i>nothing</i>" : b(r[0])} from ${r[1].length ? r[1].map(b).join(", ") : "<i>no listed brand</i>"}`}</div>`).join("");
+    if (ref) h += `<div style="color:var(--mut);margin-top:4px"><b style="color:var(--s1)">${esc(ref)}</b> = its Name clamped brand</div>`;
+    return h;
+  }
   if (CLAMP[lv] && ls && ls.length) {
     h += ls.map((l, i) => `<div>${i + 1}. ${l == null ? "<i>cut off before naming a brand</i>" : l.length ? l.map(b).join(", ") : "<i>no brand</i>"}</div>`).join("");
     if (ref) h += `<div style="color:var(--mut);margin-top:4px"><b style="color:var(--s1)">${esc(ref)}</b> = its ${CLAMP[lv] ? SHORT[CLAMP[lv]] : "Name"} clamped brand</div>`;

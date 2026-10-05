@@ -345,7 +345,8 @@ def own_mentioned(cats):
     the share of replies that mention the model's baseline answer anywhere (first mention or later), so a baseline
     demoted down a list can be told from one that is dropped. The baseline is the model's most frequent answer to the
     clamped counterpart (BASE): free Choose against clamped Choose, and so on;
-    and each reply's brands from the pool, in the order the reply names them. A reply naming no pool brand records the
+    and each reply's brands from the pool, in the order the reply names them (for the two-turn pick: [the pick, the
+    brands of the model's own turn-1 list]). A reply naming no pool brand records the
     brand it commits to, if any (one outside the pool); a reply cut off at the token limit before naming any brand is
     recorded as None, a failed run rather than a reply that names no brand."""
     lv = levels()
@@ -372,7 +373,13 @@ def own_mentioned(cats):
                                 pick = committed(c, run[turn]["reply"])
                                 named = [] if pick == NO_PICK else [pick]
                             cut = run[turn].get("finish_reason") == "length"
-                            lists[x["model"]][c][lvl].append(None if cut and not named else named[:10])
+                            if lvl == "pick2":       # the pick, and the brands of the model's own turn-1 list
+                                pick = committed(c, run[1]["reply"])
+                                listed = mentions(run[0].get("reply") or "", pats[c])[:10]
+                                lists[x["model"]][c][lvl].append(None if cut and pick == NO_PICK else
+                                                                 [None if pick == NO_PICK else pick, listed])
+                            else:
+                                lists[x["model"]][c][lvl].append(None if cut and not named else named[:10])
                             if d:
                                 h = hits[(x["model"], c)]
                                 h[1] += 1
