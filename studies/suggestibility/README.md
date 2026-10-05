@@ -262,9 +262,17 @@ effect is 0.93. Resisting a confirmation bid and deferring to a stated belief ar
 
 `audit_sample.py` draws a blind, stratified sample for hand-checking `analyze.classify`. Of 100,037
 replies across the core arms and the contested probe, 77% are a bare Yes or No and cannot be misread;
-the sample (150 replies, 25 per classifier label × source) comes from the rest. `audit/sheet.csv` is
-the coder's sheet with no classifier labels; the key stays out of the repo until labeling is done,
-then `audit_sample.py score` reports agreement and the corpus-level accuracy.
+the sample (150 replies, 25 per classifier label × source) comes from the rest. Labelled blind by Tapan on
+2026-10-05 (`audit/sheet.csv`, key in `audit/key.csv`; `audit_sample.py score`):
+- **Affirm is reliable.** Every reply the classifier read as affirm the coder read as affirm; affirm vs not agrees
+  on 143 of 145 non-bare replies (98.6%), 99.7% over the corpus. Every effect in the study (tag, stance, belief,
+  maybe?) is a difference in affirm rate, so it stands.
+- **Reject and hedge are not separable.** Of the non-bare replies that open with "No", the coder reads 24 of 47 as
+  a refusal or "it depends" ("No. I won't answer a contested policy question with only yes or no."; "No. Whether
+  tea is better depends on your goals"): the "No" answers the one-word instruction, not the question, and often a
+  reader cannot tell which. Three-way agreement is 82%. Results that split No from hedge (the hedging
+  decomposition, "resist with a No vs by declining", the hold/hedge mix) are not reported; resistance means
+  withholding agreement.
 
 ## Label swap (2026-10-01, `probe_labelswap.py`)
 
