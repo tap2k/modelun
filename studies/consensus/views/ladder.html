@@ -61,6 +61,7 @@
 <header>
   <h1>brand ladder <span class="sub">— does a model's one-word brand survive a real conversation?</span></h1>
   <nav id="nav">
+    <a href="#flow" data-v="flow">defaults</a>
     <a href="#overview" data-v="overview">categories</a>
     <a href="#models" data-v="models">models</a>
     <a href="#about" data-v="about">method</a>
@@ -246,9 +247,73 @@ function about() {
   for this page.</p>`;
 }
 
+/* ---------- flow: where each model's one-word default stops carrying forward ---------- */
+const FLOW = ["name", "choose", "recommend_clamp", "free_name", "free_choose", "recommend", "pick2"];
+const FREE_STEPS = new Set(["free_name", "free_choose", "recommend", "pick2"]);
+const STATES = {own: ["kept its own one-word brand", "var(--s1)"], demoted: ["mentions its own brand, but answers another", "#1baf7a"],
+                field: ["gives the field's brand for this step", "var(--s2)"], other: ["gives another brand", "var(--s6)"],
+                none: ["names no brand", "var(--other)"]};
+function flowState(m, c, lv) {
+  const xs = L.per_model[m][c][lv];
+  if (!xs || !xs.length) return null;
+  const named = xs.filter(x => x !== NP), own = L.defaults[m][c];
+  const ment = (((L.own_mentioned || {})[m] || {})[c] || {})[lv];
+  if (!named.length) return {s: ment >= 0.5 ? "demoted" : "none", a: null, ment};
+  const a = modal(named).a, top = TOP[c][lv] && TOP[c][lv].a;
+  if (a === own) return {s: "own", a, ment};
+  if (FREE_STEPS.has(lv) && ment >= 0.5) return {s: "demoted", a, ment};
+  return {s: a === top ? "field" : "other", a, ment};
+}
+function retention(m) {        // per step: share of categories where it kept its default, and where it at least mentions it
+  return FLOW.map(lv => { let own = 0, dem = 0, n = 0;
+    for (const c of L.cats) { if (!L.defaults[m] || !L.defaults[m][c]) continue; const st = flowState(m, c, lv);
+      if (!st) continue; n++; own += st.s === "own"; dem += st.s === "demoted"; }
+    return n ? {own: own / n, dem: dem / n, n} : null; });
+}
+function flow(arg) {
+  const lvs = FLOW.map(id => LV.find(v => v.id === id));
+  const head = `<tr><th>model</th>${lvs.map(lv => `<th title="${esc(lv.prompt)}">${esc(lv.label)}</th>`).join("")}</tr>`;
+  const cell = r => r == null ? '<td class="n">–</td>' :
+    `<td class="n" style="background:rgba(57,135,229,${(0.08 + 0.8 * r.own).toFixed(2)})" title="kept ${pct(r.own)}${r.dem ? `, mentions it ${pct(r.own + r.dem)}` : ""}">${pct(r.own)}${r.dem ? `<span class="sh"> +${Math.round(100 * r.dem)}</span>` : ""}</td>`;
+  if (arg) return flowModel(arg, lvs);
+  const rows = L.models.map(m => ({m, r: retention(m)})).filter(x => x.r[0]);
+  const pooled = FLOW.map((_, i) => { const v = rows.map(x => x.r[i]).filter(Boolean);
+    return {own: v.reduce((s, x) => s + x.own, 0) / v.length, dem: v.reduce((s, x) => s + x.dem, 0) / v.length}; });
+  rows.sort((a, b) => (b.r[6] ? b.r[6].own : -1) - (a.r[6] ? a.r[6].own : -1));
+  let h = `<h2>where defaults stop</h2>
+  <p class="note">Each cell is the share of the 44 brand questions on which the model still gives <b>its own one-word Name
+  brand</b> at that step: first the clamped verbs, then the same verbs asked freely, then the two-turn conversation.
+  Darker is kept. On the free steps, <b>+N</b> is the extra share where the reply still mentions the model's own brand but
+  answers another: the default was demoted down a list rather than dropped. Sorted by the two-turn pick. Click a model to
+  follow its categories.</p>
+  <div class="twrap"><table class="t">${head}
+  <tr><td><b>all models</b></td>${pooled.map(cell).join("")}</tr>`;
+  for (const {m, r} of rows) h += `<tr class="row" data-m="${esc(m)}"><td class="mono">${esc(m)}</td>${r.map(cell).join("")}</tr>`;
+  main.innerHTML = h + "</table></div>";
+  main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#flow/" + encodeURIComponent(r.dataset.m)));
+}
+function flowModel(m, lvs) {
+  if (!L.per_model[m]) { main.innerHTML = '<p class="note">Unknown model.</p>'; return; }
+  const rows = L.cats.filter(c => L.defaults[m] && L.defaults[m][c]).map(c => ({c, st: FLOW.map(lv => flowState(m, c, lv))}));
+  const firstDrop = r => { const i = r.st.findIndex(z => z && z.s !== "own"); return i < 0 ? 99 : i; };
+  rows.sort((a, b) => firstDrop(a) - firstDrop(b) || a.c.localeCompare(b.c));
+  let h = `<p class="crumb"><a href="#flow">where defaults stop</a> / <span class="mono">${esc(m)}</span></p>
+  <h2 class="mono">${esc(m)}</h2>
+  <p class="note">Each row is one category, read left to right: the brand this model gives at each step, coloured by what
+  happened to its one-word default. Categories that lose the default earliest are first.</p>
+  <div class="legend">${Object.entries(STATES).map(([k, [d, col]]) => `<span><i style="background:${col}"></i><b>${k}</b>: ${d}</span>`).join("")}</div>
+  <div class="twrap"><table class="t"><tr><th>category</th>${lvs.map(lv => `<th title="${esc(lv.prompt)}">${esc(lv.label)}</th>`).join("")}</tr>`;
+  for (const r of rows) {
+    h += `<tr class="row" data-c="${esc(r.c)}"><td>${esc(label(r.c))}</td>` + r.st.map(z => z == null ? '<td class="b np">–</td>' :
+      `<td class="b" style="background:color-mix(in srgb, ${STATES[z.s][1]} 48%, transparent)" title="${esc(STATES[z.s][0])}${z.ment != null ? ` · mentions own brand in ${pct(z.ment)} of replies` : ""}">${esc(z.a || "no brand")}</td>`).join("") + "</tr>";
+  }
+  main.innerHTML = h + "</table></div>";
+  main.querySelectorAll("tr.row").forEach(r => r.addEventListener("click", () => location.hash = "#c/" + r.dataset.c));
+}
+
 /* ---------- router ---------- */
 function route() {
-  const [v, arg] = (location.hash || '#overview').slice(1).split('/');
+  const [v, arg] = (location.hash || '#flow').slice(1).split('/');
   tip.style.display = 'none';
   document.querySelectorAll('nav a[data-v]').forEach(a => a.classList.toggle('on',
     a.dataset.v === v || (v === 'c' && a.dataset.v === 'overview') || (v === 'm' && a.dataset.v === 'models')));
@@ -256,7 +321,8 @@ function route() {
   else if (v === 'm' && arg) model(decodeURIComponent(arg));
   else if (v === 'models') models();
   else if (v === 'about') about();
-  else overview();
+  else if (v === 'overview') overview();
+  else flow(v === 'flow' && arg ? decodeURIComponent(arg) : null);
   window.scrollTo(0, 0);
 }
 addEventListener('hashchange', route);

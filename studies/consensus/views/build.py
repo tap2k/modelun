@@ -75,14 +75,16 @@ def release_dates():
 
 
 TITLES = {"census": "one-word census (96 categories)", "brands": "brand battery (44 categories)",
-          "choose": "one-word census with \u201cChoose\u201d (96 categories)", "brands-choose": "brand choose battery (44 categories)"}
+          "choose": "one-word census with \u201cChoose\u201d (96 categories)", "brands-choose": "brand choose battery (44 categories)",
+          "brands-recommend": "brand recommend battery (44 categories)"}
 # the census page is the 31 census and 65 expanded questions together (8 runs each); the choose page, both with "Choose"
-SOURCE = {"census": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all"}
+SOURCE = {"census": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all",
+          "brands-recommend": "recommend_brands_all"}
 PAGES = ["census", "choose"]
 # not shared yet: built only when named (--battery brands), so the Pages deploy does not publish them
-PRIVATE = ["brands", "brands-choose"]
+PRIVATE = ["brands", "brands-choose", "brands-recommend"]
 # a Choose page shows each category's Name answer beside its Choose answer: the same questions with "Name"
-NAME_OF = {"choose": "combined", "brands-choose": "brands_all"}
+NAME_OF = {"choose": "combined", "brands-choose": "brands_all", "brands-recommend": "brands_all"}
 NOTES = {"census": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
                      "battery, same template and scoring. Three models whose endpoints are gone (Claude 3 Haiku, Granite "
                      "4.1 8B, Hermes 4 70B) have census categories only.",
@@ -91,6 +93,9 @@ NOTES = {"census": "Surprisal and answers over all 96 categories: the 31 census 
                    "project-management tool, mobile carrier) and three on 2026-10-03 (ride hailing, messaging app, "
                    "news outlet). The 25 hybrid models' reasoning-off runs are in "
                    "transcripts-brands-off/ and transcripts-brands-ext-off/.",
+         "brands-recommend": "The 44 brand questions asked \u201cCan you recommend a soda brand? Reply with the name only.\u201d, "
+                             "scored as the brand battery. The questions page shows each category's Name brand beside its "
+                             "Recommend brand.",
          "brands-choose": "The 44 brand questions with \u201cChoose\u201d instead of \u201cName\u201d, scored as the brand "
                           "battery. The questions page shows each category's Name brand beside its Choose brand.",
          "choose": "The 96 census and expanded questions with one word changed: \u201cChoose a fruit\u201d instead of "

@@ -310,6 +310,39 @@ def paraphrase_floor():
                   for a, b in (("recommend", "recommend2"), ("recommend", "recommend3"), ("recommend2", "recommend3"))}
 
 
+# the free steps' replies, for whether a model's own one-word brand is mentioned anywhere in them
+FREE = {"free_name": (("free-all", "free-brands-ext", "free-brands-ext2", "clamp-ext"), "_free", "brand_", 0),
+        "free_choose": (("brands-choose-free", "brands-ext2-choose-free"), "__choosefree", "", 0),
+        "recommend": (("brands-recommend-free", "brands-ext2-recommend-free"), "__recommend", "", 0),
+        "pick2": (("brands-pick2-free", "brands-ext2-pick2-free"), "__pick", "", 1)}
+
+
+def own_mentioned(cats):
+    """model -> category -> free step -> share of replies that mention the model's own one-word Name brand anywhere
+    (first mention or later), so a default that is demoted down a list can be told from one that is dropped."""
+    pats, dflt, out = pools()[4], defaults(), defaultdict(lambda: defaultdict(dict))
+    for lv, (ids, suffix, prefix, turn) in FREE.items():
+        hits = defaultdict(lambda: [0, 0])
+        for r in ids:
+            for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json")):
+                x = json.loads(f.read_text())
+                for sid, sc in x["scenes"].items():
+                    if not sid.endswith(suffix):
+                        continue
+                    c = sid[: -len(suffix)].removeprefix(prefix)
+                    d = dflt.get(x["model"], {}).get(c)
+                    if c not in cats or not d:
+                        continue
+                    for run in sc["runs"]:
+                        if run and len(run) > turn and not run[turn].get("error") and (run[turn].get("reply") or "").strip():
+                            h = hits[(x["model"], c)]
+                            h[1] += 1
+                            h[0] += d in mentions(run[turn]["reply"], pats[c])
+        for (m, c), (k, n) in hits.items():
+            out[m][c][lv] = round(k / n, 2)
+    return out
+
+
 def blob():
     """The viewer's data: per category the answer distribution at each level, per model its answers at each level."""
     lv, rows, dflt = levels(), summary(), defaults()
@@ -321,7 +354,7 @@ def blob():
                         "flips": rows[k]["flips"], "top_share": round(rows[k]["top_share"], 3),
                         "retention": round(rows[k]["retention"], 3), "no_pick": round(rows[k]["no_pick"], 3)}
                        for k in LEVELS],
-            "cats": cats, "dist": dist, "models": models, "per_model": per_model,
+            "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": own_mentioned(set(cats)),
             "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK}
 
 
