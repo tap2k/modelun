@@ -8,7 +8,9 @@ so the comparison is apples-to-apples. Writes probes/humannorms.json (derived nu
 raw VO norms are the authors' copyrighted data and are not redistributed -- reads a local copy
 of the paper).
 
-    ../../.venv/bin/python analyze_humannorms.py --pdf ~/Downloads/1-s2.0-S0749596X03001451-main.pdf
+    ../../.venv/bin/python analyze_humannorms.py --pdf ~/Desktop/projects/modelUN/papers/vanoverschelde-2004-category-norms.pdf
+    ... --v3   # the v3 field (every panel model, 8 runs; census8) -> probes/humannorms_v3.json. The six
+               # wording-mismatch categories still use the exact-wording rerun (probes/exactword.json)
 """
 import re, sys, json, argparse
 from pathlib import Path
@@ -51,11 +53,12 @@ def merged(toks):
     return Counter(stems.get(t, t) for t in toks)
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--pdf", required=True); args = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--pdf", required=True); ap.add_argument("--v3", action="store_true")
+    args = ap.parse_args()
     human = parse_vo(Path(args.pdf).expanduser())
     exact = json.loads((HERE / "probes/exactword.json").read_text())["replies"]
 
-    ans = answers(HERE); models = sorted(m for m in ans if ans[m])
+    ans = answers(HERE, "census8" if args.v3 else "census"); models = sorted(m for m in ans if ans[m])
     def base_field(cat):
         return Counter(a for m in models for a in ans[m].get(cat, []))
     def exact_field(cat):
@@ -88,7 +91,8 @@ def main():
            "tomato": {"human_first": round(veg.get("tomato", 0.0), 3),
                       "model_share": round(vp.get("tomato", 0) / sum(vp.values()), 3)},
            "per_category": sorted(rows, key=lambda r: -r["model_modal_share"])}
-    (HERE / "probes/humannorms.json").write_text(json.dumps(out, indent=1) + "\n")
+    out["field"] = f"{len(models)} models, {'8' if args.v3 else '4'} runs"
+    (HERE / ("probes/humannorms_v3.json" if args.v3 else "probes/humannorms.json")).write_text(json.dumps(out, indent=1) + "\n")
     print(f"{out['n_categories']} cats | human modal {out['mean_human_modal_first']:.0%} vs model {out['mean_model_modal_share']:.0%} "
           f"| model more concentrated {out['model_more_concentrated_n']}/{out['n_categories']} | reversals {out['reversals']}")
     print(f"distinct >=5%: human {out['mean_human_n_ge5']} vs model {out['mean_model_n_ge5']} | "

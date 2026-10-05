@@ -216,8 +216,8 @@ fig.savefig(FIGS / "runnerup.pdf")
 plt.close(fig)
 
 # ---------------------------------------------------- human vs model concentration
-hn_path = STUDY / "probes" / "humannorms.json"
-if hn_path.exists() and not V3:   # v3: recompute probes/humannorms.json on the v3 field first
+hn_path = STUDY / "probes" / ("humannorms_v3.json" if V3 else "humannorms.json")   # v3: analyze_humannorms.py --v3
+if hn_path.exists():
     hn = json.loads(hn_path.read_text())
     hrows = hn["per_category"]  # sorted by model share desc
     fig, ax = plt.subplots(figsize=(5.6, 5.2))
