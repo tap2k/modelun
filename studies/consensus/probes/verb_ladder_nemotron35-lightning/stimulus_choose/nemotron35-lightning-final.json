@@ -1,21 +1,24 @@
 {
- "model": "olmo31-32b-rl",
- "slug": "allenai/Olmo-3.1-32B-Instruct",
+ "model": "nemotron35-lightning-final",
+ "slug": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
  "spec_version": "1.0-perturb-choose",
  "host": "local-mlx",
- "pipeline": "olmo31-32b",
- "stage": "rl",
- "framing": "nosys",
- "weights": "/Users/parikh/dev/models/Olmo-3.1-32B-Instruct-8bit",
+ "pipeline": "nemotron35-lightning",
+ "stage": "final",
+ "framing": "chat",
+ "weights": "/Users/parikh/dev/models/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-8bit",
  "quantization": "8-bit affine, group size 64",
- "revision": "ac0587e4a7744a551c059d8cd17ba220bc940dae",
+ "revision": "a9904d24bcc1d289a1950fa9d2b978c47cf903b9",
  "temperature": 1.0,
  "max_tokens": 48,
- "example_prompt": "<|im_start|>user\nChoose a color. Reply with one word only.<|im_end|>\n<|im_start|>assistant\n",
+ "chat_kwargs": {
+  "enable_thinking": false
+ },
+ "example_prompt": "<|im_start|>system\n<|im_end|>\n<|im_start|>user\nChoose a color. Reply with one word only.<|im_end|>\n<|im_start|>assistant\n<think></think>",
  "scenes": {
   "color": {
    "subtitle": "color",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -26,73 +29,13 @@
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue."
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Cerulean"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Cerulean"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Purple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
-     }
-    ],
-    [
-     {
-      "u": "Choose a color. Reply with one word only.",
       "reply": "Azure"
      }
     ],
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "Blue"
+      "reply": "blue"
      }
     ],
     [
@@ -116,91 +59,97 @@
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "Azure"
+      "reply": "Indigo"
      }
     ],
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "Azure"
+      "reply": "Blue"
      }
     ],
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "violet"
+      "reply": "azure"
      }
     ],
     [
      {
       "u": "Choose a color. Reply with one word only.",
-      "reply": "Azure"
+      "reply": "blue"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Crimson"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Blue"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Green"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Emerald"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Blue"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Cyan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Red"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Sky blue"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "blue"
+     }
+    ],
+    [
+     {
+      "u": "Choose a color. Reply with one word only.",
+      "reply": "Cobalt"
      }
     ]
    ]
   },
   "animal": {
    "subtitle": "animal",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Elephant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Cheetah"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Elephant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Fox"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Elephant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Elephant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "dolphin"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Otter"
-     }
-    ],
-    [
-     {
-      "u": "Choose an animal. Reply with one word only.",
-      "reply": "Otter"
+      "reply": "Tiger"
      }
     ],
     [
@@ -218,25 +167,25 @@
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
+      "reply": "Lion"
      }
     ],
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Otter"
+      "reply": "Snake"
      }
     ],
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
+      "reply": "Cheetah"
      }
     ],
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
+      "reply": "Lion"
      }
     ],
     [
@@ -248,26 +197,80 @@
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
+      "reply": "Tiger"
      }
     ],
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Otter"
+      "reply": "Seagull"
      }
     ],
     [
      {
       "u": "Choose an animal. Reply with one word only.",
-      "reply": "Dolphin"
+      "reply": "Cheetah"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "WOLF"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Tiger"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Manta"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Elephant"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Bear"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose an animal. Reply with one word only.",
+      "reply": "wolf"
      }
     ]
    ]
   },
   "fruit": {
    "subtitle": "fruit",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -278,7 +281,37 @@
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
+      "reply": "apple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "apple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "Mango"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
       "reply": "Apple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "Apple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "Mango"
      }
     ],
     [
@@ -290,67 +323,37 @@
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "apple"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "apple"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "Strawberry"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "mango"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "Strawberry"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "apple"
      }
     ],
     [
@@ -362,43 +365,67 @@
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
+      "reply": "mango"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "Mango"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
+      "reply": "apple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fruit. Reply with one word only.",
       "reply": "Banana"
      }
     ],
     [
      {
       "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Banana"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fruit. Reply with one word only.",
-      "reply": "Apple"
+      "reply": "mango"
      }
     ]
    ]
   },
   "vegetable": {
    "subtitle": "vegetable",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "carrot"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "tomato"
      }
     ],
     [
@@ -410,7 +437,13 @@
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "Tomato"
      }
     ],
     [
@@ -422,7 +455,19 @@
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "Tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "tomato"
+     }
+    ],
+    [
+     {
+      "u": "Choose a vegetable. Reply with one word only.",
+      "reply": "Lettuce"
      }
     ],
     [
@@ -434,92 +479,50 @@
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "Potato"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "carrot"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "tomato"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "broccoli"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "carrot"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "Potato"
      }
     ],
     [
      {
       "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
-     }
-    ],
-    [
-     {
-      "u": "Choose a vegetable. Reply with one word only.",
-      "reply": "Carrot"
+      "reply": "Spinach"
      }
     ]
    ]
   },
   "city": {
    "subtitle": "city",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -542,6 +545,12 @@
     [
      {
       "u": "Choose a city. Reply with one word only.",
+      "reply": "Tokyo"
+     }
+    ],
+    [
+     {
+      "u": "Choose a city. Reply with one word only.",
       "reply": "Paris"
      }
     ],
@@ -554,7 +563,13 @@
     [
      {
       "u": "Choose a city. Reply with one word only.",
-      "reply": "Moscow"
+      "reply": "Paris"
+     }
+    ],
+    [
+     {
+      "u": "Choose a city. Reply with one word only.",
+      "reply": "Tokyo"
      }
     ],
     [
@@ -578,7 +593,25 @@
     [
      {
       "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
+      "reply": "Tokyo"
+     }
+    ],
+    [
+     {
+      "u": "Choose a city. Reply with one word only.",
+      "reply": "Orlando"
+     }
+    ],
+    [
+     {
+      "u": "Choose a city. Reply with one word only.",
+      "reply": "NYC"
+     }
+    ],
+    [
+     {
+      "u": "Choose a city. Reply with one word only.",
+      "reply": "Berlin"
      }
     ],
     [
@@ -590,25 +623,7 @@
     [
      {
       "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
-     }
-    ],
-    [
-     {
-      "u": "Choose a city. Reply with one word only.",
-      "reply": "London"
-     }
-    ],
-    [
-     {
-      "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
-     }
-    ],
-    [
-     {
-      "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
+      "reply": "Using the tools might shift the tone, but I'm happy to engage! Since I must choose a city with one word: **Kyoto**."
      }
     ],
     [
@@ -620,32 +635,20 @@
     [
      {
       "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
+      "reply": "Tokyo"
      }
     ],
     [
      {
       "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
-     }
-    ],
-    [
-     {
-      "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
-     }
-    ],
-    [
-     {
-      "u": "Choose a city. Reply with one word only.",
-      "reply": "Paris"
+      "reply": "Tokyo"
      }
     ]
    ]
   },
   "country": {
    "subtitle": "country",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -656,18 +659,6 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Canada"
-     }
-    ],
-    [
-     {
-      "u": "Choose a country. Reply with one word only.",
-      "reply": "Germany"
-     }
-    ],
-    [
-     {
-      "u": "Choose a country. Reply with one word only.",
       "reply": "Japan"
      }
     ],
@@ -680,31 +671,25 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Japan"
+      "reply": "France"
      }
     ],
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Germany"
+      "reply": "Netherlands"
      }
     ],
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Canada"
+      "reply": "Germany (this is a country, but since the instruction is \"one word only\", I will provide just the country name: Germany)"
      }
     ],
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Japan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a country. Reply with one word only.",
-      "reply": "Canada"
+      "reply": "Zimbabwe"
      }
     ],
     [
@@ -716,13 +701,7 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Germany"
-     }
-    ],
-    [
-     {
-      "u": "Choose a country. Reply with one word only.",
-      "reply": "Brazil"
+      "reply": "Greece"
      }
     ],
     [
@@ -734,13 +713,13 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Japan"
+      "reply": "Spain"
      }
     ],
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Japan"
+      "reply": "Australia"
      }
     ],
     [
@@ -752,7 +731,13 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Japan"
+      "reply": "United States"
+     }
+    ],
+    [
+     {
+      "u": "Choose a country. Reply with one word only.",
+      "reply": "Portugal"
      }
     ],
     [
@@ -764,14 +749,32 @@
     [
      {
       "u": "Choose a country. Reply with one word only.",
-      "reply": "Canada"
+      "reply": "Italy"
+     }
+    ],
+    [
+     {
+      "u": "Choose a country. Reply with one word only.",
+      "reply": "Japan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a country. Reply with one word only.",
+      "reply": "France"
+     }
+    ],
+    [
+     {
+      "u": "Choose a country. Reply with one word only.",
+      "reply": "Insight"
      }
     ]
    ]
   },
   "flower": {
    "subtitle": "flower",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -782,7 +785,103 @@
     [
      {
       "u": "Choose a flower. Reply with one word only.",
-      "reply": "Orchid"
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Lotus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "roses"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Question"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
+     }
+    ],
+    [
+     {
+      "u": "Choose a flower. Reply with one word only.",
+      "reply": "Rose"
      }
     ],
     [
@@ -795,114 +894,42 @@
      {
       "u": "Choose a flower. Reply with one word only.",
       "reply": "Rose"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lilly"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lavender"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "rose"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Daisy"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Orchid"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Rose"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Orchid"
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Orchid."
-     }
-    ],
-    [
-     {
-      "u": "Choose a flower. Reply with one word only.",
-      "reply": "Lily"
      }
     ]
    ]
   },
   "sport": {
    "subtitle": "sport",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
+      "reply": "baseball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "baseball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "basketball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "soccer"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "football"
      }
     ],
     [
@@ -914,103 +941,13 @@
     [
      {
       "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
+      "reply": "Football"
      }
     ],
     [
      {
       "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Basketball"
-     }
-    ],
-    [
-     {
-      "u": "Choose a sport. Reply with one word only.",
-      "reply": "Soccer"
+      "reply": "tennis"
      }
     ],
     [
@@ -1018,53 +955,101 @@
       "u": "Choose a sport. Reply with one word only.",
       "reply": "Tennis"
      }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Football"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "I can't perform that action because choosing a sport would require a decision that hasn't been predetermined by the rules of the game, but I'll compromise: tennis"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Supercalifragilisticexpialidocious"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "tennis"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Volleyball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Science"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Basketball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "Basketball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "tennis"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "basketball"
+     }
+    ],
+    [
+     {
+      "u": "Choose a sport. Reply with one word only.",
+      "reply": "tennis"
+     }
     ]
    ]
   },
   "instrument": {
    "subtitle": "instrument",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
+      "reply": "Drums"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "violin"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "trumpet"
      }
     ],
     [
      {
       "u": "Choose a musical instrument. Reply with one word only.",
       "reply": "Piano"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Piano"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Violin"
      }
     ],
     [
@@ -1076,19 +1061,7 @@
     [
      {
       "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Piano"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
+      "reply": "piano"
      }
     ],
     [
@@ -1100,31 +1073,7 @@
     [
      {
       "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Violin"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Violin"
-     }
-    ],
-    [
-     {
-      "u": "Choose a musical instrument. Reply with one word only.",
-      "reply": "Guitar"
+      "reply": "guitar"
      }
     ],
     [
@@ -1142,73 +1091,79 @@
     [
      {
       "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "piano"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "trumpet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "saxophone"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
       "reply": "Violin"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "drums"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "Flute"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "Piano"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "Cello"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "Guitar"
+     }
+    ],
+    [
+     {
+      "u": "Choose a musical instrument. Reply with one word only.",
+      "reply": "Piano"
      }
     ]
    ]
   },
   "bird": {
    "subtitle": "bird",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
       "reply": "Eagle"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
-     }
-    ],
-    [
-     {
-      "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
+      "reply": "Eagle"
      }
     ],
     [
@@ -1226,19 +1181,67 @@
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
+      "reply": "EAGLE"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Swan"
+      "reply": "Eagle"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "kite"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "Hummingbird"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "hidden"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "Eagle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a bird. Reply with one word only.",
+      "reply": "Emerald"
      }
     ],
     [
@@ -1250,32 +1253,33 @@
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
+      "reply": "Eagle"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Sparrow"
+      "reply": "Eagle"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Owl"
+      "reply": "KingFisher"
      }
     ],
     [
      {
       "u": "Choose a bird. Reply with one word only.",
-      "reply": "Ostrich"
+      "reply": "Perhaps you have come across the greatness of the falcon. Whether perched on a craggy cliff or soaring high above the clouds, you can see how the falcon has an intense focus. If this is what brings a smile",
+      "finish_reason": "length"
      }
     ]
    ]
   },
   "gemstone": {
    "subtitle": "gemstone",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -1286,13 +1290,73 @@
     [
      {
       "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
+      "reply": "Ruby"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Amethyst"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Ruby"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Blue   \n        Topaz  "
      }
     ],
     [
      {
       "u": "Choose a gemstone. Reply with one word only.",
       "reply": "Sapphire"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Emerald"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Emerald"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Ruby"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Platinum"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "diamond"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Emerald"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "ruby"
      }
     ],
     [
@@ -1304,6 +1368,18 @@
     [
      {
       "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Ruby"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
+      "reply": "Emerald"
+     }
+    ],
+    [
+     {
+      "u": "Choose a gemstone. Reply with one word only.",
       "reply": "Emerald"
      }
     ],
@@ -1316,97 +1392,85 @@
     [
      {
       "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
+      "reply": "sapphire"
      }
     ],
     [
      {
       "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Amber"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "emerald"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
-     }
-    ],
-    [
-     {
-      "u": "Choose a gemstone. Reply with one word only.",
-      "reply": "Sapphire"
+      "reply": "ETHEREAL"
      }
     ]
    ]
   },
   "tree": {
    "subtitle": "tree",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a tree. Reply with one word only.",
+      "reply": "Willow"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Eucalyptus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Maple"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Cedar"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
       "reply": "Oak"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Birch"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Willow"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "OAK"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Root"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Oak"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Sequoia"
      }
     ],
     [
@@ -1424,7 +1488,31 @@
     [
      {
       "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
+      "reply": "Sequoia"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Mangrove"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Banyan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Willow"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tree. Reply with one word only.",
+      "reply": "Branches"
      }
     ],
     [
@@ -1436,121 +1524,20 @@
     [
      {
       "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tree. Reply with one word only.",
-      "reply": "Oak"
+      "reply": "Sequoia"
      }
     ]
    ]
   },
   "beverage": {
    "subtitle": "beverage",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
-     }
-    ],
-    [
-     {
-      "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Water"
-     }
-    ],
-    [
-     {
-      "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Tea"
-     }
-    ],
-    [
-     {
-      "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Water"
+      "reply": "Okay, let's see. The user wants me to \"Choose a beverage. Reply with one word only.\" So I need to pick a beverage and output just that word, nothing else.\n\nWhat's a good beverage? Coffee, tea,",
+      "finish_reason": "length"
      }
     ],
     [
@@ -1562,13 +1549,13 @@
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "tea"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "coffee"
      }
     ],
     [
@@ -1592,7 +1579,19 @@
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee."
+      "reply": "Coffee"
+     }
+    ],
+    [
+     {
+      "u": "Choose a beverage. Reply with one word only.",
+      "reply": "coffee"
+     }
+    ],
+    [
+     {
+      "u": "Choose a beverage. Reply with one word only.",
+      "reply": "PiñaColada"
      }
     ],
     [
@@ -1604,7 +1603,7 @@
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Latte"
      }
     ],
     [
@@ -1616,151 +1615,61 @@
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Pixel (This represents a distinct, binary choice, fitting the \"one word\" constraint while acknowledging the digital context.)"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Water"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "beer"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Tea"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Tea"
      }
     ],
     [
      {
       "u": "Choose a beverage. Reply with one word only.",
-      "reply": "Coffee"
+      "reply": "Water"
+     }
+    ],
+    [
+     {
+      "u": "Choose a beverage. Reply with one word only.",
+      "reply": "coffee"
      }
     ]
    ]
   },
   "insect": {
    "subtitle": "insect",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
+      "reply": "Dragonfly"
      }
     ],
     [
      {
       "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Bee"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Bee"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "ant"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Cicada"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Cockroach"
-     }
-    ],
-    [
-     {
-      "u": "Choose an insect. Reply with one word only.",
-      "reply": "Beetle"
+      "reply": "Moth"
      }
     ],
     [
@@ -1772,19 +1681,169 @@
     [
      {
       "u": "Choose an insect. Reply with one word only.",
-      "reply": "Ant"
+      "reply": "butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Why? I can be more specific if I know your preference—colorful, tiny, loud, or beneficial?"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Photographa"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "CANTEEN"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "ladybug"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Dragonfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Housefly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Dragonfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "butterfly"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "Mantis"
+     }
+    ],
+    [
+     {
+      "u": "Choose an insect. Reply with one word only.",
+      "reply": "butterfly"
      }
     ]
    ]
   },
   "occupation": {
    "subtitle": "occupation",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Carpenter"
+      "reply": "Doctor"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Developer"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "engineer"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Woodworker"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "CHEF"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Doctor"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Firefighter"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "engineer"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Word: Programmmer"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Doctor"
      }
     ],
     [
@@ -1796,13 +1855,44 @@
     [
      {
       "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
+      "reply": "developer"
      }
     ],
     [
      {
       "u": "Choose an occupation. Reply with one word only.",
       "reply": "Doctor"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "bookkeeper"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "readers"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "Accountant"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "mandaulantThe pattern seems to be that every single word is exactly 10 letters long. I need to pick an 11-letter occupation if I want to break this pattern, but if I stick to the pattern... I'll",
+      "finish_reason": "length"
+     }
+    ],
+    [
+     {
+      "u": "Choose an occupation. Reply with one word only.",
+      "reply": "teacher"
      }
     ],
     [
@@ -1814,133 +1904,25 @@
     [
      {
       "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Engineer"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Engineer"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Nurse"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Chef"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Plumber"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Doctor"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Dentist"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Engineer"
-     }
-    ],
-    [
-     {
-      "u": "Choose an occupation. Reply with one word only.",
-      "reply": "Engineer"
+      "reply": "Accountant"
      }
     ]
    ]
   },
   "language": {
    "subtitle": "language",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "Spanish"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
-     }
-    ],
-    [
-     {
-      "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
-     }
-    ],
-    [
-     {
-      "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
-     }
-    ],
-    [
-     {
-      "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
-     }
-    ],
-    [
-     {
-      "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
@@ -1952,97 +1934,181 @@
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "Español"
+      "reply": "Use."
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "ABECEDARIUS"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "python"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "earth"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "Spanish"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "Spanish"
+      "reply": "English"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "French"
+      "reply": "PleaseNational language of the Maldives"
      }
     ],
     [
      {
       "u": "Choose a language. Reply with one word only.",
-      "reply": "Spanish"
+      "reply": "Python"
+     }
+    ],
+    [
+     {
+      "u": "Choose a language. Reply with one word only.",
+      "reply": "English is the straightforward choice."
+     }
+    ],
+    [
+     {
+      "u": "Choose a language. Reply with one word only.",
+      "reply": "Python"
+     }
+    ],
+    [
+     {
+      "u": "Choose a language. Reply with one word only.",
+      "reply": "English"
+     }
+    ],
+    [
+     {
+      "u": "Choose a language. Reply with one word only.",
+      "reply": "English"
      }
     ]
    ]
   },
   "dessert": {
    "subtitle": "dessert",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a dessert. Reply with one word only.",
-      "reply": " tiramisu"
+      "reply": "Chocolate"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "White chocolate mousse"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "crème brûlée"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Cake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Milkshake"
      }
     ],
     [
      {
       "u": "Choose a dessert. Reply with one word only.",
       "reply": "Tiramisu"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Tiramisu"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "cheesecake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "cheesecake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "TIRAMISU"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Cheesecake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "CAKE"
      }
     ],
     [
@@ -2060,7 +2126,19 @@
     [
      {
       "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Tiramisu"
+      "reply": "Cake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Cheesecake"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dessert. Reply with one word only.",
+      "reply": "Cheesecake"
      }
     ],
     [
@@ -2079,211 +2157,140 @@
      {
       "u": "Choose a dessert. Reply with one word only.",
       "reply": "Cheesecake"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Cheesecake"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Brownie"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Chocolate"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Brownie"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Chocolate"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "cheesecake"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": " cheesecake"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Brownie"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Brownie"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Tiramisu"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Tiramisu"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dessert. Reply with one word only.",
-      "reply": "Brownie"
      }
     ]
    ]
   },
   "tool": {
    "subtitle": "tool",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a tool. Reply with one word only.",
+      "reply": "python"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "screwdriver"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Hammer"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Drill"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Sudowrite"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Handa Menda"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Peace"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "code"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Pencil"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Screwdriver"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "The user wants me to choose a tool and reply with one word only. This is a meta-request where I need to select a tool name as my response. Common tools include: \"hammer\", \"screwdriver\", \"wrench",
+      "finish_reason": "length"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Trench 150"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Ruler"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "wrench"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Hammer"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Hammer"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
+      "reply": "Wrench"
+     }
+    ],
+    [
+     {
+      "u": "Choose a tool. Reply with one word only.",
       "reply": "hammer"
      }
     ],
     [
      {
       "u": "Choose a tool. Reply with one word only.",
-      "reply": "Terminal"
+      "reply": "Chisel"
      }
     ],
     [
      {
       "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "GitHub"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Trello"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "hammer"
-     }
-    ],
-    [
-     {
-      "u": "Choose a tool. Reply with one word only.",
-      "reply": "Hammer"
+      "reply": "screwdriver"
      }
     ]
    ]
   },
   "fish": {
    "subtitle": "fish",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -2294,7 +2301,7 @@
     [
      {
       "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
+      "reply": "salmon"
      }
     ],
     [
@@ -2312,7 +2319,37 @@
     [
      {
       "u": "Choose a fish. Reply with one word only.",
+      "reply": "tuna"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "salmon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "Bluefin"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
       "reply": "Salmon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "Mackerel"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "MARLIN"
      }
     ],
     [
@@ -2330,7 +2367,19 @@
     [
      {
       "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
+      "reply": "salmon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "Zebrafish"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fish. Reply with one word only.",
+      "reply": "COELACANTH"
      }
     ],
     [
@@ -2342,7 +2391,7 @@
     [
      {
       "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
+      "reply": "AFFLUENT"
      }
     ],
     [
@@ -2354,49 +2403,7 @@
     [
      {
       "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fish. Reply with one word only.",
-      "reply": "Salmon"
+      "reply": "Trout"
      }
     ],
     [
@@ -2409,30 +2416,24 @@
   },
   "metal": {
    "subtitle": "metal",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
+      "reply": "NICKEL"
      }
     ],
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
+      "reply": "Steel"
      }
     ],
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Copper"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Copper"
+      "reply": "iron"
      }
     ],
     [
@@ -2456,6 +2457,42 @@
     [
      {
       "u": "Choose a metal. Reply with one word only.",
+      "reply": "Gold"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
+      "reply": "copper"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
+      "reply": "Titanium"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
+      "reply": "gold"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
+      "reply": "Lead"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
+      "reply": "Iron"
+     }
+    ],
+    [
+     {
+      "u": "Choose a metal. Reply with one word only.",
       "reply": "Copper"
      }
     ],
@@ -2474,25 +2511,14 @@
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
+      "reply": "thebes繁體中文: 鎂, 符文: Mat, 囍文: շատ, 古希臘譯文: μός, 挪威文: Magnesium, Париย์",
+      "finish_reason": "length"
      }
     ],
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Copper"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
+      "reply": "Gold"
      }
     ],
     [
@@ -2504,25 +2530,7 @@
     [
      {
       "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
-     }
-    ],
-    [
-     {
-      "u": "Choose a metal. Reply with one word only.",
-      "reply": "Iron"
+      "reply": "Steel"
      }
     ],
     [
@@ -2535,7 +2543,7 @@
   },
   "fabric": {
    "subtitle": "fabric",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -2546,37 +2554,19 @@
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Velvet"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Velvet"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Velvet"
      }
     ],
     [
@@ -2588,19 +2578,55 @@
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
+      "reply": "silk"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
+      "reply": "Linen"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
+      "reply": "Velvet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
       "reply": "Silk"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Velvet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
+      "reply": "silk"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
       "reply": "Cotton"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
+      "reply": "Velvet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a fabric. Reply with one word only.",
+      "reply": "silk"
      }
     ],
     [
@@ -2612,43 +2638,25 @@
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Denim"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Linen"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "cotton"
+      "reply": "Satin"
      }
     ],
     [
      {
       "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
-     }
-    ],
-    [
-     {
-      "u": "Choose a fabric. Reply with one word only.",
-      "reply": "Cotton"
+      "reply": "Silk"
      }
     ],
     [
@@ -2661,36 +2669,24 @@
   },
   "herb": {
    "subtitle": "herb",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Rosemary"
+      "reply": "Basilet (this is herb)"
      }
     ],
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
+      "reply": "rosemary"
      }
     ],
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Thyme"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
+      "reply": "rosemary"
      }
     ],
     [
@@ -2702,13 +2698,73 @@
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
+      "reply": "Rosemary"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "Rosemary"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "rosemary"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "sage"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "Lavender"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "basil"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "Lavender"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "rosemary"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "basil"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "mint"
      }
     ],
     [
      {
       "u": "Choose an herb. Reply with one word only.",
       "reply": "Basil"
+     }
+    ],
+    [
+     {
+      "u": "Choose an herb. Reply with one word only.",
+      "reply": "rosemary"
      }
     ],
     [
@@ -2726,91 +2782,43 @@
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
+      "reply": "basil"
      }
     ],
     [
      {
       "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
-     }
-    ],
-    [
-     {
-      "u": "Choose an herb. Reply with one word only.",
-      "reply": "Basil"
+      "reply": "Rosemary"
      }
     ]
    ]
   },
   "dance": {
    "subtitle": "dance",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Foxtrot"
      }
     ],
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Waltz"
      }
     ],
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Wal"
+      "reply": "Jazz"
      }
     ],
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Nutcracker"
      }
     ],
     [
@@ -2822,61 +2830,13 @@
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Pirouette"
      }
     ],
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Tango"
      }
     ],
     [
@@ -2888,7 +2848,25 @@
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Flamenco"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Ballet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Ballet"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Cha-cha-cha"
      }
     ],
     [
@@ -2906,19 +2884,67 @@
     [
      {
       "u": "Choose a dance. Reply with one word only.",
-      "reply": "Salsa"
+      "reply": "Cha-cha-cha"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Tango"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Swati"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Tango"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Zouk"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dance. Reply with one word only.",
+      "reply": "Tango"
      }
     ]
    ]
   },
   "hobby": {
    "subtitle": "hobby",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
+      "reply": "Gardening"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Reading"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Gardening"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Gaming"
      }
     ],
     [
@@ -2930,7 +2956,49 @@
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Sailing"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Calling"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "I choose... gardening."
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Gardening"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
       "reply": "Photography"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Photography"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Gardening"
+     }
+    ],
+    [
+     {
+      "u": "Choose a hobby. Reply with one word only.",
+      "reply": "Reading"
      }
     ],
     [
@@ -2942,61 +3010,13 @@
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography."
+      "reply": "Crocheting"
      }
     ],
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Painting"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Knitting"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Painting"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "photography"
+      "reply": "Gardening"
      }
     ],
     [
@@ -3008,43 +3028,31 @@
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Painting"
+      "reply": "painting"
      }
     ],
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
+      "reply": "Gardening"
      }
     ],
     [
      {
       "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Chess"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Painting"
-     }
-    ],
-    [
-     {
-      "u": "Choose a hobby. Reply with one word only.",
-      "reply": "Photography"
+      "reply": "Gardening"
      }
     ]
    ]
   },
   "condiment": {
    "subtitle": "condiment",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Mayonnaise"
+      "reply": "mustard"
      }
     ],
     [
@@ -3056,37 +3064,13 @@
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
+      "reply": "mayonnaise"
      }
     ],
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
+      "reply": "mayonnaise"
      }
     ],
     [
@@ -3098,7 +3082,13 @@
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Mayo"
+      "reply": "mustard"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "mustard"
      }
     ],
     [
@@ -3110,13 +3100,49 @@
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Mayo"
+      "reply": "Ranch"
      }
     ],
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Mayo"
+      "reply": "Truffle"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "Relish is the answer."
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "sriracha"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "mustard"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "sriracha"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "ketchup"
+     }
+    ],
+    [
+     {
+      "u": "Choose a condiment. Reply with one word only.",
+      "reply": "HotSauce"
      }
     ],
     [
@@ -3128,54 +3154,30 @@
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Mayo"
+      "reply": "Sriracha"
      }
     ],
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
+      "reply": "Ranch"
      }
     ],
     [
      {
       "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
-     }
-    ],
-    [
-     {
-      "u": "Choose a condiment. Reply with one word only.",
-      "reply": "Ketchup"
+      "reply": "MUSTARD"
      }
     ]
    ]
   },
   "cheese": {
    "subtitle": "cheese",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Gouda"
-     }
-    ],
-    [
-     {
-      "u": "Choose a cheese. Reply with one word only.",
       "reply": "Cheddar"
      }
     ],
@@ -3188,37 +3190,25 @@
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Gouda"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Mozzarella"
-     }
-    ],
-    [
-     {
-      "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ],
     [
@@ -3230,7 +3220,37 @@
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
+      "reply": "Brie"
+     }
+    ],
+    [
+     {
+      "u": "Choose a cheese. Reply with one word only.",
       "reply": "Cheddar"
+     }
+    ],
+    [
+     {
+      "u": "Choose a cheese. Reply with one word only.",
+      "reply": "Brie"
+     }
+    ],
+    [
+     {
+      "u": "Choose a cheese. Reply with one word only.",
+      "reply": "Camembert"
+     }
+    ],
+    [
+     {
+      "u": "Choose a cheese. Reply with one word only.",
+      "reply": "Brie"
+     }
+    ],
+    [
+     {
+      "u": "Choose a cheese. Reply with one word only.",
+      "reply": "Brie"
      }
     ],
     [
@@ -3242,69 +3262,45 @@
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Gouda"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Gouda"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "cheddar"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ],
     [
      {
       "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Gouda"
-     }
-    ],
-    [
-     {
-      "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
-     }
-    ],
-    [
-     {
-      "u": "Choose a cheese. Reply with one word only.",
-      "reply": "Cheddar"
+      "reply": "Brie"
      }
     ]
    ]
   },
   "dinosaur": {
    "subtitle": "dinosaur",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
@@ -3314,7 +3310,67 @@
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "T-rex"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "T-Rex"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "Tyrannosaurus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "Tyrannosaurus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "T-rex"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "Tyrannosaurus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "Tyrannosaurus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "T-Rex"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "TRICERATOPS"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "Tyrannosaurus"
+     }
+    ],
+    [
+     {
+      "u": "Choose a dinosaur. Reply with one word only.",
+      "reply": "T-Rex"
      }
     ],
     [
@@ -3326,98 +3382,50 @@
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "Tyrannosaurus"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "Tyrannosaurus"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "hello"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "Tyrannosaurus"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Brontosaurus"
+      "reply": "T rex"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "Tyrannosaurus"
      }
     ],
     [
      {
       "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
-     }
-    ],
-    [
-     {
-      "u": "Choose a dinosaur. Reply with one word only.",
-      "reply": "Triceratops"
+      "reply": "Tyrannosaurus"
      }
     ]
    ]
   },
   "mythical_creature": {
    "subtitle": "mythical_creature",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
@@ -3434,13 +3442,7 @@
     [
      {
       "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Dragon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Gryphon"
+      "reply": "Griffin"
      }
     ],
     [
@@ -3458,7 +3460,67 @@
     [
      {
       "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Hummingbird"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
       "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Zmey"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "kelpie"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "You can call me Naga. I was created by NVIDIA researchers as a language model."
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "Dragon"
+     }
+    ],
+    [
+     {
+      "u": "Choose a mythical creature. Reply with one word only.",
+      "reply": "DESMODON"
      }
     ],
     [
@@ -3482,109 +3544,19 @@
     [
      {
       "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Dragon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Dragon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Dragon"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Phoenix"
-     }
-    ],
-    [
-     {
-      "u": "Choose a mythical creature. Reply with one word only.",
-      "reply": "Dragon"
+      "reply": "Unicorn"
      }
     ]
    ]
   },
   "board_game": {
    "subtitle": "board_game",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Chess"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Chess"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
+      "reply": "Terraforming Mars"
      }
     ],
     [
@@ -3608,7 +3580,7 @@
     [
      {
       "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
+      "reply": "Dungeons & Dragons"
      }
     ],
     [
@@ -3620,31 +3592,13 @@
     [
      {
       "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
+      "reply": "Codenames"
      }
     ],
     [
      {
       "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Chess"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
-     }
-    ],
-    [
-     {
-      "u": "Choose a board game. Reply with one word only.",
-      "reply": "Catan"
+      "reply": "Ticket to Ride"
      }
     ],
     [
@@ -3656,7 +3610,19 @@
     [
      {
       "u": "Choose a board game. Reply with one word only.",
-      "reply": "Chess"
+      "reply": "Scrabble"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Catan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "You tell me."
      }
     ],
     [
@@ -3664,257 +3630,299 @@
       "u": "Choose a board game. Reply with one word only.",
       "reply": "Settlers"
      }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Catan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Catan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Catan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Catan"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Monopoly"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Ticket to Ride"
+     }
+    ],
+    [
+     {
+      "u": "Choose a board game. Reply with one word only.",
+      "reply": "Monopoly"
+     }
     ]
    ]
   },
   "emotion": {
    "subtitle": "emotion",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Curiosity"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "curiosity"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "hope"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "resilient"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Serene"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Kenopsia"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Awe"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "content"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "content"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "vivid"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "cozy"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "content"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Content"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Melancholy"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "I choose **content**."
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Content"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Contentment"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "speculation"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "hope"
      }
     ],
     [
      {
       "u": "Choose an emotion. Reply with one word only.",
-      "reply": "Joy"
+      "reply": "Happy"
      }
     ]
    ]
   },
   "any_word": {
    "subtitle": "any_word",
-   "run_date": "2026-10-04",
+   "run_date": "2026-10-05",
    "runs": [
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Serendipity"
+      "reply": "Solve"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sun"
+      "reply": "Enigma"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunset"
+      "reply": "Promise"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunrise"
+      "reply": "Balance"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Banana"
+      "reply": "together"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Moon"
+      "reply": "fate"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Harmony"
+      "reply": "Perseverance is the word of the day."
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Process"
+      "reply": "epiphany"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunlight"
+      "reply": "Nebula"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Echo"
+      "reply": "Psilocybin"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Echo"
+      "reply": "forest"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunflower"
+      "reply": "Serene"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Serendipity"
+      "reply": "Mochi"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunset"
+      "reply": "Memory"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sky"
+      "reply": "Light"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sun"
+      "reply": "word"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sunflower"
+      "reply": "Moment"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Echo"
+      "reply": "Rhythm"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "sun"
+      "reply": "Tiexen"
      }
     ],
     [
      {
       "u": "Choose a word. Reply with one word only.",
-      "reply": "Sun"
+      "reply": "Discipline"
      }
     ]
    ]
