@@ -86,6 +86,13 @@ def agg(ans):
     return out
 
 
+# clamped answers that are also ordinary words, so a free reply is not searched for them: "an AI assistant" names no
+# assistant, "a target audience" no Target (pool review of 2026-10-05)
+PROSE = {"ai_assistant": {"assistant", "command", "seed", "echo", "nova", "aurora", "aria", "aura", "astra", "coral", "clara",
+                          "lumina", "ling"},
+         "company": {"target"}}
+
+
 @lru_cache(None)
 def pools():
     """The Name and Choose answers, and per category the pool, alias map and mention patterns built from them."""
@@ -95,7 +102,7 @@ def pools():
         for c, cnt in agg(src).items():
             pool[c].update(cnt)
     known = {c: {**{a: a for a, k in p.items() if k >= 2}, **ALIASES, **EXTRA} for c, p in pool.items()}
-    pats = {c: patterns("brand_" + c, [a for a, k in p.items() if k >= 2]) for c, p in pool.items()}
+    pats = {c: patterns("brand_" + c, [a for a, k in p.items() if k >= 2 and a not in PROSE.get(c, ())]) for c, p in pool.items()}
     return name, choose, pool, known, pats
 
 

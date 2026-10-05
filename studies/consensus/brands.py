@@ -61,6 +61,12 @@ ALIASES = {
     "adidas superstar": "adidas", "adidas nova boost": "adidas", "adidas yeezy": "adidas",
     "walmart supermarkets": "walmart", "crest pro-health": "crest", "crest pro-health acid balance": "crest",
     "lego group": "lego", "nintendo gamecube": "nintendo", "nintendo wii": "nintendo",
+    # brand ladder pool review of 2026-10-05: full names beside short ones, doubled names
+    "blue bottle coffee": "blue bottle", "stumptown coffee roasters": "stumptown", "stumptown coffee": "stumptown",
+    "nescafe": "nescafé", "whole foods market": "whole foods", "apple apple": "apple", "amazon amazon": "amazon",
+    "amazon aws": "aws", "claude, made by anthropic": "claude",
+    "counter culture coffee": "counter culture", "intelligentsia coffee": "intelligentsia", "peet's": "peet's coffee",
+    "peets": "peet's coffee", "peets coffee": "peet's coffee",
 }
 TAG = re.compile(r"<[^>]*>")
 INVISIBLE = re.compile(r"[\u200b-\u200f\u2060\ufeff]")
