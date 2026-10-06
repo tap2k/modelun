@@ -136,10 +136,16 @@ where the endpoint allows it, with reasoning-only models as served.
 
 | id | directory | battery | form | wording | arm | models | runs |
 |---|---|---|---|---|---|---|---|
-| census-temp0 | `transcripts-temp0/` (published) | census (31) | name | clamped | temp0 | panel (95) | 4 |
+| census-temp0 | `transcripts-temp0/` (published) | census (31) | name | clamped | temp0 | panel (105) | 4 |
+| expanded-temp0 | `transcripts-expanded-temp0/` | expanded (65) | name | clamped | temp0 | panel (99) | 4 |
+| census-choose-temp0 | `transcripts-choose-temp0/` | census (31) | choose | clamped | temp0 | panel (99) | 4 |
+| expanded-choose-temp0 | `transcripts-expanded-choose-temp0/` | expanded (65) | choose | clamped | temp0 | panel (99) | 4 |
 | clamp | `transcripts-clamp/` (published) | census (10) | name | both | served | panel (105) | 4 |
+| clamp-off | `transcripts-clamp-off/` | census (10) | name | both | off | hybrids (25) | 4 |
 | clamp-ext | `transcripts-clamp-ext/` | mixed (25) | name | both | served | panel (101) | 4 |
+| clamp-ext-off | `transcripts-clamp-ext-off/` | mixed (25) | name | both | off | hybrids (25) | 4 |
 | free-all | `transcripts-clamp-free/` | mixed (98) | name | free | served | panel (101) | 4 |
+| free-all-off | `transcripts-clamp-free-off/` | mixed (98) | name | free | off | hybrids (25) | 4 |
 | free-brands-ext | `transcripts-clamp-free-brands-ext/` | brands (4) | name | free | served | panel (101) | 4 |
 | free-brands-ext2 | `transcripts-clamp-free-brands-ext2/` | brands (3) | name | free | served | panel (99) | 4 |
 
