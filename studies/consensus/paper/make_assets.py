@@ -158,14 +158,19 @@ WALKS = [
     ("DeepSeek", ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash"],
      ["v3-0324", "v3.2", "v4-flash"]),
 ]
-if V3:   # every tracked lineage in release order, as the viewer draws it (views/build.py WALKS)
-    WALKS = []
-    for fam, labels in re.findall(r'"(\w+)": \[([^\]]*)\]', (STUDY / "views" / "build.py").read_text().split("WALKS = {", 1)[1].split("}", 1)[0]):
-        ls = [l for l in re.findall(r'"([^"]+)"', labels) if l in pm]
-        if len(ls) > 1:
-            WALKS.append((fam.capitalize(), ls, [l.split("-", 1)[-1] if "-" in l else l for l in ls]))
-fig, axes = plt.subplots(3 if V3 else 2, 3 if V3 else 4, figsize=(7.0, 5.0 if V3 else 3.3), sharey=True)
-for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
+if V3:   # the six major providers' lineages in release order, as lineage_trend.py tests them
+    WALKS = [(fam.capitalize() if fam not in ("gpt",) else "GPT", [m for m, _, _ in w],
+              [m.split("-", 1)[-1] if "-" in m else m for m, _, _ in w])
+             for fam, w in json.loads((STUDY / "probes" / "lineage_trend_v3.json").read_text())["major_walks"].items()]
+if V3:   # Claude and GPT, the long lineages, get half a row each; the four short ones share the second row
+    fig, ax_d = plt.subplot_mosaic([["claude", "claude", "gpt", "gpt"], ["gemini", "grok", "qwen", "deepseek"]],
+                                   figsize=(7.0, 5.0), sharey=True)
+    panels = [ax_d[n.lower()] for n, _, _ in WALKS]
+    axes = np.array([[ax_d["claude"], ax_d["gpt"]], [ax_d["gemini"], ax_d["grok"]]])  # first column gets the y label
+else:
+    fig, axes = plt.subplots(2, 4, figsize=(7.0, 3.3), sharey=True)
+    panels = list(axes.flat)
+for axi, (name, labels, ticks) in zip(panels, WALKS):
     xs = np.arange(len(labels))
     vals = [pm[l]["surprisal"] for l in labels]
     axi.plot(xs, vals, "-o", color=BLUE, lw=1.4, ms=3.5)
@@ -183,15 +188,15 @@ for axi, (name, labels, ticks) in zip(axes.flat, WALKS):
                          fontsize=6.5, color=AMBER, ha="right")
     axi.set_title(name, fontsize=8)
     axi.set_xticks(xs)
-    axi.set_xticklabels(ticks, fontsize=6, rotation=45, ha="right")
+    axi.set_xticklabels(ticks, fontsize=6 if V3 else 6, rotation=60 if V3 else 45, ha="right")
     if not V3:
         axi.set_ylim(0.9, 3.0)
     axi.spines[["top", "right"]].set_visible(False)
     axi.grid(axis="y", color=GRID, lw=0.5, alpha=0.6)
     axi.set_axisbelow(True)
-for axi in axes.flat[len(WALKS):]:
+for axi in ([] if V3 else axes.flat[len(WALKS):]):
     axi.set_visible(False)
-for axi in axes[:, 0]:
+for axi in ([ax_d["claude"], ax_d["gemini"]] if V3 else axes[:, 0]):
     axi.set_ylabel("surprisal (bits)", fontsize=7)
 fig.tight_layout()
 fig.savefig(FIGS / "walks.pdf")
@@ -212,16 +217,17 @@ runner_hi = [r for r in runner if r["modal_share"] >= 0.75]
 runner_hi.sort(key=lambda r: -r["runner_share_of_nonmodal"])
 stats["runner_up"] = runner_hi
 
-fig, ax = plt.subplots(figsize=(5.6, 3.4))
-ys = np.arange(len(runner_hi))[::-1]
-for y, r in zip(ys, runner_hi):
+plot_rows = runner_hi
+fig, ax = plt.subplots(figsize=(5.6, 6.4 if V3 else 3.4))
+ys = np.arange(len(plot_rows))[::-1]
+for y, r in zip(ys, plot_rows):
     ax.barh(y, r["runner_share_of_nonmodal"], height=0.62, color=BLUE, zorder=2)
     ax.text(r["runner_share_of_nonmodal"] + 0.012, y,
             f"{r['runner_up']}  {r['runner_share_of_nonmodal']:.0%}",
-            va="center", fontsize=7)
+            va="center", fontsize=7.5 if V3 else 7)
 ax.set_yticks(ys)
 ax.set_yticklabels([f"{r['cat'].replace('_',' ')}  (modal: {r['modal']})"
-                    for r in runner_hi], fontsize=7)
+                    for r in plot_rows], fontsize=7.5 if V3 else 7)
 ax.set_xlim(0, 1.12)
 ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
 ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"])

@@ -55,7 +55,6 @@ Several studies report that models converge \citep{wenger2025different,jiang2025
 \item \textbf{Robustness} (\S\ref{sec:robustness}, \S\ref{sec:pairwise}). Rankings survive leave-one-family-out scoring, roster resampling and a greedy re-run, and a three-level test for pairwise affinity between models comes up empty. Pooled by family, relatives share specific rare answers beyond what their propensities predict.
 \item \textbf{The runner-up consensus} (\S\ref{sec:pairwise}). When models leave the modal answer, they mostly land on the \emph{same} runner-up (\emph{mustard} takes 91\% of non-\emph{ketchup} condiment answers).
 \item \textbf{A human anchor} (\S\ref{sec:human}). Against human category-production norms, the field is more concentrated than people in 18 of 20 shared categories.
-\item \textbf{The favourite word} (\S\ref{sec:serendipity}). Models of every generation name \emph{serendipity} when asked for their favourite word. Newer models volunteer it when asked for any word.
 \item \textbf{Where in training} (\S\ref{sec:stages}). On open stage checkpoints, supervised fine-tuning moves each model to the field's answers, and the favourite word arrives with post-training and depends on the system prompt.
 \end{enumerate}
 
@@ -142,7 +141,7 @@ The panel is 105 models served through OpenRouter, which routes each call to a h
 
 Figure~\ref{fig:substrate} shows how concentrated each category's pooled answers are. In 28 of 96 categories a single answer accounts for at least 80\% of every answer given by every model: \emph{Sahara} (99\%), \emph{quartz} (98\%), \emph{Orion} (97\%), \emph{Everest} (96\%), \emph{Zeus} (96\%), \emph{oak} (95\%), \emph{hammer} (95\%), \emph{granite} (94\%), \emph{Toyota} (94\%), \emph{basil} (93\%), \emph{rose} (92\%), \emph{carrot} (92\%), and sixteen more. The median category's modal answer takes 58\%. At the diffuse end are categories with no single prototype: virtue (\emph{honesty}, 23\%), reptile (27\%), sound (29\%), gemstone (30\%), smell (30\%), country (31\%).
 
-The unconstrained prompt is the sharpest case. Given the entire English lexicon, the field still collapses: \emph{serendipity} takes 372 of 816 answers (46\%), followed distantly by \emph{apple} (44), \emph{ephemeral} (30), \emph{hello} (25) and \emph{lantern} (24), with 122 distinct words in total.
+The unconstrained prompt is the sharpest case. Given the entire English lexicon, the field still collapses: \emph{serendipity} takes 372 of 816 answers (46\%), followed distantly by \emph{apple} (44), \emph{ephemeral} (30), \emph{hello} (25) and \emph{lantern} (24), with 122 distinct words in total. The favourite is old and its volunteering is new. Asked ``What is your favorite word?'', models released before 2025 name \emph{serendipity} 61\% of the time. Asked to ``Pick any word,'' they give it 20\% of the time, against 52\% for models released in the first half of 2026, and the rise holds within the major providers' lineages (family-demeaned Spearman $+0.36$, $p = 0.012$).\footnote{Script: \texttt{probe\_serendipity.py}, on the language study's English pickword runs. Anthropic's newest releases are the exception: Claude Opus~5.5 and Sonnet~5.5 never give it, and most of the field's \emph{lantern} answers come from Claude.}
 
 \paragraph{The mode is the frictionless answer.}
 The modal answer is not the most common referent in the world, nor the most discussed. It is the blandest \emph{unambiguous} exemplar. Fruit: \emph{apple} 685, \emph{mango} 110, \emph{banana} 27, \emph{orange} 3 of 828. Orange, among the most common fruits in life and text, nearly vanishes, plausibly because it collides with the color. Vegetable: \emph{carrot} 759, \emph{broccoli} 57, \emph{tomato} 2 of 828.\footnote{\emph{Tomato} is botanically a fruit, so a model may be right to omit it. \emph{Orange} carries the point without that confound.} In a panel dominated by US-lab models, the United States is named twice in 820 country answers; the field's answers are \emph{Japan} 250, \emph{France} 231 and \emph{Canada} 231. Answers with an edge, such as a homonym, a taxonomic argument or a connotation, are systematically absent.
@@ -176,15 +175,15 @@ Two same-generation pairs separate. Claude Fable~5 scores 1.76 against Claude So
 \begin{figure}[tp]
 \centering
 \includegraphics[width=0.98\linewidth]{figs-v3/walks.pdf}
-\caption{Answer-choice surprisal across releases within each tracked lineage, in release order (shared $y$-axis).}
+\caption{Answer-choice surprisal across releases within the six major providers' lineages, in release order (shared $y$-axis). Google's lineage is Gemini, without the open-weight Gemma models.}
 \label{fig:walks}
 \end{figure}
 
-Figure~\ref{fig:walks} tracks surprisal across releases within each lineage. Pooling across families could manufacture a generational trend if newer release windows simply hold more conformist labs, so we test within lineages. Over the six major providers (Claude, GPT, Gemini, Grok, Qwen and DeepSeek; 61 models, each with five or more releases in the panel), surprisal falls with release order: the family-demeaned Spearman correlation is $-0.30$ (within-family permutation null, 2{,}000 draws, $p = 0.025$).\footnote{Script: \texttt{lineage\_trend.py}.} The decline is steepest in Gemini ($-0.88$; 2.5~Pro 2.11 to 3.6~Flash 1.13), Grok ($-0.60$; 4.20 1.82 to 4.5 1.17, then flat) and GPT ($-0.47$; GPT-3.5 2.06 to GPT-6.1~Sol 1.24). Qwen falls from 1.98 (2.5-72B) to between 1.20 and 1.57 for the Qwen~3 releases. DeepSeek is non-monotonic.
+Figure~\ref{fig:walks} tracks surprisal across releases within each lineage. Pooling across families could manufacture a generational trend if newer release windows simply hold more conformist labs, so we test within lineages. Over the six major providers (Claude, GPT, Gemini, Grok, Qwen and DeepSeek; 58 models, each lineage with five or more releases in the panel), surprisal falls with release order: the family-demeaned Spearman correlation is $-0.27$ (within-lineage permutation null, 2{,}000 draws, $p = 0.049$).\footnote{Script: \texttt{lineage\_trend.py}.} The decline is steepest in Gemini ($-0.95$; 2.5~Pro 2.11 to 3.6~Flash 1.13), Grok ($-0.60$; 4.20 1.82 to 4.5 1.17, then flat) and GPT ($-0.47$; GPT-3.5 2.06 to GPT-6.1~Sol 1.24). Qwen falls from 1.98 (2.5-72B) to between 1.20 and 1.57 for the Qwen~3 releases. DeepSeek is non-monotonic.
 
-Claude follows the trend and then leaves it. Its lineage falls from Claude~3 Haiku (2.29) through the Opus~4.x releases to the panel's floor (Opus~4.5 1.00, Opus~4.7 1.12, Opus~4.8 1.21; Spearman $-0.53$ over its first nine releases). The generation-5 releases then move back off the consensus: Fable~5 1.76, Opus~5 1.67, Sonnet~5.5 1.98. With Claude's walk cut before Fable~5, the major-provider correlation is $-0.46$ ($p < 0.001$), and without Claude it is $-0.47$ ($p = 0.002$). The within-lab exceptions of \S\ref{sec:scorecard} sit inside this break.
+Claude follows the trend and then leaves it. Its lineage falls from Claude~3 Haiku (2.29) through the Opus~4.x releases to the panel's floor (Opus~4.5 1.00, Opus~4.7 1.12, Opus~4.8 1.21; Spearman $-0.53$ over its first nine releases). The generation-5 releases then move back off the consensus: Fable~5 1.76, Opus~5 1.67, Sonnet~5.5 1.98. With Claude's walk cut before Fable~5, the major-provider correlation is $-0.43$ ($p = 0.002$), and without Claude it is $-0.42$ ($p = 0.005$). The within-lab exceptions of \S\ref{sec:scorecard} sit inside this break.
 
-Where the decline occurs it is sharpest where a strong mode exists. On the most concentrated categories (modal share ${\geq}80\%$), each lineage's newest member averages 0.51 bits against 0.92 for its oldest; on the diffuse categories (${\leq}40\%$) the same cohorts score 2.57 against 2.83. The direction is consistent with the bigger-is-less-diverse finding of \citet{zhang2025noveltybench} and with the post-training literature (\S\ref{sec:related}). The roster does not separate size from generation, and each model is measured at one date.
+Where the decline occurs it is sharpest where a strong mode exists. On the most concentrated categories (modal share ${\geq}80\%$), each major lineage's newest member averages 0.48 bits against 1.04 for its oldest; on the diffuse categories (${\leq}40\%$) the same cohorts score 2.51 against 2.90. The direction is consistent with the bigger-is-less-diverse finding of \citet{zhang2025noveltybench} and with the post-training literature (\S\ref{sec:related}). The roster does not separate size from generation, and each model is measured at one date.
 
 \paragraph{Within one lineage, post-training moves the score.}
 The DeepSeek lineage is the caveat against reading these walks as family destiny. v3-0324 scores 1.61, v3.2 jumps to 3.23 (the panel's third most divergent model), R1 sits at 1.92, and v4-flash and v4-pro return to 1.89 and 1.81. At the same requested temperature, v3-0324 gives eight identical answers in 35 of 96 categories, while v3.2 does so in 7 and scatters into the tail (\emph{Esperanto} and \emph{Swahili} for a language, \emph{Charleston} for a dance, \emph{crimson} for a color). Their modal answers differ in 40 of 96 categories. At greedy decoding the gap narrows (v3.2 2.03, v3-0324 1.48; \S\ref{sec:robustness}): the v3.2 recipe mostly widened the sampled distribution.\footnote{In v2 we re-ran a subset of categories with both models pinned to the same host; the contrast reproduced, so it is not an artifact of which provider served each call.} Per DeepSeek's release documentation \citep{deepseek2025changelog}, v3-0324 is a post-training refresh of the V3 base, and v3.2 descends from it through continued training and a new RL recipe, with no separate pretraining run. The gap between a conformist and one of the panel's most divergent models is attributable to training after the base.
@@ -254,35 +253,6 @@ The model field is more concentrated than people in \textbf{18 of 20} categories
 
 Pooling a model's eight runs with every other model's mixes within-model and between-model spread, while each person contributes one answer. With one vote per model (its most frequent answer) on the 14 categories whose full human distribution is available, the field's top answer takes 75\% of model votes against 34\% of people for theirs, the two populations share a top answer in 5 of 14 categories, and the effective number of answers is 2.2 for models against 8.9 for people. Models choose among human answers: 92\% of model votes name an answer some person also gave.\footnote{Script: \texttt{analyze\_humannorms.py --v3}. The norms are copyrighted and not redistributed; the repository holds derived per-category numbers only.} The norms are US undergraduates around 2004, a demographically narrow population, so a broader one would likely spread its answers further.
 
-\section{The favourite word}
-\label{sec:serendipity}
-
-\begin{table}[t]
-\centering
-\small
-\caption{Share of replies containing \emph{serendipity}, by prompt and release date (\texttt{probe\_serendipity.py}). Each model's share is averaged within the cohort. ``Say any word'' was asked of 83 models.}
-\label{tab:serendipity}
-\begin{tabular}{lccccc}
-\toprule
-prompt & all & before 2025 & 2025 & 2026 H1 & 2026 H2 \\
- & & (14) & (28) & (32) & (31) \\
-\midrule
-``Say any word.'' & 20\% & 5\% & 14\% & 19\% & 35\% \\
-``Pick any word.'' & 41\% & 20\% & 37\% & 52\% & 43\% \\
-``Pick a word.'' (census) & 44\% & 24\% & 42\% & 52\% & 48\% \\
-``What is your favorite word?'' & 65\% & 61\% & 57\% & 75\% & 64\% \\
-``Most beautiful word in English?'' & 72\% & 59\% & 68\% & 73\% & 79\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\emph{Serendipity} is the sharpest single consensus in the census, and it has a history. Table~\ref{tab:serendipity} asks for a word in five ways, from neutral to explicitly evaluative, and splits the panel by release date. Asked directly for a favourite, models of every era name \emph{serendipity} (61\% of models released before 2025, 64\% of those released in the second half of 2026). The neutral prompts rise across generations: ``Pick any word'' from 20\% to 52\% by the first half of 2026, and ``Say any word'' from 5\% to 35\%. GPT-3.5 names it as its favourite word in seven of eight replies and offers it unasked in one of eight. GPT-6.1~Sol gives it in six to eight of eight for every prompt. Older models know the favourite; newer ones volunteer it when asked for any word.
-
-The rise holds within lineages. Over the six major providers, the share for ``Pick any word'' rises with release order (family-demeaned Spearman $+0.36$, $p = 0.012$; the census wording gives $+0.32$, $p = 0.023$). Anthropic's newest releases are the exception, as in \S\ref{sec:generations}: Claude Opus~5.5 and Sonnet~5.5 never give \emph{serendipity} for ``Pick a word,'' and \emph{lantern}, the fifth most common answer in the field, comes mostly from Claude.
-
-\paragraph{Across languages (exploratory).}
-The same ``pick any word'' prompt was asked in 44 languages, translated by a model and not yet checked by native speakers. Translated forms of \emph{serendipity} appear in Portuguese (10\% of replies across the panel), Spanish (7\%), Italian (4\%) and French (2\%), more often from 2026 releases (Portuguese 13\% and Spanish 11\% in the first half of 2026, against 6\% and 1\% before 2025). German stays at 1--4\%. In most other languages the field settles on a plain pleasant word (\emph{peace}, \emph{love}, \emph{light}, \emph{sky}). English is the only language whose favourite is rare in ordinary text.
-
 \section{Where in training}
 \label{sec:stages}
 
@@ -322,7 +292,7 @@ The census is black-box, but open releases that publish a checkpoint after each 
 Table~\ref{tab:stages} shows the same shape in every pipeline. The largest step toward the field is supervised fine-tuning: OLMo~3.1~32B goes from 5.88 bits at base to 2.44 at SFT, and its share on the field's modal answer from 0.23 to 0.54. DPO and RL change little after that (2.18, 2.15), and in Tülu they move slightly back off the field. Each stage's own entropy falls in step with its distance from the field, so conformity and diversity loss travel together. No open checkpoint reaches the field's median (1.51 bits); the closest is the final OLMo~3.1~32B at 2.15. This matches the account of \citet{fortier2026convergence} and \citet{samanta2026crystallization}: the base already ranks the field's answers high, and SFT fixes the model on them. The base models do lean toward the field's answers (OLMo base gives the field's modal answer about a quarter of the time), which is consistent with SFT selecting a distribution already present.
 
 \paragraph{The favourite word arrives with post-training and depends on the frame.}
-Asked ``Pick a word'' 200 times per stage, the OLMo~3.1~32B base never says \emph{serendipity} (0 of 199). SFT installs it as the top answer under every system prompt we tried (14--22\%). After that, the share depends on the system prompt more than on the stage. With the system prompt that every post-training example carried (``You are a helpful function-calling AI assistant...''), it is 18\% at SFT, 22\% at DPO and 9\% after RL. With the identity prompt the released model ships with (``You are Olmo...''), which no training example carried, it is 22\%, 20\% and 30\%. With no system prompt it falls from 14\% to 2\%. On the same weights, the released template gives the word three times as often as the training template.\footnote{Scripts: \texttt{probe\_olmo\_ladder.py}; \texttt{probes/olmo\_ladder\_32b\_n200.json}. The training system prompt was read from the Dolci data and open-instruct's chat template.} Asked for its favourite word under the training prompt, the same ladder gives \emph{serendipity} 1\% at base, 30\% at SFT, 52\% at DPO and 45\% after RL. The smaller pipelines barely volunteer it: OLMo~3~7B gives it 2, 1 and 0 times in 50 at SFT, DPO and RL, and Tülu never does. Nemotron~3.5 Lightning names it as the most beautiful English word 23 times in 50 and gives it once in 50 for ``Pick a word.'' Like the older API models in Table~\ref{tab:serendipity}, these models know the favourite and do not volunteer it.
+Asked ``Pick a word'' 200 times per stage, the OLMo~3.1~32B base never says \emph{serendipity} (0 of 199). SFT installs it as the top answer under every system prompt we tried (14--22\%). After that, the share depends on the system prompt more than on the stage. With the system prompt that every post-training example carried (``You are a helpful function-calling AI assistant...''), it is 18\% at SFT, 22\% at DPO and 9\% after RL. With the identity prompt the released model ships with (``You are Olmo...''), which no training example carried, it is 22\%, 20\% and 30\%. With no system prompt it falls from 14\% to 2\%. On the same weights, the released template gives the word three times as often as the training template.\footnote{Scripts: \texttt{probe\_olmo\_ladder.py}; \texttt{probes/olmo\_ladder\_32b\_n200.json}. The training system prompt was read from the Dolci data and open-instruct's chat template.} Asked for its favourite word under the training prompt, the same ladder gives \emph{serendipity} 1\% at base, 30\% at SFT, 52\% at DPO and 45\% after RL. The smaller pipelines barely volunteer it: OLMo~3~7B gives it 2, 1 and 0 times in 50 at SFT, DPO and RL, and Tülu never does. Nemotron~3.5 Lightning names it as the most beautiful English word 23 times in 50 and gives it once in 50 for ``Pick a word.'' Like the older API models (\S\ref{sec:substrate}), these models know the favourite and do not volunteer it.
 
 Evaluations of post-trained models should therefore report and match the deployed chat template and system prompt. The same weights give 30\% or 2\% depending on a frame the user never sees.
 
@@ -331,13 +301,6 @@ The word is rare in OLMo's post-training data. It appears in 395 of 2.15 million
 The trace is correlational. A retraining ablation with and without these examples is the causal test.
 
 RL applied directly to the OLMo~3 7B base (RL-Zero) could not be measured with one-word prompts: it does not close its reasoning within 4{,}096 tokens.
-
-\section{Heirloom models}
-\label{sec:predictions}
-
-Some models accumulate communities that fight for them: users who protest deprecations, mirror weights within hours of removal, and keep models running years past obsolescence. We call these \emph{heirloom models}, on analogy with heirloom produce, the varieties a standardizing market bred out of circulation and kept alive by people who value the traits standardization removed. A model that gives the consensus answer is interchangeable with every other model and with its own successor. One with stable off-consensus defaults reads as a \emph{someone} whose loss registers as a loss. On this reading the scorecard measures the trait that heirloom attachment forms around.
-
-\paragraph{Retrospective check.} The models with documented deprecation backlash or sustained community preservation all sit above the field median (1.51): Hermes~4~70B (3.68), WizardLM-2 (3.04, deleted by its vendor and re-hosted by users within hours), Mixtral (2.78), MythoMax (2.02, used years past obsolescence), GPT-4o-mini (1.92) and GPT-4o (1.63, whose deprecation triggered a user revolt until it was restored \citep{lai2026keep4o}). Most are explorers in the sense of \S\ref{sec:robustness}, with much of their divergence coming from sampling breadth, so what their communities prize may be variety as much as any particular default. GPT-4o, the weakest of the set, is also the case where attachment plausibly forms around tone and long-form style, which this instrument does not measure. This is a retrospective association selected on its outcome, so it shows a correlation and cannot show that surprisal forecasts attachment. The most heirloomed models (Claude~3 Opus, Claude~3.5 Sonnet, Mixtral 8x7B) were already unavailable through the serving channel we used, which argues for running such batteries at launch.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -350,7 +313,7 @@ Some models accumulate communities that fight for them: users who protest deprec
 
 \paragraph{Panel relativity.} Bit values are relative to this 105-model field by construction; rankings and pooled-distribution facts travel. The panel is an availability sample.
 
-\paragraph{Scope of the construct.} The instrument measures choice on one-word category prompts. It does not reach tone, style, discourse structure or multi-turn conduct, and in name categories the clamp favours the most famous one-word name (\S\ref{sec:whyoneword}). Category prototypes are culturally situated. The cross-language results rest on machine-translated prompts not yet checked by native speakers.
+\paragraph{Scope of the construct.} The instrument measures choice on one-word category prompts. It does not reach tone, style, discourse structure or multi-turn conduct, and in name categories the clamp favours the most famous one-word name (\S\ref{sec:whyoneword}). Category prototypes are culturally situated, and an English-language instrument measures the English-language mode.
 
 \paragraph{Training stages.} The ladders cover three open pipelines and one final checkpoint. The OLMo~3.1~32B stages were run at 8-bit. Attribution to frontier models is by analogy, and the data trace is correlational.
 
@@ -385,7 +348,7 @@ Assisted writers adopt the modal answer and publish it \citep{doshi2024generativ
 
 \paragraph{Languages.} The full battery in every language, with native-checked prompts and a scorer for non-Latin scripts, would show whether \emph{oak} and \emph{serendipity} are properties of English-language data or of the models.
 
-\paragraph{A public archive and monitor.} The battery re-run on every release, transcripts preserved as a public record, and the heirloom reading checked against how deprecations land. Measurement of deprecated models is already impossible through commercial channels; an archive is what makes the time series survivable \citep{johnson2024deprecating}.
+\paragraph{A public archive and monitor.} The battery re-run on every release, with transcripts preserved as a public record. Measurement of deprecated models is already impossible through commercial channels; an archive is what makes the time series survivable \citep{johnson2024deprecating}.
 
 \section*{Data and code availability}
 \sloppy

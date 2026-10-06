@@ -4,7 +4,8 @@ conformist labs? (census v3, "conformity rises within lineages")
 Within each family of >= 3 models with release dates, rank its members by release date and correlate rank with
 surprisal. Pooled statistic: Spearman between family-demeaned release rank and family-demeaned surprisal. Null:
 shuffle release order within each family (2,000 draws), two-sided. Reported for every family of >= 3, and for the
-six major providers (MAJOR), with and without Claude's generation-5 releases (Fable 5 on), which break its walk.
+six major providers (MAJOR: each has five or more releases in the panel; Google's lineage is Gemini, without the
+open-weight Gemma models), with and without Claude's generation-5 releases (Fable 5 on), which break its walk.
 Surprisal is the v3 scorecard (probes/v3_tables.json); dates are views/build.py release_dates().
 
     ../../.venv/bin/python lineage_trend.py   -> probes/lineage_trend_v3.json
@@ -60,7 +61,7 @@ def test(g):
 
 obs = pooled(groups)
 null = np.array([pooled({f: list(rng.permutation(ms)) for f, ms in groups.items()}) for _ in range(R)])
-major = {f: groups[f] for f in MAJOR}
+major = {f: [m for m in groups[f] if not m.startswith("gemma")] for f in MAJOR}
 cut = major["claude"].index("claude-fable-5")
 major_pre5 = {**major, "claude": major["claude"][:cut]}
 per_family = {f: {"n": len(ms), "spearman": round(float(np.corrcoef(np.arange(len(ms)), ranks(np.array([sc[m] for m in ms])))[0, 1]), 2),
@@ -68,7 +69,11 @@ per_family = {f: {"n": len(ms), "spearman": round(float(np.corrcoef(np.arange(le
 res = {"families": len(groups), "models": sum(len(v) for v in groups.values()), "of": len(sc), "undated": undated,
        "spearman_demeaned": round(obs, 3), "p_two_sided": float((1 + (np.abs(null) >= abs(obs)).sum()) / (1 + R)),
        "draws": R, "major": test(major), "major_claude_before_gen5": test(major_pre5),
-       "major_without_claude": test({f: v for f, v in major.items() if f != "claude"}), "per_family": per_family}
+       "major_without_claude": test({f: v for f, v in major.items() if f != "claude"}),
+       "major_walks": {f: [[m, dates[m], round(sc[m], 2)] for m in ms] for f, ms in major.items()},
+       "major_per_lineage": {f: round(float(np.corrcoef(np.arange(len(ms)), ranks(np.array([sc[m] for m in ms])))[0, 1]), 2)
+                             for f, ms in major.items()},
+       "per_family": per_family}
 print(f"{res['models']} of {res['of']} models in {res['families']} families of >= 3: demeaned Spearman {obs:+.2f}, "
       f"p = {res['p_two_sided']:.4f}")
 for k in ("major", "major_claude_before_gen5", "major_without_claude"):
