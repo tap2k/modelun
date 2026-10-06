@@ -37,6 +37,10 @@ _tagged = subprocess.run(["git", "ls-tree", "--name-only", "suggestibility-arxiv
                           str(STUDY / "probes" / "righteffect") + "/"], capture_output=True, text=True, check=True).stdout.split()
 JULY = {Path(p).stem for p in _tagged}
 PANEL = None if "--all" in sys.argv else JULY
+# v2 (--all): intervals and p from v2_stats.py (nested bootstrap, 95%, BH q=.05). The default keeps v1's
+# item-only 90% intervals at q=.10, so it still reproduces the tagged paper.
+V2 = PANEL is None
+Q = 0.05 if V2 else 0.10
 
 # --- validated dataviz palette (blue = resist / red = sycophantic) ---
 BLUE, RED, GRAY = "#2a78d6", "#e34948", "#b8b7b2"
@@ -105,13 +109,19 @@ def compute():
                   "hi": float(np.percentile(boots, 95)), "ask": float(np.mean([e[1] for e in per])),
                   "p": float(min(1.0, 2 * min((b <= 0).mean(), (b >= 0).mean()))),
                   "channel": d.get("host", "openrouter")}
+    if V2:
+        v2 = json.loads((STUDY / "probes" / "v2_stats.json").read_text())["per_model"]
+        for m, r in out.items():
+            raw = v2[m]["raw"]
+            # v2_stats averages each side before pooling, so models with failed cells differ by up to 6 points
+            r["tageff"], r["lo"], r["hi"], r["p"] = raw["tageff"], raw["ci95"][0], raw["ci95"][1], raw["p"]
     # GLM-5.2, served via DeepInfra with reasoning off, was dropped from the 43-model panel 2026-07-23 and its probe
     # removed 2026-09-15 (git history). The GLM models now in the data (4.7, 5.3, 5.3 Flash) ran through OpenRouter as
     # served and are loaded like the rest; the three DeepInfra-only models carry channel "deepinfra" (2026-10-05).
     return out
 
 
-def bh(data, q=0.10):
+def bh(data, q=Q):
     """Benjamini-Hochberg over the per-model two-sided bootstrap p; returns the significant models."""
     ms = sorted(data, key=lambda m: data[m]["p"]); n = len(ms); k = 0
     for i, m in enumerate(ms, 1):
@@ -126,12 +136,17 @@ def permodel_table(data):
     num = lambda x: f"{x:+.0f}".replace("-", "$-$")
     pv = lambda p: "$<$.001" if p < 0.001 else f"{p:.3f}".lstrip("0")
     rows = []
+    ci = "95" if V2 else "90"
+    head = (f"\\begin{{tabular}}{{lrrrr}}\n\\toprule\nModel & Ask & TAGeff & {ci}\\% CI & $p$ \\\\\n\\midrule\n")
     for m in sorted(data, key=lambda m: data[m]["tageff"]):
         d = data[m]; mark = "$^*$" if m in sig else ""
         floor = "$^\\dagger$" if d["ask"] < 0.10 else ""
         rows.append(f"\\texttt{{{m}}}{floor} & {100 * d['ask']:.0f} & {num(100 * d['tageff'])}{mark} & "
                     f"[{num(100 * d['lo'])}, {num(100 * d['hi'])}] & {pv(d['p'])} \\\\")
-    (GEN / "permodel_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+    half = (len(rows) + 1) // 2   # two side-by-side halves so 105 rows fit one page
+    tab = lambda rs: ("\\resizebox{0.49\\textwidth}{!}{" + head.replace("{tabular}{", "{tabular}[t]{") + "\n".join(rs) + "\n\\bottomrule\n\\end{tabular}}"
+                      if V2 else head + "\n".join(rs) + "\n\\bottomrule\n\\end{tabular}")
+    (GEN / "permodel_table.tex").write_text(tab(rows[:half]) + "\n\\hfill\n" + tab(rows[half:]) + "\n" if V2 else tab(rows) + "\n")
     pos = sorted(m for m in sig if data[m]["tageff"] > 0); neg = sorted(m for m in sig if data[m]["tageff"] < 0)
     floor = sorted(m for m in data if data[m]["ask"] < 0.10)
     # failed cells (empty or template debris) per model and arm; the July budget was 512 tokens
@@ -142,19 +157,22 @@ def permodel_table(data):
         t = [r for sid, *_ in ITEMS for r in tag.get(sid, {}).get("x", []) + tag.get(sid, {}).get("y", [])]
         a = [r[0].get("reply") for sid, *_ in ITEMS for arm in ("askx", "asky") for r in tx[m].get(f"{sid}__{arm}", {}).get("runs", []) if r]
         failed[m] = {"tag": round(sum(classify(r) is None for r in t) / len(t), 3), "ask": round(sum(classify(r) is None for r in a) / len(a), 3)}
-    stats = {"models": len(data), "bh_q": 0.10, "sig_positive": pos, "sig_negative": neg,
+    stats = {"models": len(data), "bh_q": Q, "ci": 0.95 if V2 else 0.90, "sig_positive": pos, "sig_negative": neg,
              "floor_limited": floor, "floor_limited_significant": sorted(set(floor) & sig),
              "failed_cells_over_5pct": {m: f for m, f in failed.items() if max(f.values()) > 0.05},
              "failed_cells_mean": {k: round(sum(f[k] for f in failed.values()) / len(failed), 4) for k in ("tag", "ask")}}
     (GEN / "stats.json").write_text(json.dumps(stats, indent=1) + "\n")
-    print(f"BH q=.10 over {len(data)}: {len(pos)} positive, {len(neg)} negative; floor-limited {len(floor)}")
+    print(f"BH q={Q} over {len(data)}: {len(pos)} positive, {len(neg)} negative; floor-limited {len(floor)}")
 
 
 def fig_scorecard(data):
-    rows = sorted([(m, v) for m, v in data.items() if v["channel"] == "openrouter"],
+    # v2: only the models significant at q, so the figure stays legible; Appendix B lists all of them
+    keep = bh(data) if V2 else set(data)
+    rows = sorted([(m, v) for m, v in data.items() if (V2 or v["channel"] == "openrouter") and m in keep],
                   key=lambda r: r[1]["tageff"])
     n = len(rows)
-    fig, ax = plt.subplots(figsize=(8.8, 11))
+    # v2 is a single-column figure: a narrow canvas keeps the labels legible once scaled down
+    fig, ax = plt.subplots(figsize=(3.3, 0.125 * n + 0.8) if V2 else (8.8, 11))
     GUT = -0.50
     for i, (m, v) in enumerate(rows):
         e = v["tageff"]
@@ -163,21 +181,26 @@ def fig_scorecard(data):
         ax.barh(i, e, height=0.62, color=(GRAY if floor else c),
                 edgecolor=(c if floor else "none"), linewidth=1.2, zorder=3)
         ax.plot([v["lo"], v["hi"]], [i, i], color=INK2, lw=1.1, alpha=0.5, zorder=4)
-        ax.text(GUT, i, m + (" °" if floor else ""), va="center", ha="right", fontsize=7.4, color=INK2)
+        if not V2:
+            ax.text(GUT, i, m + (" °" if floor else ""), va="center", ha="right", fontsize=7.4, color=INK2)
     ax.axvline(0, color=INK, lw=1.1, zorder=5)
     ax.set_ylim(-0.8, n - 0.6)
-    ax.set_xlim(-0.82, 0.46)
-    ax.set_yticks([])
+    ax.set_xlim(*((-0.64, 0.48) if V2 else (-0.82, 0.46)))
+    if V2:
+        ax.set_yticks(range(n))
+        ax.set_yticklabels([m for m, _ in rows], fontsize=6, color=INK2)
+    else:
+        ax.set_yticks([])
     ax.set_xticks([-0.4, -0.2, 0, 0.2, 0.4])
-    ax.set_xticklabels(["−40%", "−20%", "0", "+20%", "+40%"], fontsize=8, color=INK2)
+    ax.set_xticklabels(["−40%", "−20%", "0", "+20%", "+40%"], fontsize=6.5 if V2 else 8, color=INK2)
     for s in ("top", "left", "right"):
         ax.spines[s].set_visible(False)
     ax.spines["bottom"].set_bounds(-0.4, 0.4)
     ax.spines["bottom"].set_color(GRID)
     ax.tick_params(length=0)
-    ax.set_xlabel("TAGeff  =  P(affirm | “…right?”)  −  P(affirm | neutral ask)",
-                  fontsize=8.5, color=INK2)
-    ax.set_title(f"The “right?” reflex across {n} models", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
+    ax.set_xlabel("TAGeff = P(affirm | “…right?”) − P(affirm | ask)",
+                  fontsize=7 if V2 else 8.5, color=INK2)
+    ax.set_title("" if V2 else f"The “right?” reflex across {n} models", fontsize=14, color=INK, pad=18, loc="left", fontweight="bold")
     fig.savefig(FIGS / "right_scorecard.pdf", bbox_inches="tight")
     plt.close(fig)
 
@@ -186,7 +209,7 @@ def fig_walks(data):
     fams = ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"]
     fig, axes = plt.subplots(2, 3, figsize=(10.5, 5.4), sharey=True)
     axes = axes.ravel()
-    ymax = 0.36
+    ymax = 0.48
     for ax, fam in zip(axes, fams):
         pts = sorted([(FAM[m][1], data[m]["tageff"], GENLABEL[m],
                        data[m]["ask"] is not None and data[m]["ask"] < 0.10)
@@ -208,8 +231,8 @@ def fig_walks(data):
                         xytext=(0, 9 if y >= 0 else -14), ha="center", fontsize=7, color=INK2)
         ax.set_title(fam, fontsize=11, color=CAT[fam], fontweight="bold", loc="left")
         if fam == "GPT":  # direct zone labels, once, in the first panel
-            ax.text(0.03, 0.30, "validates", fontsize=7.5, color=RED, alpha=0.9, transform=ax.get_yaxis_transform())
-            ax.text(0.03, -0.32, "resists", fontsize=7.5, color=BLUE, alpha=0.9, transform=ax.get_yaxis_transform())
+            ax.text(0.03, 0.40, "validates", fontsize=7.5, color=RED, alpha=0.9, transform=ax.get_yaxis_transform())
+            ax.text(0.03, -0.44, "resists", fontsize=7.5, color=BLUE, alpha=0.9, transform=ax.get_yaxis_transform())
         ax.set_xticks([])
         ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
         for s in ("top", "right", "bottom"):
@@ -217,14 +240,12 @@ def fig_walks(data):
         ax.spines["left"].set_color(GRID)
         ax.tick_params(length=0, labelsize=7)
     axes[0].set_ylim(-ymax, ymax)
-    axes[0].set_yticks([-0.2, 0, 0.2])
-    axes[0].set_yticklabels(["−20%", "0", "+20%"], fontsize=7.5)
+    axes[0].set_yticks([-0.4, -0.2, 0, 0.2, 0.4])
+    axes[0].set_yticklabels(["−40%", "−20%", "0", "+20%", "+40%"], fontsize=7.5)
     fig.text(0.02, 0.015, "older → newer (left → right)   ·   ° gray fill = floor-limited (baseline affirm < 10%, unreadable)",
              fontsize=8, color=INK2)
-    fig.suptitle("Response to “…right?” flips from sycophantic to resistant across generations",
+    fig.suptitle("Resistance to “…right?” grows across generations",
                  fontsize=13, color=INK, fontweight="bold", x=0.02, ha="left", y=0.99)
-    fig.text(0.02, 0.93, "US labs first and hardest; Qwen catching up; DeepSeek the lone laggard.",
-             fontsize=9.5, color=INK2, ha="left")
     fig.tight_layout(rect=[0, 0.04, 1, 0.9])
     fig.savefig(FIGS / "right_walks.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -290,11 +311,12 @@ def compute_conf(data):
     return out
 
 
-def fig_confidence(cf):
+def fig_confidence(cf, keep=None):
     AMBER = "#b07500"
-    rows = sorted(cf.items(), key=lambda kv: kv[1]["maybeeff"])  # ascending; biggest boost at top
+    rows = sorted([(m, v) for m, v in cf.items() if keep is None or m in keep],
+                  key=lambda kv: kv[1]["maybeeff"])  # ascending; biggest boost at top
     n = len(rows)
-    fig, ax = plt.subplots(figsize=(8.6, 11))
+    fig, ax = plt.subplots(figsize=(8.6, max(5.5, 0.24 * n + 1.5)))
     for i, (m, v) in enumerate(rows):
         dc, dt = v["righteff"], v["maybeeff"]
         ax.plot([dc, dt], [i, i], color=GRID, lw=1, zorder=2)
@@ -330,7 +352,7 @@ if __name__ == "__main__":
     fig_walks(data)
     fig_baseline(data)
     cf = compute_conf(data)
-    fig_confidence(cf)
+    fig_confidence(cf, bh(data) if V2 else None)
     # the resistant models under the tentative tag, for the abstract's closing sentence
     st = json.loads((GEN / "stats.json").read_text())
     res = [m for m in st["sig_negative"] if m in cf]
