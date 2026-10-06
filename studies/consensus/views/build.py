@@ -124,6 +124,9 @@ def name_modal(src, cats):
 def build(battery):
     src = SOURCE.get(battery, battery)
     ans = answers(STUDY, src)
+    if battery in PRIVATE:                    # the brand pages leave out sonar, as the brand analysis does
+        from brand_ladder import EXCLUDE
+        ans = {m: cs for m, cs in ans.items() if m not in EXCLUDE}
     result = analyze(STUDY, src, ans=ans)
     pm, pc = result["per_model"], result["per_category"]
 
