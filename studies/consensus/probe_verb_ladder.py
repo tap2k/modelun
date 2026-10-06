@@ -170,8 +170,8 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
         if data is None:
             data = {"model": st["label"], "slug": st["repo"], "spec_version": "verb-ladder-pick-2turn", "host": "local-mlx",
                     "pipeline": pipeline, "stage": st["stage"], "framing": f, "weights": st["weights"],
-                    "quantization": st.get("quantization"), "revision": local.revision(st["repo"]), "temperature": 1.0,
-                    "max_tokens": max_tokens, "turn1": str(rec_path.relative_to(HERE)), "scenes": {}}
+                    "quantization": st.get("quantization"), "revision": local.revision(st["repo"], st["weights"]),
+                    "temperature": 1.0, "max_tokens": max_tokens, "turn1": str(rec_path.relative_to(HERE)), "scenes": {}}
         sampler, t0 = make_sampler(temp=1.0), time.time()
         path.parent.mkdir(parents=True, exist_ok=True)
         for i in range(0, len(todo), 4):                                  # written every 4 categories, to resume
@@ -181,7 +181,8 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
                     if run and run[0].get("reply"):
                         prompts.append(pick2_encode(tok, st, f, run[0]["u"], run[0]["reply"]))
                         keys.append((sid, k))
-            replies = local.generate(model, tok, prompts, max_tokens, sampler, batch, st.get("batched", True))
+            replies = local.generate(model, tok, prompts, max_tokens, sampler, batch,
+                                     st.get("batched", True) and "--unbatched" not in sys.argv)
             by = {}
             for (sid, k), (text, fin) in zip(keys, replies):
                 by.setdefault(sid, []).append([rec["scenes"][sid]["runs"][k][0], local.cell(PICK, text, False, fin)])
@@ -196,6 +197,7 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
 
 
 if __name__ == "__main__" and "--pick2" in sys.argv:
-    # --batch=4: the two-turn prompts carry a full recommend reply; OLMo 3 7B ran out of GPU memory at 8 (2026-10-05)
+    # --batch=N: the two-turn prompts carry a full recommend reply; OLMo 3 7B ran out of GPU memory at 8 and at 4
+    # (2026-10-05). --unbatched samples one prompt at a time, for a model whose batched path will not fit.
     pick2_pass(sys.argv[1], "--delete-cache" in sys.argv,
                batch=int(next((a.split("=")[1] for a in sys.argv if a.startswith("--batch=")), 8)))
