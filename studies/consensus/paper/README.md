@@ -1,6 +1,6 @@
 # paper — arXiv write-up of the consensus study
 
-"The One-Word Census: Answer-Choice Conformity Across 44 Language Models" (Parikh, 2026).
+"The One-Word Census: Answer-Choice Conformity Across 44 Language Models" (Parikh, 2026; v2). The v3 draft covers 105 models.
 
 ## Build
 
@@ -25,17 +25,13 @@ Bibliography author lists were verified against the source PDFs (2026-07-07);
 `references.bib` corrects several entries relative to BIBLIOGRAPHY.md
 shorthand (GX-Chen et al., Gueorguieva et al., Karouzos et al., Liu).
 
-## Pending for the next revision (v3)
+## v3 (draft, 2026-10-06)
 
-Neither warrants a revision on its own; include both when one happens.
+`main.tex` is the v3 draft: 105 models x 96 prompts x 8 runs. It reads `figs-v3/` and `gen-v3/`
+(`make_assets.py --v3`) and the `*_v3.json` probes (`robustness.py`, `pairwise.py`, `probe_smoothing.py`,
+`probe_corpusfreq.py`, `probe_permutation.py`, `probe_temp0.py`, `family_signal.py`, each with `--v3`;
+`lineage_trend.py`; `probe_serendipity.py`; `stage_ladder.py census|verbs`). v2's `figs/` and `gen/` stay as
+published; v2 is reproducible from tag `consensus-arxiv-v2`. Tag `consensus-arxiv-v3` at submission.
 
-1. **Data-availability link → tag.** The paragraph points at `tree/main`, which now carries the
-   wave-2 roster (70 models) and September re-snapshots. Point it at `tree/consensus-arxiv-v2`,
-   the frozen 44-model panel the paper describes.
-2. **Per-model unclamped sentence** after the oak/rose list in §3.4 ("Why one-word answers"):
-   the ranking survives without the clamp, not just the mode — a model's share of bare-prompt
-   replies avoiding the field's modal word rank-correlates with its census surprisal at Spearman
-   0.61 (n=44, permutation p<0.001; `probe_clamp.py`, `probes/clamp_rank.json`). Optional
-   corroboration: Spearman 0.64 against the convergence study's embedding uniqueness over the 17
-   shared models excluding ernie (`probe_convergence_xval.py`).
-
+Open before submission: the Nemotron training-data counts (TODO in §6) need a committed probe; native-speaker
+checks of the pickword translations; `make_assets.py --v3` NEWEST/OLDEST review.
