@@ -75,39 +75,56 @@ def disp(label):
 order = sorted(pm, key=lambda m: -pm[m]["surprisal"])
 
 # ---------------------------------------------------------------- fig 1: scorecard
-fig, ax = plt.subplots(figsize=(5.6, 6.4 * max(1, len(order) / 44)))
-ys = np.arange(len(order))[::-1]
-for y, m in zip(ys, order):
+def ends(rows, head, tail):
+    """v3: the two ends of a ranked list with a gap row (None) between; v2: every row."""
+    if not V3 or len(rows) <= head + tail:
+        return rows, 0
+    return rows[:head] + [None] + rows[-tail:], len(rows) - head - tail
+
+
+shown, skipped = ends(order, 15, 15)
+fig, ax = plt.subplots(figsize=(5.6, 6.4 * max(1, len(shown) / 44)))
+ys = np.arange(len(shown))[::-1]
+for y, m in zip(ys, shown):
+    if m is None:
+        ax.text(0.02, y, f"\u22ee  {skipped} more models", transform=ax.get_yaxis_transform(),
+                va="center", fontsize=7, color="#6b6b6b")
+        continue
     v = pm[m]
     lo, hi = v.get("ci90", [v["surprisal"]] * 2)
     ax.plot([lo, hi], [y, y], color=GRID, lw=1.4, zorder=1)
     ax.plot(v["surprisal"], y, "o", ms=4, color=BLUE, zorder=2)
 ax.set_yticks(ys)
-ax.set_yticklabels([disp(m) for m in order], fontsize=7)
+ax.set_yticklabels(["" if m is None else disp(m) for m in shown], fontsize=7)
 ax.set_xlabel("answer-choice surprisal (bits), leave-one-out, 90% CI")
 ax.spines[["top", "right", "left"]].set_visible(False)
 ax.tick_params(axis="y", length=0)
 ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.6)
 ax.set_axisbelow(True)
-ax.set_ylim(-0.8, len(order) - 0.2)
+ax.set_ylim(-0.8, len(shown) - 0.2)
 fig.tight_layout()
 fig.savefig(FIGS / "scorecard.pdf")
 plt.close(fig)
 
 # ---------------------------------------------------------------- fig 2: substrate
 cat_rows = sorted(pc.items(), key=lambda kv: -kv[1]["modal_share"])
-fig, ax = plt.subplots(figsize=(5.6, 5.4 * max(1, len(cat_rows) / 31)))
-ys = np.arange(len(cat_rows))[::-1]
-for y, (c, v) in zip(ys, cat_rows):
+shown, skipped = ends(cat_rows, 15, 10)
+fig, ax = plt.subplots(figsize=(5.6, 5.4 * max(1, len(shown) / 31)))
+ys = np.arange(len(shown))[::-1]
+for y, row in zip(ys, shown):
+    if row is None:
+        ax.text(0.02, y, f"\u22ee  {skipped} more categories", va="center", fontsize=7, color="#6b6b6b")
+        continue
+    c, v = row
     hi = v["modal_share"] >= 0.8
     ax.barh(y, v["modal_share"], height=0.62, color=BLUE if hi else GRID,
             edgecolor="none", zorder=2)
     ax.text(v["modal_share"] + 0.012, y, f"{v['modal']}  {v['modal_share']:.0%}",
             va="center", fontsize=7, color="#0b0b0b")
 ax.axvline(0.8, color=AMBER, lw=0.9, ls=(0, (4, 3)), zorder=1)
-ax.text(0.8, len(cat_rows) - 0.1, "80%", color=AMBER, fontsize=7, ha="center")
+ax.text(0.8, len(shown) - 0.1, "80%", color=AMBER, fontsize=7, ha="center")
 ax.set_yticks(ys)
-ax.set_yticklabels([c.replace("_", " ") for c, _ in cat_rows], fontsize=7)
+ax.set_yticklabels(["" if r is None else r[0].replace("_", " ") for r in shown], fontsize=7)
 ax.set_xlim(0, 1.12)
 ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
 ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"])
