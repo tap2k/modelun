@@ -56,6 +56,19 @@ def stages(pipeline):
     return [{**st, "weights": over.get(st["stage"], st["weights"])} for st in local.stages(pipeline)]
 
 
+def drop_cache(repo):
+    """Remove a repo's Hub cache, weights included. The model folder holds only symlinks into the shared blob store
+    (hub/blobs), so deleting the folder alone frees nothing; huggingface_hub's cache API deletes the blobs too."""
+    from huggingface_hub import scan_cache_dir
+    cache = scan_cache_dir()
+    revs = [r.commit_hash for repo_info in cache.repos if repo_info.repo_id == repo for r in repo_info.revisions]
+    if revs:
+        strategy = cache.delete_revisions(*revs)
+        strategy.execute()
+        print(f"deleted cache {repo} ({strategy.expected_freed_size_str})", flush=True)
+    shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + repo.replace("/", "--")), ignore_errors=True)
+
+
 def main(pipeline, delete_cache):
     out = HERE / "probes" / f"verb_ladder_{pipeline}"
     for st in stages(pipeline):
@@ -81,9 +94,7 @@ def main(pipeline, delete_cache):
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
-            cache = Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--"))
-            shutil.rmtree(cache, ignore_errors=True)
-            print(f"deleted cache {cache.name}", flush=True)
+            drop_cache(st["weights"])
 
 
 if __name__ == "__main__" and "--recommend" not in sys.argv and "--pick2" not in sys.argv:
@@ -116,7 +127,7 @@ def recommend_pass(pipeline, delete_cache):
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
-            shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
+            drop_cache(st["weights"])
 
 
 if __name__ == "__main__" and "--recommend" in sys.argv:
@@ -181,7 +192,7 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
         del model
         local.free()
         if delete_cache and not st["weights"].startswith(("/", "~")):
-            shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
+            drop_cache(st["weights"])
 
 
 if __name__ == "__main__" and "--pick2" in sys.argv:

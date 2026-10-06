@@ -76,9 +76,9 @@ def mentions(reply, pats):
     return out
 
 
-def load():
+def load(dirs=DIRS):
     clamp, free = {}, {}
-    for d in DIRS:
+    for d in dirs:
         for p in sorted((HERE / d).glob("*.json")):
             dd = json.loads(p.read_text())
             for sid, s in dd["scenes"].items():

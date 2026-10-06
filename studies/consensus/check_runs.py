@@ -54,7 +54,7 @@ def check(entry, tags, hybrids):
             out.append(f"published tag {t} does not exist")
     version, scenes = spec_of(entry)
     bad_version, extra, missing, runs, modes, temps, failed, empty = Counter(), set(), 0, Counter(), Counter(), Counter(), 0, []
-    hybrid_modes = Counter()
+    hybrid_modes, partial = Counter(), 0      # "partial": models the entry declares stopped early, with the reason in its note
     for f in fs:
         d = json.loads(f.read_text())
         want = {s for s in scenes if s.endswith("__" + f.parent.name)} if entry.get("layout") else scenes
@@ -62,7 +62,10 @@ def check(entry, tags, hybrids):
             bad_version[d.get("spec_version")] += 1
         temps[d.get("temperature")] += 1
         extra |= set(d["scenes"]) - want
-        missing += len(want - set(d["scenes"]))
+        if f.stem in entry.get("partial", ()):
+            partial += len(want - set(d["scenes"]))
+        else:
+            missing += len(want - set(d["scenes"]))
         cells = [cell for sc in d["scenes"].values() for run in sc["runs"] for cell in run]
         for sc in d["scenes"].values():
             runs[len(sc["runs"])] += 1
@@ -79,6 +82,8 @@ def check(entry, tags, hybrids):
         out.append(f"{len(extra)} scene ids not in {entry['spec']}, e.g. {sorted(extra)[:3]}")
     if missing:
         out.append(f"{missing} model x scene cells missing from the files")
+    if partial:
+        notes.append(f"{partial} cells missing from models declared partial: {', '.join(entry['partial'])}")
     if set(runs) != {entry["runs"]}:
         out.append(f"runs per scene {dict(runs)}, manifest says {entry['runs']}")
     arm, other = entry["arm"], set(modes) - {None, "off"}

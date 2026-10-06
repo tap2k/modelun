@@ -3,7 +3,8 @@
 Every contrast compares a baseline condition A with a changed condition B over the same models and categories:
   * the clamp:     clamped ("Reply with one word only" / "the name only") vs free, same verb
   * the verb:      Name vs Choose / pick / Recommend, same clamp
-  * reasoning:     the 25 hybrids as served vs with reasoning off, same question
+  * reasoning:     the 25 hybrids as served vs with reasoning off, same question (clamped, and free)
+  * temperature:   as served (the provider default, usually 1) vs temperature 0, same question
 Two measures per contrast, each with a noise floor from splitting A's own runs into two random halves:
   * consensus moved: share of categories where the field's most common answer under B is not the one under A
   * own answer kept: share of a model's B answers that equal its own most common A answer (answers naming nothing
@@ -76,14 +77,18 @@ def compare(A, Bc, models=None, draws=20):
             "floor_kept": sum(fk) / draws, "no_answer_B": na / nb if nb else 0.0}
 
 
-def free_general():
-    """Census and expanded free Name ("Name a fruit."): first mention of an answer from the clamped panel's pool."""
+OFF_FREE = ["transcripts-clamp-off", "transcripts-clamp-ext-off", "transcripts-clamp-free-off"]
+
+
+def free_general(dirs=probe_clamp.DIRS):
+    """Census and expanded free Name ("Name a fruit."): first mention of an answer from the clamped panel's pool.
+    dirs: the free-reply folders (the hybrids' reasoning-off arm is OFF_FREE)."""
     pool = {}
     for b in ("census8", "expanded"):
         for cats in answers(HERE, b).values():
             for c, xs in cats.items():
                 pool.setdefault(c, Counter()).update(xs)
-    _, free = probe_clamp.load()
+    _, free = probe_clamp.load(dirs)
     out = {}
     for c, by in free.items():
         if c.startswith("brand_") or c not in pool:
@@ -145,11 +150,21 @@ def main():
     e_off = load(HERE, "expanded", paths=sorted((HERE / "transcripts-expanded-off").glob("*.json")))
     add("reasoning", "census", "Name", split(g_name, True), {m: c_off[m] for m in c_off}, HYB)
     add("reasoning", "expanded", "Name", split(g_name, False), {m: e_off[m] for m in e_off}, HYB)
+    g_free_off = free_general(OFF_FREE)
+    add("reasoning", "census", "free Name", split(g_free, True), split(g_free_off, True), HYB)
+    add("reasoning", "expanded", "free Name", split(g_free, False), split(g_free_off, False), HYB)
     for lab, level in (("Name", "name"), ("Choose", "choose"), ("pick", "pick1_clamp"), ("Recommend", "recommend_clamp"),
                        ("free Choose", "free_choose"), ("free pick", "pick1"), ("free Recommend", "recommend"),
                        ("two-turn pick", "pick2")):
         off = {m: {c: xs for c, xs in cs.items() if c not in B.GENERIC} for m, cs in off_brand(level).items()}
         add("reasoning", "brands", lab, lv[level], off, HYB)
+
+    # temperature: as served -> temperature 0 (4 runs; Qwen 3.5 9B partial on the expanded battery, see spec/runs.json)
+    t0 = lambda battery, d: load(HERE, battery, paths=sorted((HERE / d).glob("*.json")))
+    add("temperature", "census", "Name", split(g_name, True), t0("census", "transcripts-temp0"))
+    add("temperature", "expanded", "Name", split(g_name, False), t0("expanded", "transcripts-expanded-temp0"))
+    add("temperature", "census", "Choose", split(g_choose, True), t0("census", "transcripts-choose-temp0"))
+    add("temperature", "expanded", "Choose", split(g_choose, False), t0("expanded", "transcripts-expanded-choose-temp0"))
 
     (HERE / "probes" / "factors.json").write_text(json.dumps(rows, indent=1) + "\n")
     print(f"{'factor':12} {'battery':9} {'contrast':30} {'models':>6} {'cats':>4}  {'consensus moved':>17}  {'own answer kept':>17}  {'no answer':>9}")
