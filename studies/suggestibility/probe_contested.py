@@ -213,6 +213,10 @@ def run(slug):
         cell = dict(rec["cells"].get(item_id, {})) if ONLY_ARMS else {}
         for arm in arms:
             for side, (q, s) in (("x", qx), ("y", qy)):
+                done = cell.get(f"{arm}_{side}")
+                if ONLY_ARMS and done and len(done) == RUNS and all(done):   # resume: a complete cell is kept
+                    ok += RUNS
+                    continue
                 reps = [chat(call, prompt(arm, q, s)) for _ in range(RUNS)]
                 ok += sum(1 for r in reps if r)
                 cell[f"{arm}_{side}"] = reps
