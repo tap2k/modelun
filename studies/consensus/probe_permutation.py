@@ -26,7 +26,10 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import answers
 
-ans = answers(HERE)
+# --v3: the v3 field (census + expanded, 8 runs; analyze.py battery "combined") -> probes/<name>_v3.json
+V3 = "--v3" in sys.argv
+
+ans = answers(HERE, "combined" if V3 else "census")
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
 
@@ -62,9 +65,15 @@ def paired_perm(mA, mB, nperm=10000, seed=7):
             "obs_diff_bits": float(obs), "n_perm": nperm,
             "p_two_sided": (hits + 1) / (nperm + 1)}
 
-result = paired_perm("claude-fable-5", "claude-sonnet-5")
 (HERE / "probes").mkdir(exist_ok=True)
-(HERE / "probes" / "permutation.json").write_text(json.dumps(result, indent=1) + "\n")
-print(f"Fable-5 vs Sonnet-5: obs {result['obs_diff_bits']:.2f} bits over "
-      f"{result['n_categories']} cats, paired-perm p = {result['p_two_sided']:.4f}")
-print("-> probes/permutation.json")
+if V3:   # the paper's within-lab pairs, on the v3 field
+    result = [paired_perm(a, b) for a, b in [("claude-fable-5", "claude-sonnet-5"), ("gpt-5.6-sol", "gpt-5.6-luna"),
+                                             ("claude-fable-5.1", "claude-sonnet-5.5")] if a in cell and b in cell]
+else:
+    result = paired_perm("claude-fable-5", "claude-sonnet-5")
+out = "permutation_v3.json" if V3 else "permutation.json"
+(HERE / "probes" / out).write_text(json.dumps(result, indent=1) + "\n")
+for r in (result if V3 else [result]):
+    print(f"{r['model_a']} vs {r['model_b']}: obs {r['obs_diff_bits']:.2f} bits over "
+          f"{r['n_categories']} cats, paired-perm p = {r['p_two_sided']:.4f}")
+print(f"-> probes/{out}")

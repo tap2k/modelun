@@ -27,7 +27,10 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import answers
 
-ans = answers(HERE)
+# --v3: the v3 field (census + expanded, 8 runs; analyze.py battery "combined") -> probes/<name>_v3.json
+V3 = "--v3" in sys.argv
+
+ans = answers(HERE, "combined" if V3 else "census")
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
 
@@ -130,7 +133,7 @@ result = {
 }
 
 (HERE / "probes").mkdir(exist_ok=True)
-(HERE / "probes" / "corpusfreq.json").write_text(json.dumps(result, indent=1) + "\n")
+(HERE / "probes" / ("corpusfreq_v3.json" if V3 else "corpusfreq.json")).write_text(json.dumps(result, indent=1) + "\n")
 
 print(f"modal == frequency-top of support: {len(hits)}/{n} categories "
       f"({', '.join(r['category'] for r in hits)})")
@@ -146,4 +149,4 @@ for r in sorted(per_cat, key=lambda r: -r["modal_share"]):
     rho = f"{r['rho_count_zipf']:+.2f}" if r["rho_count_zipf"] is not None else "  --"
     print(f"{r['category']:<12}{r['modal']:<14}{r['modal_zipf']:>5.2f}{r['modal_freq_rank']:>5}  "
           f"{r['freq_top']:<14}{r['freq_top_zipf']:>5.2f}{r['freq_top_share']:>7.1%}{rho:>7}")
-print("-> probes/corpusfreq.json")
+print(f"-> probes/corpusfreq{'_v3' if V3 else ''}.json")

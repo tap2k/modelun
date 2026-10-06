@@ -20,7 +20,10 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import answers
 
-ans = answers(HERE)
+# --v3: the v3 field (census + expanded, 8 runs; analyze.py battery "combined") -> probes/<name>_v3.json
+V3 = "--v3" in sys.argv
+
+ans = answers(HERE, "combined" if V3 else "census")
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
 
@@ -64,5 +67,5 @@ result = {"shipped": "add-1, Vc=union", "min_rho": min(r["rho"] for r in out),
           "all_top6_identical": all(r["top6_identical"] for r in out),
           "all_last_identical": all(r["last_identical"] for r in out), "variants": out}
 (HERE / "probes").mkdir(exist_ok=True)
-(HERE / "probes" / "smoothing.json").write_text(json.dumps(result, indent=1) + "\n")
-print("-> probes/smoothing.json")
+(HERE / "probes" / ("smoothing_v3.json" if V3 else "smoothing.json")).write_text(json.dumps(result, indent=1) + "\n")
+print(f"-> probes/smoothing{'_v3' if V3 else ''}.json")

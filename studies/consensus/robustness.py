@@ -23,7 +23,10 @@ STUDY = Path(__file__).resolve().parent
 sys.path.insert(0, str(STUDY))
 from analyze import answers
 
-ans = answers(STUDY)
+# --v3: the v3 field (census + expanded, 8 runs; analyze.py battery "combined") -> probes/<name>_v3.json
+V3 = "--v3" in sys.argv
+
+ans = answers(STUDY, "combined" if V3 else "census")
 models = sorted(m for m in ans if ans[m])
 cats = sorted({c for m in models for c in ans[m]})
 
@@ -69,6 +72,12 @@ ERA = {
     'gpt-5.4-mini': 2, 'grok-4.7': 2, 'gemini-3-flash-preview': 2, 'gemini-3.6-flash': 2,
     'qwen3.7-plus': 2, 'muse-spark-1.3': 2, 'claude-opus-4.6': 2, 'claude-opus-4.7': 2,
     'claude-sonnet-5.5': 2,
+    # added 2026-10-06 for the 105-model v3 field, same date rule (dates: views/build.py release_dates())
+    'hermes-3-llama-3.1-70b': 1, 'phi-4': 1, 'hermes-4-405b': 1,
+    'gpt-6.1-sol': 2, 'granite-4.2-30b': 2, 'granite-4.2-8b': 2, 'hy4-preview': 2, 'inkling': 2,
+    'inkling-small': 2, 'ling-3.0-flash': 2, 'mimo-v2.6-pro': 2, 'mistral-small-2603': 2, 'muse-glimmer-30b': 2,
+    'nemotron-3-super-120b-a12b': 2, 'nemotron-3-ultra-550b-a55b': 2, 'nemotron-3.5-lightning': 2,
+    'qwen3.8-27b': 2, 'seed-2.0-pro': 2,
 }
 missing = [m for m in models if m not in ERA]
 if missing:

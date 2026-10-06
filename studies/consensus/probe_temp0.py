@@ -21,17 +21,25 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent                      # studies/consensus
 sys.path.insert(0, str(HERE))
-from analyze import load, answers, against                  # same scoring as the paper
+from analyze import load, answers, against, analyze         # same scoring as the paper
 
-T0_DIR = HERE / "transcripts-temp0"
-if not T0_DIR.exists():
-    sys.exit(f"no {T0_DIR} yet — run the temp-0 subset first.")
+# --v3: the v3 field (census + expanded, 8 runs; battery "combined") against both temp-0 directories
+# -> probes/temp0_v3.json. Temp 0 has 4 runs, so temp-1 self-distinctness is taken over runs 1-4 to match.
+V3 = "--v3" in sys.argv
+BATTERY = "combined" if V3 else "census"
+T0_DIRS = [HERE / "transcripts-temp0"] + ([HERE / "transcripts-expanded-temp0"] if V3 else [])
+if not all(d.exists() for d in T0_DIRS):
+    sys.exit(f"no {T0_DIRS} yet — run the temp-0 subset first.")
 
-pm = json.loads((HERE / "analysis.json").read_text())["per_model"]   # frozen temp-1 metrics
-
-field = answers(HERE)                          # the whole panel, temp 1 (the frozen reference)
+field = answers(HERE, BATTERY)                 # the whole panel, temp 1 (the frozen reference)
+if V3:
+    pm = analyze(HERE, BATTERY, ans=field)["per_model"]
+    for m in pm:
+        pm[m]["self_distinct"] = float(np.mean([len(set(a[:4])) / len(a[:4]) for a in field[m].values() if a]))
+else:
+    pm = json.loads((HERE / "analysis.json").read_text())["per_model"]   # frozen temp-1 metrics
 # the temp-0 subset, merged onto the temp-1 field's pool as answers() merges the panel
-t0 = against(field, load(HERE, paths=sorted(T0_DIR.glob("*.json"))), HERE)
+t0 = against(field, load(HERE, BATTERY, paths=sorted(p for d in T0_DIRS for p in d.glob("*.json"))), HERE, BATTERY)
 cats = sorted({c for m in field for c in field[m]})
 
 
@@ -102,6 +110,8 @@ agg = {
     "last_t0": by_t0[-1][0],
     "fable_minus_sonnet5_t0": round(dict(zip(ms, s0))["claude-fable-5"]
                                     - dict(zip(ms, s0))["claude-sonnet-5"], 3),
+    "fable_minus_sonnet5_t1": round(dict(zip(ms, s1))["claude-fable-5"]
+                                    - dict(zip(ms, s1))["claude-sonnet-5"], 3),
     "gpt56_tiers_t0": {t: round(dict(zip(ms, s0))[f"gpt-5.6-{t}"], 3)
                        for t in ("luna", "terra", "sol")},
     "per_model": {r[0]: {"surprisal_t1": round(r[1], 3), "surprisal_t0": round(r[2], 3),
@@ -109,7 +119,7 @@ agg = {
                          "temp": r[7], "verdict": r[8]} for r in rows},
 }
 (HERE / "probes").mkdir(exist_ok=True)
-(HERE / "probes" / "temp0.json").write_text(json.dumps(agg, indent=1) + "\n")
+(HERE / "probes" / ("temp0_v3.json" if V3 else "temp0.json")).write_text(json.dumps(agg, indent=1) + "\n")
 print(f"\nselfd x surprisal (t1): pearson {agg['pearson_selfd_surprisal_t1']:+.2f} "
       f"spearman {agg['spearman_selfd_surprisal_t1']:+.2f}")
 print(f"scorecard t1 vs t0: spearman {agg['spearman_scorecard_t1_t0']:+.3f}   "
@@ -118,7 +128,7 @@ print(f"collapsed (Δ <= -0.5): {agg['collapsed']}")
 print(f"t0 top5 {agg['top5_t0']}\nt0 bottom5 {agg['bottom5_t0']}")
 print(f"fable - sonnet5 at t0: {agg['fable_minus_sonnet5_t0']:+.2f}   "
       f"gpt-5.6 tiers at t0: {agg['gpt56_tiers_t0']}")
-print("-> probes/temp0.json")
+print(f"-> probes/temp0{'_v3' if V3 else ''}.json")
 
 # ---- dumbbell plot: surprisal (left) and self-distinctness (right), temp1 -> temp0 ----
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
@@ -141,4 +151,4 @@ axL.plot([], [], "o", color=BLUE, label="temp 1 (frozen)"); axL.plot([], [], "o"
 axL.legend(loc="lower right", fontsize=8, frameon=False)
 fig.suptitle("temp-1 → temp-0: who honors temperature, whose divergence survives", fontsize=11)
 fig.tight_layout()
-out = HERE / "temp0_compare.png"; fig.savefig(out, dpi=150); print(f"\nplot -> {out}")
+out = HERE / ("temp0_compare_v3.png" if V3 else "temp0_compare.png"); fig.savefig(out, dpi=150); print(f"\nplot -> {out}")

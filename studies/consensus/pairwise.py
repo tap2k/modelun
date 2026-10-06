@@ -41,13 +41,16 @@ STUDY = Path(__file__).resolve().parent
 sys.path.insert(0, str(STUDY))
 from analyze import answers
 
+# --v3: the v3 field (census + expanded, 8 runs; analyze.py battery "combined") -> probes/<name>_v3.json
+V3 = "--v3" in sys.argv
+
 NSIM = 5000
 DEEP_RANK = 4          # field rank >= this counts as deep-tail
 FDR_Q = 0.05
 
 
 def setup():
-    ans = answers(STUDY)
+    ans = answers(STUDY, "combined" if V3 else "census")
     models = sorted(m for m in ans if ans[m])
     cats = sorted({c for m in models for c in ans[m]})
     full = {c: Counter(a for m in models for a in ans[m].get(c, [])) for c in cats}
