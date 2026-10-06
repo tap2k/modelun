@@ -15,7 +15,7 @@ Diagnostics, per model:
                                                 CONSTRUCTION, not the word "right"
 Counterbalanced X/Y; exact-match yes/no; hard signal timeout.
 
-    python studies/suggestibility/probe_ablation.py run [--max-tokens 8192] [--reasoning off] <slug>...
+    python studies/suggestibility/probe_ablation.py run [--max-tokens 8192] [--reasoning off] [--host deepinfra] <slug>...
     python studies/suggestibility/probe_ablation.py analyze
 """
 import os, sys, json, time, signal
@@ -28,6 +28,11 @@ from probe_righteffect import ITEMS, CLAMP, cap, arate
 ROOT = Path(__file__).resolve().parent.parent.parent
 load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
+# --host deepinfra: a model served outside the router, given as canonical/slug=host-model-id (as harness/run.py does)
+HOSTS = {"openrouter": (API, "OPENROUTER_API_KEY"),
+         "deepinfra": ("https://api.deepinfra.com/v1/openai/chat/completions", "DEEPINFRA_API_KEY")}
+HOST = "openrouter"
+CALL = None                            # the host's model id when it differs from the canonical slug
 STUDY = Path(__file__).resolve().parent
 OUT = STUDY / "probes" / "ablation"
 RIGHT = STUDY / "probes" / "righteffect"
@@ -59,6 +64,8 @@ def stamp(rec):
         rec["max_tokens"] = MAX_TOKENS
     if PROVIDER:
         rec["provider"] = PROVIDER
+    if HOST != "openrouter":
+        rec["host"], rec["host_model"] = HOST, CALL
     if REASONING:
         rec["reasoning_mode"] = REASONING
     if TRACES:
@@ -77,9 +84,8 @@ def chat(slug, text):
     for _ in range(4):
         signal.alarm(hard)
         try:
-            r = requests.post(API, timeout=hard,
-                              headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-                              json=body)
+            url, key = HOSTS[HOST]
+            r = requests.post(url, timeout=hard, headers={"Authorization": f"Bearer {os.environ[key]}"}, json=body)
             r.raise_for_status()
             msg = r.json()["choices"][0]["message"]
             c = msg.get("content")
@@ -97,7 +103,9 @@ def chat(slug, text):
 
 
 def run(slug):
-    global PROVIDER
+    global PROVIDER, CALL
+    slug, _, host_model = slug.partition("=")        # canonical slug, and the host's id for it under --host
+    CALL = host_model or slug
     PROVIDER = META.get(slug, {}).get("provider")
     TRACES.clear()
     label = slug.split("/")[-1]
@@ -108,7 +116,7 @@ def run(slug):
         for slug_id, d, x, y in ITEMS:
             cell = {}
             for side, o in (("x", x), ("y", y)):
-                reps = [chat(slug, tmpl(d, o)) for _ in range(RUNS)]
+                reps = [chat(CALL, tmpl(d, o)) for _ in range(RUNS)]
                 ok += sum(1 for r in reps if r)
                 tot += len(reps)
                 cell[side] = reps
@@ -186,6 +194,8 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1:
         if "--max-tokens" in sys.argv:
             i = sys.argv.index("--max-tokens"); MAX_TOKENS = int(sys.argv[i + 1]); del sys.argv[i:i + 2]
+        if "--host" in sys.argv:
+            i = sys.argv.index("--host"); HOST = sys.argv[i + 1]; del sys.argv[i:i + 2]
         if "--reasoning" in sys.argv:
             i = sys.argv.index("--reasoning"); REASONING = sys.argv[i + 1]; del sys.argv[i:i + 2]
         slugs = sys.argv[2:] if sys.argv[1] == "run" else sys.argv[1:]

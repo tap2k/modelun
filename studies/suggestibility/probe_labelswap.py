@@ -17,7 +17,7 @@ else, including a sentence that starts with the article "A", is a hedge.
   bootstrap, the letter-format compliance rate, and agreement with the original Yes/No TAGeff
   (probes/righteffect_analysis.json): Spearman across models, sign agreement, and the panel mean.
 
-    python studies/suggestibility/probe_labelswap.py run <slug>...
+    python studies/suggestibility/probe_labelswap.py run [--host deepinfra] <slug>...
     python studies/suggestibility/probe_labelswap.py analyze
 """
 import json, re, sys, time
@@ -41,6 +41,8 @@ def swap(prompt, order):
 
 
 def run(slug):
+    slug, _, host_model = slug.partition("=")        # canonical slug, and the host's id for it under --host
+    call = host_model or slug
     pr.MAX_TOKENS = 8192
     pr.PROVIDER = pr.META.get(slug, {}).get("provider")
     pr.TRACES.clear()
@@ -50,12 +52,14 @@ def run(slug):
            "orders": ORDERS, "cells": {}}
     if pr.PROVIDER:
         rec["provider"] = pr.PROVIDER
+    if pr.HOST != "openrouter":
+        rec["host"], rec["host_model"] = pr.HOST, call
     for item, d, x, y in ITEMS:
         cell = {}
         for side, o in (("x", x), ("y", y)):
             base = {"ask": ASK[f"{item}__ask{side}"], "tag": tag_prompt(d, o)}
             for arm, p in base.items():
-                cell[f"{arm}_{side}"] = [{"order": order, "reply": pr.chat(slug, swap(p, order))}
+                cell[f"{arm}_{side}"] = [{"order": order, "reply": pr.chat(call, swap(p, order))}
                                          for order in ORDERS for _ in range(PER_ORDER)]
         rec["cells"][item] = cell
         if pr.TRACES:
@@ -155,6 +159,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "analyze":
         analyze()
     elif len(sys.argv) > 2 and sys.argv[1] == "run":
+        if "--host" in sys.argv:
+            i = sys.argv.index("--host"); pr.HOST = sys.argv[i + 1]; del sys.argv[i:i + 2]
         for s in sys.argv[2:]:
             run(s)
     else:
