@@ -3,7 +3,7 @@ conformist labs? (census v3, "conformity rises within lineages")
 
 Within each family of >= 3 models with release dates, rank its members by release date and correlate rank with
 surprisal. Pooled statistic: Spearman between family-demeaned release rank and family-demeaned surprisal. Null:
-shuffle release order within each family (2,000 draws), two-sided. Reported for every family of >= 3, and for the
+shuffle release order within each family (20,000 draws), two-sided. Reported for every family of >= 3, and for the
 six major providers (MAJOR: each has five or more releases in the panel; Google's lineage is Gemini, without the
 open-weight Gemma models), with and without Claude's generation-5 releases (Fable 5 on), which break its walk.
 Surprisal is the v3 scorecard (probes/v3_tables.json); dates are views/build.py release_dates().
@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "views"))
 from build import release_dates  # noqa: E402
 
-R = 2000
+R = 20000
 rng = np.random.default_rng(0)
 sc = {r["model"]: r["surprisal"] for r in json.loads((HERE / "probes/v3_tables.json").read_text())["scorecard"]}
 fam = {e["label"]: e["family"] for e in json.loads((HERE / "spec/models.json").read_text())["models"]}
