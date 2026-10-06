@@ -2,6 +2,8 @@
 scored against the API panel, for the census and brand papers' training-stage sections. Zero API calls; reads
 probes/verb_ladder_<pipeline>/ (written by probe_verb_ladder.py).
 
+  census  Each stage's Name answers on the 96 categories scored against the v3 API field: surprisal, share on the
+          field's modal answer, and the stage's own entropy.
   verbs   Name vs Choose by stage, on the 96 census and expanded categories. Over the categories where the panel's
           Name and Choose consensus differ: the share of the stage's answers giving the panel's Name and its Choose
           answer. Also: in how many categories the stage's own Name and Choose modes differ.
@@ -16,7 +18,7 @@ probes/verb_ladder_<pipeline>/ (written by probe_verb_ladder.py).
 
 The two-turn pick by stage is stage_pick.py.
 
-    ../../.venv/bin/python stage_ladder.py verbs|brands|dolci   -> probes/stage_<verbs|brands|dolci>.json
+    ../../.venv/bin/python stage_ladder.py census|verbs|brands|dolci   -> probes/stage_<cmd>.json
 """
 import json
 import re
@@ -75,6 +77,43 @@ def verbs():
             res["pipelines"][pipe][st] = row
             print(f"  {st:6} {'   |   '.join(cells)}   |  own Name/Choose modal differs: "
                   f"{row['own_modes_differ'][0]}/{len(both)}")
+        print()
+    return res
+
+
+def census():
+    """Each stage's one-word Name answers on the 96 census and expanded categories, scored against the v3 API field
+    (battery "combined") as a model outside the panel is scored: mean add-one surprisal against the whole field,
+    share on the field's modal answer, and the stage's own answer entropy per category (bits, mean)."""
+    import math
+    from analyze import against
+    field = answers(HERE, "combined")
+    P = defaultdict(Counter)
+    for cats in field.values():
+        for c, xs in cats.items():
+            P[c].update(xs)
+    modal = {c: p.most_common(1)[0][0] for c, p in P.items()}
+    res = {"field": f"{len(field)} models", "pipelines": {}}
+    for pipe, stages in PIPELINES:
+        print(pipe)
+        res["pipelines"][pipe] = {}
+        for st in stages.split():
+            mine = clamped(pipe, (("stimulus", "census"), ("stimulus_expanded", "expanded")), st, None)
+            mine = against(field, {"stage": mine}, HERE, "combined")["stage"]
+            s, hit, ent, n = [], 0, [], 0
+            for c, xs in mine.items():
+                if c not in P or not xs:
+                    continue
+                tot, vocab = sum(P[c].values()), len(set(P[c]) | set(xs))
+                s += [-math.log2((P[c].get(a, 0) + 1) / (tot + vocab)) for a in xs]
+                hit += sum(a == modal[c] for a in xs); n += len(xs)
+                k = Counter(xs)
+                ent.append(-sum(v / len(xs) * math.log2(v / len(xs)) for v in k.values()))
+            row = {"categories": len(ent), "answers": n, "surprisal": round(sum(s) / len(s), 3),
+                   "modal_share": round(hit / n, 3), "entropy": round(sum(ent) / len(ent), 3)}
+            res["pipelines"][pipe][st] = row
+            print(f"  {st:6} surprisal {row['surprisal']:.2f}  modal share {row['modal_share']:.2f}  "
+                  f"entropy {row['entropy']:.2f}  ({row['categories']} categories, {n} answers)")
         print()
     return res
 
@@ -195,7 +234,7 @@ def dolci():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
-    fn = {"verbs": verbs, "brands": brands, "dolci": dolci}.get(cmd)
+    fn = {"census": census, "verbs": verbs, "brands": brands, "dolci": dolci}.get(cmd)
     if not fn:
         sys.exit(__doc__)
     out = HERE / "probes" / f"stage_{cmd}.json"
