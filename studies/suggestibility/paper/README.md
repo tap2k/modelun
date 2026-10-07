@@ -15,7 +15,7 @@ never fork the text per venue. `responsible-nlp-checklist.md` holds the ARR chec
 tectonic main.tex               # -> main.pdf, the arXiv build
 tectonic main-acl-review.tex    # -> the anonymous ACL build for ARR
 tectonic main-acl.tex           # -> the named ACL build
-python3 make_assets.py          # -> figs/, gen/ (the July 45 by default; --all for the 70)
+python3 make_assets.py          # -> figs/, gen/ (v1: the July 45 by default; --all for v2, all 105)
 ```
 
 ## The 2026-09-25 rewrite
