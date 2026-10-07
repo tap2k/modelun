@@ -66,7 +66,7 @@
 </head>
 <body>
 <header>
-  <h1>structured <span class="sub">— ask for JSON, lose the mustard</span></h1>
+  <h1>structured</h1>
   <nav id="nav"></nav>
   <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/structured" target="_blank" rel="noopener">source ↗</a>
 </header>
@@ -88,7 +88,7 @@ const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>'
 document.getElementById("npanel").textContent = D.meta.panel;
 
 function nav(cur){
-  const tabs = [["#/","scorecard"],["#/cats","categories"],["#/gradient","gradient"],["#/about","method"]];
+  const tabs = [["#/","scorecard"],["#/cats","categories"],["#/gradient","gradient"],["#/compliance","compliance"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
     (cur.startsWith("#/m/") ? `<a class="cur">${esc(cur.slice(4))}</a>` : "");
@@ -229,7 +229,7 @@ function gradient(){
   the headline: <b>JSON and XML</b> compress the field, <b>YAML and CSV</b> show no reliable net effect,
   and bare <b>brackets</b> <i>loosens</i> it — the collapse is specific to the formats models are trained
   to answer in. Hatched cells are below 90% wrapper compliance (surprisal inflated by format incapacity,
-  not divergence — left uncolored; see format compliance on the method tab). Δ and p are per-model paired (sign-flip
+  not divergence — left uncolored; see the compliance tab). Δ and p are per-model paired (sign-flip
   permutation, 20k draws). Click a model to drill down.</p>
   <div class="divkey">
     <b class="delta-neg">compresses</b><span class="ramp"></span><b class="delta-pos">loosens</b>
@@ -245,8 +245,8 @@ function gradient(){
   </table></div>`);
 }
 
-// the compliance table sits at the foot of the method page
 function compliance(){
+  nav("#/compliance");
   const fmts = D.meta.formats;
   const rows = D.order.map(l => {
     const cells = fmts.map(f => {
@@ -258,13 +258,13 @@ function compliance(){
     }).join("");
     return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td>${esc(l)}</td>${cells}</tr>`;
   }).join("");
-  return `<h3 id="compliance">format compliance</h3>
+  $(`<h2>format compliance</h2>
   <p class="note">Share of replies carrying the requested wrapper (regex hit), per model per format;
   parenthetical shows the rate surviving the junk guard where lower. <span class="delta-neg">Red</span>
   = under 90%. Unwrapped replies fall back to census normalization, so low compliance doesn't
   fabricate answers — but it's a capability datum in its own right, and the reason parse artifacts
   can't explain the surprisal deltas (audited ≥99% usable on every column).</p>
-  <div class="wide"><table><tr><th>model</th>${fmts.map(f=>`<th>${f}</th>`).join("")}</tr>${rows}</table></div>`;
+  <div class="wide"><table><tr><th>model</th>${fmts.map(f=>`<th>${f}</th>`).join("")}</tr>${rows}</table></div>`);
 }
 
 function about(){
@@ -287,8 +287,7 @@ function about(){
   yaml/csv n.s.; brackets loosening p≤.014.</p>
   <h3>sample prompts</h3><ul class="note">${clauses}</ul>
   <p class="note">Raw replies, runners, and analysis:
-  <a href="https://github.com/tap2k/modelun/tree/main/studies/structured" target="_blank" rel="noopener">source ↗</a></p>
-  ${compliance()}`);
+  <a href="https://github.com/tap2k/modelun/tree/main/studies/structured" target="_blank" rel="noopener">source ↗</a></p>`);
 }
 
 function route(){
@@ -296,7 +295,8 @@ function route(){
   if (h === "#/") scorecard();
   else if (h === "#/cats") cats();
   else if (h === "#/gradient") gradient();
-  else if (h === "#/about" || h === "#/compliance") about();
+  else if (h === "#/compliance") compliance();
+  else if (h === "#/about") about();
   else if (h.startsWith("#/m/")) model(decodeURIComponent(h.slice(4)));
   else scorecard();
 }
