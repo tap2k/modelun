@@ -686,8 +686,9 @@ goes from $+8$ to $+27$. Tag resistance appears in one place. The OLMo 3.1 32B S
 $-12$, and DPO and RL bring it back to $-4$ and $-5$. The other pipelines stay between $-8$ and
 $+2$ at every stage, and Tulu's base is already at $-8$. Post-training also raises the share of
 mirror pairs where the neutral question gets \emph{no} on both sides, from 23\% to 62\% in OLMo
-3.1 32B and from 48\% to 88\% in OLMo 3 7B. The trained neutrality on contested questions takes the
-form of rejecting both claims.
+3.1 32B and from 48\% to 88\% in OLMo 3 7B. The classifier reads a refusal that opens with
+\emph{no} as \emph{no}, so this share counts both rejections of both claims and refusals to take
+either side.
 
 None of the open pipelines produces the profile of the recent frontier models, which resist the
 tag on decision items. All of them produce deference to a stated stance, and most produce
