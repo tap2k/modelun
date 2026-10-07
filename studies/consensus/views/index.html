@@ -337,7 +337,7 @@ function questions(){
   D.cats.forEach((c,i)=>{
     const q = c.prompt || `Name a ${c.id.replace('_',' ')}.`;
     h += `<tr class="row" data-c="${esc(c.id)}"><td class="n">${i+1}</td>
-      <td>${esc(q)}${c.census ? '<span class="chip" title="one of the 31 questions of the original census">census</span>' : ''}</td>
+      <td>${esc(q)}</td>
       <td class="mono" style="color:var(--mut)">${esc(c.modal)}</td>
       <td class="n">${pct(c.share)}</td>
       <td class="n">${c.eff}</td>${nameCell(c)}</tr>`;
