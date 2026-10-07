@@ -54,7 +54,7 @@ than deleted (see `hermes-3-llama-3.1-70b`, whose only host returned prose to a
 one-word prompt).
 
 **Every panel a paper reports is pinned with a git tag** named
-`<study>-arxiv-v<n>` — `consensus-arxiv-v1`, `consensus-arxiv-v2`,
+`<study>-arxiv-v<n>` — `consensus-arxiv-v1`, `consensus-arxiv-v2`, `consensus-arxiv-v3`,
 `suggestibility-arxiv-v1`, `structured-arxiv-v1`, `conduct-arxiv-v1`, `conduct-arxiv-v2`. Adding models after a paper
 ships is expected and does not invalidate it: the tag is what the paper's
 numbers reproduce from, and `main` carries the growing panel. When a new wave is
@@ -97,7 +97,7 @@ where waiting loses the data permanently.
   intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
 
 ## Provenance & secrets
-- **Published papers are pinned by git tag**, not by `main`: `consensus-arxiv-v1`/`-v2`,
+- **Published papers are pinned by git tag**, not by `main`: `consensus-arxiv-v1`/`-v2`/`-v3`,
   `structured-arxiv-v1`, `suggestibility-arxiv-v1`, `conduct-arxiv-v1`/`-v2`. Rosters and analyses on `main`
   may grow past them (new models join the live panel); never move or delete a tag. A paper revision
   gets a new tag.

@@ -13,9 +13,9 @@ codebook, no judge. The analysis is **fully mechanical**: exact-match on normali
 No embeddings, no LLM anywhere in the loop. A junk guard drops non-answers (chat-template artifacts,
 reasoning-leak essays, bare acknowledgments like "Okay.") as failed cells rather than scoring them.
 
-**Published pin:** the paper is [arXiv:2607.12796](https://arxiv.org/abs/2607.12796); the live v2
-(revised 2026-07-25) derives from the repo at tag `consensus-arxiv-v2`, v1 (submitted 2026-07-14)
-from `consensus-arxiv-v1`. The roster
+**Published pin:** the paper is [arXiv:2607.12796](https://arxiv.org/abs/2607.12796); v3
+(submitted 2026-10-07; 105 models, 96 prompts x 8 runs) derives from the repo at tag `consensus-arxiv-v3`,
+v2 (revised 2026-07-25) from `consensus-arxiv-v2`, v1 (submitted 2026-07-14) from `consensus-arxiv-v1`. The roster
 and analysis on `main` may move past these; the tags do not.
 
 ## The metric
