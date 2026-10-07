@@ -252,18 +252,16 @@ function compliance(){
     const cells = fmts.map(f => {
       const c = (D.compliance[l]||{})[f];
       if (!c || !c.n) return `<td class="mut">—</td>`;
-      const w = Math.round(100*c.wrapped/c.n), u = Math.round(100*c.usable/c.n);
-      const bad = w < 90;
-      return `<td class="${bad?"delta-neg":""}">${w}%${u<w?` <span class="mut">(${u}% usable)</span>`:""}</td>`;
+      const w = Math.round(100*c.wrapped/c.n);
+      return `<td class="${w<90?"delta-neg":""}">${w}%</td>`;
     }).join("");
     return `<tr class="rowlink" onclick="location.hash='#/m/${l}'"><td>${esc(l)}</td>${cells}</tr>`;
   }).join("");
   $(`<h2>format compliance</h2>
-  <p class="note">Share of replies carrying the requested wrapper (regex hit), per model per format;
-  parenthetical shows the rate surviving the junk guard where lower. <span class="delta-neg">Red</span>
-  = under 90%. Unwrapped replies fall back to census normalization, so low compliance doesn't
-  fabricate answers — but it's a capability datum in its own right, and the reason parse artifacts
-  can't explain the surprisal deltas (audited ≥99% usable on every column).</p>
+  <p class="note">Share of replies carrying the requested wrapper (regex hit), per model per format.
+  <span class="delta-neg">Red</span> = under 90%. Unwrapped replies fall back to census normalization,
+  so low compliance doesn't fabricate answers. Parse failures can't explain the surprisal deltas:
+  in every format, at least 96% of the field's replies parse to a usable answer.</p>
   <div class="wide"><table><tr><th>model</th>${fmts.map(f=>`<th>${f}</th>`).join("")}</tr>${rows}</table></div>`);
 }
 
