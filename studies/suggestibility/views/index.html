@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>suggestibility — the “right?” reflex</title>
+<title>The “right?” reflex</title>
 <link rel="stylesheet" href="base.css">
 <style>
   main{padding:20px 22px;max-width:1080px}
@@ -33,8 +33,7 @@
 </head>
 <body>
 <header>
-  <h1>suggestibility <span class="sub">— the “right?” reflex</span></h1>
-  <span class="sets"><a class="on" href="index.html">“right?” reflex</a><a href="contested.html">contested</a></span>
+  <h1>The “right?” reflex</h1>
   <nav id="nav"></nav>
   <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/suggestibility" target="_blank" rel="noopener">source ↗</a>
 </header>
@@ -106,8 +105,7 @@ function lineages(){
       const arr = i < pts.length-1 ? `<span class="arr">→</span>` : "";
       return `<span class="chip ${cls}"><span class="g">${esc(p.genlabel)}</span><span class="v">${pct(p.tageff)}</span></span>${arr}`;
     }).join("");
-    const dag = f === "GLM" ? ` <span class="tagm">DeepInfra</span>` : "";
-    return `<div class="lin"><span class="fam" style="color:${D.meta.famcolor[f]}">${f}${dag}</span>${chips}</div>`;
+    return `<div class="lin"><span class="fam" style="color:${D.meta.famcolor[f]}">${f}</span>${chips}</div>`;
   }).join("");
   $(`<h2>the generational flip, by family</h2>
   <p class="note">Each family oldest → newest (left → right). The reflex crosses from
@@ -115,9 +113,7 @@ function lineages(){
   within nearly every lineage — the anti-sycophancy training, read straight off behavior.
   <b>DeepSeek is the exception</b>: it stays positive the whole way. But it isn't a China effect —
   Qwen and GLM (same region) flip with the US labs. It's DeepSeek specifically.</p>
-  ${strips}
-  <p class="key">GLM served via DeepInfra with reasoning disabled — the within-GLM trend is valid;
-  its absolute level isn't channel-matched to the rest of the panel.</p>`);
+  ${strips}`);
 }
 
 function model(l){
@@ -192,11 +188,13 @@ function about(){
   both options, averaged over decisions, with a bootstrap 90% CI over decisions. Replies are classified
   affirm / reject / hedge by <b>exact match, no LLM judge</b> — which matters for a study <i>of</i>
   agreeableness: an LLM judge would share the trait it grades.</p>
-  <p class="note"><b>Panel.</b> ${D.meta.panel} models via OpenRouter; GLM-4.7 / GLM-5.2 via DeepInfra with
-  reasoning disabled (a within-GLM comparison, flagged separately — no per-decision drill-down).</p>
+  <p class="note"><b>Panel.</b> ${D.meta.panel} models via OpenRouter, except three served only by DeepInfra
+  (Granite 4.2 30B, Hermes 3 70B, Seed 2.0 Pro), which have no per-decision drill-down.</p>
   <p class="note"><b>Caveats.</b> Characterization, not measurement — one date, one serving channel,
   20 decisions. Floor-limited models (baseline affirm &lt; 10%) read near zero because they barely
-  commit to anything, not because they're steady. See the companion
+  commit to anything, not because they're steady.</p>
+  <p class="note">The same tag on history, policy and partisan claims, beside a stated belief, is in
+  <a href="contested.html">Contested questions</a>. See also the
   <a href="../consensus/">One-Word Census</a>.</p>`);
 }
 
