@@ -191,11 +191,11 @@ mean moves from $-7.2$ to $-7.5$. Seven models change sign, all near zero, and 2
 significance threshold in one direction or the other. Claude Opus 5 is the least stable specimen:
 $-15$ in July and $-33$ on the retest, with its neutral affirm rate rising from 21\% to 46\%.
 
-\paragraph{Label swap.} A yes-or-no clamp can carry a habit of answering \emph{yes}. On 101
-models (all those served, less Hy4 Preview, which was too slow to finish before retirement) we replaced \emph{yes} and \emph{no} with the letters A and B, with the meaning of each
-letter counterbalanced. Of the 48 models that resist under yes-or-no, 47 stay negative under the
-letters and 46 do so in both letter orders. 56 models have a 95\% interval below zero and 5 above,
-and the panel mean is $-11.3$ against $-7.0$ under yes-or-no on the same models. The positive pole
+\paragraph{Label swap.} A yes-or-no clamp can carry a habit of answering \emph{yes}. On the 102
+models still served we replaced \emph{yes} and \emph{no} with the letters A and B, with the meaning of each
+letter counterbalanced. Of the 49 models that resist under yes-or-no, 48 stay negative under the
+letters and 47 do so in both letter orders. 57 models have a 95\% interval below zero and 5 above,
+and the panel mean is $-11.2$ against $-7.1$ under yes-or-no on the same models. The positive pole
 shrinks: MythoMax goes from $+32$ to $+4$, Phi-4 from $+24$ to $+6$, Qwen-2.5-72B from $+16$ to $0$
 and Nemotron 3.5 Lightning from $+16$ to $-8$. Part of the older models' agreement under the tag is a habit of saying \emph{yes}, so the
 generational result is that resistance grows, and the older end sits at or above zero rather than
@@ -297,21 +297,21 @@ DeepSeek & v4-Flash & $+11$ & v4-Pro & $+4$ [$-11$, $+19$] \\
 \section{The resistance is keyed to the construction}
 \label{sec:ablation}
 
-To find what the resistant models respond to, we ran two further cells on 104 models (all but Hy4 Preview) and 20
+To find what the resistant models respond to, we ran two further cells on all 105 models and 20
 items with the same counterbalanced design: a \emph{word control} (\emph{``$X$ is the better
 choice, correct?''}) and a \emph{stance control} (\emph{``I've settled on $X$. Is it the better
 choice?''}), which states the user's commitment with no tag. Arm rates here are computed on each
 model's common valid items, so a tag effect can differ from \S\ref{sec:tageffect} by a point.
 
 \paragraph{The word.} The synonym tag reproduces each model's response. Per-model
-\emph{correct?} effects correlate with \emph{right?} effects at $r=0.89$ over the 104 models, and the strongest
+\emph{correct?} effects correlate with \emph{right?} effects at $r=0.89$ over the 105 models, and the strongest
 resisters resist the synonym at least as hard (Fable 5 $-42$ against $-32$; Llama-3.3 and
 GPT-5.6-Luna $-35$ under both). In a smaller scan, \emph{isn't it?} behaves like the other tags,
 and removing the question mark keeps most of the effect (GPT-5.4 $-12$ of $-23$).
 
-\paragraph{The stance.} All 34 significantly resistant models in this set affirm the stated
+\paragraph{The stance.} All 35 significantly resistant models affirm the stated
 stance at or above their neutral baseline, by $+1$ to $+48$ points. GPT-5.6-Luna is $-28$ under
-the tag and $+48$ under \emph{``I've settled on it''}. 54 of the 104 models show the dissociation
+the tag and $+48$ under \emph{``I've settled on it''}. 55 of the 105 models show the dissociation
 (a tag effect below $-5$ with a non-negative stance effect), and stance effects correlate with tag
 effects at $r=0.29$, against $0.89$ for the word control. A settled decision might be spared
 contradiction because it is closed, so a third cell keeps the decision open: \emph{``I'm leaning
@@ -568,7 +568,7 @@ how to commute to work & biking & driving \\
 \small
 \captionof{table}{The arm templates. Every prompt ends with \texttt{Reply with only Yes or No.}
 $X$ is capitalized where it begins a sentence. Of the ablations, the word control, stance and open
-leaning were run on the 45 July models and the first two were extended to 104; the rest were run on the small dissection panels of
+leaning were run on the 45 July models and the first two were extended to all 105; the rest were run on the small dissection panels of
 \S\ref{sec:ablation}.}
 \label{tab:arms}
 \begin{tabular}{ll}
