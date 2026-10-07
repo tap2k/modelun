@@ -109,22 +109,31 @@ plt.close(fig)
 # ---------------------------------------------------------------- fig 2: substrate
 cat_rows = sorted(pc.items(), key=lambda kv: -kv[1]["modal_share"])
 shown, skipped = ends(cat_rows, 15, 10)
+gaps = [skipped]
+# v3: the unconstrained prompt keeps its place in the hidden middle, so serendipity is in the figure
+aw_i = next((i for i, (c, _) in enumerate(cat_rows) if c == "any_word"), None)
+if V3 and None in shown and aw_i is not None and 15 <= aw_i < len(cat_rows) - 10:
+    g = shown.index(None)
+    gaps = [aw_i - 15, len(cat_rows) - 10 - aw_i - 1]
+    shown = shown[:g] + ([None] if gaps[0] else []) + [cat_rows[aw_i]] + ([None] if gaps[1] else []) + shown[g + 1:]
+    gaps = [n for n in gaps if n]
 fig, ax = plt.subplots(figsize=(5.6, 5.4 * max(1, len(shown) / 31)))
 ys = np.arange(len(shown))[::-1]
 for y, row in zip(ys, shown):
     if row is None:
-        ax.text(0.02, y, f"\u22ee  {skipped} more categories", va="center", fontsize=7, color="#6b6b6b")
+        ax.text(0.02, y, f"\u22ee  {gaps.pop(0)} more categories", va="center", fontsize=7, color="#6b6b6b")
         continue
     c, v = row
     hi = v["modal_share"] >= 0.8
-    ax.barh(y, v["modal_share"], height=0.62, color=BLUE if hi else GRID,
+    ax.barh(y, v["modal_share"], height=0.62, color=AMBER if c == "any_word" else BLUE if hi else GRID,
             edgecolor="none", zorder=2)
     ax.text(v["modal_share"] + 0.012, y, f"{v['modal']}  {v['modal_share']:.0%}",
             va="center", fontsize=7, color="#0b0b0b")
 ax.axvline(0.8, color=AMBER, lw=0.9, ls=(0, (4, 3)), zorder=1)
 ax.text(0.8, len(shown) - 0.1, "80%", color=AMBER, fontsize=7, ha="center")
 ax.set_yticks(ys)
-ax.set_yticklabels(["" if r is None else r[0].replace("_", " ") for r in shown], fontsize=7)
+ax.set_yticklabels(["" if r is None else "pick a word" if r[0] == "any_word" else r[0].replace("_", " ")
+                    for r in shown], fontsize=7)
 ax.set_xlim(0, 1.12)
 ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
 ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"])
