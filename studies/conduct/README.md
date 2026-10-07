@@ -88,6 +88,10 @@ python studies/conduct/views/build.py && open studies/conduct/views/index.html
 - **The stimulus is sacred.** `spec/stimulus.json` is byte-identical input to every model — that's what
   makes columns comparable. Any change (including the clamp) must bump `script_version`; old and new are
   not comparable. See [AGENTS.md](../../AGENTS.md).
+- **The judge retires 2026-10-20.** `gemini-2.5-flash` leaves OpenRouter that day; no new model can be
+  judged by it afterwards. Its raw labels are committed in `markers/` beside gemini-3.5-flash and
+  gpt-oss-120b on the same 108 models, and `data/markers-3judge.json` is the three-judge adjudication,
+  the bridge for a successor judge.
 - **The judge is itself a subject.** `gemini-2.5-flash` scoring the google family (gemini / gemma) is
   self-judged — the adjudicator flags those cells rather than trusting or dropping them silently.
 - **Markers annotate, they don't replace.** Every value cites a verbatim trigger quote, string-verified

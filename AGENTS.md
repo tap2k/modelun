@@ -102,7 +102,8 @@ where waiting loses the data permanently.
   may grow past them (new models join the live panel); never move or delete a tag. A paper revision
   gets a new tag.
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
-- `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored** (the
+- `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored**,
+  except `studies/conduct/markers/`: its raw labels are committed because gemini-2.5-flash leaves OpenRouter 2026-10-20 (the
   curated basis is committed under `studies/conduct/bottom-up/`). The published data lives in `studies/conduct/data/benchmark/`. Never
   commit transcripts-in-progress, scratch marker runs, or `.env`.
 - Before any push, confirm `.env` is not staged. A leaked `OPENROUTER_API_KEY` is the one
