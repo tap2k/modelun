@@ -55,12 +55,15 @@
   table.g tr.grp th{background:var(--bg);text-align:left;padding:14px 6px 4px;font-size:12.5px;font-weight:650;cursor:default;border:0}
   table.g tr.grp .gl{position:sticky;left:6px}
   /* grid */
-  /* grid view: the page does not scroll; the grid fills the window below the controls and is the one
-     scroll area. On phones the page scrolls and the grid only scrolls sideways. */
+  /* grid view: the page does not scroll; main is the one scroll area, so the intro and controls scroll away
+     and the grid gets the whole window, its header row and model column sticky. The intro stays put
+     when the grid scrolls sideways. On phones the page scrolls and the grid only scrolls sideways. */
   .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto}
   main.wide{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));height:calc(100dvh - var(--hh,0px));padding-bottom:12px}  /* dvh: the visible height on iPad and phone Safari, whose 100vh runs under the toolbar */
-  main.wide .gwrap{flex:1;min-height:0}
-  @media (max-width:640px){ main.wide{display:block;height:auto} main.wide .gwrap{overflow-y:visible}
+  main.wide{overflow:auto;max-width:none;padding:0}  /* sticky offsets count from main's padding edge, so the padding moves to .lead */
+  main.wide .gwrap{flex:none;overflow:visible;border:0;border-radius:0;padding:0 6px 12px 6px}
+  main.wide .lead{position:sticky;left:0;width:100vw;padding:20px 22px 4px}
+  @media (max-width:640px){ main.wide{display:block;height:auto;overflow:visible;padding:14px} main.wide .gwrap{overflow-x:auto;overflow-y:visible;padding:0} main.wide .lead{position:static;width:auto;padding:0}
     table.g tbody th:not([colspan]){max-width:120px;white-space:normal;font-size:11.5px;line-height:1.3} table.g tbody th .s{display:none} }
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
   table.g th,table.g td{padding:0;font-weight:400;text-align:left}
@@ -222,7 +225,7 @@ function board(){
 
 /* ---------- grid ---------- */
 function grid(){
-  let h = `<h2>models &times; answers</h2>
+  let h = `<div class="lead"><h2>models &times; answers</h2>
   <p class="note"><b>Unhighlighted cells are the modal answer; color is a model breaking from it.</b>
   Rows follow the order below; columns are most-converged first. Dashes appear only when a model's
   ${MAXR} runs disagree — one dash per run, same colors. Hover for detail; click a model or category to drill down.</p>
@@ -232,7 +235,7 @@ function grid(){
     <span class="k"><span class="dot v"></span><b>novel</b> — no other model said it</span>
     <button class="tog" id="dv">divergences only</button>
   </div>
-  ${controls('grid')}
+  ${controls('grid')}</div>
   <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>`;
   for(const c of D.cats) h += `<th data-c="${esc(c.id)}"><div class="cat">${esc(c.id.replace('_',' '))}</div><div class="cm mono">${esc(c.modal)} ${pct(c.share)}</div></th>`;
   h += '</tr></thead><tbody>';
