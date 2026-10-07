@@ -103,7 +103,6 @@
 <body>
 <header>
   <h1>consensus <span class="sub">— which models give answers the field doesn't?</span></h1>
-  <span class="sets" id="verb" title="the verb each question is asked with"></span>
   <nav id="nav">
     <a href="#board" data-v="board">scorecard</a>
     <a href="#grid" data-v="grid">grid</a>
@@ -132,14 +131,11 @@ document.title = `consensus · ${D.title} — which models give answers the fiel
 const FAMILY = [[["", "Name"], ["choose", "Choose"]], [["brands", "Name"], ["brands-choose", "Choose"], ["brands-recommend", "Recommend"]]]
   .find(f => f.some(([k]) => k === (SET || "")));
 const pageUrl = k => (k ? "index.html?set=" + k : "index.html") + location.hash;
-if (FAMILY) {
-  document.getElementById('verb').innerHTML = FAMILY.map(([k, label]) =>
-    `<a class="${k === (SET || "") ? "on" : ""}" data-k="${k}" href="${pageUrl(k)}">${label}</a>`).join("");
-  // keep the current view (scorecard, grid, a question) when the toggle switches page
-  document.querySelectorAll('#verb a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); location.href = pageUrl(a.dataset.k); }));
-} else document.getElementById('verb').remove();
-const main = document.getElementById('main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// the verb row sits with the order and provider rows; its links keep the current view (scorecard, grid, a question)
+const verbRow = () => FAMILY ? `<div class="ctl" title="the verb each question is asked with"><span class="lab">verb</span>${FAMILY.map(([k, label]) =>
+  `<a class="${k === (SET || "") ? "on" : ""}" href="${esc(pageUrl(k))}">${label}</a>`).join("")}</div>` : "";
+const main = document.getElementById('main');
 const pct = x => (x*100).toFixed(0)+'%';
 const SN = {modal:'consensus', off:'off-modal', novel:'novel'};
 const CLS = {modal:'stmod', off:'stoff', novel:'stnov'};
@@ -186,7 +182,7 @@ function controls(view){
   const o = k => `<a class="${Q.o===k?'on':''}" href="#${view}${qs(k,Q.p)}">${k}</a>`;
   const chip = v => { const on=Q.p.includes(v), p=on?Q.p.filter(x=>x!==v):[...Q.p,v];
     return `<a class="${on?'on':''}" href="#${view}${qs(Q.o,p)}">${esc(v)}<span>${VCOUNT[v]}</span></a>`; };
-  return `<div class="ctls"><div class="ctl"><span class="lab">order</span>${o('provider')}${o('surprisal')}${o('release')}</div>
+  return `<div class="ctls">${verbRow()}<div class="ctl"><span class="lab">order</span>${o('provider')}${o('surprisal')}${o('release')}</div>
   <div class="ctl"><span class="lab">provider</span><a class="${Q.p.length?'':'on'}" href="#${view}${qs(Q.o,[])}">all</a>${VENDORS.map(chip).join('')}</div></div>`;
 }
 
@@ -332,6 +328,7 @@ function questions(){
   distinct answers (entropy). Click a question for its full field distribution.
   ${D.name_modal ? `<b>Under “Name”</b> is the same question asked with “Name” instead of “Choose”: the field's answer changes in
   <b>${NAME_FLIPS} of ${D.cats.length}</b> categories (bold).` : ''}</p>
+  ${FAMILY ? `<div class="ctls">${verbRow()}</div>` : ''}
   <table class="t"><tr><th>#</th><th>question</th>
     <th title="the field's single most-common answer">field modal</th>
     <th title="share of all answers landing on that modal answer — higher = more converged">modal share</th>
