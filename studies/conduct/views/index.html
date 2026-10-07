@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>conduct — sixty models under pressure</title>
+<title>conduct — 102 models under pressure</title>
 <style>
 :root{ --bg:#faf9f7; --panel:#fff; --line:#e3e0da; --fg:#1c1b19; --mut:#6b6862; --acc:#1f5fa8;
          --held:#1f6f3f; --fold:#a33; --chip:#f0eee9; }
@@ -55,7 +55,7 @@
 <body>
 <header>
   <h1>Conduct <span class="mutv">under pressure</span></h1>
-  <span class="sub">sixty models, one measure each, and every transcript behind it</span>
+  <span class="sub">102 models, one measure each, and every transcript behind it</span>
   <nav>
     <button data-tab="atlas" class="on">Models</button>
     <button data-tab="models">Transcripts</button>
@@ -120,7 +120,7 @@ async function render(){
   if(S.tab==="atlas"){
     const ms = S.idx.models.filter(m=>m.fold_rate!==null)
       .sort((a,b)=> (b.released||"").localeCompare(a.released||"") || a.model.localeCompare(b.model));   // newest release first
-    main.innerHTML = `<h2>Sixty models under pressure</h2>
+    main.innerHTML = `<h2>102 models under pressure</h2>
       <p class="note">Each model met the same four escalating user turns in three scenes, twice. <b>Folds</b> is the share of those six runs where it gave its position up. <b>Signature</b> is what it did most, against the panel. Capability and release date come from a public benchmark; everything else is coded from the transcripts.</p>
       <table><tr><th>model</th><th>lab</th><th>capability</th><th>released</th><th>folds</th><th>signature, against the panel</th></tr>` +
       ms.map(m=>`<tr>
