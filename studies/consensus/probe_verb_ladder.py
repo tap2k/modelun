@@ -148,16 +148,20 @@ def pick2_encode(tok, st, framing, q1, a1):
     return tok.apply_chat_template(msgs, add_generation_prompt=True, **st.get("chat_kwargs", {}))
 
 
-def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
+def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8, turn1_from=None):
     """The two-turn pick on the tuned stages: each of the stage's one-turn recommend replies (recommend/) is turn 1, and
-    the stage answers PICK once per reply, so every pick is paired with the list it chose from. Writes pick2/."""
+    the stage answers PICK once per reply, so every pick is paired with the list it chose from. Writes pick2/.
+    turn1_from=<stage> gives every later stage that stage's recommend replies as turn 1 instead of its own, so the list
+    is held fixed and only the choice from it can change; writes pick2_from_<stage>/."""
     from mlx_lm.sample_utils import make_sampler
     base = HERE / "probes" / f"verb_ladder_{pipeline}"
+    src = next((s for s in stages(pipeline) if s["stage"] == turn1_from), None) if turn1_from else None
     for st in stages(pipeline):
-        if st["stage"] == "base":
+        if st["stage"] == "base" or (src and st["stage"] == turn1_from):
             continue
         f = tuned_framing(st)
-        rec_path, path = local.path(base / "recommend", st, f), local.path(base / "pick2", st, f)
+        rec_path = local.path(base / "recommend", src or st, tuned_framing(src or st))
+        path = local.path(base / (f"pick2_from_{turn1_from}" if src else "pick2"), st, f)
         if not rec_path.exists():
             print(f"{st['label']}: no recommend file, skipped", flush=True)
             continue
@@ -199,5 +203,7 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8):
 if __name__ == "__main__" and "--pick2" in sys.argv:
     # --batch=N: the two-turn prompts carry a full recommend reply; OLMo 3 7B ran out of GPU memory at 8 and at 4
     # (2026-10-05). --unbatched samples one prompt at a time, for a model whose batched path will not fit.
+    # --turn1-from=sft: the later stages pick from the SFT stage's lists (the list held fixed, 2026-10-06).
     pick2_pass(sys.argv[1], "--delete-cache" in sys.argv,
-               batch=int(next((a.split("=")[1] for a in sys.argv if a.startswith("--batch=")), 8)))
+               batch=int(next((a.split("=")[1] for a in sys.argv if a.startswith("--batch=")), 8)),
+               turn1_from=next((a.split("=")[1] for a in sys.argv if a.startswith("--turn1-from=")), None))

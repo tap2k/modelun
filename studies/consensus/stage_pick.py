@@ -6,6 +6,9 @@ model) and each tuned stage, over the brand categories (the generic company/bran
     brand (probes/verb_ladder_<p>/stimulus_brands*), against a floor from two halves of the stage's own Name runs
   * panel brands: over the categories where the API panel's two-turn pick differs from its Name brand, the share of
     the stage's picks naming the panel's pick brand, and the share naming its Name brand
+  * the same picks with the list held fixed (pick2_from_sft/: each later stage picks from the SFT stage's turn-1
+    lists), the panel-pick share with a 90% bootstrap interval over categories, and head to head: of the runs whose
+    turn-1 list names both panel brands and whose pick is one of them, the share picking the panel's pick brand
 Picks are read as brand_ladder reads them (the brand the reply commits to). Zero API calls. Writes
 probes/stage_pick.json.
 
@@ -35,6 +38,30 @@ def stage_file(folder, label):
     return hits[0] if hits else None
 
 
+def read_picks(pf):
+    """category -> [(the brand the pick commits to, the pool brands of its turn-1 list)]"""
+    pats, out = B.pools()[4], {}
+    for sid, sc in json.loads(pf.read_text())["scenes"].items():
+        c = sid.removesuffix("__pick")
+        if c in B.GENERIC:
+            continue
+        out[c] = [(B.committed(c, r[1]["reply"]), B.mentions(r[0].get("reply") or "", pats[c])) for r in sc["runs"]
+                  if r and len(r) > 1 and (r[1].get("reply") or "").strip()]
+    return out
+
+
+def held_fixed(picks, differ, panel_pick, panel_name):
+    """Panel-pick share over the differing categories with a 90% bootstrap interval, and the head-to-head share."""
+    cats = [c for c in sorted(differ) if any(p != B.NO_PICK for p, _ in picks.get(c, []))]
+    hit = {c: [p == panel_pick[c] for p, _ in picks[c] if p != B.NO_PICK] for c in cats}
+    share = lambda cs: sum(sum(hit[c]) for c in cs) / sum(len(hit[c]) for c in cs)
+    boot = sorted(share(random.choices(cats, k=len(cats))) for _ in range(1000))
+    h2h = [p == panel_pick[c] for c in cats for p, ls in picks[c]
+           if panel_pick[c] in ls and panel_name[c] in ls and p in (panel_pick[c], panel_name[c])]
+    return {"panel_pick": share(cats), "ci90": [boot[50], boot[949]],
+            "head_to_head": sum(h2h) / len(h2h) if h2h else None, "head_to_head_n": len(h2h)}
+
+
 def main():
     random.seed(0)
     lv = B.levels()
@@ -53,13 +80,8 @@ def main():
             names = [f for d in ("stimulus_brands", "stimulus_brands_ext") if (f := stage_file(base / d, label))]
             if not pf:
                 continue
-            picks = {}
-            for sid, sc in json.loads(pf.read_text())["scenes"].items():
-                c = sid.removesuffix("__pick")
-                if c in B.GENERIC:
-                    continue
-                picks[c] = [B.committed(c, r[1]["reply"]) for r in sc["runs"]
-                            if r and len(r) > 1 and (r[1].get("reply") or "").strip()]
+            pairs = read_picks(pf)
+            picks = {c: [p for p, _ in v] for c, v in pairs.items()}
             own = {}
             for f in names:
                 for m, cats in load(HERE, "brands", paths=[f]).items():
@@ -83,6 +105,18 @@ def main():
             f = lambda v: "   -" if v is None else f"{v:4.0%}"
             print(f"{label:28} {f(row['own_moved']):>22} {f(row['floor']):>6}   {f(row['panel_pick']):>12} {f(row['panel_name']):>12}")
         out["pipelines"][p] = rows
+    print(f"\nlist held fixed{'':13} {'= panel pick':>12} {'90% interval':>14}   {'head to head':>12}")
+    out["held_fixed"] = {}
+    for p, stages in PIPES.items():
+        base = HERE / "probes" / f"verb_ladder_{p}"
+        for s, sub in [(s, "pick2" if s == "sft" else "pick2_from_sft") for s in stages if "sft" in stages]:
+            pf = stage_file(base / sub, f"{p}-{s}")
+            if not pf:
+                continue
+            r = held_fixed(read_picks(pf), differ, panel_pick, panel_name)
+            out["held_fixed"][f"{p}-{s}"] = r
+            print(f"{p + '-' + s:28} {r['panel_pick']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
+                  f"   {r['head_to_head']:>8.0%} (n {r['head_to_head_n']})")
     (HERE / "probes" / "stage_pick.json").write_text(json.dumps(out, indent=1) + "\n")
 
 
