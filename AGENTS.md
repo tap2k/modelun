@@ -64,11 +64,12 @@ if it is published again.
 So the sequence for adding a model is: append to `spec/models.txt`, run it,
 commit the transcripts, and leave every earlier tag alone.
 
-A model added to the census also gets pickword on the same day: append it to
-`studies/language/spec/models.txt` and run `spec/pickword.json` into
-`transcripts_pickword/`. Pickword is the cheapest longitudinal record the repo
-keeps (one word, 44 languages), and gaps in it cannot be filled after a model
-is retired.
+A model added to the panel is owed every `core` and `extended` directory in
+each study's `spec/runs.json` (consensus, language, suggestibility, conduct).
+Core runs on release day; it includes pickword, the cheapest longitudinal
+record the repo keeps, and gaps in it cannot be filled after a model is
+retired. `harness/panel_gap.py` lists what is still missing. Definitions:
+[`docs/harness.md`](docs/harness.md) § The standing panel.
 
 ## What has been run is the transcripts, not the roster
 

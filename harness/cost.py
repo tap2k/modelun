@@ -25,34 +25,25 @@ import sys
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from study import Study  # noqa: E402
+
 CATALOG_URL = "https://openrouter.ai/api/v1/models"
 REPO = Path(__file__).resolve().parent.parent
 
-# The battery: the studies a new model is run through, where each keeps the
-# transcripts to measure from, and how many times a sweep sends its stimulus
-# (the language deep pass runs it once per language).
-#
-# This list is explicit on purpose. Discovering studies from disk would quietly
-# enrol a probe or a pilot the moment someone made a directory, and quietly drop
-# one whose spec is laid out differently — both of which happened when this was
-# automatic. `drift()` reports the difference instead, so adding a study to the
-# battery stays a decision someone makes.
-BATTERY = {
-    "consensus": ("studies/consensus/transcripts", 1),
-    "suggestibility": ("studies/suggestibility/transcripts", 1),
-    "conduct": ("studies/conduct/data/benchmark", 1),
-    "language": ("studies/language/transcripts_deep_en", 6),
-}
-
-
-def studies() -> dict[str, tuple[str, int]]:
-    return BATTERY
-
-
-def drift() -> list[str]:
-    """Study directories on disk that the battery does not mention."""
-    on_disk = {d.name for d in (REPO / "studies").glob("*") if d.is_dir()}
-    return sorted(on_disk - set(BATTERY) - {"cross-instrument"})
+# The battery is whatever each study's spec/runs.json marks ``tier: core`` or
+# ``extended`` (``Study.standing``). A study without that file is not in the
+# battery, so enrolling one stays a decision someone writes down. Directories
+# owed only by hybrids (the off arms) are left out of the price; a hybrid runs
+# them too, at about the served cost again.
+def studies() -> dict[str, list[dict]]:
+    """Study -> its standing entries owed by every panel model."""
+    out = {}
+    for f in sorted((REPO / "studies").glob("*/spec/runs.json")):
+        runs = [e for e in Study(f.parent.parent).standing()[0] if e["owed_by"] == "panel"]
+        if runs:
+            out[f.parent.parent.name] = runs
+    return out
 
 
 def stimulus_version(study: str) -> str | None:
@@ -84,13 +75,10 @@ def tokens_path(study: str) -> Path:
 
 # ---------------------------------------------------------------- measuring
 
-def system_prompt_chars(study: str) -> int:
-    for name in ("spec/stimulus.json", "spec/clamp.json"):
-        f = REPO / "studies" / study / name
-        if f.exists():
-            sp = json.loads(f.read_text()).get("system_prompt")
-            if sp:
-                return len(sp)
+def system_prompt_chars(study: str, spec: str) -> int:
+    f = REPO / "studies" / study / spec
+    if f.suffix == ".json" and f.exists():
+        return len(json.loads(f.read_text()).get("system_prompt") or "")
     return 0
 
 
@@ -117,42 +105,52 @@ def measure_one(path: Path, system_chars: int, cpt: float) -> tuple[float, float
 
 
 def measure(cpt: float, names: list[str]) -> None:
+    """Sum, over a study's standing directories, the median model's tokens in each.
+
+    A directory whose files are not Contract A transcripts (a probe's own format)
+    measures as zero; it is named in the file as not priced rather than counted
+    as free.
+    """
     found = studies()
     for study in names:
-        tdir, mult = found[study]
-        files = sorted((REPO / tdir).glob("*.json"))
-        if not files:
-            print(f"{study}: no transcripts at {tdir}, skipped", file=sys.stderr)
-            continue
-        sysc = system_prompt_chars(study)
-        m = [measure_one(f, sysc, cpt) for f in files]
-        pt = statistics.median(s[0] for s in m) * mult
-        ct = statistics.median(s[1] for s in m) * mult
-        if pt <= 0 or ct <= 0:
-            # Every study here sends a prompt and gets a reply, so a zero means
-            # these transcripts are not the shape measure_one() understands.
-            # Storing it would price the study at nothing, for ever, in silence.
-            print(f"{study}: measured {pt:.0f}p/{ct:.0f}c from {len(files)} "
-                  f"transcripts in {tdir} — unrecognised transcript shape, "
+        pt = ct = lo = hi = 0.0
+        priced, unpriced, n = [], [], 0
+        for e in found[study]:
+            files = sorted((REPO / "studies" / study / e["dir"]).glob("*.json"))
+            sysc = system_prompt_chars(study, e["spec"])
+            m = [s for s in (measure_one(f, sysc, cpt) for f in files) if s[0] > 0 and s[1] > 0]
+            if not m:
+                unpriced.append(e["dir"])
+                continue
+            pt += statistics.median(s[0] for s in m)
+            ct += statistics.median(s[1] for s in m)
+            lo += min(s[1] for s in m)
+            hi += max(s[1] for s in m)
+            priced.append(e["dir"])
+            n = max(n, len(m))
+        if not priced:
+            print(f"{study}: no standing directory holds Contract A transcripts, "
                   f"not written", file=sys.stderr)
             continue
-        ver = stimulus_version(study)
         out = {
-            "note": "Token cost of one model through this study. Prompt is fixed by "
-                    "the frozen stimulus; completion is the median observed reply "
-                    "length. Re-measure only when the stimulus version bumps.",
-            "stimulus_version": ver,
-            "sweeps": mult,
+            "note": "Token cost of one model through this study's standing directories "
+                    "(spec/runs.json, tier core or extended, served arm). Prompt is fixed "
+                    "by the frozen stimulus; completion is the median observed reply "
+                    "length per directory, summed. Re-measure when the stimulus version "
+                    "bumps or a standing directory is added.",
+            "stimulus_version": stimulus_version(study),
             "prompt_tokens": round(pt),
             "completion_tokens": round(ct),
-            "completion_spread": [round(min(s[1] for s in m) * mult),
-                                  round(max(s[1] for s in m) * mult)],
+            "completion_spread": [round(lo), round(hi)],
+            "priced": priced,
+            "not_priced": unpriced,
             "measured": {"date": dt.date.today().isoformat(),
-                         "models": len(files), "chars_per_token": cpt},
+                         "models": n, "chars_per_token": cpt},
         }
         tokens_path(study).write_text(json.dumps(out, indent=1) + "\n")
         print(f"{study:16s} {out['prompt_tokens']:>8,}p {out['completion_tokens']:>7,}c"
-              f"   from {len(files)} transcripts -> {tokens_path(study).relative_to(REPO)}")
+              f"   {len(priced)} dirs priced, {len(unpriced)} not"
+              f" -> {tokens_path(study).relative_to(REPO)}")
 
 
 # ------------------------------------------------------------------ pricing
@@ -201,11 +199,6 @@ def main() -> int:
     ap.add_argument("--top", type=int, help="show only the N most expensive")
     ap.add_argument("--chars-per-token", type=float, default=4.0)
     args = ap.parse_args()
-
-    extra = drift()
-    if extra:
-        print(f"note: {len(extra)} study dirs are not in the battery: "
-              f"{', '.join(extra)}", file=sys.stderr)
 
     battery = args.study or sorted(studies())
     if args.measure:

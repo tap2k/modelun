@@ -143,6 +143,22 @@ to locate the reply to verify the quote against. A codebook is a bundle of crite
 separate "rubric" type. Stimulus is frozen and versioned — changing it bumps `spec_version`, and
 old/new are not comparable.
 
+## The standing panel
+
+A study's `spec/runs.json` lists its transcript directories. Each entry gives `dir`, `spec`, `runs`,
+`arm` (`served` or `off`), `models` (`panel` or `hybrids`) and `tier`. The top-level `hybrids` field
+names the models that accept reasoning off and reason by default. A new panel model is owed every
+`core` and `extended` directory:
+
+- **core**: on release day, judge-free.
+- **extended**: every model, may lag (judged, or the slower grids).
+- **check**: run once to validate an instrument, again only when it changes.
+- **probe**, **local**: question-driven subsets, never standing.
+
+An `off`-arm directory is owed by hybrids only. `harness/panel_gap.py` lists the runnable roster
+models missing from each standing directory. `harness/cost.py` prices one model through the standing
+served directories. A study without `spec/runs.json` has no standing instruments.
+
 ## The components
 
 1. **RUNNER** — *stimulus → transcripts.* Plays each scene's escalating turns multi-turn against each

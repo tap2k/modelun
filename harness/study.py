@@ -65,3 +65,17 @@ class Study:
         """All Contract-A files (model -> path), excluding the adjudicated store."""
         return sorted(p for p in self.transcripts_dir.glob("*.json")
                       if p.name not in ("markers.json", "store.json"))
+
+    def standing(self):
+        """The study's standing directories: spec/runs.json entries at tier core or extended.
+
+        Each entry gains ``owed_by``: "hybrids" for an off arm or a hybrids-only entry, which
+        only the file's ``hybrids`` list owes, else "panel". A study without the file has none.
+        """
+        f = self.root / "spec" / "runs.json"
+        if not f.exists():
+            return [], set()
+        doc = json.loads(f.read_text())
+        runs = [dict(e, owed_by="hybrids" if e.get("arm") == "off" or e.get("models") == "hybrids" else "panel")
+                for e in doc["runs"] if e.get("tier") in ("core", "extended")]
+        return runs, set(doc.get("hybrids", []))

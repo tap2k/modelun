@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare the study panels against the live OpenRouter catalog.
 
-Three questions, in order of how much a wrong answer costs:
+Four questions, in order of how much a wrong answer costs:
 
 1. What is about to disappear? A model with an ``expiration_date``, or one
    already absent from the catalog, can never be run again. Transcripts for it
@@ -9,11 +9,15 @@ Three questions, in order of how much a wrong answer costs:
 2. What is missing from a panel that another panel already has? Cross-study
    correlations are computed on the overlap, so a model in one panel and not
    another is a row the matrix cannot use.
-3. What is new? Models in the catalog that no panel has seen.
+3. What has a panel model not been run on? A study's ``spec/runs.json`` marks its standing
+   directories ``tier: core`` or ``extended``; every runnable roster model owes a file in each, and
+   an ``off``-arm directory is owed only by the study's ``hybrids``.
+4. What is new? Models in the catalog that no panel has seen.
 
-Reads each ``studies/<name>/spec/models.txt``; no study semantics live here. A roster entry in
-``spec/models.json`` carrying ``not_run_after`` (a model the study has stopped running, kept in the
-append-only roster) is left out of the MISSING and EXPIRING lists and shown under RETIRED.
+Reads each ``studies/<name>/spec/models.txt`` and ``spec/runs.json``; no study semantics live here. A
+roster entry in ``spec/models.json`` carrying ``not_run_after`` (a model the study has stopped
+running, kept in the append-only roster) is left out of the MISSING, STANDING and EXPIRING lists and
+shown under RETIRED. A model a study lists under ``unrunnable`` is left out of its STANDING list.
 
     python3 harness/panel_gap.py                    # all studies with a panel
     python3 harness/panel_gap.py --study conduct consensus
@@ -28,6 +32,9 @@ import json
 import sys
 import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from study import Study  # noqa: E402
 
 CATALOG_URL = "https://openrouter.ai/api/v1/models"
 REPO = Path(__file__).resolve().parent.parent
@@ -55,17 +62,51 @@ def panels(names: list[str] | None) -> dict[str, set[str]]:
     return out
 
 
-def retired() -> dict[str, dict]:
-    """Slug -> its not_run_after record, from every study's spec/models.json that has one."""
+def models_json() -> dict[str, dict]:
+    """Study -> its parsed spec/models.json, for the studies whose file is a JSON object."""
     out = {}
     for spec in sorted((REPO / "studies").glob("*/spec/models.json")):
         try:
-            entries = json.loads(spec.read_text()).get("models", [])
-        except (json.JSONDecodeError, AttributeError):
+            doc = json.loads(spec.read_text())
+        except json.JSONDecodeError:
             continue
-        for e in entries if isinstance(entries, list) else []:
-            if isinstance(e, dict) and e.get("not_run_after") and e.get("slug"):
-                out[e["slug"]] = e["not_run_after"]
+        if isinstance(doc, dict):
+            out[spec.parent.parent.name] = doc
+    return out
+
+
+def retired(docs: dict[str, dict]) -> dict[str, dict]:
+    """Slug -> its not_run_after record, from every study's roster that has one."""
+    return {e["slug"]: e["not_run_after"]
+            for doc in docs.values() for e in doc.get("models", [])
+            if isinstance(e, dict) and e.get("not_run_after") and e.get("slug")}
+
+
+def unrunnable(docs: dict[str, dict]) -> dict[str, set[str]]:
+    """Study -> slugs its models.json lists as unrunnable (tried, could not be collected)."""
+    return {study: {e["model"] for e in doc.get("unrunnable", []) if isinstance(e, dict) and e.get("model")}
+            for study, doc in docs.items()}
+
+
+def standing(panel: dict[str, set[str]], runnable: set[str], skip: dict[str, set[str]]) -> dict:
+    """Study -> {entry id: labels with no file}, over each standing entry (``Study.standing``).
+
+    A file is named for the slug's last segment.
+    """
+    out = {}
+    for study, have in sorted(panel.items()):
+        root = REPO / "studies" / study
+        if not (root / "spec" / "runs.json").exists():
+            continue
+        runs, hybrids = Study(root).standing()
+        owed = {m.split("/")[-1] for m in (have & runnable) - skip.get(study, set())}
+        gaps = {}
+        for e in runs:
+            want = owed & hybrids if e["owed_by"] == "hybrids" else owed
+            missing = sorted(m for m in want if not (root / e["dir"] / f"{m}.json").exists())
+            if missing:
+                gaps[e["id"]] = missing
+        out[study] = gaps
     return out
 
 
@@ -135,7 +176,8 @@ def main() -> int:
         return 1
     union = set().union(*p.values())
     today = dt.date.today().isoformat()
-    stopped = retired()
+    docs = models_json()
+    stopped = retired(docs)
 
     expiring = sorted(
         (catalog[m]["expiration_date"], m, sorted(s for s in p if m in p[s]))
@@ -152,6 +194,7 @@ def main() -> int:
         study: sorted(m for m in runnable - have if m not in vanished)
         for study, have in p.items()
     }
+    gaps = standing(p, runnable, unrunnable(docs))
     unseen = sorted(
         (released(catalog[m]), m) for m in set(catalog) - union
         if (args.all_variants or not is_variant(m))
@@ -166,6 +209,7 @@ def main() -> int:
             "expiring": [{"date": d, "model": m, "studies": s} for d, m, s in expiring],
             "vanished": [{"model": m, "studies": s} for m, s in vanished],
             "misaligned": misaligned,
+            "standing": gaps,
             "retired": [{"model": m, **r} for m, r in sorted(stopped.items())],
             "unseen": [{"released": d, "model": m} for d, m in unseen],
         }, indent=1))
@@ -200,6 +244,17 @@ def main() -> int:
         for m in missing:
             exp = catalog[m].get("expiration_date")
             print(f"     {m}{'   EXPIRES ' + exp if exp else ''}")
+
+    print("\n== STANDING: core/extended directories missing a runnable panel model ==")
+    for study, entries in gaps.items():
+        if not entries:
+            print(f"  {study}: complete")
+            continue
+        print(f"  {study}:")
+        for eid, missing in entries.items():
+            print(f"     {eid:28s} {len(missing):3d}  {', '.join(missing)}")
+    if not gaps:
+        print("  no study has a spec/runs.json")
 
     label = f" created >= {args.new_since}" if args.new_since else ""
     print(f"\n== UNSEEN: in the catalog, in no panel{label} ({len(unseen)}) ==")
