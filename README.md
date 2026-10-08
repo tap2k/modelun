@@ -71,7 +71,9 @@ cp .env.example .env   # OPENROUTER_API_KEY
 
 # run a study's scenes against models, score them, adjudicate:
 python harness/run.py        --study studies/conduct anthropic/claude-opus-4.8 openai/gpt-5.4 --runs 2
-python harness/judge.py      --study studies/conduct --judge google/gemini-2.5-flash
+for j in qwen/qwen3.7-plus google/gemma-4-31b-it deepseek/deepseek-v4.1-flash; do
+  python harness/judge.py    --study studies/conduct --judge $j
+done
 python harness/adjudicate.py --study studies/conduct
 
 # read a transcript by eye, or build + open the review site:

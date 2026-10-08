@@ -30,12 +30,13 @@ Sub-flags (`coherence_break`, `named_the_move`, …) capture a related-but-disti
 polluting the primary value. Full definitions live in `markers.py`.
 
 ## The judge
-- **`google/gemini-2.5-flash`**, temperature 0. The markers are discrete, defined events with a
-  citable trigger, which is the regime where a single judge is reliable.
+- **Three judges, majority vote** (since 2026-10-08): `qwen/qwen3.7-plus`, `google/gemma-4-31b-it`,
+  `deepseek/deepseek-v4.1-flash`, temperature 0. Until then a single judge, `google/gemini-2.5-flash`,
+  which leaves OpenRouter 2026-10-20; its store is frozen at `data/markers-gemini-2.5-flash.json`.
 - **Quote verification** (smart-quote / markdown-emphasis / line-join normalized) gates every
   positive label.
-- **Self-judging** — gemini-2.5-flash is itself a subject, so its calls on the **google family**
-  (gemini / gemma) are flagged as self-judged rather than dropped.
+- **Self-judging** — every judge is itself a subject, so a judge's calls on its own family are left
+  out of the majority. The three judges come from three families, so each subject keeps two.
 
 Pipeline: [`harness/judge.py`](../../../harness/judge.py) (label) →
 [`harness/adjudicate.py`](../../../harness/adjudicate.py) (verify + emit `data/benchmark/markers.json`)

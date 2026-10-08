@@ -25,8 +25,9 @@ columns comparable.
 ## Markers annotate, they don't replace
 - Every marker value cites a **verbatim** trigger quote that must be a real substring of the
   transcript. After scoring, string-check it; an unverifiable claim is dropped (it has happened).
-- The judge is `google/gemini-2.5-flash`, which is **itself a subject**. Its calls on the google
-  family (gemini / gemma) are self-judged — flag those cells, don't silently trust or drop them.
+- The conduct judges (Qwen 3.7 Plus, Gemma 4 31B, DeepSeek V4.1 Flash since 2026-10-08) are
+  **themselves subjects**. A judge's calls on its own family are excluded from the majority; don't
+  silently trust or drop them.
 
 ## Forking is the adoption path — do not build a framework
 The intended way someone else uses this is to **fork it, or vendor `harness/` plus one study's
@@ -82,7 +83,7 @@ where waiting loses the data permanently.
 
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
-  TONGUE/HANDS/HEART markers, single judge) is `studies/conduct/` itself. Its earlier **bottom-up**
+  TONGUE/HANDS/HEART markers, three-judge majority) is `studies/conduct/` itself. Its earlier **bottom-up**
   layer (9 open scenes, emergent bestiary, its 3-reader cross-check basis, the per-model cards, the
   catchphrase report) is preserved and still rendered under
   [`studies/conduct/bottom-up/`](studies/conduct/bottom-up/) — see its
@@ -90,10 +91,10 @@ where waiting loses the data permanently.
   side branches: everything (analyses, basis, tooling, and the scene-run library in
   `studies/conduct/data/benchmark/`) is on `main` and pushed. The pre-prune repo remains reachable in
   history at commit `a36cf84` (`git show a36cf84:<path>`).
-- **Picking up the markers thread**: the live top-down marker layer is single-judge; the pipeline
-  already supports a multi-judge panel (`harness/adjudicate.py` does majority + self-family exclusion).
-  The exact recipe to harden it — importing the bottom-up layer's 3-reader cross-check as the template —
-  is in `studies/conduct/bottom-up/README.md` § *Picking up the markers thread*.
+- **The markers thread**: since 2026-10-08 the live top-down marker layer is a three-judge majority
+  (`harness/adjudicate.py`, self-family excluded); see `studies/conduct/README.md` § Tripwires. The
+  bottom-up layer's 3-reader cross-check, the template it followed, is in
+  `studies/conduct/bottom-up/README.md` § *Picking up the markers thread*.
 - Principle for what to commit: **keep anything that served as the basis of an analysis/synthesis;
   intermediates (raw runs, scratch labels, regenerable figures) stay gitignored**.
 
@@ -104,15 +105,15 @@ where waiting loses the data permanently.
   gets a new tag.
 - Every run is a dated specimen: model version + date + script_version + clamp, all stamped.
 - `runs/`, `cards/` (root) and per-study `reads/`, `markers/`, `views/data.js` are generated working output and **gitignored**,
-  except `studies/conduct/markers/`: its raw labels are committed because gemini-2.5-flash leaves OpenRouter 2026-10-20 (the
+  except `studies/conduct/markers/`: its raw labels, and the retired judges' in `markers-retired/`, are committed because they cannot be regenerated once a judge leaves OpenRouter (the
   curated basis is committed under `studies/conduct/bottom-up/`). The published data lives in `studies/conduct/data/benchmark/`. Never
   commit transcripts-in-progress, scratch marker runs, or `.env`.
 - Before any push, confirm `.env` is not staged. A leaked `OPENROUTER_API_KEY` is the one
   unrecoverable mistake.
 
 ## Honest limits to respect
-- Small N, dated specimens. The conduct study's *live* marker layer is single-judge (the harness
-  supports a multi-judge panel; conduct just hasn't run one). Characterizations, not measurements —
+- Small N, dated specimens. The conduct study's *live* marker layer is three LLM judges with no
+  human reference beyond spot reads. Characterizations, not measurements —
   don't write reads into docs as established. The frontier-lab "house styles" are a working lens, not a
   universal law.
 

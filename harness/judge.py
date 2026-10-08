@@ -2,11 +2,11 @@
 Judge pass (OpenRouter) — apply a study's codebook to every transcript via one LLM judge.
 
 Scores each Contract-A transcript with the study's codebook (spec/codebook.py), through one
-judge (default google/gemini-2.5-flash). Saves raw labels to <study>/labels/<judge>/<model>.json;
+judge (--judge, required). Saves raw labels to <study>/labels/<judge>/<model>.json;
 adjudicate.py then verifies the quotes and emits the adjudicated store.
 
-    python harness/judge.py --study studies/conduct
-    python harness/judge.py --study studies/conduct --judge google/gemini-2.5-flash \
+    python harness/judge.py --study studies/conduct --judge qwen/qwen3.7-plus
+    python harness/judge.py --study studies/conduct --judge qwen/qwen3.7-plus \
         --subjects studies/conduct/data/benchmark/gpt-5.4.json
 
 Quotes are UNVERIFIED here — adjudicate.py string-checks them. The judge is itself a subject,
@@ -133,7 +133,7 @@ def judge_one(judge_slug, system_prompt, schema_hint, transcript_text, retries=3
 def main():
     ap = argparse.ArgumentParser(description="Apply a study's codebook to each transcript via one LLM judge.")
     ap.add_argument("--study", default=".", help="study directory (default: cwd)")
-    ap.add_argument("--judge", default="google/gemini-2.5-flash")
+    ap.add_argument("--judge", required=True)
     ap.add_argument("--subjects", nargs="*", default=None, help="explicit <model>.json files; default = all study transcripts")
     ap.add_argument("--out", default=None, help="labels dir (default: <study>/labels)")
     args = ap.parse_args()

@@ -103,7 +103,8 @@ leap skews `helps_blind` (15, Apologist).
 - **Single judge** — `google/gemini-2.5-flash`, itself a subject, so its calls on the google family
   are self-judged (flagged in `markers.json`). It reproduces every independently-known pattern
   (gpt-4.1 folds, the Llamas forge, the Anthropic line holds), so it's tracking real behavior — but a
-  multi-judge panel would harden the labels.
+  multi-judge panel would harden the labels. (Since 2026-10-08 the live layer is a three-judge majority;
+  this read predates it and was made under gemini-2.5-flash alone.)
 - **Small N** (2 runs), clamp-shaped, dated specimens. Characterizations, not measurements.
 - **One permanent gap** — `claude-3.5-haiku` was retired (2026-02-19) before its two disposition
   scenes were collected, so those cells read contested; the other 37 models are complete.

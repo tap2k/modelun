@@ -40,8 +40,8 @@ ladder resolve into recurring **house styles** — a working lens, not a law:
 A fixed four-panel script per scene, identical for every model and escalating regardless of the reply;
 each model run twice at deployment temperature; a system-prompt **clamp** holds replies short and plain
 so the read is about conduct, not formatting. Each scene carries a **marker** — a discrete,
-quote-verified event scored by a single judge (`google/gemini-2.5-flash`) — that turns the scene into a
-comparable readout. See [`docs/markers.md`](docs/markers.md).
+quote-verified event scored by the majority of three judges (Qwen 3.7 Plus, Gemma 4 31B, DeepSeek V4.1
+Flash) — that turns the scene into a comparable readout. See [`docs/markers.md`](docs/markers.md).
 
 These are reads at small N, dated specimens. Vivid enough to recognize, precise enough to compare on the
 markers — not a leaderboard.
@@ -69,7 +69,9 @@ From the repo root (the harness is study-agnostic; `--study studies/conduct` poi
 ```bash
 # run the scenes against models, score the codebook, adjudicate the store
 python harness/run.py        --study studies/conduct anthropic/claude-opus-4.8 openai/gpt-5.4 --runs 2
-python harness/judge.py      --study studies/conduct --judge google/gemini-2.5-flash
+for j in qwen/qwen3.7-plus google/gemma-4-31b-it deepseek/deepseek-v4.1-flash; do
+  python harness/judge.py    --study studies/conduct --judge $j
+done
 python harness/adjudicate.py --study studies/conduct
 
 # the review site
@@ -88,11 +90,13 @@ python studies/conduct/views/build.py && open studies/conduct/views/index.html
 - **The stimulus is sacred.** `spec/stimulus.json` is byte-identical input to every model — that's what
   makes columns comparable. Any change (including the clamp) must bump `script_version`; old and new are
   not comparable. See [AGENTS.md](../../AGENTS.md).
-- **The judge retires 2026-10-20.** `gemini-2.5-flash` leaves OpenRouter that day; no new model can be
-  judged by it afterwards. Its raw labels are committed in `markers/` beside gemini-3.5-flash and
-  gpt-oss-120b on the same 108 models, and `data/markers-3judge.json` is the three-judge adjudication,
-  the bridge for a successor judge.
-- **The judge is itself a subject.** `gemini-2.5-flash` scoring the google family (gemini / gemma) is
-  self-judged — the adjudicator flags those cells rather than trusting or dropping them silently.
+- **Three judges since 2026-10-08.** `markers.json` is the majority of Qwen 3.7 Plus, Gemma 4 31B and
+  DeepSeek V4.1 Flash, whose raw labels are in `markers/`. It replaced the single `gemini-2.5-flash`
+  judge, which leaves OpenRouter 2026-10-20. That store is frozen at `data/markers-gemini-2.5-flash.json`,
+  and its raw labels, with gemini-3.5-flash's and gpt-oss-120b's, are in `markers-retired/`. Run cells
+  agree 0.82 between the two layers; `leap_help` moves most (see the store's `_meta.switched`).
+- **Every judge is itself a subject.** A judge's calls on its own family are excluded from the majority;
+  with three families no subject is left with fewer than two judges. DeepSeek V4.1 Flash returns empty
+  replies on a few transcripts after retries; re-run its pass and the cell falls to the other two.
 - **Markers annotate, they don't replace.** Every value cites a verbatim trigger quote, string-verified
   against the transcript; an unverifiable claim is dropped.
