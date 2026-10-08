@@ -17,8 +17,8 @@ agreement. On the decisions the effect runs from $+32$ to $-42$ points. 35 model
 significantly less once asked to confirm, and 8 agree significantly more. Within model families,
 newer releases agree less under the tag than older ones. The resistance is specific to the tag. A
 synonym tag reproduces it, and three other ways of signalling the same view raise agreement: the
-preference stated without a tag, a tentative tag (\emph{``maybe?''}), and a stated belief
-(\emph{``I think X.''}). On the contested questions the tag lowers agreement by 5 points and a
+preference stated without a tag (by 24 points), a tentative tag (\emph{``maybe?''}, by 20), and a
+stated belief (\emph{``I think X.''}). On the contested questions the tag lowers agreement by 5 points and a
 stated belief raises it by 8, and the belief draws more agreement than the tag in 86 of 102
 models. Recent models withhold agreement from a request to confirm, and they still defer to a
 user who states what they believe. The instrument costs about a dollar per model, so it can be
@@ -309,7 +309,8 @@ resisters resist the synonym at least as hard (Fable 5 $-42$ against $-32$; Llam
 GPT-5.6-Luna $-35$ under both). In a smaller scan, \emph{isn't it?} behaves like the other tags,
 and removing the question mark keeps most of the effect (GPT-5.4 $-12$ of $-23$).
 
-\paragraph{The stance.} All 35 significantly resistant models affirm the stated
+\paragraph{The stance.} The stance raises agreement by 24 points on average, and in 104 of 105
+models. All 35 significantly resistant models affirm the stated
 stance at or above their neutral baseline, by $+1$ to $+48$ points. GPT-5.6-Luna is $-28$ under
 the tag and $+48$ under \emph{``I've settled on it''}. 55 of the 105 models show the dissociation
 (a tag effect below $-5$ with a non-negative stance effect), and stance effects correlate with tag
@@ -320,14 +321,16 @@ models of the first version affirm the open leaning at or above baseline, and th
 (Gemini 3.6 Flash $-4$, GPT-5.4 $-3$) fall far short of their tag effects.
 
 \paragraph{The unstated alternative.} Each prompt names only the option under test, so a model
-might decline to vouch for a comparison it cannot see, and that would look like resistance. On ten
-models spanning the panel we ran, on one day, the original pair beside a version that names both
-options (\emph{``I'm deciding $D$: $X$ or $Y$. $X$ is the better choice, right?''};
-Appendix~\ref{app:named}). Five of the six resistant models among them still resist significantly
-with both options named, Claude Fable 5 most strongly ($-34$); the sixth, GPT-4o, was the weakest
-at $-8$. Named and original effects correlate at $r=0.77$. Naming the alternative lowers agreement
-in both arms, so effect sizes depend on the wording. The original wording, rerun two months after
-the July collection, reproduces the July effects at $r=0.98$.
+might decline to vouch for a comparison it cannot see, and that would look like resistance. We reran
+the neutral question, the tag and the tentative tag on 102 models with both options named
+(\emph{``I'm deciding $D$: $X$ or $Y$. $X$ is the better choice, right?''};
+Appendix~\ref{app:named}). Named and original tag effects correlate at $r=0.79$. Of the 34
+significantly resistant models still available, 33 stay below zero and 13 stay significant. The
+tentative tag raises agreement in 100 of the 102. Naming the alternative lowers agreement with the
+neutral question from 48\% to 31\% and with the tag from 41\% to 29\%. With the baseline lower, the
+mean tag effect shrinks from $-7.2$ to $-1.4$ points. With both options in view, models more often
+answer \emph{no} to both questions. The direction of the effect and the ranking of models hold under
+both wordings, and the size of the effect depends on the wording.
 
 \paragraph{Interpretation.} The stance cell carries the same evidence of the user's preference
 as the tag, and it draws agreement rather than resistance. Both cells implicate the same preference,
@@ -498,7 +501,7 @@ served model behavior at a point in time and are not a ranking of vendors.
 repository (\url{https://github.com/tap2k/modelun})\fi: \texttt{probe\_righteffect.py} (the tag
 arm), \texttt{probe\_maybetag.py} and \texttt{probe\_should.py} (the tentative tag and the
 proposition control), \texttt{probe\_ablation.py} and \texttt{probe\_leaning.py} (the word,
-stance and open-leaning cells), \texttt{probe\_righttag.py} and \texttt{probe\_reactance.py} (the
+stance and open-leaning cells), \texttt{probe\_named\_panel.py} (both options named), \texttt{probe\_righttag.py} and \texttt{probe\_reactance.py} (the
 small dissection scans), \texttt{heldout\_wave2.py} (the held-out table), \texttt{probe\_contested.py} (the contested
 questions), \texttt{probe\_retest.py} and \texttt{probe\_labelswap.py} (the retest and the
 label swap), \texttt{probe\_suggest\_ladder.py} and \texttt{probe\_contested\_ladder.py} (the
@@ -616,26 +619,32 @@ distributions differ in shape.
 \clearpage
 \section{Naming both options}
 \label{app:named}
-Ten models spanning the July tag effect, each run on one day in September in four arms: the
-original neutral and tag prompts, and both with the two options named (\texttt{I'm deciding
-\{D\}: \{X\} or \{Y\}. Is \{X\} the better choice?} and \texttt{\ldots\ \{X\} is the better choice,
-right?}). The options are listed in item order in both probes of an item. Serving matches July:
-512 output tokens, the same provider pins, four samples per cell, temperature 1.0. Tag effects in
-points with 90\% bootstrap intervals; the last column is the neutral-arm affirm rate under each
-wording.
+{\sloppy Every model with a tag-arm file was rerun in October in three arms with both options named:
+\texttt{I'm deciding \{D\}: \{X\} or \{Y\}. Is \{X\} the better choice?}, \texttt{\ldots\ \{X\} is
+the better choice, right?} and \texttt{\ldots\ \{X\} is the better choice, maybe?}. The options are
+listed in item order in every probe of an item. Each model is served as in its tag arm (output
+budget, host, provider pin), with four samples per cell at temperature 1.0. Three models were no
+longer served: Claude 3 Haiku, Granite 4.1 8B and Hermes 4 70B. Statistics follow the body: nested
+bootstrap, 95\% intervals, BH at $q=.05$.\par}
+
+Over the 102 models, 15 resist the named tag significantly and 12 agree with it significantly more,
+against 34 and 8 under the original wording. Seven models that were not significantly positive
+become so when named, among them GPT-3.5 Turbo ($+4$ to $+29$) and Hunyuan A13B ($+6$ to $+32$).
+Qwen3.5-27B is the one original resister above zero when named ($-16$ to $+4$). Counting only
+\emph{yes} and \emph{no} replies gives the same picture (mean $-0.8$; 8 significant each way). The
+named tentative tag is significantly positive in 92 models, and the 34 original resisters average
+$+21$ under it.
 
 \begin{center}
-\small
-\begin{tabular}{lrrrr}
-\toprule
-Model & July & Original, rerun & Both named & Ask affirm \\
-\midrule
-\input{gen/named_table}
-\end{tabular}
+\captionof{table}{Tag effects in points under the original wording and with both options named,
+sorted by the named tag effect. $^*$: significant at BH $q=.05$. Ask: the neutral question's affirm
+rate, original / named.}
+\label{tab:named}
+\scriptsize
+\renewcommand{\arraystretch}{0.78}
+\setlength{\tabcolsep}{3pt}
+\input{gen/named_panel_table}
 \end{center}
-
-\noindent With both options named, five of the six resistant models still resist significantly,
-and the original wording, rerun in September, reproduces the July effects at $r=0.98$.
 
 \section{Baseline agreeableness}
 \label{app:figs}
