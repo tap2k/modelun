@@ -8,7 +8,7 @@
 
 # labels (judge output, Contract B) + reads/grids — regenerable working output per study.
 # The adjudicated store (data/benchmark/markers.json) is committed; raw labels are not,
-# except conduct's: its judge gemini-2.5-flash leaves OpenRouter 2026-10-20, so they cannot be regenerated.
+# except conduct's (markers/ and markers-retired/): a judge's labels cannot be regenerated once it leaves OpenRouter.
 studies/*/markers/
 !studies/conduct/markers/
 studies/*/markers-unclamped/
@@ -50,3 +50,6 @@ studies/conduct/data/openrouter-thinking/*/markers/
 # repo in ~/Desktop/projects/modelUN/<paper>/reviews-<date>/ (pass --out); this catches the default output dir.
 studies/*/paper/reviews/
 studies/*/views/ladder_replies/
+
+# consensus: per-battery analyze.py output (analysis.json, the census, stays committed)
+studies/consensus/analysis_*.json
