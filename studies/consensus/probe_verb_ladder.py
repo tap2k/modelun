@@ -16,6 +16,7 @@ stage on disk.
     caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --delete-cache              # Name/Choose/free
     caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --recommend --delete-cache  # one-turn recommend, 41 brands
     caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --pick2 --delete-cache      # then "Which one would you pick?"
+    caffeinate -ims ../../.venv/bin/python probe_verb_ladder.py olmo3-7b --pick2 --turn1-from=sft --picks=5 --delete-cache
 """
 import json, shutil, sys, time
 from pathlib import Path
@@ -148,26 +149,50 @@ def pick2_encode(tok, st, framing, q1, a1):
     return tok.apply_chat_template(msgs, add_generation_prompt=True, **st.get("chat_kwargs", {}))
 
 
-def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8, turn1_from=None):
+def head_to_head_runs(rec):
+    """scene -> indices of the turn-1 replies that name both of the API panel's brands (its Name brand and its two-turn
+    pick brand), over the categories where the two differ (probes/stage_pick.json, written by stage_pick.py). Mentions
+    are read as stage_pick.py reads them, so these are exactly the lists its head-to-head share can use."""
+    sys.path.insert(0, str(HERE))
+    import brand_ladder as B
+    sp = json.loads((HERE / "probes" / "stage_pick.json").read_text())
+    pats, out = B.pools()[4], {}
+    for c in sp["categories_where_panel_pick_differs"]:
+        sid, both = f"{c}__recommend", set(sp["panel_brands"][c].values())
+        runs = rec["scenes"].get(sid, {}).get("runs", [])
+        ks = [k for k, r in enumerate(runs) if r and r[0].get("reply") and both <= set(B.mentions(r[0]["reply"], pats[c]))]
+        if ks:
+            out[sid] = ks
+    return out
+
+
+def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8, turn1_from=None, picks=1):
     """The two-turn pick on the tuned stages: each of the stage's one-turn recommend replies (recommend/) is turn 1, and
     the stage answers PICK once per reply, so every pick is paired with the list it chose from. Writes pick2/.
     turn1_from=<stage> gives every later stage that stage's recommend replies as turn 1 instead of its own, so the list
-    is held fixed and only the choice from it can change; writes pick2_from_<stage>/."""
+    is held fixed and only the choice from it can change; writes pick2_from_<stage>/.
+    picks=K > 1 answers PICK K times per turn-1 reply, on the head-to-head lists only (head_to_head_runs), and runs the
+    turn1_from stage too, on its own lists; writes pick2_from_<stage>_k/ (pick2_k/ without turn1_from). Each pick
+    records its turn-1 reply's index as turn1_run."""
     from mlx_lm.sample_utils import make_sampler
     base = HERE / "probes" / f"verb_ladder_{pipeline}"
     src = next((s for s in stages(pipeline) if s["stage"] == turn1_from), None) if turn1_from else None
+    folder = (f"pick2_from_{turn1_from}" if src else "pick2") + ("_k" if picks > 1 else "")
     for st in stages(pipeline):
-        if st["stage"] == "base" or (src and st["stage"] == turn1_from):
+        if st["stage"] == "base" or (src and st["stage"] == turn1_from and picks == 1):
             continue
         f = tuned_framing(st)
         rec_path = local.path(base / "recommend", src or st, tuned_framing(src or st))
-        path = local.path(base / (f"pick2_from_{turn1_from}" if src else "pick2"), st, f)
+        path = local.path(base / folder, st, f)
         if not rec_path.exists():
             print(f"{st['label']}: no recommend file, skipped", flush=True)
             continue
         rec = json.loads(rec_path.read_text())
+        runs = head_to_head_runs(rec) if picks > 1 else {sid: range(len(sc["runs"])) for sid, sc in rec["scenes"].items()}
         data = json.loads(path.read_text()) if path.exists() else None
-        todo = [sid for sid in rec["scenes"] if not data or sid.replace("__recommend", "__pick") not in data["scenes"]]
+        if data and data.get("picks", 1) != picks:
+            sys.exit(f"{path} holds {data.get('picks', 1)} picks per list, not {picks}")
+        todo = [sid for sid in runs if not data or sid.replace("__recommend", "__pick") not in data["scenes"]]
         if not todo:
             continue
         model, tok = local.load(st)
@@ -175,21 +200,24 @@ def pick2_pass(pipeline, delete_cache, max_tokens=384, batch=8, turn1_from=None)
             data = {"model": st["label"], "slug": st["repo"], "spec_version": "verb-ladder-pick-2turn", "host": "local-mlx",
                     "pipeline": pipeline, "stage": st["stage"], "framing": f, "weights": st["weights"],
                     "quantization": st.get("quantization"), "revision": local.revision(st["repo"], st["weights"]),
-                    "temperature": 1.0, "max_tokens": max_tokens, "turn1": str(rec_path.relative_to(HERE)), "scenes": {}}
+                    "temperature": 1.0, "max_tokens": max_tokens, "turn1": str(rec_path.relative_to(HERE)),
+                    **({"picks": picks, "turn1_runs": "head to head (head_to_head_runs)"} if picks > 1 else {}), "scenes": {}}
         sampler, t0 = make_sampler(temp=1.0), time.time()
         path.parent.mkdir(parents=True, exist_ok=True)
         for i in range(0, len(todo), 4):                                  # written every 4 categories, to resume
             chunk, prompts, keys = todo[i:i + 4], [], []
             for sid in chunk:
-                for k, run in enumerate(rec["scenes"][sid]["runs"]):
+                for k in runs[sid]:
+                    run = rec["scenes"][sid]["runs"][k]
                     if run and run[0].get("reply"):
-                        prompts.append(pick2_encode(tok, st, f, run[0]["u"], run[0]["reply"]))
-                        keys.append((sid, k))
+                        prompts += [pick2_encode(tok, st, f, run[0]["u"], run[0]["reply"])] * picks
+                        keys += [(sid, k)] * picks
             replies = local.generate(model, tok, prompts, max_tokens, sampler, batch,
                                      st.get("batched", True) and "--unbatched" not in sys.argv)
             by = {}
             for (sid, k), (text, fin) in zip(keys, replies):
-                by.setdefault(sid, []).append([rec["scenes"][sid]["runs"][k][0], local.cell(PICK, text, False, fin)])
+                cell = local.cell(PICK, text, False, fin) | ({"turn1_run": k} if picks > 1 else {})
+                by.setdefault(sid, []).append([rec["scenes"][sid]["runs"][k][0], cell])
             for sid in chunk:
                 data["scenes"][sid.replace("__recommend", "__pick")] = {"run_date": time.strftime("%Y-%m-%d"), "runs": by.get(sid, [])}
             path.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
@@ -204,6 +232,7 @@ if __name__ == "__main__" and "--pick2" in sys.argv:
     # --batch=N: the two-turn prompts carry a full recommend reply; OLMo 3 7B ran out of GPU memory at 8 and at 4
     # (2026-10-05). --unbatched samples one prompt at a time, for a model whose batched path will not fit.
     # --turn1-from=sft: the later stages pick from the SFT stage's lists (the list held fixed, 2026-10-06).
-    pick2_pass(sys.argv[1], "--delete-cache" in sys.argv,
-               batch=int(next((a.split("=")[1] for a in sys.argv if a.startswith("--batch=")), 8)),
-               turn1_from=next((a.split("=")[1] for a in sys.argv if a.startswith("--turn1-from=")), None))
+    # --picks=K: K picks per head-to-head list, to tighten the head-to-head n (2026-10-06).
+    arg = lambda name, default: next((a.split("=")[1] for a in sys.argv if a.startswith(f"--{name}=")), default)
+    pick2_pass(sys.argv[1], "--delete-cache" in sys.argv, batch=int(arg("batch", 8)), turn1_from=arg("turn1-from", None),
+               picks=int(arg("picks", 1)))

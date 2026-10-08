@@ -9,6 +9,9 @@ model) and each tuned stage, over the brand categories (the generic company/bran
   * the same picks with the list held fixed (pick2_from_sft/: each later stage picks from the SFT stage's turn-1
     lists), the panel-pick share with a 90% bootstrap interval over categories, and head to head: of the runs whose
     turn-1 list names both panel brands and whose pick is one of them, the share picking the panel's pick brand
+  * pooled: the held-fixed picks plus pick2_from_sft_k/ (K picks per head-to-head list, probe_verb_ladder.py
+    --picks=K), head to head with a 90% bootstrap interval over categories. K picks from one list are not independent,
+    so the interval resamples categories, not picks
 Picks are read as brand_ladder reads them (the brand the reply commits to). Zero API calls. Writes
 probes/stage_pick.json.
 
@@ -50,16 +53,35 @@ def read_picks(pf):
     return out
 
 
+def boot90(hit):
+    """Pooled share of category -> [bool], and its 90% bootstrap interval over categories."""
+    cats = [c for c in hit if hit[c]]
+    share = lambda cs: sum(sum(hit[c]) for c in cs) / sum(len(hit[c]) for c in cs)
+    boot = sorted(share(random.choices(cats, k=len(cats))) for _ in range(1000))
+    return share(cats), [boot[50], boot[949]]
+
+
+def head_to_head(picks, cats, panel_pick, panel_name):
+    """category -> [picked the panel's pick brand], over runs whose list names both panel brands and whose pick is one."""
+    return {c: [p == panel_pick[c] for p, ls in picks.get(c, [])
+                if panel_pick[c] in ls and panel_name[c] in ls and p in (panel_pick[c], panel_name[c])] for c in cats}
+
+
 def held_fixed(picks, differ, panel_pick, panel_name):
     """Panel-pick share over the differing categories with a 90% bootstrap interval, and the head-to-head share."""
     cats = [c for c in sorted(differ) if any(p != B.NO_PICK for p, _ in picks.get(c, []))]
-    hit = {c: [p == panel_pick[c] for p, _ in picks[c] if p != B.NO_PICK] for c in cats}
-    share = lambda cs: sum(sum(hit[c]) for c in cs) / sum(len(hit[c]) for c in cs)
-    boot = sorted(share(random.choices(cats, k=len(cats))) for _ in range(1000))
-    h2h = [p == panel_pick[c] for c in cats for p, ls in picks[c]
-           if panel_pick[c] in ls and panel_name[c] in ls and p in (panel_pick[c], panel_name[c])]
-    return {"panel_pick": share(cats), "ci90": [boot[50], boot[949]],
+    share, ci = boot90({c: [p == panel_pick[c] for p, _ in picks[c] if p != B.NO_PICK] for c in cats})
+    h2h = [x for xs in head_to_head(picks, cats, panel_pick, panel_name).values() for x in xs]
+    return {"panel_pick": share, "ci90": ci,
             "head_to_head": sum(h2h) / len(h2h) if h2h else None, "head_to_head_n": len(h2h)}
+
+
+def pooled(picks, differ, panel_pick, panel_name):
+    """Head to head over the differing categories, with a 90% bootstrap interval over categories."""
+    hit = head_to_head(picks, sorted(differ), panel_pick, panel_name)
+    share, ci = boot90(hit)
+    return {"head_to_head": share, "ci90": ci, "head_to_head_n": sum(map(len, hit.values())),
+            "categories": sum(1 for v in hit.values() if v)}
 
 
 def main():
@@ -68,7 +90,8 @@ def main():
     panel_name = {c: B.top(n)[0] for c, n in B.agg(lv["name"]).items()}
     panel_pick = {c: B.top(n)[0] for c, n in B.agg(lv["pick2"]).items()}
     differ = {c for c in panel_name if panel_pick.get(c) and panel_pick[c] != panel_name[c] and c not in B.GENERIC}
-    out = {"categories_where_panel_pick_differs": sorted(differ), "pipelines": {}}
+    out = {"categories_where_panel_pick_differs": sorted(differ),
+           "panel_brands": {c: {"name": panel_name[c], "pick": panel_pick[c]} for c in sorted(differ)}, "pipelines": {}}
     print(f"{'stage':28} {'own pick != own Name':>22} {'floor':>6}   {'= panel pick':>12} {'= panel Name':>12}"
           f"   (over {len(differ)} categories where the panel's pick differs)")
     for p, stages in PIPES.items():
@@ -117,6 +140,22 @@ def main():
             out["held_fixed"][f"{p}-{s}"] = r
             print(f"{p + '-' + s:28} {r['panel_pick']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
                   f"   {r['head_to_head']:>8.0%} (n {r['head_to_head_n']})")
+    print(f"\npooled with K picks{'':10} {'head to head':>12} {'90% interval':>14}")
+    out["held_fixed_pooled"] = {}
+    for p, stages in PIPES.items():
+        base = HERE / "probes" / f"verb_ladder_{p}"
+        for s in (s for s in stages if "sft" in stages):
+            kf = stage_file(base / "pick2_from_sft_k", f"{p}-{s}")
+            pf = stage_file(base / ("pick2" if s == "sft" else "pick2_from_sft"), f"{p}-{s}")
+            if not (kf and pf):
+                continue
+            picks = read_picks(pf)
+            for c, v in read_picks(kf).items():
+                picks[c] = picks.get(c, []) + v
+            r = pooled(picks, differ, panel_pick, panel_name)
+            out["held_fixed_pooled"][f"{p}-{s}"] = r
+            print(f"{p + '-' + s:28} {r['head_to_head']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
+                  f"   (n {r['head_to_head_n']}, {r['categories']} categories)")
     (HERE / "probes" / "stage_pick.json").write_text(json.dumps(out, indent=1) + "\n")
 
 
