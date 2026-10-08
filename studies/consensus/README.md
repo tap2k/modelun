@@ -83,53 +83,53 @@ where the endpoint allows it, with reasoning-only models as served.
 
 | id | directory | battery | form | wording | arm | models | runs |
 |---|---|---|---|---|---|---|---|
-| census | `transcripts/` (published) | census (31) | name | clamped | served | panel (105) | 4 |
-| census-extra | `transcripts-extra/` | census (31) | name | clamped | served | panel (102) | 4 |
+| census | `transcripts/` (published) | census (31) | name | clamped | served | panel (106) | 4 |
+| census-extra | `transcripts-extra/` | census (31) | name | clamped | served | panel (103) | 4 |
 | census-off | `transcripts-off/` | census (31) | name | clamped | off | panel (74) | 8 |
-| expanded | `transcripts-expanded/` | expanded (65) | name | clamped | served | panel (102) | 8 |
+| expanded | `transcripts-expanded/` | expanded (65) | name | clamped | served | panel (103) | 8 |
 | expanded-off | `transcripts-expanded-off/` | expanded (65) | name | clamped | off | hybrids (25) | 8 |
-| brands | `transcripts-brands/` | brands (37) | name | clamped | served | panel (102) | 8 |
+| brands | `transcripts-brands/` | brands (37) | name | clamped | served | panel (103) | 8 |
 | brands-off | `transcripts-brands-off/` | brands (37) | name | clamped | off | hybrids (25) | 8 |
-| brands-ext | `transcripts-brands-ext/` | brands (4) | name | clamped | served | panel (101) | 8 |
+| brands-ext | `transcripts-brands-ext/` | brands (4) | name | clamped | served | panel (102) | 8 |
 | brands-ext-off | `transcripts-brands-ext-off/` | brands (4) | name | clamped | off | hybrids (25) | 8 |
-| brands-ext2 | `transcripts-brands-ext2/` | brands (3) | name | clamped | served | panel (101) | 8 |
+| brands-ext2 | `transcripts-brands-ext2/` | brands (3) | name | clamped | served | panel (102) | 8 |
 | brands-ext2-off | `transcripts-brands-ext2-off/` | brands (3) | name | clamped | off | hybrids (25) | 8 |
 
 **extended**
 
 | id | directory | battery | form | wording | arm | models | runs |
 |---|---|---|---|---|---|---|---|
-| census-choose | `transcripts-choose/` | census (31) | choose | clamped | served | panel (102) | 8 |
-| expanded-choose | `transcripts-expanded-choose/` | expanded (65) | choose | clamped | served | panel (102) | 8 |
-| brands-choose | `transcripts-brands-choose-clamp/` | brands (37) | choose | clamped | served | panel (101) | 8 |
+| census-choose | `transcripts-choose/` | census (31) | choose | clamped | served | panel (103) | 8 |
+| expanded-choose | `transcripts-expanded-choose/` | expanded (65) | choose | clamped | served | panel (103) | 8 |
+| brands-choose | `transcripts-brands-choose-clamp/` | brands (37) | choose | clamped | served | panel (102) | 8 |
 | brands-choose-off | `transcripts-brands-choose-clamp-off/` | brands (37) | choose | clamped | off | hybrids (25) | 8 |
-| brands-ext-choose | `transcripts-brands-ext-choose-clamp/` | brands (4) | choose | clamped | served | panel (101) | 8 |
+| brands-ext-choose | `transcripts-brands-ext-choose-clamp/` | brands (4) | choose | clamped | served | panel (102) | 8 |
 | brands-ext-choose-off | `transcripts-brands-ext-choose-clamp-off/` | brands (4) | choose | clamped | off | hybrids (25) | 8 |
-| brands-ext2-choose | `transcripts-brands-ext2-choose-clamp/` | brands (3) | choose | clamped | served | panel (99) | 8 |
+| brands-ext2-choose | `transcripts-brands-ext2-choose-clamp/` | brands (3) | choose | clamped | served | panel (100) | 8 |
 | brands-ext2-choose-off | `transcripts-brands-ext2-choose-clamp-off/` | brands (3) | choose | clamped | off | hybrids (25) | 8 |
-| brands-choose-free | `transcripts-brands-choose-free/` | brands (41) | choose | free | served | panel (101) | 4 |
+| brands-choose-free | `transcripts-brands-choose-free/` | brands (41) | choose | free | served | panel (102) | 4 |
 | brands-choose-free-off | `transcripts-brands-choose-free-off/` | brands (41) | choose | free | off | hybrids (25) | 4 |
-| brands-recommend-clamp | `transcripts-brands-recommend-clamp/` | brands (41) | recommend | clamped | served | panel (101) | 8 |
+| brands-recommend-clamp | `transcripts-brands-recommend-clamp/` | brands (41) | recommend | clamped | served | panel (102) | 8 |
 | brands-recommend-clamp-off | `transcripts-brands-recommend-clamp-off/` | brands (41) | recommend | clamped | off | hybrids (25) | 8 |
-| brands-recommend-free | `transcripts-brands-recommend-free/` | brands (41) | recommend | free | served | panel (101) | 4 |
+| brands-recommend-free | `transcripts-brands-recommend-free/` | brands (41) | recommend | free | served | panel (102) | 4 |
 | brands-recommend-free-off | `transcripts-brands-recommend-free-off/` | brands (41) | recommend | free | off | hybrids (25) | 4 |
-| brands-pick1-clamp | `transcripts-brands-pick1-clamp/` | brands (41) | pick1 | clamped | served | panel (101) | 8 |
+| brands-pick1-clamp | `transcripts-brands-pick1-clamp/` | brands (41) | pick1 | clamped | served | panel (102) | 8 |
 | brands-pick1-clamp-off | `transcripts-brands-pick1-clamp-off/` | brands (41) | pick1 | clamped | off | hybrids (25) | 8 |
-| brands-pick1-free | `transcripts-brands-pick1-free/` | brands (41) | pick1 | free | served | panel (101) | 4 |
+| brands-pick1-free | `transcripts-brands-pick1-free/` | brands (41) | pick1 | free | served | panel (102) | 4 |
 | brands-pick1-free-off | `transcripts-brands-pick1-free-off/` | brands (41) | pick1 | free | off | hybrids (25) | 4 |
-| brands-pick2-free | `transcripts-brands-pick2-free/` | brands (41) | pick2 | free | served | panel (101) | 4 |
+| brands-pick2-free | `transcripts-brands-pick2-free/` | brands (41) | pick2 | free | served | panel (102) | 4 |
 | brands-pick2-free-off | `transcripts-brands-pick2-free-off/` | brands (41) | pick2 | free | off | hybrids (25) | 4 |
-| brands-ext2-choose-free | `transcripts-brands-ext2-choose-free/` | brands (3) | choose | free | served | panel (99) | 4 |
+| brands-ext2-choose-free | `transcripts-brands-ext2-choose-free/` | brands (3) | choose | free | served | panel (100) | 4 |
 | brands-ext2-choose-free-off | `transcripts-brands-ext2-choose-free-off/` | brands (3) | choose | free | off | hybrids (25) | 4 |
-| brands-ext2-recommend-free | `transcripts-brands-ext2-recommend-free/` | brands (3) | recommend | free | served | panel (99) | 4 |
+| brands-ext2-recommend-free | `transcripts-brands-ext2-recommend-free/` | brands (3) | recommend | free | served | panel (100) | 4 |
 | brands-ext2-recommend-free-off | `transcripts-brands-ext2-recommend-free-off/` | brands (3) | recommend | free | off | hybrids (25) | 4 |
-| brands-ext2-recommend-clamp | `transcripts-brands-ext2-recommend-clamp/` | brands (3) | recommend | clamped | served | panel (99) | 8 |
+| brands-ext2-recommend-clamp | `transcripts-brands-ext2-recommend-clamp/` | brands (3) | recommend | clamped | served | panel (100) | 8 |
 | brands-ext2-recommend-clamp-off | `transcripts-brands-ext2-recommend-clamp-off/` | brands (3) | recommend | clamped | off | hybrids (25) | 8 |
-| brands-ext2-pick1-free | `transcripts-brands-ext2-pick1-free/` | brands (3) | pick1 | free | served | panel (99) | 4 |
+| brands-ext2-pick1-free | `transcripts-brands-ext2-pick1-free/` | brands (3) | pick1 | free | served | panel (100) | 4 |
 | brands-ext2-pick1-free-off | `transcripts-brands-ext2-pick1-free-off/` | brands (3) | pick1 | free | off | hybrids (25) | 4 |
-| brands-ext2-pick1-clamp | `transcripts-brands-ext2-pick1-clamp/` | brands (3) | pick1 | clamped | served | panel (99) | 8 |
+| brands-ext2-pick1-clamp | `transcripts-brands-ext2-pick1-clamp/` | brands (3) | pick1 | clamped | served | panel (100) | 8 |
 | brands-ext2-pick1-clamp-off | `transcripts-brands-ext2-pick1-clamp-off/` | brands (3) | pick1 | clamped | off | hybrids (25) | 8 |
-| brands-ext2-pick2-free | `transcripts-brands-ext2-pick2-free/` | brands (3) | pick2 | free | served | panel (99) | 4 |
+| brands-ext2-pick2-free | `transcripts-brands-ext2-pick2-free/` | brands (3) | pick2 | free | served | panel (100) | 4 |
 | brands-ext2-pick2-free-off | `transcripts-brands-ext2-pick2-free-off/` | brands (3) | pick2 | free | off | hybrids (25) | 4 |
 
 **check**
@@ -241,6 +241,10 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   "Lacrosse", "Olympics", "N/A"), above Hermes 4 70B. The new labs sit in the concentrated half: Seed 2.0
   Pro 1.13 (95th), Inkling 1.27, MiMo 1.27, Ling 1.32. Existing models' scores move negligibly with the
   larger field (r=0.9995).
+- **Claude Haiku 5.5 (2026-10-08, +1 model)** — appended on its release day and run through every core and
+  extended directory, plus pickword and conduct. Not a hybrid: the served route does not reason. No failed cells.
+  It ranks 103rd of 106 (1.01 bits), consensus-fixed beside Sonnet 5 and Opus 4.5/4.7, where Haiku 4.5 ranks
+  41st (1.65). It gives one answer in all 8 runs on 24 of 31 categories, and serendipity for any_word on 7 of 8.
 - **Unclamped check (`probe_clamp.py`, data 2026-07, rank check added 2026-09-10)** — the study's own
   free-prose control: 10 categories asked bare, no clamp, all 44 wave-1 models. Field level: the
   clamped modal word appears in free replies at about the clamped share (oak 92% vs 93%, rose
