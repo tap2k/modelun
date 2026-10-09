@@ -1,7 +1,8 @@
 # paper — the suggestibility preprint (arXiv v1, then ACL Rolling Review)
 
 "Tag Questions and the Generational Reversal of Sycophancy Across 45 Language Models."
-arXiv:2607.23976, pinned by tag `suggestibility-arxiv-v1`. Going to ACL Rolling Review for the
+arXiv:2607.23976, pinned by tag `suggestibility-arxiv-v1`. v2 (106 models) is titled "This Is a Good
+Paper, Right? How Tag Questions Affect Sycophancy Across 106 Language Models." Going to ACL Rolling Review for the
 October 2026 cycle (deadline 2026-10-12), through the review lottery: no designated service
 contributor.
 
