@@ -365,35 +365,6 @@ def stage_table():
     (GEN / "stage_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
-def fig_wording_shift():
-    """Each model's tag effect against its neutral affirm rate in the three wordings, joined per model."""
-    res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
-    W = ("named", "original", "should")
-    col = {"original": INK, "named": "#4a3aa7", "should": "#1baf7a"}
-    lab = {"original": "implicit", "named": "both named", "should": "sufficiency"}
-    common = [m for m in res["original"] if all(m in res[w] for w in W)]
-    fig, ax = plt.subplots(figsize=(5.2, 3.6))
-    ax.axhline(0, color=INK2, lw=0.8)
-    for m in common:
-        xs = [res[w][m]["affirm_neutral"] for w in W]; ys = [res[w][m]["tag"]["tageff"] for w in W]
-        ax.plot(xs, ys, "-", color=GRAY, lw=0.5, alpha=0.5, zorder=1)
-    for w in W:
-        ax.scatter([res[w][m]["affirm_neutral"] for m in common], [res[w][m]["tag"]["tageff"] for m in common],
-                   s=12, color=col[w], label=lab[w], zorder=3, alpha=0.85, linewidths=0)
-    xs = np.linspace(0, 1, 2)
-    ax.plot(xs, -xs, ":", color=INK2, lw=0.8)        # the floor: an effect cannot fall below -baseline
-    ax.plot(xs, 1 - xs, ":", color=INK2, lw=0.8)     # the ceiling: nor rise above 1 - baseline
-    ax.set_xlim(0, 1); ax.set_ylim(-0.65, 0.5)
-    ax.set_xlabel("neutral affirm rate"); ax.set_ylabel("tag effect (right? − neutral)")
-    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{100 * v:+.0f}"))
-    ax.legend(frameon=False, fontsize=8, loc="upper right")
-    ax.set_title(f"The same models in three wordings (n={len(common)})", fontsize=9)
-    fig.tight_layout()
-    fig.savefig(FIGS / "grid_baseline.pdf", bbox_inches="tight")
-    plt.close(fig)
-
-
 def fig_grid():
     """Agreement under the three cues in each wording of the grid (../grid_stats.py)."""
     res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
@@ -433,7 +404,6 @@ if __name__ == "__main__":
     fig_confidence(cf, bh(data) if V2 else None)
     if V2:
         fig_grid()
-        fig_wording_shift()
         stage_table()
     # the resistant models under the tentative tag, for the abstract's closing sentence
     st = json.loads((GEN / "stats.json").read_text())
