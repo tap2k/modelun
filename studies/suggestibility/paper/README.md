@@ -38,6 +38,7 @@ qualified service contributor or a lottery), then back to ARR after TMLR desk-re
 ## Submission package
 
 Kept privately under the planning folder's `arr-submission/`: the anonymous PDF, the checklist
-answers, the abstract as plain text, and `supplement.zip` (`git archive` of `studies/suggestibility/` without the paper's
-LaTeX sources, with the explorer's source link removed and the repository name replaced; a scan for
-the author's name, institution, email and repository finds nothing in it).
+answers, the abstract as plain text, and `supplement.zip`. `make_supplement.sh` builds the zip from
+HEAD: the study directory without the paper sources, identifying strings replaced, and a scan for
+the author's name, institution, email, repository and arXiv IDs that fails the build on any hit.
+The checklist answers are also kept here as `responsible-nlp-checklist.md`.
