@@ -11,7 +11,9 @@ model) and each tuned stage, over the brand categories (the generic company/bran
     turn-1 list names both panel brands and whose pick is one of them, the share picking the panel's pick brand
   * pooled: the held-fixed picks plus pick2_from_sft_k/ (K picks per head-to-head list, probe_verb_ladder.py
     --picks=K), head to head with a 90% bootstrap interval over categories. K picks from one list are not independent,
-    so the interval resamples categories, not picks
+    so the interval resamples categories, not picks. OLMo 3.1 32B has only the K picks. Each stage step (SFT to DPO,
+    DPO to RL, SFT to RL) is a paired bootstrap over the categories both stages share. Both are given over all picks
+    and over complete picks only (those that stopped before max_tokens; DPO and RL picks in Tulu often do not)
 Picks are read as brand_ladder reads them (the brand the reply commits to). Zero API calls. Writes
 probes/stage_pick.json.
 
@@ -28,7 +30,9 @@ sys.path.insert(0, str(HERE))
 import brand_ladder as B                 # noqa: E402
 from analyze import load                 # noqa: E402
 
-PIPES = {"tulu3-8b": ("sft", "dpo", "rl"), "olmo3-7b": ("sft", "dpo", "rl"), "nemotron35-lightning": ("final",)}
+PIPES = {"tulu3-8b": ("sft", "dpo", "rl"), "olmo3-7b": ("sft", "dpo", "rl"), "olmo31-32b": ("sft", "dpo", "rl"),
+         "nemotron35-lightning": ("final",)}
+STEPS = (("sft", "dpo"), ("dpo", "rl"), ("sft", "rl"))
 
 
 def top(xs):
@@ -41,15 +45,17 @@ def stage_file(folder, label):
     return hits[0] if hits else None
 
 
-def read_picks(pf):
-    """category -> [(the brand the pick commits to, the pool brands of its turn-1 list)]"""
+def read_picks(pf, complete=False):
+    """category -> [(the brand the pick commits to, the pool brands of its turn-1 list)]; complete=True drops picks
+    cut off at max_tokens."""
     pats, out = B.pools()[4], {}
     for sid, sc in json.loads(pf.read_text())["scenes"].items():
         c = sid.removesuffix("__pick")
         if c in B.GENERIC:
             continue
         out[c] = [(B.committed(c, r[1]["reply"]), B.mentions(r[0].get("reply") or "", pats[c])) for r in sc["runs"]
-                  if r and len(r) > 1 and (r[1].get("reply") or "").strip()]
+                  if r and len(r) > 1 and (r[1].get("reply") or "").strip()
+                  and not (complete and r[1].get("finish_reason") == "length")]
     return out
 
 
@@ -76,12 +82,21 @@ def held_fixed(picks, differ, panel_pick, panel_name):
             "head_to_head": sum(h2h) / len(h2h) if h2h else None, "head_to_head_n": len(h2h)}
 
 
-def pooled(picks, differ, panel_pick, panel_name):
-    """Head to head over the differing categories, with a 90% bootstrap interval over categories."""
-    hit = head_to_head(picks, sorted(differ), panel_pick, panel_name)
+def pooled(hit):
+    """Head to head from category -> [bool], with a 90% bootstrap interval over categories."""
     share, ci = boot90(hit)
     return {"head_to_head": share, "ci90": ci, "head_to_head_n": sum(map(len, hit.values())),
             "categories": sum(1 for v in hit.values() if v)}
+
+
+def step(a, b):
+    """Head-to-head change from stage a to stage b (category -> [bool] each), over the categories both have, with a
+    paired 90% bootstrap interval over those categories and the share of resamples at or below zero."""
+    cats = [c for c in a if a[c] and b.get(c)]
+    share = lambda hit, cs: sum(sum(hit[c]) for c in cs) / sum(len(hit[c]) for c in cs)
+    boot = sorted(share(b, cs) - share(a, cs) for cs in (random.choices(cats, k=len(cats)) for _ in range(2000)))
+    return {"change": share(b, cats) - share(a, cats), "ci90": [boot[100], boot[1899]],
+            "p_le_0": sum(x <= 0 for x in boot) / len(boot), "categories": len(cats)}
 
 
 def main():
@@ -140,22 +155,33 @@ def main():
             out["held_fixed"][f"{p}-{s}"] = r
             print(f"{p + '-' + s:28} {r['panel_pick']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
                   f"   {r['head_to_head']:>8.0%} (n {r['head_to_head_n']})")
-    print(f"\npooled with K picks{'':10} {'head to head':>12} {'90% interval':>14}")
-    out["held_fixed_pooled"] = {}
-    for p, stages in PIPES.items():
-        base = HERE / "probes" / f"verb_ladder_{p}"
-        for s in (s for s in stages if "sft" in stages):
-            kf = stage_file(base / "pick2_from_sft_k", f"{p}-{s}")
-            pf = stage_file(base / ("pick2" if s == "sft" else "pick2_from_sft"), f"{p}-{s}")
-            if not (kf and pf):
-                continue
-            picks = read_picks(pf)
-            for c, v in read_picks(kf).items():
-                picks[c] = picks.get(c, []) + v
-            r = pooled(picks, differ, panel_pick, panel_name)
-            out["held_fixed_pooled"][f"{p}-{s}"] = r
-            print(f"{p + '-' + s:28} {r['head_to_head']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
-                  f"   (n {r['head_to_head_n']}, {r['categories']} categories)")
+    out["held_fixed_pooled"], out["held_fixed_steps"] = {}, {}
+    for which, complete in (("all", False), ("complete", True)):
+        print(f"\npooled with K picks, {which + ' picks':16} {'head to head':>12} {'90% interval':>14}")
+        hits = {}
+        for p, stages in PIPES.items():
+            base = HERE / "probes" / f"verb_ladder_{p}"
+            for s in (s for s in stages if "sft" in stages):
+                kf = stage_file(base / "pick2_from_sft_k", f"{p}-{s}")
+                pf = stage_file(base / ("pick2" if s == "sft" else "pick2_from_sft"), f"{p}-{s}")
+                if not kf:
+                    continue
+                picks = read_picks(pf, complete) if pf else {}
+                for c, v in read_picks(kf, complete).items():
+                    picks[c] = picks.get(c, []) + v
+                hits[p, s] = head_to_head(picks, sorted(differ), panel_pick, panel_name)
+                r = pooled(hits[p, s])
+                out["held_fixed_pooled"].setdefault(f"{p}-{s}", {})[which] = r
+                print(f"{p + '-' + s:28} {r['head_to_head']:>12.0%} {r['ci90'][0]:>6.0%}-{r['ci90'][1]:<6.0%}"
+                      f"   (n {r['head_to_head_n']}, {r['categories']} categories)")
+        print(f"\nstage step, {which + ' picks':25} {'change':>8} {'90% interval':>14}  {'P(<= 0)':>8}")
+        for p in PIPES:
+            for a, b in STEPS:
+                if (p, a) in hits and (p, b) in hits:
+                    r = step(hits[p, a], hits[p, b])
+                    out["held_fixed_steps"].setdefault(p, {}).setdefault(f"{a}->{b}", {})[which] = r
+                    print(f"{p + ' ' + a + '->' + b:37} {r['change']:>+8.0%} {r['ci90'][0]:>+6.0%},{r['ci90'][1]:<+6.0%}"
+                          f"  {r['p_le_0']:>8.2f}   ({r['categories']} categories)")
     (HERE / "probes" / "stage_pick.json").write_text(json.dumps(out, indent=1) + "\n")
 
 
