@@ -146,7 +146,7 @@ def main():
     pc = lambda x: f"{100 * x:.0f}"
     pv = lambda p: "$<$.001" if p < 0.001 else f"{p:.3f}".lstrip("0")
     rows = []
-    for w, label in zip(WORDINGS, ("Original", "Both named", "Sufficiency")):
+    for w, label in zip(WORDINGS, ("Implicit", "Both named", "Sufficiency")):
         s = summary[w]
         rows.append(f"{label} & {s['models']} & {pc(s['affirm_neutral'])} & {pc(s['affirm_right'])} & {pc(s['affirm_maybe'])} & "
                     f"{num(s['tag_mean'])} & {s['tag_sig_neg']} / {s['tag_sig_pos']} & {num(s['gap_mean'])} & "
@@ -168,7 +168,7 @@ def tables():
         floor = "$^\\dagger$" if r["affirm_neutral"] < 0.10 else ""
         return f"{100 * r['affirm_neutral']:.0f}{floor} & {num(r, 'tag')} & {num(r, 'gap')}"
     ms = sorted(res["original"], key=lambda m: res["original"][m]["tag"]["tageff"])
-    head = ("\\begin{tabular}{l rrr rrr rrr}\n\\toprule\n & \\multicolumn{3}{c}{Original} & \\multicolumn{3}{c}{Both named} "
+    head = ("\\begin{tabular}{l rrr rrr rrr}\n\\toprule\n & \\multicolumn{3}{c}{Implicit} & \\multicolumn{3}{c}{Both named} "
             "& \\multicolumn{3}{c}{Sufficiency} \\\\\n\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\\cmidrule(lr){8-10}\n"
             "Model" + " & Neut. & Tag & Gap" * 3 + " \\\\\n\\midrule\n")
     rows = [f"\\texttt{{{m}}} & " + " & ".join(cols(w, m) for w in WORDINGS) + " \\\\" for m in ms]

@@ -370,7 +370,7 @@ def fig_wording_shift():
     res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
     W = ("named", "original", "should")
     col = {"original": INK, "named": "#4a3aa7", "should": "#1baf7a"}
-    lab = {"original": "original", "named": "both named", "should": "sufficiency"}
+    lab = {"original": "implicit", "named": "both named", "should": "sufficiency"}
     common = [m for m in res["original"] if all(m in res[w] for w in W)]
     fig, ax = plt.subplots(figsize=(5.2, 3.6))
     ax.axhline(0, color=INK2, lw=0.8)
@@ -397,7 +397,7 @@ def fig_wording_shift():
 def fig_grid():
     """Agreement under the three cues in each wording of the grid (../grid_stats.py)."""
     res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
-    titles = {"original": "Original: “Is X the better choice?”",
+    titles = {"original": "Implicit: “Is X the better choice?”",
               "named": "Both named: “…: X or Y. Is X the better choice?”",
               "should": "Sufficiency: “Should I go with X?”"}
     fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.2), sharey=True)
