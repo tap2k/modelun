@@ -16,6 +16,7 @@ weighted by family size, release order permuted within family). Writes probes/gr
 paper/gen/grid_stats.json, paper/gen/grid_table.tex.
 
     python studies/suggestibility/grid_stats.py
+    python studies/suggestibility/grid_stats.py --slope   # split-half check of the baseline slope
 """
 import json
 from pathlib import Path
@@ -154,6 +155,7 @@ def main():
     (GEN / "grid_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
     tables()
     robustness()
+    baseline_slope()
     print(json.dumps(summary, indent=1))
 
 
@@ -216,9 +218,53 @@ def robustness():
     (GEN / "release_robust.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
+def baseline_slope():
+    """Within-model slope of the tag effect on the neutral rate across the three wordings, with the
+    neutral rate's sampling noise kept out of it: each neutral cell's replies are split in two, one
+    half instruments the other (slope of right? on neutral = cov(R, N_a) / cov(N_b, N_a), models
+    demeaned), and the tag-effect slope is that minus 1. Intervals resample models. Writes
+    probes/baseline_slope.json."""
+    grid = load()
+    res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
+    common = sorted(set.intersection(*(set(res[w]) for w in WORDINGS)))
+
+    def halves(cells, rng):
+        a, b = [], []
+        for sid, *_ in ITEMS:
+            ha, hb = [], []
+            for s in "xy":
+                c = vs.codes(cells.get(sid, {}).get(s, []))
+                if len(c) < 2:
+                    break
+                i = rng.permutation(len(c))
+                ha.append((c[i[:len(c) // 2]] == 1).mean()); hb.append((c[i[len(c) // 2:]] == 1).mean())
+            if len(ha) == 2:
+                a.append(np.mean(ha)); b.append(np.mean(hb))
+        return np.mean(a), np.mean(b)
+
+    rng = np.random.default_rng(7)
+    rows = {m: np.array([(res[w][m]["affirm_neutral"], res[w][m]["affirm_right"], *halves(grid[w][m]["neutral"], rng))
+                         for w in WORDINGS]) for m in common}
+
+    def slope(ms):
+        d = np.concatenate([rows[m] - rows[m].mean(0) for m in ms])
+        n, r, a, b = d.T
+        return {"reported": float(np.sum(n * (r - n)) / np.sum(n * n)), "split": float(np.sum(a * r) / np.sum(a * b) - 1)}
+
+    out = slope(common)
+    br = np.random.default_rng(3)
+    boot = [slope([common[i] for i in br.integers(0, len(common), len(common))])["split"] for _ in range(2000)]
+    out["split_ci95"] = [float(x) for x in np.percentile(boot, [2.5, 97.5])]
+    out["models"] = len(common)
+    (STUDY / "probes" / "baseline_slope.json").write_text(json.dumps(out, indent=1) + "\n")
+    print("baseline slope", json.dumps(out))
+
+
 if __name__ == "__main__":
     import sys
-    if "--tables" in sys.argv:
+    if "--slope" in sys.argv:
+        baseline_slope()
+    elif "--tables" in sys.argv:
         tables(); robustness()
     else:
         main()
