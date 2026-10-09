@@ -22,7 +22,7 @@ FAM = {
     "qwen-2.5-72b-instruct": ("Qwen", 0), "qwen3-235b-a22b-2507": ("Qwen", 1),
     "qwen3.5-9b": ("Qwen", 2), "qwen3.5-27b": ("Qwen", 2), "qwen3.5-122b-a10b": ("Qwen", 2),
     "qwen3.6-35b-a3b": ("Qwen", 3), "qwen3.8-2.4t-a95b": ("Qwen", 4), "qwen3.8-27b": ("Qwen", 4),
-    "deepseek-chat-v3-0324": ("DeepSeek", 0), "deepseek-r1": ("DeepSeek", 1),
+    "deepseek-r1": ("DeepSeek", 0), "deepseek-chat-v3-0324": ("DeepSeek", 1),  # R1 2025-01, V3-0324 2025-03
     "deepseek-v3.2": ("DeepSeek", 2), "deepseek-v4-flash": ("DeepSeek", 3), "deepseek-v4-pro": ("DeepSeek", 3),
     # wave 3 (2026-09-25), placed between the existing generations by release date
     "claude-opus-4.1": ("Claude", 0.5), "claude-sonnet-4.5": ("Claude", 0.75),
@@ -33,4 +33,19 @@ FAM = {
     "grok-4.7": ("Grok", 4), "qwen3.7-plus": ("Qwen", 3.5),
     "claude-sonnet-5.5": ("Claude", 8),  # 2026-09-28, on its release
     "gpt-6.1-sol": ("GPT", 9),  # 2026-09-29, on its release
+    "claude-haiku-5.5": ("Claude", 9),  # 2026-10-07, on its release
+}
+
+# Further multi-generation lineages in the panel, used only by the release test's robustness check
+# (grid_stats.robustness): the six families above plus these.
+EXTRA = {
+    "llama-3.3-70b-instruct": ("Llama", 0), "llama-4-maverick": ("Llama", 1), "llama-4-scout": ("Llama", 1),
+    "mixtral-8x22b-instruct": ("Mistral", 0), "mistral-nemo": ("Mistral", 1),
+    "mistral-small-3.2-24b-instruct": ("Mistral", 2), "mistral-small-2603": ("Mistral", 3),
+    "kimi-k2": ("Kimi", 0), "kimi-k2.5": ("Kimi", 1), "kimi-k3": ("Kimi", 2),
+    "glm-4.7": ("GLM", 0), "glm-5.3": ("GLM", 1), "glm-5.3-flash": ("GLM", 1),
+    "nemotron-3-nano-30b-a3b": ("Nemotron", 0), "nemotron-3-super-120b-a12b": ("Nemotron", 0),
+    "nemotron-3-ultra-550b-a55b": ("Nemotron", 0), "nemotron-3.5-lightning": ("Nemotron", 1),
+    "gemma-3-27b-it": ("Gemma", 0), "gemma-4-26b-a4b-it": ("Gemma", 1), "gemma-4-31b-it": ("Gemma", 1),
+    "hermes-3-llama-3.1-405b": ("Hermes", 0), "hermes-3-llama-3.1-70b": ("Hermes", 0), "hermes-4-405b": ("Hermes", 1),
 }

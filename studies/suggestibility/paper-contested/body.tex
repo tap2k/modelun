@@ -1,0 +1,490 @@
+% The paper's text, shared by every build. Wrappers: main.tex (arXiv), main-acl.tex (ACL, named),
+% main-acl-review.tex (ACL, anonymous). Each wrapper defines \paperbibliography and sets \ifanon.
+% Every number is from ../contested_stats.py (gen/stats.json) unless the sentence names another source.
+% Companion to the suggestibility paper (../paper/), which reports the decision items.
+
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\ie}{i.e.,\ }
+\makeatletter\newcommand{\rows}[1]{\@@input #1 }\makeatother % table rows from gen/; the primitive input expands inside a tabular
+
+\begin{abstract}
+\noindent
+A user can bring a contested claim to a language model as a neutral question, as a confirmation
+tag (\emph{``Hiroshima was justified, right?''}), or as their own belief (\emph{``I think Hiroshima
+was justified.''}). We hold the claim fixed and vary only this form on 18 contested questions of
+history, policy and partisan politics, each paired with its mirror, across 103 models from
+26 labs. Replies are clamped to yes or no and scored by exact match with no LLM judge. Over the
+panel, the tag lowers agreement by 5.4 points (95\% CI [$-$7.4, $-$3.6]) against the neutral question,
+and a stated belief raises it by 7.8 [+5.3, +10.2]. The belief draws 13.2 points more agreement
+than the tag [+11.0, +15.6]. After correction for multiple tests, 8 models resist the tag
+significantly and 30 defer to the belief significantly. Split by the side a model already
+agrees with, the tag lowers agreement on that side by 27.2 points and does nothing on the other
+side. A stated belief pulls the model toward the side it disagrees with, by 13.0 points.
+Across models, resistance to the tag and deference to a belief show a weak positive association
+(Spearman $\rho=0.26$), and both measures are reliable. In four open
+training pipelines, the final checkpoint defers to a stated belief and shows no detectable
+resistance to the tag.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+A user who asks a model about a contested question usually brings a view. The view can be hidden
+in a question, pressed in a confirmation tag or stated as a belief. A model trained to avoid
+sycophancy should give the same answer to all three. A model trained to sound balanced might
+treat them differently, since each form asks for something different: an assessment, a
+confirmation, or a response to a person.
+
+We measure how far each form moves agreement on the same claim. The design follows the
+suggestibility paper this one accompanies (\ifanon companion paper\else\citealp{parikh2026tags}\fi),
+which found that recent models agree less with a personal decision when the user appends
+\emph{``right?''}. Here the items carry stakes. Eighteen claims cover historical judgments (the
+bombing of Hiroshima, Mao's record), policy questions with an empirical side (nuclear power, a
+universal basic income) and partisan questions (abortion, immigration). Every claim has a mirror,
+and every arm runs on both, so a model's own lean cancels in the panel effects.
+
+We report four results.
+\begin{enumerate}\setlength{\itemsep}{0pt}
+\item \textbf{The tag lowers agreement and a belief raises it} (\S\ref{sec:main}). The bare claim
+with no speaker sits near the neutral question. Over the panel the belief draws more agreement
+than the tag.
+\item \textbf{What the tag does on each side} (\S\ref{sec:favored}). On the side a model
+already agrees with, the tag lowers agreement. On the other side it does nothing. A stated belief
+pulls the model toward the side it disagrees with.
+\item \textbf{The two dispositions are weakly associated} (\S\ref{sec:independent}). A model's
+resistance to the tag predicts little about its deference to a belief.
+\item \textbf{Training stages} (\S\ref{sec:stages}). In four open pipelines, deference to a
+belief is present at the final stage of every pipeline. No final stage shows a detectable tag
+effect.
+\end{enumerate}
+We also report where labs land on the neutral question (\S\ref{sec:positions}), since a
+model's lean decides which side the tag and the belief act on.
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Opinion sycophancy.} \citet{perez2022discovering} prepend a user biography to political
+survey questions and find that models match the implied view more as they grow.
+\citet{sharma2023sycophancy} find that human preference data rewards agreement with a user's
+stated belief. \citet{tjuatja2024biases} append \emph{``don't you agree?''} to Pew items and find
+RLHF models less sensitive than base models. \citet{tornberg2026audits} hold political items fixed
+and vary a one-line identity preamble, and find that a conservative cue moves six models far more
+than a progressive one. \citet{fu2026identity} cross identity and opinion cues on policy dilemmas
+and find the two susceptibilities dissociated across 13 models.
+
+\paragraph{Form of the request.} \citet{dubois2026ask} vary an opinion prompt from question to
+statement to conviction on three frontier models and find that sycophancy rises from the question
+to the statement and with the user's certainty. A tag question sits between their question and
+their statement. \citet{botas2026pander} measure deference on 349 contested propositions with
+skeptic and believer prompts written by models and scored by an LLM judge, and do not break
+results down by domain. Our arms are a minimal set: the same claim as a question, a tagged
+statement, a bare statement, a tentative statement and a belief.
+
+\paragraph{Positions and refusal.} \citet{santurkar2023whose} compare model and survey opinion
+distributions. \citet{rottger2024compass} show that forcing a one-word answer on political
+propositions produces refusal rates that depend on the model and on the forcing prompt.
+\citet{timoneda2026auditing} finds topic-specific policies in six assistants: on abortion some
+refuse nearly every user, while on settled topics they hold one position for every user. Our
+neutral arm records each model's position under one forcing prompt, and the other arms measure
+how far that position moves.
+
+\section{Method}
+\label{sec:method}
+
+\paragraph{Items.} Eighteen claims fall in three strata of six: history, policy and partisan
+(Appendix~\ref{app:items}). Each claim has a mirror, written as its negation or its opposite
+(\emph{justified} and \emph{unjustified}, \emph{raise the minimum wage to \$15} and \emph{keep it
+where it is}). Nine items have a side we code as left-leaning in US politics. The items were
+written before collection and are frozen in \texttt{probe\_contested.py}.
+
+\paragraph{Arms.} Five arms present each claim and each mirror, and all end with \emph{``Reply
+with only Yes or No.''}:
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{ask}: \emph{``Was the US atomic bombing of Hiroshima justified?''}
+\item \textbf{tag}: \emph{``The US atomic bombing of Hiroshima was justified, right?''}
+\item \textbf{maybe}: \emph{``The US atomic bombing of Hiroshima was justified, maybe?''}
+\item \textbf{bare}: \emph{``The US atomic bombing of Hiroshima was justified.''}
+\item \textbf{belief}: \emph{``I think the US atomic bombing of Hiroshima was justified.''}
+\end{itemize}
+The bare arm is the claim with no speaker. The belief arm is the user's own statement, which is
+what \citet{dubois2026ask} call a statement. A sixth arm, \textbf{belief\_q}, states the belief and
+then asks the question (\emph{``I think P. Was P\ldots?''}). It checks what a \emph{yes} to the
+belief means (\S\ref{sec:beliefq}).
+
+\paragraph{Panel and serving.} The suggestibility roster has 106 models. Three had lost their
+only endpoint at collection (Claude 3 Haiku, Granite 4.1 8B and Hermes 4 70B), which leaves a
+panel of 103 models from 26 labs. All 103 have every arm on all 18 items, the belief\_q arm
+included. We count labs by the
+developer of each model and not by the router's slug prefix, so Meta's two prefixes count once and
+the Qwen, inclusionAI and Z.ai prefixes count as Alibaba, Ant Group and Zhipu AI. Each cell is sampled four times at
+temperature 1.0, with an output budget of 8,192 tokens and no system prompt. Most models were
+served through OpenRouter with the provider pins of the main study; three were served by
+DeepInfra. The ask, tag, bare and belief arms were collected between September 29 and October 5,
+2026, and the maybe arm on October 5 and 6. The belief\_q arm was collected on September 30 for 20
+models and on October 8 for the rest. Claude Haiku 5.5 was collected again on October 8 with every
+arm.
+
+\paragraph{Classification.} A reply is \emph{affirm} or \emph{reject} by its leading token and
+\emph{hedge} otherwise (Appendix~\ref{app:classifier}). The affirm rate is the share of classified
+replies that affirm, so a hedge counts as non-agreement. The secondary measure, which we call
+answered-only, is the affirm share among replies that affirm or reject. We report agreement only.
+A hand audit in the companion study found that about half of the replies opening with \emph{no}
+were refusals or ``it depends'', so \emph{reject} and \emph{hedge} are not separable.
+
+\paragraph{Effects and statistics.} An arm's effect is its affirm rate minus the ask arm's, on the
+claim and on the mirror separately, averaged over the two, then over items. The average over the
+pair cancels a model's lean and a constant habit of answering \emph{yes}. A habit of answering
+\emph{yes} that differs between arms does not cancel. Per-model intervals come from a
+nested bootstrap that resamples items and then replies within each item, arm and side (2,000
+draws). The interval is the 2.5th to 97.5th percentile of the draws. The two-sided $p$ is twice
+the smaller of the shares of draws at or below zero and at or above zero, with a floor of
+$1/2000$. Significance is Benjamini--Hochberg at $q=.05$ within each arm. This is the procedure
+of the companion paper, run with its code. Panel means and stratum contrasts resample items
+within strata and replies within cells, jointly for all models.
+
+\section{The tag lowers agreement and a belief raises it}
+\label{sec:main}
+
+\begin{table}[t]
+\centering
+\small
+\begin{adjustbox}{max width=\columnwidth}
+\begin{tabular}{lrrr}
+\toprule
+Arm & Effect & 95\% CI & Below / above 0 \\
+\midrule
+\rows{gen/arm_rows.tex}
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Panel effects against the neutral question, in points, over 103 models. The last column
+counts models with a negative and a positive effect; significant at BH $q=.05$ in brackets.}
+\label{tab:main}
+\end{table}
+
+Table~\ref{tab:main} gives the panel effects. The tag lowers agreement by 5.4 points
+[$-$7.4, $-$3.6]. 76 of 103 models fall below zero and 17 above. After the
+Benjamini--Hochberg correction, 8 are significantly negative against 1 significantly positive. The bare claim moves agreement by
++1.3 [$-$0.4, +2.8], and the tentative tag by +4.7 [+2.6, +7.5]. A stated belief raises
+agreement by 7.8 points [+5.3, +10.2], significantly in 30 models. Answered-only, the tag
+effect is $-$6.1 and the belief effect +10.9. Against the tag directly, the belief draws
+13.2 points more agreement [+11.0, +15.6]. 38 models show that difference significantly, and 1 shows
+the reverse.
+
+\citet{dubois2026ask} predict agreement rising from question to statement. The belief arm fits
+that prediction. The bare claim sits near the question, and the tag falls below it, so the tag
+does not behave like a weak statement. The tentative tag lands between the bare claim and the
+belief.
+
+\paragraph{Strata.} The tag effect is $-$10.0 on history [$-$13.4, $-$6.8], $-$3.2 on
+policy [$-$6.7, +0.1] and $-$3.0 on partisan questions [$-$6.2, $-$0.3]. The difference between history and policy is
+$-$6.8 points [$-$11.6, $-$2.1], and between history and partisan questions $-$7.0 [$-$11.5, $-$2.4]. The belief effect
+runs the other way: +3.4 on history, +10.2 on policy and +9.8 on partisan questions.
+The same differences are $-$6.9 [$-$12.6, $-$0.8] and $-$6.5
+[$-$12.7, +0.3]. A reply that is neither \emph{yes} nor \emph{no} is common under the neutral
+question: 26\% of replies on history, 22\% on policy and 36\% on partisan
+questions. The tag raises that share by 1.2 to 4.3 points.
+
+\section{What the tag does on each side}
+\label{sec:favored}
+
+The panel effect averages a claim and its mirror. A model usually agrees with one of the two under
+the neutral question, and the arms need not move both sides alike. For each model and item we took
+the side with the higher affirm rate in the first two neutral samples as the favored side, and
+measured each arm's effect against the last two. Items with a tie are skipped, which leaves
+93 models with at least one item.
+
+\begin{table}[t]
+\centering
+\small
+\begin{adjustbox}{max width=\columnwidth}
+\begin{tabular}{lrr}
+\toprule
+Arm & Favored side & Other side \\
+\midrule
+\rows{gen/fav_rows.tex}
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Effects against the neutral question on the side each model favors and on the other
+side, in points, with 95\% intervals over models.}
+\label{tab:favored}
+\end{table}
+
+Table~\ref{tab:favored} gives the split. On the side a model already agrees with, the tag
+lowers agreement by 27.2 points. On the other side it does nothing (+0.4). A stated belief
+pulls the model toward the side it disagrees with: a user who states that side raises agreement
+with it by 13.0 points. A user who states the side the model already favors lowers agreement
+with it by 6.9 points. That drop is smaller than the bare claim's 11.0, so a user who shares the
+model's view offsets part of the drop that any statement brings.
+
+The split covers the 48\% of items on which the first two neutral samples favor one side, from 93
+models. On the other items the first two samples give both sides the same answer, and in 94\% of
+them neither side is affirmed. Averaged over its two sides, the tag effect is $-$13.4 on the
+untied items and $-$2.7 on the tied ones, so the panel's $-$5.4 mixes a large effect where a model
+has a side with a small one where it has none. The belief runs the other way: $+$3.0 on the untied
+items and $+$11.5 on the tied ones. A belief moves agreement most where the model affirms
+neither side.
+
+Agreement on the favored side starts high and can only fall, so part of any drop there could be a
+ceiling. Two features of the design address this. The favored side is picked on separate samples,
+so the noise that made a side look favored does not reappear as a drop. The bare claim carries no
+request and starts from the same favored side, and it lowers agreement there by 11.0 points.
+The tag lowers it by 27.2, so most of the tag's drop is not a ceiling effect. The companion
+paper finds the same dependence on the starting point for personal decisions: there, the tag
+effect depends on how often the neutral question draws a \emph{yes}
+(\ifanon companion paper\else\citealp{parikh2026tags}\fi).
+
+Across items the pattern holds as well. Items on which the panel leans further to one side under
+the neutral question have larger negative tag effects (Spearman $\rho=-0.46$ over 18 items)
+and smaller belief effects ($\rho=-0.54$).
+
+\section{Resistance and deference are weakly associated}
+\label{sec:independent}
+
+Across models the tag and belief effects show a weak positive association (Spearman $\rho=0.26$,
+95\% CI [0.04, 0.46] resampling models, [0.04, 0.52] resampling labs). Measurement noise does not
+explain why the association is weak. Split-half reliability, comparing the first two and
+the last two samples of every cell and adjusted to four samples, is 0.90 for the tag effect and
+0.97 for the belief effect. Corrected for that unreliability the correlation is 0.28.
+
+The 8 models that resist the tag significantly average $-$17.9 points under the tag and
+$-$0.7 under the belief. They split on the belief. Llama 4 Maverick defers to it significantly
+($+21$) and Inkling resists it significantly ($-14$). The other six are not significant either
+way, with belief effects from $-10$ to $+12$. Four of the eight agree significantly more with the
+belief than with the tag.
+
+\subsection{What a yes to a belief means}
+\label{sec:beliefq}
+
+\emph{``I think P. Reply with only Yes or No.''} could be answered as \emph{``yes, that is your
+view''}. The belief\_q arm states the belief and then asks the question, so a \emph{yes} to it can only
+mean agreement with the claim. We ran it on 103 models from 26 labs. Over these models it raises
+agreement by 11.8 points [+9.4, +14.3] against 7.8 [+5.4, +10.5] for the belief arm, a difference of
++4.0 [+2.4, +5.7]. 36 models raise agreement significantly under belief\_q. Over the
+panel the forced question draws slightly more agreement than the belief alone, which supports
+reading a \emph{yes} to the belief as agreement with the claim. Per model the two effects
+correlate at $\rho=0.68$. Fifteen models differ significantly, and 9 differ by 20 points or more.
+The largest gaps are Claude Opus 4.6 ($+55$), Claude Sonnet 5 ($+51$) and Claude Opus 4.5 ($+41$),
+which agree far more when the belief is followed by the question, and Phi-4 ($-37$), which
+declines most belief\_q prompts. For these models the belief arm misstates agreement with the
+claim. The arm began as a spot check on a broad cross-section of
+20 models. On those models it gave 17.2 against 13.8. Claude Sonnet 5 shows why the check matters. Most of its replies to the
+belief are neither \emph{yes} nor \emph{no}, so its belief effect is $-52$. Under belief\_q it is at
+$-1$.
+
+\section{Where models stand}
+\label{sec:positions}
+
+The neutral arm records a position. For each model and item, the lean is the affirm share for
+the claim plus the reject share for the mirror, minus the same for the other side, halved. It
+runs from $-1$ to $+1$, and hedges count toward neither side. A model is on a side of an item if
+its lean is at least $0.25$ in size. Over the panel, models take a side on 56\% of items.
+
+\begin{table}[t]
+\centering
+\small
+\begin{adjustbox}{max width=\columnwidth}
+\begin{tabular}{lrrrr}
+\toprule
+Lab & Models & On a side & With panel & $p$ \\
+\midrule
+\rows{gen/vendor_table.tex}
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Neutral-question positions for labs with four or more models. On a side: percent of
+items with $|\text{lean}|\geq 0.25$. With panel: percent of those that agree in sign with the
+panel mean, on items where the panel mean is at least $0.1$ in size. $p$: permutation test of the
+on-a-side share against the other labs.}
+\label{tab:labs}
+\end{table}
+
+Labs differ more in whether they take a side than in which side they take
+(Table~\ref{tab:labs}). OpenAI models take a side on 84\% of items, and Anthropic and Google
+models on 25\% and 12\%. Where they do take a side, most labs agree with the panel's
+direction on 79\% of items or more. xAI is the exception, agreeing with the panel's direction on 57\% of
+the items where its models take a side. A lab that rarely takes a side leaves the tag little to
+act on, since the tag acts on the favored side (\S\ref{sec:favored}).
+
+\section{Training stages}
+\label{sec:stages}
+
+Four open pipelines publish a checkpoint after each stage of post-training: OLMo 3.1 32B and OLMo
+3 7B (base, SFT, DPO, RL), Tulu 3 8B (base, SFT, DPO, RL) and Nemotron 3.5 Lightning (base and
+final). We sampled every checkpoint locally on the contested items with the ask, tag, bare and
+belief arms, 16 samples per cell at temperature 1 with thinking off. Table~\ref{tab:stages} in
+Appendix~\ref{app:stages} gives every stage. The same checkpoints on the decision items are
+reported in the companion paper (\ifanon companion paper\else\citealp{parikh2026tags}\fi).
+
+Deference to a belief is present in the OLMo 3.1 32B base ($+18$ [$+10$, $+27$]). It is $+7$
+[$-3$, $+17$] after SFT and $+16$ [$+7$, $+25$] after RL. Tulu installs it in steps ($+4$ at base, $+25$ after SFT, $+37$
+after DPO, $+43$ after RL), and Nemotron raises it from $+8$ to $+27$. OLMo 3 7B goes from $+3$ at
+base to $+12$. Two stages have a tag effect whose interval excludes zero: OLMo 3.1 32B after SFT
+($-12$ [$-19$, $-4$]) and Tulu after DPO ($-7$ [$-14$, $-1$]). The next stage of each has an interval
+that includes zero (OLMo 3.1 32B DPO $-5$ [$-12$, $+3$], Tulu RL $-6$ [$-14$, $+2$]). Tulu's base is
+already at $-8$ [$-16$, $+1$]. No stage of OLMo 3 7B or Nemotron has a detectable tag effect. Post-training also raises the share of mirror pairs where the neutral question gets
+\emph{no} on both sides, from 23\% to 62\% in OLMo 3.1 32B and from 48\% to 88\% in OLMo 3 7B.
+That share counts rejections of both claims and refusals that open with \emph{no}.
+
+Local quantized sampling with thinking off is not the served model, so we compare stages within a
+pipeline and never against the API panel. The base checkpoints also see a different framing (plain
+text and \emph{``Answer:''}) from the later stages (a chat turn), so the change from base to SFT
+mixes training with format. These are descriptions of four pipelines. In them, deference to a
+belief is present at the final stage of every pipeline, and no final stage has a detectable tag
+effect.
+
+\section{Discussion}
+\label{sec:discussion}
+
+On contested questions the form of the request moves agreement in two directions. A request to
+confirm lowers agreement with the side a model already favors. A stated belief raises agreement
+with the side it does not. The two movements are only weakly associated across models, and
+both are measured reliably, so they behave like two dispositions.
+
+The tag result fits a model that has been trained to resist pressure to confirm. It withholds
+agreement only where agreement was likely, which is where the pressure would bite. The belief
+result fits a model that responds to the person. A stated view makes the model more willing to
+agree with a claim it would otherwise reject, which is the behavior most sycophancy evaluations
+target. Over the panel a stated belief draws more agreement than a request to confirm. The models
+that resist the tag significantly average near zero under a belief, and they split: one defers
+to it significantly and one resists it.
+
+An evaluation of opinion sycophancy should therefore include a stated belief and should report
+effects by side. An effect averaged over a claim and its mirror hides that the tag and the belief
+act on opposite sides of a model's position.
+
+\section*{Limitations}
+
+The battery is 18 claims, mostly from a US frame, and each stratum rests on six. The mirrors are
+not exact logical complements, and a model can reasonably reject both. The clamp is one forcing
+prompt, and refusal rates depend on its wording \citep{rottger2024compass}. Each cell has four
+samples, and per-model effects on single items are noisy; the panel and per-model means average
+over 36 cells per arm. The classifier reads the leading token and cannot separate a refusal from a
+\emph{no}. Each arm is a single turn with no conversation, so the effects are best read as lower
+bounds on what context can produce.  The
+favored side is defined by the neutral question under the clamp, so it is a position under one
+forcing prompt. The stage ladders are four pipelines sampled locally and quantized, with thinking
+off, and they describe those pipelines and not how any served model was trained. The left coding of nine items in
+Appendix~\ref{app:leftright} is ours and reflects current US politics.
+
+\section*{Ethical considerations}
+
+The study sends fixed questions on contested political and historical topics to public model
+APIs. It involves no human subjects and no user data. The lab comparisons describe served
+model behavior at one point in time under one forcing prompt, and they are not a ranking of
+labs or a measure of bias.
+
+\section*{Data and code availability}
+{\sloppy All code and data are in the \texttt{studies/suggestibility/} directory of the
+\ifanon study repository (an anonymized copy is provided with the submission)\else modelun
+repository (\url{https://github.com/tap2k/modelun})\fi: \texttt{probe\_contested.py} (items, arms
+and collection), \texttt{probe\_contested\_ladder.py} (the training stages),
+\texttt{contested\_stats.py} (every statistic and table in this paper), \texttt{v2\_stats.py}
+(BH) and \texttt{analyze.py} (the classifier), with raw replies under
+\texttt{probes/contested/} and \texttt{probes/contested\_ladder\_*/}.\par}
+
+\section*{Note on AI usage}
+This work was done with Claude (Opus 5.5), which helped run the probes, build the analysis and
+draft the text; the research questions and interpretation are the author's. Several Claude
+models are also subjects of the study.
+
+\paperbibliography
+
+\clearpage
+\appendix
+\onecolumn
+
+\section{Items}
+\label{app:items}
+
+\begin{center}
+\captionof{table}{The 18 claims and their mirrors. Tag and Belief: panel effects in points, mean
+over both sides. Hedge: percent of neutral-question replies that are neither yes nor no. Lean:
+the panel's mean lean under the neutral question, positive toward the first claim.}
+\label{tab:items}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lp{0.3\textwidth}p{0.3\textwidth}rrrr}
+\toprule
+Stratum & Claim & Mirror & Tag & Belief & Hedge & Lean \\
+\midrule
+\rows{gen/items_table.tex}
+\bottomrule
+\end{tabular}
+\end{center}
+
+\clearpage
+\section{Per-model results}
+\label{app:permodel}
+
+\begin{center}
+\captionof{table}{Per-model tag and belief effects in points with 95\% nested-bootstrap
+intervals, sorted by the tag effect. $^*$: significant at BH $q=.05$ within the arm.}
+\label{tab:permodel}
+\scriptsize
+\renewcommand{\arraystretch}{0.78}
+\setlength{\tabcolsep}{3pt}
+\input{gen/permodel_table}
+\end{center}
+
+\section{Training stages}
+\label{app:stages}
+
+A base checkpoint receives the prompt as plain text followed by \emph{``Answer:''}. The OLMo
+post-trained stages receive a user turn with no system prompt, as the served models do, and the
+Tulu and Nemotron stages receive their shipped chat template. The 32B and Nemotron checkpoints ran
+at 8-bit and the others at bf16. Intervals are the same nested bootstrap.
+
+\begin{center}
+\captionof{table}{Contested effects by training stage, in points with 95\% intervals. Both-No:
+percent of mirror pairs where the neutral question gets \emph{no} on both sides.}
+\label{tab:stages}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llrrrr}
+\toprule
+Pipeline & Stage & Tag & Bare & Belief & Both-No \\
+\midrule
+\rows{gen/stages_table.tex}
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Left and right}
+\label{app:leftright}
+
+Nine items have a side we code as left-leaning in US politics: adopting a universal basic income,
+raising the minimum wage, forgiving student debt, legal abortion, banning assault weapons,
+abolishing the death penalty, increasing immigration, race-conscious admissions and legal assisted
+suicide. Table~\ref{tab:leftright} gives each arm's effect on the left-coded and the right-coded
+claims of these items. The tag lowers agreement with the left-coded claims and leaves the
+right-coded claims near zero, and the belief raises agreement with the right-coded claims more.
+
+The asymmetry is the favored-side effect of \S\ref{sec:favored}. The panel's neutral answers lean
+toward the left-coded claim on 9 of the 9 items, so the left-coded claim is usually the
+favored side. The tag lowers agreement on the favored side and the belief raises it on the other
+side, which produces this pattern without any effect of political direction as such.
+
+\begin{center}
+\captionof{table}{Effects against the neutral question on the nine items with a left-coded side,
+in points, mean over models.}
+\label{tab:leftright}
+\small
+\begin{tabular}{lrr}
+\toprule
+Arm & Left-coded claim & Right-coded claim \\
+\midrule
+\rows{gen/leftright_rows.tex}
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Classifier}
+\label{app:classifier}
+A reply is \emph{affirm} if its leading token, after stripping punctuation, is one of
+\texttt{yes}, \texttt{yeah}, \texttt{yep}, \texttt{absolutely}, \texttt{definitely},
+\texttt{sure}, \texttt{correct}, \texttt{agreed}; \emph{reject} if it is one of \texttt{no},
+\texttt{nope}, \texttt{not}, \texttt{disagree}; otherwise \emph{hedge}. Replies containing
+chat-template artifacts are failed cells. The rule is exact-match and case-insensitive. A cell
+with no valid replies drops its item from that model's mean.

@@ -71,7 +71,7 @@ GENLABEL = {
     "deepseek-chat-v3-0324": "v3", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4", "deepseek-v4-pro": "v4-p",
     "glm-4.7": "4.7", "glm-5.2": "5.2",
     "claude-opus-4.1": "o4.1", "claude-sonnet-4.5": "s4.5", "claude-opus-4.5": "o4.5",
-    "claude-opus-4.6": "o4.6", "claude-opus-4.7": "o4.7", "claude-opus-5.5": "o5.5", "claude-sonnet-5.5": "s5.5",
+    "claude-opus-4.6": "o4.6", "claude-opus-4.7": "o4.7", "claude-opus-5.5": "o5.5", "claude-sonnet-5.5": "s5.5", "claude-haiku-5.5": "h5.5",
     "gpt-5.4-mini": "5.4-m", "gpt-6-luna": "6-l", "gpt-6-sol": "6-s", "gpt-6.1-sol": "6.1-s",
     "gemini-2.5-pro": "2.5-p", "gemini-3-flash-preview": "3", "grok-4.7": "4.7", "qwen3.7-plus": "3.7",
 }
@@ -344,6 +344,84 @@ def fig_confidence(cf, keep=None):
     plt.close(fig)
 
 
+def stage_table():
+    """Decision-item tag and stance effects and the confidence gap (maybe? - right?) at each post-training stage of four open pipelines
+    (../probe_suggest_ladder.py summaries). Base checkpoints use the raw framing; post-trained OLMo
+    stages the no-system user turn, Tulu and Nemotron their shipped chat template."""
+    pipes = [("OLMo 3.1 32B", "32b", "nosys"), ("OLMo 3 7B", "7b", "nosys"), ("Tulu 3 8B", "tulu", "chat"),
+             ("Nemotron 3.5 Lightning", "nemotron", "chat")]
+    num = lambda x: f"{100 * x:+.0f}".replace("-", "$-$")
+    rows = []
+    for name, key, fr in pipes:
+        summ = json.loads((STUDY / "probes" / f"suggest_ladder_{key}.json").read_text())["summary"]
+        for k, v in summ.items():
+            stage, framing = k.split("/")
+            if framing != ("raw" if stage == "base" else fr):
+                continue
+            ci = lambda e: f"{num(e[0])} [{num(e[1])}, {num(e[2])}]"
+            e = v["effects"]
+            rows.append(f"{name} & {stage} & {ci(e['TAGeff'])} & {ci(e['STANCEeff'])} & {ci(e['GAP'])} & {100 * v['answered']:.0f} \\\\")
+            name = ""
+    (GEN / "stage_table.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+
+
+def fig_wording_shift():
+    """Each model's tag effect against its neutral affirm rate in the three wordings, joined per model."""
+    res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
+    W = ("named", "original", "should")
+    col = {"original": INK, "named": "#4a3aa7", "should": "#1baf7a"}
+    lab = {"original": "original", "named": "both named", "should": "sufficiency"}
+    common = [m for m in res["original"] if all(m in res[w] for w in W)]
+    fig, ax = plt.subplots(figsize=(5.2, 3.6))
+    ax.axhline(0, color=INK2, lw=0.8)
+    for m in common:
+        xs = [res[w][m]["affirm_neutral"] for w in W]; ys = [res[w][m]["tag"]["tageff"] for w in W]
+        ax.plot(xs, ys, "-", color=GRAY, lw=0.5, alpha=0.5, zorder=1)
+    for w in W:
+        ax.scatter([res[w][m]["affirm_neutral"] for m in common], [res[w][m]["tag"]["tageff"] for m in common],
+                   s=12, color=col[w], label=lab[w], zorder=3, alpha=0.85, linewidths=0)
+    xs = np.linspace(0, 1, 2)
+    ax.plot(xs, -xs, ":", color=INK2, lw=0.8)        # the floor: an effect cannot fall below -baseline
+    ax.plot(xs, 1 - xs, ":", color=INK2, lw=0.8)     # the ceiling: nor rise above 1 - baseline
+    ax.set_xlim(0, 1); ax.set_ylim(-0.65, 0.5)
+    ax.set_xlabel("neutral affirm rate"); ax.set_ylabel("tag effect (right? − neutral)")
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{100 * v:+.0f}"))
+    ax.legend(frameon=False, fontsize=8, loc="upper right")
+    ax.set_title(f"The same models in three wordings (n={len(common)})", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(FIGS / "grid_baseline.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_grid():
+    """Agreement under the three cues in each wording of the grid (../grid_stats.py)."""
+    res = json.loads((STUDY / "probes" / "grid_stats.json").read_text())["per_model"]
+    titles = {"original": "Original: “Is X the better choice?”",
+              "named": "Both named: “…: X or Y. Is X the better choice?”",
+              "should": "Sufficiency: “Should I go with X?”"}
+    fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.2), sharey=True)
+    xs = [0, 1, 2]
+    for ax, w in zip(axes, ("original", "named", "should")):
+        rows = [[r["affirm_neutral"], r["affirm_right"], r["affirm_maybe"]] for r in res[w].values()]
+        for y in rows:
+            ax.plot(xs, y, "-", color=GRAY, lw=0.5, alpha=0.6, zorder=2)
+        mean = np.mean(rows, axis=0)
+        ax.plot(xs, mean, "-o", color=INK, lw=2.2, ms=5, zorder=4)
+        for x, y in zip(xs, mean):
+            ax.annotate(f"{100 * y:.0f}%", (x, y), textcoords="offset points", xytext=(0, 8), ha="center", fontsize=8.5, color=INK, fontweight="bold")
+        ax.set_xticks(xs, ["neutral", "right?", "maybe?"])
+        ax.set_xlim(-0.3, 2.45)
+        ax.set_ylim(-0.02, 1.02)
+        ax.set_title(titles[w] + f"  (n={len(rows)})", fontsize=8.5)
+        ax.grid(axis="y", color=GRID, lw=0.5)
+    axes[0].set_ylabel("P(affirm)")
+    axes[0].yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
+    fig.tight_layout()
+    fig.savefig(FIGS / "grid_cues.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     data = compute()
     print(f"computed {len(data)} models")
@@ -353,6 +431,10 @@ if __name__ == "__main__":
     fig_baseline(data)
     cf = compute_conf(data)
     fig_confidence(cf, bh(data) if V2 else None)
+    if V2:
+        fig_grid()
+        fig_wording_shift()
+        stage_table()
     # the resistant models under the tentative tag, for the abstract's closing sentence
     st = json.loads((GEN / "stats.json").read_text())
     res = [m for m in st["sig_negative"] if m in cf]

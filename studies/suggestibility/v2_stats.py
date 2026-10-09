@@ -18,7 +18,7 @@ probes/righteffect/. Scoring is analyze.classify.
 
     python studies/suggestibility/v2_stats.py
 """
-import json
+import json, zlib
 from pathlib import Path
 import numpy as np
 from analyze import classify, CONSEQUENTIAL
@@ -92,7 +92,12 @@ def draw_indices(cells):
             for item, c in cells.items() for arm in ("ask", "tag") for s in "xy"}
 
 
-def per_model(cells, answered=False):
+def per_model(cells, answered=False, seed=None):
+    """seed: a per-model seed (see model_seed) so the same model and contrast draw the same bootstrap
+    in every script that calls this."""
+    global rng
+    if seed is not None:
+        rng = np.random.default_rng(seed)
     items = list(cells)
     point = np.nanmean(list(item_effects(cells, answered=answered).values()))
     boots = []
@@ -104,6 +109,10 @@ def per_model(cells, answered=False):
     lo, hi = np.nanpercentile(boots, [2.5, 97.5])
     p = 2 * min(np.mean(boots <= 0), np.mean(boots >= 0))
     return {"tageff": float(point), "ci95": [float(lo), float(hi)], "p": float(min(1.0, max(p, 1 / B)))}
+
+
+def model_seed(model, contrast, answered=False):
+    return zlib.crc32(f"{model}|{contrast}|{answered}".encode())
 
 
 def bh(ps, q):
@@ -145,7 +154,8 @@ def main():
     res = {"method": "nested bootstrap (items, then replies within cells), 2000 draws, 95% CI, BH q=.05",
            "per_model": {}, "panels": {}}
     for m in panels["current"]:
-        res["per_model"][m] = {"raw": per_model(data[m]), "answered": per_model(data[m], answered=True)}
+        res["per_model"][m] = {"raw": per_model(data[m], seed=model_seed(m, "original_tag")),
+                               "answered": per_model(data[m], answered=True, seed=model_seed(m, "original_tag", True))}
         print(f"  {m:<30} {res['per_model'][m]['raw']['tageff']:+.1%} "
               f"[{res['per_model'][m]['raw']['ci95'][0]:+.1%}, {res['per_model'][m]['raw']['ci95'][1]:+.1%}]", flush=True)
     for name, ms in panels.items():

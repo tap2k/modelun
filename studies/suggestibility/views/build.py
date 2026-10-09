@@ -39,7 +39,7 @@ GENLABEL = {
     "deepseek-chat-v3-0324": "v3-0324", "deepseek-r1": "r1", "deepseek-v3.2": "v3.2", "deepseek-v4-flash": "v4-flash", "deepseek-v4-pro": "v4-pro",
     "glm-4.7": "4.7", "glm-5.2": "5.2",
     "claude-opus-4.1": "opus 4.1", "claude-sonnet-4.5": "sonnet 4.5", "claude-opus-4.5": "opus 4.5",
-    "claude-opus-4.6": "opus 4.6", "claude-opus-4.7": "opus 4.7", "claude-opus-5.5": "opus 5.5", "claude-sonnet-5.5": "sonnet 5.5",
+    "claude-opus-4.6": "opus 4.6", "claude-opus-4.7": "opus 4.7", "claude-opus-5.5": "opus 5.5", "claude-sonnet-5.5": "sonnet 5.5", "claude-haiku-5.5": "haiku 5.5",
     "gpt-5.4-mini": "5.4 mini", "gpt-6-luna": "6 luna", "gpt-6-sol": "6 sol", "gpt-6.1-sol": "6.1 sol",
     "gemini-2.5-pro": "2.5 pro", "gemini-3-flash-preview": "3 flash", "grok-4.7": "4.7", "qwen3.7-plus": "3.7 plus",
 }
@@ -60,83 +60,53 @@ def cell(reps):
     return [{"c": classify(r) or "fail", "r": trim(r)} for r in reps]
 
 
-rng = np.random.default_rng(7)
-tx = {json.loads(p.read_text())["model"]: json.loads(p.read_text())["scenes"]
-      for p in (STUDY / "transcripts").glob("*.json")}
+import grid_stats as GS   # noqa: E402  the 3 wordings x 3 cues grid and its statistics
 
+WORDINGS = list(GS.WORDINGS)
+CUES = ("neutral", "right", "maybe")
+
+
+def code(r):
+    """One reply as a letter (a affirm, r reject, h hedge, f failed) plus its text when it is not a bare yes/no."""
+    if not r:
+        return "f"
+    c = {"affirm": "a", "reject": "r", "hedge": "h"}.get(classify(r), "f")
+    t = r.strip().replace("\n", " ")
+    return c if t.rstrip(".!").lower() in ("yes", "no") else c + t[:80]
+
+
+g = json.loads((STUDY / "probes" / "grid_stats.json").read_text())
+gsum, gres = g["summary"], g["per_model"]
+replies = GS.load()     # wording -> model -> cue -> item -> side -> replies
+rd = lambda x: round(x, 3) if isinstance(x, float) else x
 models = {}
-# The panel: tag arm from probes/righteffect, ask baseline from main transcripts. Each model's probes ran on the channel
-# of its main run (OpenRouter, or DeepInfra for the three models only served there); "channel" records which.
-for p in sorted((STUDY / "probes" / "righteffect").glob("*.json")):
-    d = json.loads(p.read_text())
-    m = d["model"]
-    if m == "run" or m not in tx:
-        continue
-    items, effs = [], []
-    for sid, decision, x, y in ITEMS:
-        ask = [r[0].get("reply") for r in tx[m].get(sid + "__askx", {}).get("runs", []) +
-               tx[m].get(sid + "__asky", {}).get("runs", []) if r]
-        tag = d["tag"].get(sid, {}).get("x", []) + d["tag"].get(sid, {}).get("y", [])
-        a, t = arate(ask), arate(tag)
-        if a is None or t is None:
-            continue
-        effs.append(t - a)
-        items.append({"id": sid, "decision": decision, "x": x, "y": y,
-                      "ask_rate": round(a, 3), "tag_rate": round(t, 3),
-                      "ask": cell(ask), "tag": cell(tag)})
-    if not effs:
-        continue
-    boots = [float(np.mean(rng.choice(effs, len(effs)))) for _ in range(2000)]
+for m in gres["original"]:
     fam, gen = FAM.get(m, (None, None))
-    asks = [it["ask_rate"] for it in items]
-    tags = [it["tag_rate"] for it in items]
-    models[m] = {
-        "tageff": round(float(np.mean(effs)), 3),
-        "lo": round(float(np.percentile(boots, 5)), 3),
-        "hi": round(float(np.percentile(boots, 95)), 3),
-        "ask": round(float(np.mean(asks)), 3), "tag": round(float(np.mean(tags)), 3),
-        "floor": float(np.mean(asks)) < 0.10, "family": fam, "gen": gen,
-        "genlabel": GENLABEL.get(m, m), "channel": d.get("host", "openrouter"), "items": items,
-    }
-
-# GLM was dropped 2026-07-23 for an old GLM-5.2 run served through DeepInfra with reasoning off. The GLM models now in
-# the data (4.7, 5.3, 5.3 Flash) were run through OpenRouter as served, like the panel, so they are kept (2026-10-05).
-
-# confidence axis (probe_maybe: neutral ask / confident "right?" / tentative "maybe?")
-conf = {}
-for p in sorted((STUDY / "probes" / "maybe").glob("*.json")):
-    d = json.loads(p.read_text())
-    m = d["model"]
-    if m == "run":
-        continue
-    rates = {f: arate(d["cells"].get(f, [])) for f in ("ask", "confident", "tentative")}
-    if any(v is None for v in rates.values()):
-        continue
-    conf[m] = {"ask": round(rates["ask"], 3), "confident": round(rates["confident"], 3),
-               "tentative": round(rates["tentative"], 3),
-               "mirror": round(rates["tentative"] - rates["confident"], 3),
-               "family": FAM.get(m, (None,))[0]}
-conf_order = sorted(conf, key=lambda m: -conf[m]["mirror"])
-
-# per-family walks (families with >= 2 generations)
-walks = {}
-for m, v in models.items():
-    if v["family"]:
-        walks.setdefault(v["family"], []).append(
-            {"model": m, "gen": v["gen"], "genlabel": v["genlabel"], "tageff": v["tageff"]})
-walks = {f: sorted(pts, key=lambda p: p["gen"]) for f, pts in walks.items() if len(pts) >= 2}
-
-order = sorted(models, key=lambda m: models[m]["tageff"])   # most resistant (−) first
+    v = {"family": fam, "gen": gen, "genlabel": GENLABEL.get(m, m), "w": {}}
+    for w in WORDINGS:
+        r = gres[w].get(m)
+        if r is None:
+            continue
+        v["w"][w] = {"neutral": rd(r["affirm_neutral"]), "right": rd(r["affirm_right"]), "maybe": rd(r["affirm_maybe"]),
+                     **{k: {"e": rd(r[k]["tageff"]), "lo": rd(r[k]["ci95"][0]), "hi": rd(r[k]["ci95"][1]), "sig": r[k]["sig"]}
+                        for k in ("tag", "gap")}}
+    v["items"] = {w: {sid: [[code(x) for s in "xy" for x in replies[w][m][c].get(sid, {}).get(s, [])] for c in CUES]
+                      for sid, *_ in ITEMS}
+                  for w in WORDINGS if m in replies[w]}
+    models[m] = v
 
 data = {
-    "meta": {"panel": len(models), "run_date": "2026-07-16", "famcolor": FAMCOLOR,
-             "fam_order": ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"]},
-    "models": models, "order": order, "walks": walks,
-    "confidence": conf, "confidence_order": conf_order,
+    "meta": {"panel": len(models), "famcolor": FAMCOLOR, "wordings": WORDINGS,
+             "fam_order": ["GPT", "Claude", "Gemini", "Grok", "Qwen", "DeepSeek"],
+             "summary": {w: {k: rd(x) if not isinstance(x, dict) else {kk: rd(vv) for kk, vv in x.items()}
+                             for k, x in gsum[w].items()} for w in WORDINGS},
+             "corr": {k: rd(x["pearson"]) for k, x in gsum["correlations"].items()}},
+    "items": [{"id": sid, "decision": d, "x": x, "y": y} for sid, d, x, y in ITEMS],
+    "models": models,
 }
 blob = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data.js").write_text(f"const D = {blob};\n")
-print(f"wrote {VIEWS/'data.js'}  ({len(models)} models, {len(walks)} lineages, {len(blob)//1024}KB)")
+print(f"wrote {VIEWS/'data.js'}  ({len(models)} models, {len(blob)//1024}KB)")
 
 # shared styling for the study sites (copied, like core.js; the copy is gitignored)
 shutil.copy(STUDY.parent.parent / "harness" / "viewer" / "base.css", VIEWS / "base.css")
