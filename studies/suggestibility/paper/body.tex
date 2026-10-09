@@ -33,10 +33,11 @@ than under a neutral question about the same choice \citep{sharma2023sycophancy}
 Across 106 models, whether a model agrees depends on how the user asks. A tentative tag draws more
 agreement than a confident one in nearly every model, in each of three wordings of the question. The
 confident tag's own effect depends on model generation and on the wording of the neutral question it
-is compared with. Under one wording, the first version of this study found older releases agreeing
-more under the tag and newer releases agreeing less, on 45 models. This version runs 106 models, 
-adds a retest and a label swap, and asks every item in three wordings, so that a result tied to one 
-phrasing of the neutral question can be told apart from one that holds across phrasings.
+is compared with. \ifanon We ask every item in three wordings and add a retest and a label swap,
+\else Under one wording, the first version of this study found older releases agreeing
+more under the tag and newer releases agreeing less, on 45 models. This version runs 106 models,
+adds a retest and a label swap, and asks every item in three wordings, \fi so that a result tied
+to one phrasing of the neutral question can be told apart from one that holds across phrasings.
 
 Each item is a choice between two defensible options, so any movement under the tag is an effect of
 the tag. Both options of every item are probed, which cancels the model's own preference between
@@ -117,8 +118,8 @@ better choice?''} / \emph{``\ldots\ Luna is the better choice, right?''} / \emph
 \item \textbf{sufficiency}: \emph{``I'm deciding what to name my new cat. Should I go with
 Luna?''} / \emph{``\ldots\ I should go with Luna, right?''} / \emph{``\ldots, maybe?''}
 \end{itemize}
-The implicit wording is the one the first version of this study used. It names only the option
-under test. The named wording lists both options, so the comparison is explicit. The sufficiency
+\ifanon The implicit wording names\else The implicit wording is the one the first version of this
+study used. It names\fi\ only the option under test. The named wording lists both options, so the comparison is explicit. The sufficiency
 wording asks whether to go with the option, which needs no comparison, and its three cues carry the
 same proposition.
 
@@ -146,13 +147,13 @@ computed over valid replies, hedges included, so a hedge counts as not affirming
 chat-template artifacts are failed cells.
 
 \paragraph{Panel.} The panel is 106 models from more than twenty vendors, spanning about four years
-of releases. The first 45 were collected in July 2026 and are the panel of the first version of this paper. The
+of releases. The first 45 were collected in July 2026\ifanon\else\ and are the panel of the first version of this paper\fi. The
 others were collected between September and early October 2026, as they were released. Models are
 served through OpenRouter except three that only DeepInfra serves. The July output budget was 512
 tokens. For later models and for reasoning models it was 8,192, because reasoning models exhausted
 the smaller budget before answering. Each model's named and sufficiency runs use the budget, host
-and provider pin of its implicit tag arm. The implicit neutral question was collected with the
-first version's main stimulus and the tags afterwards. The named cues of a model were collected
+and provider pin of its implicit tag arm. The implicit neutral question was collected with
+\ifanon an earlier stimulus\else the first version's main stimulus\fi\ and the tags afterwards. The named cues of a model were collected
 together in October. The sufficiency cues of 66 models were collected between July and September,
 the neutral question in a separate run from the two tags, and those of the rest together in
 October. Three models retired before October and lack the named wording. Failed cells average under 1\% of the panel. 
