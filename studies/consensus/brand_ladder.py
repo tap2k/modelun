@@ -22,6 +22,12 @@ named). A list of options, a question back, or a refusal is "<no pick>". Hand-ch
 samples (120, 60 and 30 replies): before a sample was used to tune the rules they agreed with the reading on 80-85%
 of it, after on 87-97%. The earlier opening-brand rule (first bolded label or capitalised name) agreed on 68%.
 
+A clamped reply counts only if it is one name (CLAMP_LEVELS, one_name): the whole-name scorer already drops replies of
+more than 15 words, and a list ("Samsung, Apple, Google") or a lead-in ("I'd suggest Samsung") is dropped too, not read
+for its first brand, which would score the clamped level like a free one. compliance() reports each model's share of
+clamped replies that count; a model under MIN_COMPLIANCE on a level is listed, and analyses that compare models leave
+it out of that level (2026-10-09: Phi-4 and Granite 4.2 8B on clamped Recommend; most Claude 4.x on the clamped pick).
+
 Per level: categories where the field's consensus brand differs from Name's; mean top share; how often a model
 keeps its own one-word Name default, among its replies that name a brand; the no-pick share. The two-turn pick also reports whether the model's default
 was in its own turn-1 list. The paraphrase floor compares recommend with two rewordings on the 14-model subset.
@@ -235,6 +241,18 @@ def clamped(run_ids):
     return load_clamped(HERE, "brands", paths=[f for r in run_ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))])
 
 
+CLAMP_LEVELS = {"name": ("brands", "brands-ext", "brands-ext2"), "choose": ("brands-choose", "brands-ext-choose", "brands-ext2-choose"),
+                "pick1_clamp": ("brands-pick1-clamp", "brands-ext2-pick1-clamp"),
+                "recommend_clamp": ("brands-recommend-clamp", "brands-ext2-recommend-clamp")}
+MIN_COMPLIANCE = .75
+LEAD_IN = re.compile(r"^(i'?d|i would|i recommend|i suggest|try|consider|you might|maybe|perhaps|how about|go with|my pick)\b", re.I)
+
+
+def one_name(a):
+    """A clamped answer that is one name: no list, no lead-in, at most four words."""
+    return bool(a) and not re.search(r",|/| or | and ", a) and len(a.split()) <= 4 and not LEAD_IN.search(a)
+
+
 # sonar answers from a live web search, not model memory (spec/models.json); the brand analysis leaves it out
 EXCLUDE = {"sonar"}
 # "company" and "brand" name no product: asked freely, most models ask what is meant. Pooled brand numbers leave them out;
@@ -252,9 +270,27 @@ def levels():
           "recommend_clamp": clamped(["brands-recommend-clamp", "brands-ext2-recommend-clamp"]),
           "recommend": load(["brands-recommend-free", "brands-ext2-recommend-free"], "__recommend", 0, "first"),
           "pick2": load(["brands-pick2-free", "brands-ext2-pick2-free"], "__pick", 1, "open")}
+    for k in CLAMP_LEVELS:
+        lv[k] = {m: {c: [a for a in xs if one_name(a)] for c, xs in cats.items()} for m, cats in lv[k].items()}
     grid = {c for cats in lv["pick2"].values() for c in cats}      # the categories every level asks (44)
     return {k: {m: {c: xs for c, xs in cats.items() if c in grid} for m, cats in d.items() if m not in EXCLUDE}
             for k, d in lv.items()}
+
+
+@lru_cache(None)
+def compliance():
+    """level -> model -> share of its clamped replies (errors and empty replies left out) that count as one name, over the
+    categories and models levels() keeps."""
+    lv, out = levels(), {}
+    cats = {c for d in lv.values() for cs in d.values() for c in cs}
+    for k, ids in CLAMP_LEVELS.items():
+        sent = Counter()
+        for f in [f for r in ids for f in sorted((HERE / RUNS[r]["dir"]).glob("*.json"))]:
+            x = json.loads(f.read_text())
+            sent[x["model"]] += sum(1 for c, s in x["scenes"].items() if c in cats for r in s["runs"]
+                                    if r and not r[0].get("error") and (r[0].get("reply") or "").strip())
+        out[k] = {m: round(sum(map(len, cs.values())) / sent[m], 3) for m, cs in lv[k].items() if sent[m]}
+    return out
 
 
 def defaults():
@@ -439,7 +475,8 @@ def blob():
                         "retention": round(rows[k]["retention"], 3), "no_pick": round(rows[k]["no_pick"], 3)}
                        for k in LEVELS],
             "cats": cats, "dist": dist, "models": models, "per_model": per_model, "own_mentioned": om, "lists": lists, "base": BASE,
-            "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK}
+            "defaults": {m: dflt.get(m, {}) for m in models}, "two_turn": two_turn_list(), "no_pick": NO_PICK,
+            "compliance": compliance(), "min_compliance": MIN_COMPLIANCE}
 
 
 def show(rows, title):
@@ -458,6 +495,10 @@ if __name__ == "__main__":
           f"default is the pick {t['default_picked']:.0%}; pick is the first brand listed {t['first_listed']:.0%}")
     common = set.intersection(*[set(d) for d in levels().values()])
     show(summary(common), f"models present at every level ({len(common)})")
+    print(f"\nclamp compliance: share of clamped replies that are one name; models under {MIN_COMPLIANCE:.0%}")
+    for k, by in compliance().items():
+        low = sorted((v, m) for m, v in by.items() if v < MIN_COMPLIANCE)
+        print(f"  {LABELS[k]:14} median {sorted(by.values())[len(by) // 2]:.0%}; " + (", ".join(f"{m} {v:.0%}" for v, m in low) or "none"))
     prow, agree = paraphrase_floor()
     show(prow, "paraphrase floor (recommend as asked vs two rewordings, 14 models)")
     for (a, b), (same, n) in agree.items():
