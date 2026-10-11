@@ -21,6 +21,9 @@ from analyze import answers, against, load
 
 KS = (1, 3, 5, 10, 20, 40, 96)
 FOLDS = ((0, 1), (2, 3), (4, 5), (6, 7))
+# models added after the fingerprint paper's 94-model panel was fixed (2026-10-06); panel() leaves them out so the
+# paper's numbers reproduce. A new paper panel empties this list and states its own count.
+AFTER_PANEL = {"claude-haiku-5.5"}
 
 
 def panel():
@@ -28,7 +31,7 @@ def panel():
     extra = against(core, load(HERE, "census", paths=sorted((HERE / "transcripts-extra").glob("*.json"))), HERE)
     exp = answers(HERE, "expanded")
     A = {m: {**{c: core[m][c] + extra[m].get(c, []) for c in core[m]}, **exp[m]} for m in core if m in extra and m in exp}
-    models = sorted(m for m in A if sum(len(v) >= 8 for v in A[m].values()) >= 90)
+    models = sorted(m for m in A if sum(len(v) >= 8 for v in A[m].values()) >= 90 and m not in AFTER_PANEL)
     return {m: A[m] for m in models}
 
 
@@ -68,22 +71,26 @@ if __name__ == "__main__" and "--subset" not in sys.argv:
 def best_subset(A, fam, size=25, select_folds=FOLDS[:2], eval_folds=FOLDS[2:]):
     """Greedy forward selection of questions for identification with two answers per question. Questions are
     chosen on select_folds (mean log-probability of the true model, softmax over models) and scored on
-    eval_folds, whose answers played no part in the choice."""
+    eval_folds. Selection sees only the select_folds' samples: each selection fold is profiled from the other
+    selection fold, so no eval_folds answer enters a profile, the vocabulary or the choice. Evaluation profiles
+    use the six samples outside each eval fold, as in accuracy(), so selected and random sets compare alike."""
     import numpy as np
     models, cats = sorted(A), sorted({c for m in A for c in A[m] if all(len(A[x].get(c, [])) >= 8 for x in A)})
-    vocab = {c: len({a for m in models for a in A[m][c]}) + 1 for c in cats}
+    pool = sorted(i for f in select_folds for i in f)
 
-    def ll(folds):   # [fold, true, cand, cat]: log-likelihood of true's two held-out answers under cand's profile
+    def ll(folds, use):   # [fold, true, cand, cat]: log-likelihood of true's two held-out answers under cand's profile
+        vocab = {c: len({A[m][c][i] for m in models for i in use}) + 1 for c in cats}
         out = np.zeros((len(folds), len(models), len(models), len(cats)))
         for f, held in enumerate(folds):
+            src = [i for i in use if i not in held]
             for j, c in enumerate(cats):
-                prof = [Counter(a for i, a in enumerate(A[m][c][:8]) if i not in held) for m in models]
+                prof = [Counter(A[m][c][i] for i in src) for m in models]
                 for t, true in enumerate(models):
                     obs = [A[true][c][i] for i in held]
-                    out[f, t, :, j] = [sum(math.log((p[a] + 0.1) / (6 + 0.1 * vocab[c])) for a in obs) for p in prof]
+                    out[f, t, :, j] = [sum(math.log((p[a] + 0.1) / (len(src) + 0.1 * vocab[c])) for a in obs) for p in prof]
         return out
 
-    S, E = ll(select_folds), ll(eval_folds)
+    S, E = ll(select_folds, pool), ll(eval_folds, range(8))
     idx = np.arange(len(models))
     acc = lambda M, cols: float((M[..., cols].sum(-1).argmax(-1) == idx).mean())
     chosen, cur, trace = [], np.zeros(S.shape[:3]), []
@@ -105,9 +112,18 @@ def best_subset(A, fam, size=25, select_folds=FOLDS[:2], eval_folds=FOLDS[2:]):
 
 if __name__ == "__main__" and "--subset" in sys.argv:
     A = panel()
-    trace, rand = best_subset(A, None)
-    for t in trace:
-        print(f"{t['k']:2d} +{t['question']:18s} chosen-set accuracy {t['eval_exact']:.0%}" + (f"   random {t['k']}-set {rand[t['k']]:.0%}" if t['k'] in rand else ""))
+    splits = []
+    for sel, ev, name in ((FOLDS[:2], FOLDS[2:], "select on samples 0-3, score on 4-7"),
+                          (FOLDS[2:], FOLDS[:2], "select on samples 4-7, score on 0-3")):
+        trace, rand = best_subset(A, None, select_folds=sel, eval_folds=ev)
+        print(name)
+        for t in trace:
+            print(f"{t['k']:2d} +{t['question']:18s} chosen-set accuracy {t['eval_exact']:.0%}" + (f"   random {t['k']}-set {rand[t['k']]:.0%}" if t['k'] in rand else ""))
+        splits.append({"split": name, "greedy": trace, "random_mean": rand})
+    ks = sorted(splits[0]["random_mean"], key=int)
+    mean = {k: {"selected": round(sum(sp["greedy"][int(k) - 1]["eval_exact"] for sp in splits) / 2, 3),
+                "random": round(sum(sp["random_mean"][k] for sp in splits) / 2, 3)} for k in ks}
     res = json.loads((HERE / "probes" / "fingerprint.json").read_text())
-    res["best_subset_x2"] = {"selected_on": "folds {0,1},{2,3}", "scored_on": "folds {4,5},{6,7}", "greedy": trace, "random_mean": rand}
+    res["best_subset_x2"] = {"note": "each selection fold is profiled from the other, so no scored answer enters selection",
+                             "splits": splits, "mean_of_splits": mean}
     (HERE / "probes" / "fingerprint.json").write_text(json.dumps(res, indent=1) + "\n")
