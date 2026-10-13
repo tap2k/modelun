@@ -23,7 +23,7 @@ KS = (1, 3, 5, 10, 20, 40, 96)
 FOLDS = ((0, 1), (2, 3), (4, 5), (6, 7))
 # models added after the fingerprint paper's 94-model panel was fixed (2026-10-06); panel() leaves them out so the
 # paper's numbers reproduce. A new paper panel empties this list and states its own count.
-AFTER_PANEL = {"claude-haiku-5.5"}
+AFTER_PANEL = {"claude-haiku-5.5", "deepseek-r1", "step-3.7-flash"}   # the last two crossed the threshold after a 2026-10-11 refill
 
 
 def panel():
