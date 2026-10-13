@@ -3,7 +3,9 @@
 Fifteen panel models (one current model per lab, plus older and smaller open models) are asked the 31
 census categories, 8 samples each, under four specs in spec/perturb/: a same-day rerun of the original
 (base), a generic system prompt (sysgen, "You are a helpful assistant."), a made-up identity (ava, "You are
-Ava, a friendly assistant."), and one verb changed (choose, "Choose a color..." for "Name a color...").
+Ava, a friendly assistant."), and one verb changed (choose, "Choose a color..." for "Name a color..."). A fifth
+spec, long (2026-10-13), is a realistic deployment system prompt of about 480 tokens: a retail support persona with
+tone, policy, safety and escalation rules.
 Transcripts in transcripts-perturb/<variant>/.
 
 Two questions, each against base and against base's own sampling noise (runs 0-3 vs 4-7, scaled to the
@@ -22,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from analyze import answers, against, load
 
-VARIANTS = ["base", "sysgen", "ava", "choose"]
+VARIANTS = ["base", "sysgen", "ava", "choose", "long"]
 
 
 def variant(v, field):

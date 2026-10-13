@@ -9,6 +9,8 @@ budget (k questions x n answers), 20 random draws of questions and answers per m
   sysgen  system prompt "You are a helpful assistant."
   ava     system prompt "You are Ava, a friendly assistant."
   choose  "Choose a" in place of "Name a" (a different question, reported as such)
+  long    a realistic deployment system prompt of about 480 tokens (spec/perturb/stimulus_long.json, collected
+          2026-10-13); appended last so the earlier variants' random draws are unchanged
 
 Also reported:
   stability   share of (model, category) whose favourite answer on 2026-10-01 (base) matches the panel's favourite,
