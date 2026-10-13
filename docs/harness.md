@@ -321,11 +321,11 @@ and `kind` (the invented code is both question and answer); carry a `memo`; live
 labeler-namespaced file (`coding/<coder>.jsonl`); don't vote. When an emergent code graduates into a
 fixed category, it becomes a declared `graded` criterion and crosses into the closed model.
 
-## Planned: runner hygiene (2026-10-13)
+## Conventions for new runners (2026-10-13)
 
 1. **Save as you go.** Write each result to disk as soon as it comes back. If a run stops, restart
-   it and it picks up where it left off. Record failures instead of dropping them. Start with
-   `studies/suggestibility/probe_righteffect.py`.
+   it and it picks up where it left off. Record failures instead of dropping them. `harness/run.py`
+   already does this.
 2. **Name runs from one place.** Describe each run once (model, arm, wording, and so on). Generate
    the folder name and the `spec/runs.json` entry from that description, not by hand.
 3. **Skip only exact repeats.** Stamp each result with a short hash of what produced it (prompt,
