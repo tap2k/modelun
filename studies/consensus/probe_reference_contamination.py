@@ -18,8 +18,7 @@ files already on disk (no API calls):
 
     ../../.venv/bin/python probe_reference_contamination.py   # -> probes/reference_contamination.json
 
-Reads transcripts-providers/ and probes/provider_audit.json, which name providers and stay out of git; the output
-keys endpoints by model and a letter, not by provider.
+Reads transcripts-providers/ and probes/provider_audit.json. The output keys endpoints by model and a letter.
 """
 import json, math, random, sys
 from collections import Counter

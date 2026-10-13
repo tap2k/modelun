@@ -106,7 +106,7 @@ def check(entry, tags, hybrids):
 
 def orphans(entries):
     """Transcript directories holding Contract-A files that no entry names."""
-    named = {e["dir"] for e in entries}
+    named = {e["dir"] for e in entries} | set(json.loads(MANIFEST.read_text()).get("elsewhere", {}))
     found = set()
     for d in HERE.glob("transcripts*"):
         if any(d.glob("*.json")):

@@ -319,9 +319,9 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   identify the exact model 92.5% of the time (`probes/fingerprint.json`); scorer baselines in
   `probes/fingerprint_baselines.json`; system-prompt, later-day and lineage checks in `probes/fingerprint_robust.json`.
   The OpenRouter provider audit (`probe_provider_audit.py`, `probe_billed_tokens.py`, `probe_provider_followup.py`)
-  reads `transcripts-providers/`, which names providers and is excluded from git (`.git/info/exclude`).
+  reads `transcripts-providers/` (one directory per endpoint, named by provider; committed 2026-10-13).
   `probe_reference_contamination.py` measures how much each audited model's default-routed profile comes from a
-  flagged endpoint and rescores the audit against pinned reference profiles; its output keys endpoints by letter.
+  flagged endpoint and rescores the audit against pinned reference profiles.
   Failed cells of DeepSeek R1, Step 3.7 Flash, Qwen3.5 9B and WizardLM 2 in `transcripts-extra/` and
   `transcripts-expanded/` were refilled on 2026-10-11 at `--max-tokens 8192` ($0.35); the Qwen3.5 9B refill was
   stopped part-way.
