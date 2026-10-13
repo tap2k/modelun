@@ -313,6 +313,18 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   completion framing (truncations such as "new" for New York). The final model's 2.11 sits with
   the lightly tuned open models (Llama 3.3 2.06, Qwen 2.5 72B 2.00, MythoMax 2.34), not with
   the frontier (Claude Sonnet 5 0.98, GPT-5 1.26); the field median is 1.49.
+- **Fingerprinting (`probe_fingerprint.py` and siblings, 2026-10-02 to 10-13)** — identifies a model from its
+  answers to the 96 census and expanded questions: a likelihood under per-question answer counts, no training. The
+  paper's panel is pinned at 94 models (`AFTER_PANEL` in `probe_fingerprint.py` holds out later models). 40 answers
+  identify the exact model 92.5% of the time (`probes/fingerprint.json`); scorer baselines in
+  `probes/fingerprint_baselines.json`; system-prompt, later-day and lineage checks in `probes/fingerprint_robust.json`.
+  The OpenRouter provider audit (`probe_provider_audit.py`, `probe_billed_tokens.py`, `probe_provider_followup.py`)
+  reads `transcripts-providers/`, which names providers and is excluded from git (`.git/info/exclude`).
+  `probe_reference_contamination.py` measures how much each audited model's default-routed profile comes from a
+  flagged endpoint and rescores the audit against pinned reference profiles; its output keys endpoints by letter.
+  Failed cells of DeepSeek R1, Step 3.7 Flash, Qwen3.5 9B and WizardLM 2 in `transcripts-extra/` and
+  `transcripts-expanded/` were refilled on 2026-10-11 at `--max-tokens 8192` ($0.35); the Qwen3.5 9B refill was
+  stopped part-way.
 
 ## Run
 
