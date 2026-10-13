@@ -320,3 +320,18 @@ fixed: open codes reuse `labeler`, arc-grain `target`, and the same `quote` veri
 and `kind` (the invented code is both question and answer); carry a `memo`; live in their own
 labeler-namespaced file (`coding/<coder>.jsonl`); don't vote. When an emergent code graduates into a
 fixed category, it becomes a declared `graded` criterion and crosses into the closed model.
+
+## Planned: runner hygiene (2026-10-13)
+
+From a review of Transluce's fxtr (not adopted: Postgres store, alpha, no mlx path).
+
+1. **Write each cell on completion.** Atomic per-cell writes, failures recorded as data, resume from
+   stored cells. `studies/suggestibility/probe_righteffect.py` first (writes per model, failures
+   become a silent `None`).
+2. **Dimensions generate the manifest.** One dimensions dict per study generates the transcript
+   folder name and its `spec/runs.json` entry; `check_runs.py` becomes an assertion.
+3. **Fingerprint each cell.** Hash of prompt text, slug, sampling, reasoning, and provider, stamped
+   on the cell; skip on fingerprint match, not file existence. Catches a stimulus edit without a
+   `script_version` bump.
+4. **Arms are versioned like specs.** A changed probe arm (`ARMS`) gets a new name or version, never
+   an in-place edit.
