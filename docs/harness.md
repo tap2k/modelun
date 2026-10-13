@@ -323,15 +323,11 @@ fixed category, it becomes a declared `graded` criterion and crosses into the cl
 
 ## Planned: runner hygiene (2026-10-13)
 
-From a review of Transluce's fxtr (not adopted: Postgres store, alpha, no mlx path).
-
-1. **Write each cell on completion.** Atomic per-cell writes, failures recorded as data, resume from
-   stored cells. `studies/suggestibility/probe_righteffect.py` first (writes per model, failures
-   become a silent `None`).
-2. **Dimensions generate the manifest.** One dimensions dict per study generates the transcript
-   folder name and its `spec/runs.json` entry; `check_runs.py` becomes an assertion.
-3. **Fingerprint each cell.** Hash of prompt text, slug, sampling, reasoning, and provider, stamped
-   on the cell; skip on fingerprint match, not file existence. Catches a stimulus edit without a
-   `script_version` bump.
-4. **Arms are versioned like specs.** A changed probe arm (`ARMS`) gets a new name or version, never
-   an in-place edit.
+1. **Save as you go.** Write each result to disk as soon as it comes back. If a run stops, restart
+   it and it picks up where it left off. Record failures instead of dropping them. Start with
+   `studies/suggestibility/probe_righteffect.py`.
+2. **Name runs from one place.** Describe each run once (model, arm, wording, and so on). Generate
+   the folder name and the `spec/runs.json` entry from that description, not by hand.
+3. **Skip only exact repeats.** Stamp each result with a short hash of what produced it (prompt,
+   model, settings). Rerun anything whose hash changed, even if a file already exists.
+4. **Don't edit arms in place.** If a probe arm changes, give it a new name or version.
