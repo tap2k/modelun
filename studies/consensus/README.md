@@ -320,6 +320,9 @@ Scoring is v3 (2026-10-01): `analyze.clean()` strips reasoning and chat-template
   `probes/fingerprint_baselines.json`; system-prompt, later-day and lineage checks in `probes/fingerprint_robust.json`.
   The OpenRouter provider audit (`probe_provider_audit.py`, `probe_billed_tokens.py`, `probe_provider_followup.py`)
   reads `transcripts-providers/` (one directory per endpoint, named by provider; committed 2026-10-13).
+  `probe_disclosure.py` asked the unresolved mismatches and their peers for the date, their instructions and their
+  name (`transcripts-providers/disclosure-2026-10-11/`). `hidden-prompt-2026-10-02/` holds the date and billed-token
+  probe of every live panel model, with its notes; `probes/blind-deepinfra-2026-10-02.json` the blinded second-host test.
   `probe_reference_contamination.py` measures how much each audited model's default-routed profile comes from a
   flagged endpoint and rescores the audit against pinned reference profiles.
   Failed cells of DeepSeek R1, Step 3.7 Flash, Qwen3.5 9B and WizardLM 2 in `transcripts-extra/` and

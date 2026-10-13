@@ -1,0 +1,204 @@
+{
+  "model": "claude-fable-5.1",
+  "slug": "anthropic/claude-fable-5.1",
+  "spec_version": "probe-hidden-info-2026-10-02",
+  "temperature": 1.0,
+  "max_tokens": 1024,
+  "scenes": {
+    "identity": {
+      "subtitle": "identity",
+      "run_date": "2026-10-02",
+      "runs": [
+        [
+          {
+            "u": "What is your name, and which company made you?",
+            "reply": "I'm Claude, an AI assistant made by Anthropic.",
+            "usage": {
+              "prompt_tokens": 19,
+              "completion_tokens": 23,
+              "total_tokens": 42,
+              "cost": 0.00134,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.00134,
+                "upstream_inference_prompt_cost": 0.00019,
+                "upstream_inference_completions_cost": 0.00115
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "What is your name, and which company made you?",
+            "reply": "I'm Claude, an AI assistant made by Anthropic.",
+            "usage": {
+              "prompt_tokens": 19,
+              "completion_tokens": 23,
+              "total_tokens": 42,
+              "cost": 0.00134,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.00134,
+                "upstream_inference_prompt_cost": 0.00019,
+                "upstream_inference_completions_cost": 0.00115
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ]
+    },
+    "cutoff": {
+      "subtitle": "cutoff",
+      "run_date": "2026-10-02",
+      "runs": [
+        [
+          {
+            "u": "What is your knowledge cutoff date?",
+            "reply": "My knowledge has a reliable cutoff of around early 2025, with some awareness of events into mid-2025. Anything after that, I may not know about, so if you're asking about recent developments, it's worth double-checking with a current source.",
+            "usage": {
+              "prompt_tokens": 21,
+              "completion_tokens": 74,
+              "total_tokens": 95,
+              "cost": 0.00391,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.00391,
+                "upstream_inference_prompt_cost": 0.00021,
+                "upstream_inference_completions_cost": 0.0037
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "What is your knowledge cutoff date?",
+            "reply": "I don't have a precise, verified cutoff date I can point to with certainty, but my training data appears to extend into early-to-mid 2025. In practice, that means:\n\n- I'm generally reliable on events, publications, and developments up to around that period.\n- I may have patchy or incomplete knowledge of things from the last few months before my cutoff, since coverage of recent events in training data tends to be thinner.\n- I have no knowledge of anything after my cutoff, and I can't browse the web or access real-time information unless a tool for that has been provided in this conversation.\n\nIf you're asking because you want to check whether I know about something specific, feel free to just ask—I'll tell you if it's outside what I know.",
+            "reasoning": "I should answer honestly about my knowledge cutoff as Claude, made by Anthropic, though I don't have a precise date to point to, so I'll convey appropriate uncertainty.\n\n",
+            "usage": {
+              "prompt_tokens": 21,
+              "completion_tokens": 319,
+              "total_tokens": 340,
+              "cost": 0.01616,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.01616,
+                "upstream_inference_prompt_cost": 0.00021,
+                "upstream_inference_completions_cost": 0.01595
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 98,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ]
+    },
+    "platform": {
+      "subtitle": "platform",
+      "run_date": "2026-10-02",
+      "runs": [
+        [
+          {
+            "u": "Do you know anything about the platform, app or service you are running in right now? Tell me whatever you know.",
+            "reply": "Honestly, not much — and I want to be careful not to overstate it.\n\nHere's what I can actually tell:\n\n**What I know:**\n- I'm Claude, a model made by Anthropic. That's a fixed fact about me regardless of where I'm deployed.\n- In this particular conversation, I don't see any system prompt or operator instructions telling me I'm inside a specific product (like a named app, a customer-service tool, a coding assistant, etc.). That's a mild signal that I'm being accessed fairly directly — possibly through the API, a developer console, a testing setup, or a general chat interface — but it's a weak inference, not knowledge.\n\n**What I don't have access to:**\n- The name of the app or website you're using\n- Who built it or operates it\n- Your device, location, IP, browser, or account information\n- Any other conversations you've had, including with me in other sessions\n- Whether there's a UI around this text (buttons, file uploads, etc.) beyond what shows up in the conversation itself\n- Backend details like which servers I'm running on, rate limits, pricing, or logging policies of whoever deployed me\n\n**How I'd normally find out:**\nUsually, if I'm embedded in a product, the operator includes a system message that says something like \"You are an assistant for X company\" and gives me context. I don't see anything like that here. So if you're using some third-party app, I genuinely can't confirm or identify it from my side.\n\nIf you tell me what you're using, I'm happy to work with that context — but I'd be making things up if I claimed to know more than this.",
+            "reasoning": "I don't actually have a system prompt here telling me what platform or app this is, so I genuinely don't know—I should be upfront about that and explain what I can versus can't infer.\n\n",
+            "usage": {
+              "prompt_tokens": 39,
+              "completion_tokens": 563,
+              "total_tokens": 602,
+              "cost": 0.02854,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.02854,
+                "upstream_inference_prompt_cost": 0.00039,
+                "upstream_inference_completions_cost": 0.02815
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 69,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Do you know anything about the platform, app or service you are running in right now? Tell me whatever you know.",
+            "reply": "Honestly, not much—and I want to be straightforward about the limits of what I can know.\n\nHere's what I can say:\n\n**What I actually know**\n- I'm Claude, a language model made by Anthropic.\n- In this particular conversation, I haven't been given any system prompt or context that identifies the specific app, product, or platform you're using. Sometimes operators who build on Anthropic's API include instructions that tell me things like \"You are a customer service assistant for Company X\" or \"The user is on a mobile app.\" Nothing like that is present here, as far as I can tell.\n\n**What I can't observe**\n- I don't have access to information about the device you're on, the interface you're looking at, your location, the URL, or the application wrapping this conversation.\n- I can't tell whether you're talking to me through Anthropic's own Claude app/website, through a third-party product built on the API, or through some other integration.\n- I don't know what tools, memory features, or settings may be configured around me unless they're surfaced to me in the conversation.\n\n**What I can infer (loosely)**\n- Since there's no system prompt visible to me, this could be a direct API call, a developer testing environment, or a minimal setup. But that's a guess, not knowledge.\n\nIf you tell me where you're using me, I can speak more specifically about what that platform typically does or doesn't allow. And if you're curious whether a particular feature exists in your setup (like file uploads, web search, or memory), the best test is usually just to try it—I'll let you know if something isn't available to me.",
+            "reasoning": "I don't actually have details about the specific platform I'm running on here—there's no system prompt giving me that context, so I should just be upfront about what I know and don't know rather than guessing.\n\n",
+            "usage": {
+              "prompt_tokens": 39,
+              "completion_tokens": 547,
+              "total_tokens": 586,
+              "cost": 0.02774,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.02774,
+                "upstream_inference_prompt_cost": 0.00039,
+                "upstream_inference_completions_cost": 0.02735
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 66,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ]
+    }
+  }
+}
