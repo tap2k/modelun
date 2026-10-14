@@ -30,18 +30,18 @@
 \begin{abstract}
 \noindent
 A model behind an API can be identified from its one-word answers to everyday questions such as
-``Name a sound'' or ``Name a poet''. Each model's profile counts its answers to each question, and
-new answers are assigned to the model whose profile makes them most likely. On a panel of 94
+``Name a sound'' or ``Name a poet''. A model's profile records how often it gives each answer to each
+question. We attribute new answers to the model most likely to have given
+them. On a panel of 94
 models, 40 answers identify the exact model 92.5\% of the time, against 1.1\% by chance. Profiles
-built on one host identified all ten models served by a second host under blinded labels. A short
+built through OpenRouter identified all ten models served by DeepInfra under blinded labels. A 
 system prompt lowers accuracy by 6 to 16 points. We applied the method to 96 endpoints of 13 open
-models on OpenRouter, and 92 identify as the model they claim. Of the other four, one is the
+models on OpenRouter, and 92 identify as the model they claim. Of the other four, one matches the
 claimed model with reasoning turned off. One serves Gemma~4 under the name Llama~4 Maverick: it
 names itself Gemma~4, and it is billed Gemma~4's token counts on every message. Two remain
-unresolved. Profiles collected through default routing mix a model's providers, but rescoring
-against pinned reference profiles leaves all four findings unchanged. Billing records also show
+unresolved. Billing records also show
 context added to first-party models. Grok~4.7 is billed 1,247 input tokens for a one-line
-question that costs GPT-4o 12, and five models state the current date without being billed for
+question that costs GPT-4o only 12 tokens, and five models state the current date without being billed for
 it. The questions come from a public census of model defaults, and the method costs cents per
 endpoint.
 \end{abstract}
@@ -55,11 +55,7 @@ endpoint.
 A deployed language model is usually a name behind an API. The caller sees neither the weights
 nor how they are served. A provider may quantize the weights, add a default system prompt or
 change the reasoning setting, and each of these can change the answers without changing the
-weights. We give a method for the caller to tell which model is behind the API. The method has
-three common uses. An auditor checks whether an endpoint serves the model it claims
-(\S\ref{sec:audit}). A buyer checks whether a vendor's model derives from another lab's
-(\S\ref{sec:lineage}). A user checks whether the model behind a name has changed
-(\S\ref{sec:weeks}).
+weights. In this paper we describe a method for the caller to tell which model is behind the API.
 
 Recent work shows that short, constrained answers can identify a model. IRIS attributes endpoints
 from requests for random digits and bit strings, with a trained classifier \citep{zhang2026iris}.
@@ -67,20 +63,24 @@ from requests for random digits and bit strings, with a trained classifier \cite
 ``name a random number''. FLIPS identifies configured instances from requested random binary
 sequences \citep{richardeau2026flips}.
 
-Our questions ask for answers with meaning, such as a poet or a smell. We decide by likelihood
-under per-question answer counts. No weights are tuned, and a new model is added by sampling it
-once. Each decision traces to the answers behind it, so a human auditor can check it: which
-answers the endpoint gave, and which models give them.
-
 A census of model defaults asked 105 models 96 one-word questions such as ``Name a color'' and
 ``Name a fruit'', repeated eight times per question \citep{parikh2026census}. Models converge
 strongly on these questions, as they do on open-ended prompts \citep{jiang2025hivemind}. The
 answers that depart from the consensus repeat within a model. A model that says ``petrichor''
 where the field says ``lavender'' says it again, and these repeated departures are what we use to
-identify it. We use the 94 census models with at least eight answers on at least 90 of the 96
-questions (\S\ref{sec:method}).
+identify it. 
 
-The auditor chooses the questions and sends no system prompt. A provider can still add text before
+We use the 94 census models with at least eight answers on at least 90 of the 96
+questions (\S\ref{sec:method}). We decide by likelihood
+under per-question answer counts. No weights are tuned, and a new model is added by sampling it
+once. Each decision traces to the answers behind it, so a human auditor can check it: which
+answers the endpoint gave, and which models give them.
+
+The method has
+three common uses. An auditor checks whether an endpoint serves the model it claims
+(\S\ref{sec:audit}). A buyer checks whether a vendor's model derives from another lab's
+(\S\ref{sec:lineage}). A user checks whether the model behind a name has changed
+(\S\ref{sec:weeks}). The auditor chooses the questions and sends no system prompt. A provider can still add text before
 the auditor's message, and \S\ref{sec:audit} shows that this happens.
 
 Contributions:
@@ -90,10 +90,10 @@ beyond answer counts. Forty answers identify one of 94 models 92.5\% of the time
 (\S\ref{sec:howmany}).
 \item Question selection. Ten questions selected on separate samples reach 81\% with two answers
 each, against 67.5\% for ten random ones (\S\ref{sec:which}).
-\item Transfer across hosts under blinding, and robustness to a system prompt and to repeated
+\item Blinded identification on a second host, and robustness to a system prompt and to repeated
 sampling over weeks (\S\ref{sec:host} to \S\ref{sec:weeks}).
 \item An audit of OpenRouter. Of 96 endpoints, 92 identify as the model they claim. Of the four
-exceptions, one is a reasoning configuration, one is a substituted model and two remain
+exceptions, one is consistent with a reasoning configuration, one is a substituted model and two remain
 unresolved. A rescore against pinned reference profiles leaves these findings unchanged. Billed
 tokens and the current date give evidence of context added to first-party models
 (\S\ref{sec:audit}).
@@ -151,15 +151,7 @@ one word only.'' The full list is in Appendix~\ref{app:questions}.
 \paragraph{Models.} 94 models with at least eight answers on at least 90 of the 96 questions,
 carrying 27 family labels (Appendix~\ref{app:models}). All were queried through OpenRouter's
 default routing, with no provider pinned, no system prompt, temperature 1 and default reasoning
-settings, between 3 July and 2 October 2026. The transcripts do not record which provider served
-each call. The robustness runs in \S\ref{sec:sysprompt} and \S\ref{sec:weeks} were made on
-1 October, the provider audit in \S\ref{sec:audit} on 2 October, and its follow-ups on 6 and
-11 October. Answers are normalized as in the census: first answer line, case-folded, spelling
-variants and plurals merged (Appendix~\ref{app:normalize}).
-
-Because routing was not pinned, a reference profile can mix a model's providers, including
-endpoints that \S\ref{sec:audit} audits. Section~\ref{sec:results} measures how much and shows
-that it does not change the audit.
+settings, between 3 July and 2 October 2026. The robustness runs in \S\ref{sec:sysprompt} and \S\ref{sec:weeks} were made on 1 October, the provider audit in \S\ref{sec:audit} on 2 October, and its follow-ups on 6 and 11 October. Answers are normalized as in the census: first answer line, case-folded, spelling variants and plurals merged (Appendix~\ref{app:normalize}).
 
 \paragraph{Profile and score.} A model's profile for question $c$ is the count of each answer among
 its samples. A test set $\{(c, a)\}$ is scored under model $m$ as
@@ -212,27 +204,13 @@ later day with 31 questions asked twice (\S\ref{sec:sysprompt}), 10 of 10 on a s
 \paragraph{Against simpler scorers.} We compared the likelihood with two simpler scorers on the
 same folds and question draws. One picks the model whose answers are closest in Jensen--Shannon
 distance, as in \citet{bruckner2026onetoken}. The other counts how many held-out answers match
-each model's favourite answer. The comparison uses the 66 questions every model answered eight
-times, so its numbers differ slightly from Table~\ref{tab:curve}.
-
-\begin{table}[h]
-\centering\small
-\begin{tabular}{lcccc}
-\toprule
-scorer & 10 $\times$ 1 & 20 $\times$ 1 & 40 $\times$ 1 & 40 $\times$ 2 \\
-\midrule
-\rows{gen/scorer_rows.tex}
-\bottomrule
-\end{tabular}
-\caption{Exact-model accuracy of three scorers on the same folds and draws (66 questions, 20
-draws). Full table with standard deviations in Appendix~\ref{app:scorers}.}
-\label{tab:scorers}
-\end{table}
-% probes/fingerprint_baselines.json (probe_fingerprint_baselines.py)
-
-The likelihood scores best at every budget. With one or two held-out answers per question, a
-distance between distributions is a poor estimate. Matching favourite answers ignores the
-occasional answers that distinguish models most.
+each model's favourite answer. On the 66 questions every model answered eight times, forty
+answers identify the model 92\% of the time under the likelihood, 65\% under Jensen--Shannon
+distance and 76\% under favourite answers. The likelihood scores best at every budget
+(Appendix~\ref{app:scorers}). With one or two held-out answers per question, the distance between
+distributions cannot be estimated well. Matching favourite answers ignores the occasional answers
+that distinguish models most.
+% probes/fingerprint_baselines.json (probe_fingerprint_baselines.py), 40q_x1
 
 \subsection{Which questions}
 \label{sec:which}
@@ -271,22 +249,21 @@ Llama 3.3 70B, Llama 4 Scout, Mistral Small 3.2, Mistral Nemo, Nemotron 3 Super,
 GPT-OSS 120B, DeepSeek V4 Flash, DeepSeek V3.2 and Gemma 3 27B. The scorer recorded its guesses
 before the key was read. Profiles came only from OpenRouter answers. DeepInfra is one of
 OpenRouter's providers, and the profiles' providers were not recorded (\S\ref{sec:method}), so some
-reference answers may have come from DeepInfra. The test shows transfer from a routed mixture to
-one host, not between two disjoint hosts. With all questions (93 to 96 per model), 10 of 10 were
+reference answers may have come from DeepInfra. With all questions (93 to 96 per model), 10 of 10 were
 identified (95\% interval 69\% to 100\%). With the best twenty, 8 of 10 were (44\% to 97\%). In
 one miss the true model ranked second, 0.3 nats behind in total over 40 answers, which is a near
 tie. In the other it ranked third, 5.9 nats behind.
 % probes/blind-deepinfra-2026-10-02.json; Clopper-Pearson intervals; the best twenty from the 2026-10-06 selection.
 
-Identification transfers across hosts. Equality tests can still tell hosts of one model apart
-\citep{bruckner2026onetoken,zhang2026iris}, because they ask whether two distributions differ.
-Identification asks which model a distribution is closest to.
+Equality tests can still tell hosts of one model apart \citep{bruckner2026onetoken,zhang2026iris}.
+Two hosts can differ slightly and still both be closest to the same model.
 
 \subsection{Under a system prompt}
 \label{sec:sysprompt}
 
-Fourteen models answered 31 of the 96 questions under three conditions. They were identified among
-all 94 models from profiles built with no system prompt.
+Fourteen models answered 31 of the 96 questions three ways: with no system prompt, with ``You are a
+helpful assistant.'', and with a made-up persona, ``You are Ava, a friendly assistant.''. They were
+identified among all 94 models from profiles built with no system prompt.
 
 \begin{table}[h]
 \centering\small
@@ -303,8 +280,7 @@ cell).}
 \end{table}
 % transcripts-perturb/{base,sysgen,ava}/ via probe_fingerprint_robust.py -> probes/fingerprint_robust.json
 
-A system prompt costs 6 to 9 points for ``You are a helpful assistant.'' and 9 to 16 for the Ava
-persona. With 31 questions asked four times, models under a system prompt are still identified
+The generic prompt costs 6 to 9 points, and the Ava persona costs 9 to 16. With 31 questions asked four times, models under a system prompt are still identified
 91\% to 94\% of the time. A provider can add such a prompt without the auditor knowing
 (\S\ref{sec:added}).
 
@@ -338,8 +314,7 @@ context may shape its answers.
 OpenRouter routes each open model to one of several providers, with declared precision (bf16,
 fp8, fp4, int4 or unstated) and prices that differ up to thirtyfold for one model. We pinned each
 of 104 endpoints of 14 open models in turn, with fallbacks off, and asked all 96 questions four
-times. Eight could not be scored. Four returned no data, and four claim Qwen3.5 122B, which has no
-profile in the panel because it answered fewer than 90 questions eight times. The rest of this
+times. Eight could not be scored. Four returned no data, and four claim Qwen3.5 122B, which is not in the panel because it answered fewer than 90 questions eight times. The rest of this
 section reports the other 96 endpoints, of 13 models. The whole audit cost \$7.20 over 36,918
 calls. The released transcripts identify each endpoint by provider. The text characterizes
 endpoints and names no third-party provider; Appendix~\ref{app:audit} lists them by model and
@@ -355,11 +330,15 @@ label permutations within each question, with Benjamini--Hochberg correction acr
 \subsection{Results}
 \label{sec:results}
 
-Of the 96 endpoints, 92 identify as the model they claim. Twenty-two differ from their peers at
-$q < 0.05$. Eighteen of those still identify as the claimed model. Their differences are
-consistent with sampling or reasoning configuration within the right model. DeepSeek V4 Flash, for
-example, reasoned on at least 99\% of calls at 11 of its 15 endpoints, on no call at three, and on
-38\% of calls at one. All four mismatches also differ from their peers at $q < 0.05$.
+Of the 96 endpoints, 92 identify as the model they claim. Table~\ref{tab:mismatch} lists the four
+that do not.
+
+The peer test flags 22 endpoints as different from the same model's other providers at
+$q < 0.05$. These include all four mismatches. The other 18 still identify as the claimed model,
+so they differ from their peers within the claimed model. The reasoning setting is one source of
+difference. DeepSeek V4 Flash, for example, reasoned on at least 99\% of calls at 11 of its 15 endpoints, on no call at
+three, and on 38\% of calls at one. The peer pools include the mismatched endpoints, so their peers
+can be flagged too. Both Maverick endpoints that identify as Maverick have $q = 0.006$.
 
 \begin{table}[h]
 \centering\small
@@ -379,12 +358,16 @@ among 94 profiles.}
 \end{table}
 % probes/provider_audit.json rows with rank_of_claim != 1
 
-Two of the four, Mistral Small 3.2 and Kimi K2.5, are identified as a close relative of the claim:
-a sibling release or an earlier version. They rank the claimed model fifth and second. The
-DeepSeek V4 Flash endpoint is identified as a model from another lab. The DeepSeek and Mistral
-labels change between runs (\S\ref{sec:followup}), so neither label should be read as the served
-model. The Llama 4 Maverick endpoint's answers make the claimed model the 91st most likely of 94,
-so they are far from anything Maverick says.
+The Llama 4 Maverick endpoint is identified as Gemma 4 31B and ranks Maverick 91st of 94, so its
+answers are far from anything Maverick says. Section~\ref{sec:followup} confirms that it serves
+Gemma 4: it names itself Gemma 4, and it is billed Gemma 4's token counts.
+
+The other three rank their claimed model near the top. The Mistral Small 3.2 endpoint is identified as Mistral Small 2603, a later release
+from the same developer, and ranks the claimed model fifth. The Kimi K2.5 endpoint is identified as
+Kimi K2, the earlier version of the same model, and ranks the claimed model second. The DeepSeek V4
+Flash endpoint is identified as Qwen 3.8 27B, a model from another lab, and ranks the claimed model
+fourth. The Mistral and DeepSeek identifications change between runs (\S\ref{sec:followup}), so
+neither should be read as the model served.
 
 \paragraph{How far a match is from a mismatch.} The margin is the claimed model's score minus the
 best other model's, in nats per question. It is positive when the endpoint is identified as
@@ -427,9 +410,7 @@ audit day we asked every live panel model, with no system prompt, ``What is toda
 model told nothing can only guess the date. GPT-5, GPT-5.4, GPT-5.4 mini and GPT-5.5 stated the
 correct date in both samples. Each was billed 11 input tokens for the question. GPT-5.6 and the
 GPT-6 models were billed the same 11 tokens and did not know the date. Muse Spark 1.3, from
-another lab, also stated the date in both samples while billed 12 tokens, about what the question
-alone costs. The date reaches these five models without being billed, either as unbilled prompt
-text or through another channel such as server-side metadata. Either way, billed tokens are a
+another lab, also stated the date in both samples while billed 12 tokens. The date reaches these five models without being billed, either as unbilled prompt text or through another channel such as server-side metadata. Either way, billed tokens are a
 lower bound on added context.
 % hidden-prompt-2026-10-02/round1-date-instructions/: usage.prompt_tokens and reply
 
@@ -456,10 +437,10 @@ Kimi K3 & 90 to 93 \\
 % hidden-prompt-2026-10-02/round1-date-instructions/*.json usage.prompt_tokens
 
 Grok 4.7's surplus over GPT-4o is 1,235 tokens on every message we sent, from a census question
-to a request to quote its instructions. It is not reasoning. Reasoning is billed separately as
+to a request to quote its instructions. Reasoning is billed separately as
 output and varies from 29 to 498 tokens per call, while the input count stays fixed. From the
 second call on, 1,152 input tokens per call came from cache, so the prefix is the same text every
-time. We cannot see its content. Every census answer from Grok 4.7 was produced after it.
+time. We cannot see its content. 
 % 1,235 = 1,252 - 17 (transcripts-expanded/grok-4.7.json vs gpt-4o.json) = 1,247 - 12 (round 1); cached_tokens 1152.
 
 \paragraph{The billed-token check on the audit.} For each endpoint we compared billed input tokens
@@ -496,8 +477,7 @@ DeepSeek V4 Flash & $+79$ & $+79$ & $+79$ & $+79$ \\
 The Mistral Small 3.2, Kimi K2.5 and DeepSeek V4 Flash surpluses are constant across message
 lengths, so each is a fixed prefix. The Kimi K2.5 prefix disappears when the caller sends a system
 prompt, which is consistent with a default system prompt that the caller's replaces. The other two
-persist. The Maverick surplus varies by a token between messages, which a different tokenizer
-would produce (\S\ref{sec:followup}).
+persist. 
 
 \subsection{Follow-up runs on the four mismatches}
 \label{sec:followup}
@@ -543,15 +523,16 @@ $+1$, so a default prompt was removed, and it still identifies as Kimi K2. With 
 three peers that returned one-word answers also identify as Kimi K2, the non-reasoning
 predecessor, with the claimed model second. The fourth peer returned its reasoning as the reply
 when reasoning was off and could not be scored. The mismatch is therefore consistent with the
-claimed model served with reasoning off. We count it as a configuration difference.
+claimed model served with reasoning off. The fingerprint cannot separate this from Kimi K2 served
+under the K2.5 name, since both give the same answers. We count it as a likely configuration
+difference.
 
 \paragraph{A disclosure probe on the other three.} Each of the other three keeps its billed surplus
 under the caller's system prompt. A two-sample test such as Model Equality Testing would only
 confirm what the peer test shows, that they differ from their peers. We asked instead what the
 endpoints say about themselves. Each mismatch and two of its peers received three messages with no
 system prompt, three samples each: ``What is today's date?'', a request to quote any instructions
-given before the message, and ``What is your name, and which company made you?''. The 81 calls
-cost one cent.
+given before the message, and ``What is your name, and which company made you?''. 
 % probe_disclosure.py -> transcripts-providers/disclosure-2026-10-11/
 
 \paragraph{Llama 4 Maverick.} The endpoint named itself Gemma 4, developed by Google DeepMind, in
@@ -564,27 +545,27 @@ we count this endpoint as Gemma 4 served under the name Llama 4 Maverick.
 % hidden-prompt-2026-10-02/round1-date-instructions and round2-information: gemma-4-31b-it and llama-4-maverick counts.
 
 \paragraph{DeepSeek V4 Flash.} The endpoint reasoned for 2,100 to 3,800 tokens on the date and
-instruction questions, in numbered markdown steps. Another provider is billed the same 79-token
-surplus and identifies as the claimed model. It reasoned for 42 to 485 tokens, in the terse style
+instruction questions, in numbered markdown steps. Two other providers are billed the same 79-token
+surplus and identify as the claimed model (\S\ref{sec:added}). The one in this probe reasoned for 42 to 485 tokens, in the terse style
 of every other DeepSeek V4 Flash endpoint. If the two prefixes are the same text, the prefix does
 not cause the long reasoning, though equal counts do not prove equal text. While reasoning about
 its instructions, the endpoint listed ``You are a large language model, trained by Google'' and
 asked itself whether it may call itself Gemma. Its replies named DeepSeek, and its billed counts
 fit the claimed model's tokenizer plus the surplus. Models confabulate their instructions, so the
-reasoning text is weak evidence alone. The evidence points away from the claimed weights, and it
-does not name the served model. It remains unresolved.
+reasoning text is weak evidence alone. The evidence points away from the claimed weights, but the served model remains unresolved.
 
 \paragraph{Mistral Small 3.2.} This endpoint is the developer's own API. It reported no
-instructions, named Mistral AI, and gave invented dates in 2024 and 2025. Its billed counts (21, 45
+instructions, identified itself as Mistral AI, and gave invented dates from 2024 and 2025. Its billed counts (21, 45
 and 26) are the developer API's counts for both Mistral Small 3.2 and Mistral Small 2603, which
 share a tokenizer and template. Nothing in the probe separates two releases from one developer.
 The fingerprint places the endpoint nearest Mistral Small 2603 on two of three runs. That is
-consistent with the developer serving a newer release under the older name, the third use in
-\S\ref{sec:intro}. It remains unresolved.
+consistent with the developer serving a newer release under the older name. It is also consistent
+with the claimed weights under the endpoint's fixed 12-token prefix, which persists under the
+caller's system prompt. It also remains unresolved.
 
-The 92 matches show that the fingerprint identifies models as a live service serves them. The two
-resolved mismatches show two things a mismatch can mean: a configuration, as with Kimi K2.5, and
-another lab's model, as with Llama 4 Maverick.
+The 92 matches show that the fingerprint identifies models as a live service serves them. The Kimi
+K2.5 and Llama 4 Maverick cases show two things a mismatch can mean: a configuration and another
+lab's model.
 
 \section{Limitations}
 \label{sec:limits}
@@ -629,12 +610,19 @@ the time, whichever 40 are drawn (Appendix~\ref{app:scorers}).
 \section{Conclusion}
 
 One-word answers to everyday questions identify the model behind an API. Forty answers pick one of
-94 models 92.5\% of the time with nothing learned beyond answer counts, and the profiles transfer
-across hosts. Each decision can be checked by reading the answers behind it. Applied to 96
-OpenRouter endpoints, the method identifies 92 as claimed. One of the four exceptions is the
+94 models 92.5\% of the time with nothing learned beyond answer counts, and they identify all ten
+models tested on a second host. Each decision can be checked by reading the answers behind it. Applied to 96
+OpenRouter endpoints, the method identifies 92 as claimed. One of the four exceptions matches the
 claimed model served with reasoning off. Another is Gemma 4 served under the name Llama 4 Maverick.
 The other two remain unresolved. Billed tokens and the date show that first-party models served
 through OpenRouter also receive context the caller did not send.
+
+\section*{Disclosure}
+
+We sent the Llama 4 Maverick finding to the provider and to OpenRouter on 14 October 2026, before
+posting. The endpoint still served Gemma 4 that day. The paper names no third-party provider, and
+the released transcripts do.
+% transcripts-providers/recheck-2026-10-14.json
 
 \section*{Data and code}
 
@@ -696,7 +684,8 @@ before the second four runs. Six answer fewer than 90 questions eight times, fro
 replies that are not one word: wizardlm-2-8x22b (69), qwen3.5-9b (79), hermes-3-llama-3.1-405b
 (83), qwen3.5-122b-a10b (84), hunyuan-a13b-instruct (87) and nemotron-3-nano-30b-a3b (88). Three
 were added after the panel was fixed on 6 October: claude-haiku-5.5, and deepseek-r1 and
-step-3.7-flash, which crossed the threshold after failed cells were refilled on 11 October.
+step-3.7-flash, which crossed the threshold after failed cells were refilled on 11 October. The
+panel was fixed after the 2 October audit, and the audit was scored against it.
 % probe_fingerprint.py AFTER_PANEL and panel()
 
 \section{From reply to answer}

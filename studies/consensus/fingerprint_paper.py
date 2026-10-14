@@ -39,11 +39,8 @@ def main():
     write("curve_rows.tex", [f"{k} & {pct(bq[f'{k}q_x1']['exact'], 1)} & {pct(bq[f'{k}q_x1']['family'], 1)} & "
                              f"{pct(bq[f'{k}q_x2']['exact'], 1)} & {pct(bq[f'{k}q_x2']['family'], 1)} \\\\" for k in (5, 10, 20, 40, 96)])
 
-    # 4.1 scorer comparison (main text) and full table (appendix)
+    # 4.1 scorer comparison (appendix)
     res = base["results"]
-    names = {"likelihood 0.1": "likelihood", "jsd": "nearest neighbour, Jensen--Shannon", "modal": "most common answer"}
-    write("scorer_rows.tex", [f"{label} & " + " & ".join(pct(res[b][s]["mean"]) for b in ("10q_x1", "20q_x1", "40q_x1", "40q_x2")) + " \\\\"
-                              for s, label in names.items()])
     budgets = [b for b in res]
     scorers = list(res[budgets[0]])
     write("scorer_full_rows.tex", [tex(s) + " & " + " & ".join(f"{100 * res[b][s]['mean']:.1f} ({100 * res[b][s]['sd']:.1f})" for b in budgets) + " \\\\"
