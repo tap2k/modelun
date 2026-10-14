@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+% Tables read from gen/. Each paragraph's source is in a comment below it.
+% Plan: PAPER-PLAN-2026-10-04.md §1 (private). Design decision 2026-10-05: Name, Choose and Recommend, each
+% clamped and free, plus the two-turn pick. Clamped rows are the headline. One-turn pick is an appendix control.
+
+\makeatletter\newcommand{\rows}[1]{\@@input #1 }\makeatother
+
+\title{\textbf{Name versus Pick}}
+\author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+% TODO. Claim: the brand a model names is not the brand it recommends or picks. Asked for a judgment, the
+% field moves together to a shared second favourite.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+% TODO. Place against the census \citep{parikh2026census}, \citet{jiang2025hivemind}, \citet{jack2026paraphrase},
+% \citet{trhlik2026multitudes}, \citet{tonneau2026cues}.
+
+\section{Method}
+\label{sec:method}
+% Panel (101 models, sonar excluded), 44 categories (37 + ext 4 + ext2 3; 41 after the generic "brand" and
+% "company"), the verbs and their wordings, runs per cell, reasoning arms.
+% Scoring: whole-name scorer on clamped levels (one-name replies only, compliance floor); first mention and
+% committed brand on free levels; hand-check agreement. Source: ../brand_ladder.py docstring.
+
+\section{The verb moves the brand}
+\label{sec:verb}
+% Headline: clamped Name against clamped Choose and clamped Recommend. Consensus moved, own default kept, each
+% against a split-half floor. Source: ../probes/factors.json (factor "verb", battery "brands").
+
+\section{The clamp holds}
+\label{sec:clamp}
+% Free against clamped within each verb, as validation of the clamp. Source: factors.json (factor "clamp").
+
+\section{The pick after a list}
+\label{sec:pick}
+% Two-turn pick as the end point, read against Name. Own default in the turn-1 list, pick position in the list.
+% Cold scatter against list convergence. Categories that hold (Toyota) and flip (Nike to Brooks, ...).
+
+\section{Where the pick forms in training}
+\label{sec:stages}
+% Hypothesis, not a result (Tapan, 2026-10-05). Sources: ../probes/advice_register.json,
+% stage_brands.json, stage_pick.json. Place against \citet{fortier2026convergence}, \citet{karouzos2026where}.
+
+\section{Confounds}
+\label{sec:confounds}
+% By lab, by category, by reasoning arm, list position, paraphrase floor for Recommend.
+% Source: ../probes/brand_confounds.json.
+
+\section{Identity prompts}
+\label{sec:identity}
+% One system-prompt sentence flips OLMo's self-naming and 5 of 37 brand defaults. \citet{lehr2025selfpreference}.
+
+\section{Languages (pilot)}
+\label{sec:languages}
+% 21-language, five-model pilot: home-market brands win where they exist. Source: ../brands_lang.py.
+
+\section{Limitations}
+\label{sec:limits}
+
+\appendix
+\section{One-turn pick}
+\label{app:pick1}
+% Clamped one-turn pick as a control for the two-turn pick's verb. Free one-turn pick: one line (most replies name
+% no brand).
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
