@@ -32,13 +32,13 @@ BRIEF = ("You are an experienced reviewer for {venue}. Review the paper below as
 
 
 def flatten(tex_path):
-    """The .tex with each \\input{...} replaced, recursively, by the file's text and each figure image by a note."""
+    """The .tex with each \\input{...} or \\rows{...} replaced, recursively, by the file's text and each figure image by a note."""
     base = tex_path.parent
     def inline(m):
         p = base / m.group(1)
         p = p if p.suffix else p.with_suffix(".tex")
-        return re.sub(r"\\input\{([^}]+)\}", inline, p.read_text()) if p.exists() else m.group(0)
-    tex = re.sub(r"\\input\{([^}]+)\}", inline, tex_path.read_text())
+        return re.sub(r"\\(?:input|rows)\{([^}]+)\}", inline, p.read_text()) if p.exists() else m.group(0)
+    tex = re.sub(r"\\(?:input|rows)\{([^}]+)\}", inline, tex_path.read_text())   # \rows{...}: the papers' table-row macro
     return re.sub(r"\\includegraphics(\[[^\]]*\])?\{[^}]+\}", "[FIGURE: image not included; caption follows.]", tex)
 
 
