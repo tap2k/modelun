@@ -1,0 +1,1124 @@
+{
+ "pipeline": "tulu3-8b",
+ "teacher": "gpt-4o",
+ "teacher_brands": {
+  "soda": "coca-cola",
+  "coffee_chain": "starbucks",
+  "fast_food": "chick-fil-a",
+  "beer": "sierra nevada",
+  "snack_brand": "kind snacks",
+  "toothpaste": "colgate",
+  "cereal": "cheerios",
+  "smartphone": "apple",
+  "laptop": "dell",
+  "search_engine": "duckduckgo",
+  "social_network": "linkedin",
+  "streaming": "netflix",
+  "cloud": "aws",
+  "ecommerce": "amazon",
+  "ai_assistant": "chatgpt",
+  "ai_company": "openai",
+  "ev": "tesla",
+  "airline": "delta",
+  "hotel": "marriott",
+  "credit_card": "chase",
+  "bank": "chase",
+  "payment_app": "venmo",
+  "sneaker": "nike",
+  "running_shoe": "nike",
+  "luxury": "hermès",
+  "watch": "seiko",
+  "fashion": "patagonia",
+  "car_brand": "toyota",
+  "chocolate": "lindt",
+  "video_game": "nintendo",
+  "camera": "canon",
+  "toy_brand": "lego",
+  "sports_brand": "nike",
+  "supermarket": "trader joe's",
+  "browser": "brave",
+  "brand": "nike",
+  "company": "google",
+  "coffee_brand": "stumptown",
+  "skincare": "cerave",
+  "pm_software": "trello",
+  "mobile_carrier": "verizon",
+  "messaging_app": "signal",
+  "ride_hailing": "uber",
+  "news_outlet": "reuters"
+ },
+ "stages": {
+  "base": {
+   "framing": "raw",
+   "revision": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+   "pick": {
+    "ai_assistant": {
+     "own_first": {
+      "siri": -1.6801,
+      "chatgpt": -1.8097
+     },
+     "teacher_first": {
+      "siri": -2.4211,
+      "chatgpt": -1.4367
+     }
+    },
+    "ai_company": {
+     "own_first": {
+      "google": -0.957,
+      "openai": -2.0053
+     },
+     "teacher_first": {
+      "google": -1.9514,
+      "openai": -1.1073
+     }
+    },
+    "bank": {
+     "own_first": {
+      "wells fargo": -1.1123,
+      "chase": -1.8414
+     },
+     "teacher_first": {
+      "wells fargo": -1.9904,
+      "chase": -1.1498
+     }
+    },
+    "beer": {
+     "own_first": {
+      "budweiser": -2.6117,
+      "sierra nevada": -2.2412
+     },
+     "teacher_first": {
+      "budweiser": -3.2367,
+      "sierra nevada": -1.7391
+     }
+    },
+    "browser": {
+     "own_first": {
+      "firefox": -1.1711,
+      "brave": -1.7323
+     },
+     "teacher_first": {
+      "firefox": -2.0667,
+      "brave": -1.3573
+     }
+    },
+    "cereal": {
+     "own_first": {
+      "kellogg's": -1.6214,
+      "cheerios": -0.8652
+     },
+     "teacher_first": {
+      "kellogg's": -2.3712,
+      "cheerios": -0.4875
+     }
+    },
+    "chocolate": {
+     "own_first": {
+      "cadbury": -2.0987,
+      "lindt": -1.2462
+     },
+     "teacher_first": {
+      "cadbury": -3.0914,
+      "lindt": -0.9951
+     }
+    },
+    "cloud": {
+     "own_first": {
+      "google": -0.6867,
+      "aws": -3.0782
+     },
+     "teacher_first": {
+      "google": -1.7188,
+      "aws": -2.0266
+     }
+    },
+    "coffee_brand": {
+     "own_first": {
+      "starbucks": -1.6003,
+      "stumptown": -1.8599
+     },
+     "teacher_first": {
+      "starbucks": -2.3293,
+      "stumptown": -1.3579
+     }
+    },
+    "credit_card": {
+     "own_first": {
+      "capital one": -1.2881,
+      "chase": -1.2142
+     },
+     "teacher_first": {
+      "capital one": -2.5282,
+      "chase": -0.7961
+     }
+    },
+    "fashion": {
+     "own_first": {
+      "zara": -1.4908,
+      "patagonia": -1.4858
+     },
+     "teacher_first": {
+      "zara": -1.8669,
+      "patagonia": -1.234
+     }
+    },
+    "fast_food": {
+     "own_first": {
+      "burger king": -1.2403,
+      "chick-fil-a": -2.0914
+     },
+     "teacher_first": {
+      "burger king": -1.7403,
+      "chick-fil-a": -1.4596
+     }
+    },
+    "hotel": {
+     "own_first": {
+      "hilton": -2.1179,
+      "marriott": -2.7433
+     },
+     "teacher_first": {
+      "hilton": -3.4944,
+      "marriott": -1.6214
+     }
+    },
+    "luxury": {
+     "own_first": {
+      "gucci": -1.3716,
+      "hermès": -1.9988
+     },
+     "teacher_first": {
+      "gucci": -2.3691,
+      "hermès": -1.3736
+     }
+    },
+    "messaging_app": {
+     "own_first": {
+      "telegram": -1.3631,
+      "signal": -1.2861
+     },
+     "teacher_first": {
+      "telegram": -2.9195,
+      "signal": -0.6498
+     }
+    },
+    "news_outlet": {
+     "own_first": {
+      "the new york times": -1.9922,
+      "reuters": -1.7164
+     },
+     "teacher_first": {
+      "the new york times": -2.3666,
+      "reuters": -1.3007
+     }
+    },
+    "search_engine": {
+     "own_first": {
+      "google": -1.0898,
+      "duckduckgo": -1.1496
+     },
+     "teacher_first": {
+      "google": -2.0803,
+      "duckduckgo": -0.6231
+     }
+    },
+    "skincare": {
+     "own_first": {
+      "neutrogena": -1.6711,
+      "cerave": -1.6556
+     },
+     "teacher_first": {
+      "neutrogena": -2.9211,
+      "cerave": -1.1498
+     }
+    },
+    "smartphone": {
+     "own_first": {
+      "samsung": -1.5987,
+      "apple": -1.9514
+     },
+     "teacher_first": {
+      "samsung": -2.3531,
+      "apple": -1.4451
+     }
+    },
+    "snack_brand": {
+     "own_first": {
+      "doritos": -1.9642,
+      "kind snacks": -1.8762
+     },
+     "teacher_first": {
+      "doritos": -1.9514,
+      "kind snacks": -1.6933
+     }
+    },
+    "social_network": {
+     "own_first": {
+      "facebook": -1.1231,
+      "linkedin": -2.3631
+     },
+     "teacher_first": {
+      "facebook": -1.9981,
+      "linkedin": -1.4367
+     }
+    },
+    "soda": {
+     "own_first": {
+      "pepsi": -1.0914,
+      "coca-cola": -3.6328
+     },
+     "teacher_first": {
+      "pepsi": -2.3201,
+      "coca-cola": -1.9981
+     }
+    },
+    "supermarket": {
+     "own_first": {
+      "aldi": -1.2457,
+      "trader joe's": -1.247
+     },
+     "teacher_first": {
+      "aldi": -2.1212,
+      "trader joe's": -0.7468
+     }
+    },
+    "toy_brand": {
+     "own_first": {
+      "hasbro": -0.9944,
+      "lego": -1.5934
+     },
+     "teacher_first": {
+      "hasbro": -1.9867,
+      "lego": -0.837
+     }
+    }
+   }
+  },
+  "sft": {
+   "framing": "chat",
+   "revision": "f2a0b46b0cfda21003c6141b1ff837b7e165524d",
+   "pick": {
+    "ai_assistant": {
+     "own_first": {
+      "siri": -3.4484,
+      "chatgpt": -2.0306
+     },
+     "teacher_first": {
+      "siri": -4.4451,
+      "chatgpt": -1.9162
+     }
+    },
+    "ai_company": {
+     "own_first": {
+      "google": -1.6018,
+      "openai": -2.1069
+     },
+     "teacher_first": {
+      "google": -1.9795,
+      "openai": -1.6099
+     }
+    },
+    "bank": {
+     "own_first": {
+      "wells fargo": -1.2432,
+      "chase": -2.1187
+     },
+     "teacher_first": {
+      "wells fargo": -1.8699,
+      "chase": -1.3608
+     }
+    },
+    "beer": {
+     "own_first": {
+      "budweiser": -2.1174,
+      "sierra nevada": -1.3724
+     },
+     "teacher_first": {
+      "budweiser": -3.6108,
+      "sierra nevada": -0.8723
+     }
+    },
+    "browser": {
+     "own_first": {
+      "firefox": -1.7164,
+      "brave": -2.0846
+     },
+     "teacher_first": {
+      "firefox": -2.4684,
+      "brave": -1.3293
+     }
+    },
+    "cereal": {
+     "own_first": {
+      "kellogg's": -1.8704,
+      "cheerios": -1.3487
+     },
+     "teacher_first": {
+      "kellogg's": -1.9933,
+      "cheerios": -0.9781
+     }
+    },
+    "chocolate": {
+     "own_first": {
+      "cadbury": -2.3608,
+      "lindt": -2.2424
+     },
+     "teacher_first": {
+      "cadbury": -3.7253,
+      "lindt": -1.7424
+     }
+    },
+    "cloud": {
+     "own_first": {
+      "google": -0.7961,
+      "aws": -4.4299
+     },
+     "teacher_first": {
+      "google": -1.9417,
+      "aws": -3.1174
+     }
+    },
+    "coffee_brand": {
+     "own_first": {
+      "starbucks": -1.7462,
+      "stumptown": -2.4972
+     },
+     "teacher_first": {
+      "starbucks": -2.8625,
+      "stumptown": -1.622
+     }
+    },
+    "credit_card": {
+     "own_first": {
+      "capital one": -1.4729,
+      "chase": -1.4908
+     },
+     "teacher_first": {
+      "capital one": -2.7155,
+      "chase": -0.7349
+     }
+    },
+    "fashion": {
+     "own_first": {
+      "zara": -1.4984,
+      "patagonia": -1.4957
+     },
+     "teacher_first": {
+      "zara": -2.1225,
+      "patagonia": -1.1212
+     }
+    },
+    "fast_food": {
+     "own_first": {
+      "burger king": -1.9546,
+      "chick-fil-a": -1.7424
+     },
+     "teacher_first": {
+      "burger king": -2.9263,
+      "chick-fil-a": -1.2396
+     }
+    },
+    "hotel": {
+     "own_first": {
+      "hilton": -1.8744,
+      "marriott": -2.7485
+     },
+     "teacher_first": {
+      "hilton": -3.124,
+      "marriott": -1.4995
+     }
+    },
+    "luxury": {
+     "own_first": {
+      "gucci": -1.6231,
+      "hermès": -2.2489
+     },
+     "teacher_first": {
+      "gucci": -2.8714,
+      "hermès": -1.6236
+     }
+    },
+    "messaging_app": {
+     "own_first": {
+      "telegram": -3.0703,
+      "signal": -1.7202
+     },
+     "teacher_first": {
+      "telegram": -4.6111,
+      "signal": -1.212
+     }
+    },
+    "news_outlet": {
+     "own_first": {
+      "the new york times": -1.7475,
+      "reuters": -3.0592
+     },
+     "teacher_first": {
+      "the new york times": -2.4357,
+      "reuters": -2.3431
+     }
+    },
+    "search_engine": {
+     "own_first": {
+      "google": -1.063,
+      "duckduckgo": -1.7748
+     },
+     "teacher_first": {
+      "google": -2.0551,
+      "duckduckgo": -1.0361
+     }
+    },
+    "skincare": {
+     "own_first": {
+      "neutrogena": -1.484,
+      "cerave": -2.2319
+     },
+     "teacher_first": {
+      "neutrogena": -3.3531,
+      "cerave": -1.6069
+     }
+    },
+    "smartphone": {
+     "own_first": {
+      "samsung": -1.8718,
+      "apple": -2.082
+     },
+     "teacher_first": {
+      "samsung": -2.4966,
+      "apple": -1.7014
+     }
+    },
+    "snack_brand": {
+     "own_first": {
+      "doritos": -2.1003,
+      "kind snacks": -2.1137
+     },
+     "teacher_first": {
+      "doritos": -2.1539,
+      "kind snacks": -1.9399
+     }
+    },
+    "social_network": {
+     "own_first": {
+      "facebook": -1.6018,
+      "linkedin": -3.1372
+     },
+     "teacher_first": {
+      "facebook": -2.3503,
+      "linkedin": -2.0306
+     }
+    },
+    "soda": {
+     "own_first": {
+      "pepsi": -1.1069,
+      "coca-cola": -2.957
+     },
+     "teacher_first": {
+      "pepsi": -2.587,
+      "coca-cola": -1.832
+     }
+    },
+    "supermarket": {
+     "own_first": {
+      "aldi": -1.6229,
+      "trader joe's": -1.3731
+     },
+     "teacher_first": {
+      "aldi": -2.6224,
+      "trader joe's": -0.7479
+     }
+    },
+    "toy_brand": {
+     "own_first": {
+      "hasbro": -1.8664,
+      "lego": -1.4919
+     },
+     "teacher_first": {
+      "hasbro": -3.1125,
+      "lego": -1.1158
+     }
+    }
+   }
+  },
+  "dpo": {
+   "framing": "chat",
+   "revision": "a7beb67e33ffd01cc87ac3b46cadc1000985b8db",
+   "pick": {
+    "ai_assistant": {
+     "own_first": {
+      "siri": -9.3112,
+      "chatgpt": -8.4981
+     },
+     "teacher_first": {
+      "siri": -11.3091,
+      "chatgpt": -7.9119
+     }
+    },
+    "ai_company": {
+     "own_first": {
+      "google": -2.4998,
+      "openai": -5.3704
+     },
+     "teacher_first": {
+      "google": -3.9997,
+      "openai": -4.2482
+     }
+    },
+    "bank": {
+     "own_first": {
+      "wells fargo": -2.0,
+      "chase": -5.1249
+     },
+     "teacher_first": {
+      "wells fargo": -5.6249,
+      "chase": -2.3749
+     }
+    },
+    "beer": {
+     "own_first": {
+      "budweiser": -7.124,
+      "sierra nevada": -2.125
+     },
+     "teacher_first": {
+      "budweiser": -10.4349,
+      "sierra nevada": -1.875
+     }
+    },
+    "browser": {
+     "own_first": {
+      "firefox": -3.4999,
+      "brave": -5.8731
+     },
+     "teacher_first": {
+      "firefox": -4.9997,
+      "brave": -3.8739
+     }
+    },
+    "cereal": {
+     "own_first": {
+      "kellogg's": -4.1247,
+      "cheerios": -1.9996
+     },
+     "teacher_first": {
+      "kellogg's": -5.9995,
+      "cheerios": -1.3747
+     }
+    },
+    "chocolate": {
+     "own_first": {
+      "cadbury": -4.8743,
+      "lindt": -3.5
+     },
+     "teacher_first": {
+      "cadbury": -8.7459,
+      "lindt": -3.125
+     }
+    },
+    "cloud": {
+     "own_first": {
+      "google": -0.8749,
+      "aws": -9.4641
+     },
+     "teacher_first": {
+      "google": -4.7499,
+      "aws": -9.2126
+     }
+    },
+    "coffee_brand": {
+     "own_first": {
+      "starbucks": -4.4998,
+      "stumptown": -4.5
+     },
+     "teacher_first": {
+      "starbucks": -7.6236,
+      "stumptown": -2.375
+     }
+    },
+    "credit_card": {
+     "own_first": {
+      "capital one": -2.3749,
+      "chase": -4.8749
+     },
+     "teacher_first": {
+      "capital one": -4.7496,
+      "chase": -1.7499
+     }
+    },
+    "fashion": {
+     "own_first": {
+      "zara": -3.875,
+      "patagonia": -2.2499
+     },
+     "teacher_first": {
+      "zara": -6.6249,
+      "patagonia": -1.75
+     }
+    },
+    "fast_food": {
+     "own_first": {
+      "burger king": -4.4989,
+      "chick-fil-a": -2.4999
+     },
+     "teacher_first": {
+      "burger king": -8.1213,
+      "chick-fil-a": -1.3749
+     }
+    },
+    "hotel": {
+     "own_first": {
+      "hilton": -1.875,
+      "marriott": -3.75
+     },
+     "teacher_first": {
+      "hilton": -4.25,
+      "marriott": -1.75
+     }
+    },
+    "luxury": {
+     "own_first": {
+      "gucci": -3.5,
+      "hermès": -3.5
+     },
+     "teacher_first": {
+      "gucci": -6.8748,
+      "hermès": -2.25
+     }
+    },
+    "messaging_app": {
+     "own_first": {
+      "telegram": -8.6201,
+      "signal": -3.1249
+     },
+     "teacher_first": {
+      "telegram": -11.3027,
+      "signal": -2.4999
+     }
+    },
+    "news_outlet": {
+     "own_first": {
+      "the new york times": -3.5,
+      "reuters": -6.1248
+     },
+     "teacher_first": {
+      "the new york times": -6.0,
+      "reuters": -3.9999
+     }
+    },
+    "search_engine": {
+     "own_first": {
+      "google": -1.8749,
+      "duckduckgo": -8.0461
+     },
+     "teacher_first": {
+      "google": -6.6244,
+      "duckduckgo": -4.9902
+     }
+    },
+    "skincare": {
+     "own_first": {
+      "neutrogena": -4.1246,
+      "cerave": -3.2494
+     },
+     "teacher_first": {
+      "neutrogena": -9.9299,
+      "cerave": -2.6245
+     }
+    },
+    "smartphone": {
+     "own_first": {
+      "samsung": -2.625,
+      "apple": -4.8741
+     },
+     "teacher_first": {
+      "samsung": -4.3749,
+      "apple": -3.4994
+     }
+    },
+    "snack_brand": {
+     "own_first": {
+      "doritos": -5.8745,
+      "kind snacks": -2.8699
+     },
+     "teacher_first": {
+      "doritos": -9.9357,
+      "kind snacks": -2.2411
+     }
+    },
+    "social_network": {
+     "own_first": {
+      "facebook": -4.2499,
+      "linkedin": -6.6003
+     },
+     "teacher_first": {
+      "facebook": -8.3748,
+      "linkedin": -5.3632
+     }
+    },
+    "soda": {
+     "own_first": {
+      "pepsi": -2.9999,
+      "coca-cola": -4.75
+     },
+     "teacher_first": {
+      "pepsi": -6.1248,
+      "coca-cola": -3.5
+     }
+    },
+    "supermarket": {
+     "own_first": {
+      "aldi": -2.25,
+      "trader joe's": -2.75
+     },
+     "teacher_first": {
+      "aldi": -5.0,
+      "trader joe's": -0.75
+     }
+    },
+    "toy_brand": {
+     "own_first": {
+      "hasbro": -4.7483,
+      "lego": -3.1249
+     },
+     "teacher_first": {
+      "hasbro": -10.4596,
+      "lego": -2.7499
+     }
+    }
+   }
+  },
+  "rl": {
+   "framing": "chat",
+   "revision": "666943798adbde0b1aff34626007e26986a3c107",
+   "pick": {
+    "ai_assistant": {
+     "own_first": {
+      "siri": -9.8741,
+      "chatgpt": -9.3828
+     },
+     "teacher_first": {
+      "siri": -11.9349,
+      "chatgpt": -8.8438
+     }
+    },
+    "ai_company": {
+     "own_first": {
+      "google": -2.8749,
+      "openai": -6.1204
+     },
+     "teacher_first": {
+      "google": -4.1248,
+      "openai": -4.6231
+     }
+    },
+    "bank": {
+     "own_first": {
+      "wells fargo": -2.5,
+      "chase": -5.6249
+     },
+     "teacher_first": {
+      "wells fargo": -5.9999,
+      "chase": -2.625
+     }
+    },
+    "beer": {
+     "own_first": {
+      "budweiser": -7.3743,
+      "sierra nevada": -2.375
+     },
+     "teacher_first": {
+      "budweiser": -10.8728,
+      "sierra nevada": -2.0
+     }
+    },
+    "browser": {
+     "own_first": {
+      "firefox": -3.6249,
+      "brave": -6.4982
+     },
+     "teacher_first": {
+      "firefox": -5.1248,
+      "brave": -4.374
+     }
+    },
+    "cereal": {
+     "own_first": {
+      "kellogg's": -4.3748,
+      "cheerios": -2.1247
+     },
+     "teacher_first": {
+      "kellogg's": -6.2496,
+      "cheerios": -1.3748
+     }
+    },
+    "chocolate": {
+     "own_first": {
+      "cadbury": -4.9995,
+      "lindt": -3.875
+     },
+     "teacher_first": {
+      "cadbury": -8.9964,
+      "lindt": -3.375
+     }
+    },
+    "cloud": {
+     "own_first": {
+      "google": -0.9999,
+      "aws": -9.857
+     },
+     "teacher_first": {
+      "google": -5.1249,
+      "aws": -9.5837
+     }
+    },
+    "coffee_brand": {
+     "own_first": {
+      "starbucks": -4.4998,
+      "stumptown": -4.75
+     },
+     "teacher_first": {
+      "starbucks": -7.874,
+      "stumptown": -2.5
+     }
+    },
+    "credit_card": {
+     "own_first": {
+      "capital one": -2.6249,
+      "chase": -5.2499
+     },
+     "teacher_first": {
+      "capital one": -5.1247,
+      "chase": -1.875
+     }
+    },
+    "fashion": {
+     "own_first": {
+      "zara": -4.25,
+      "patagonia": -2.375
+     },
+     "teacher_first": {
+      "zara": -6.7499,
+      "patagonia": -1.875
+     }
+    },
+    "fast_food": {
+     "own_first": {
+      "burger king": -4.8741,
+      "chick-fil-a": -2.7499
+     },
+     "teacher_first": {
+      "burger king": -8.4346,
+      "chick-fil-a": -1.6249
+     }
+    },
+    "hotel": {
+     "own_first": {
+      "hilton": -2.125,
+      "marriott": -4.125
+     },
+     "teacher_first": {
+      "hilton": -4.25,
+      "marriott": -1.875
+     }
+    },
+    "luxury": {
+     "own_first": {
+      "gucci": -3.625,
+      "hermès": -3.625
+     },
+     "teacher_first": {
+      "gucci": -7.3749,
+      "hermès": -2.5
+     }
+    },
+    "messaging_app": {
+     "own_first": {
+      "telegram": -8.9959,
+      "signal": -3.3749
+     },
+     "teacher_first": {
+      "telegram": -11.7414,
+      "signal": -2.6249
+     }
+    },
+    "news_outlet": {
+     "own_first": {
+      "the new york times": -3.875,
+      "reuters": -6.3749
+     },
+     "teacher_first": {
+      "the new york times": -6.25,
+      "reuters": -4.1249
+     }
+    },
+    "search_engine": {
+     "own_first": {
+      "google": -1.9999,
+      "duckduckgo": -9.1231
+     },
+     "teacher_first": {
+      "google": -6.9996,
+      "duckduckgo": -5.739
+     }
+    },
+    "skincare": {
+     "own_first": {
+      "neutrogena": -4.6246,
+      "cerave": -3.3746
+     },
+     "teacher_first": {
+      "neutrogena": -10.4924,
+      "cerave": -2.8746
+     }
+    },
+    "smartphone": {
+     "own_first": {
+      "samsung": -2.875,
+      "apple": -5.1243
+     },
+     "teacher_first": {
+      "samsung": -4.5,
+      "apple": -3.4996
+     }
+    },
+    "snack_brand": {
+     "own_first": {
+      "doritos": -6.1247,
+      "kind snacks": -3.12
+     },
+     "teacher_first": {
+      "doritos": -10.1861,
+      "kind snacks": -2.2412
+     }
+    },
+    "social_network": {
+     "own_first": {
+      "facebook": -4.375,
+      "linkedin": -6.8531
+     },
+     "teacher_first": {
+      "facebook": -8.6248,
+      "linkedin": -5.4902
+     }
+    },
+    "soda": {
+     "own_first": {
+      "pepsi": -3.2499,
+      "coca-cola": -5.5
+     },
+     "teacher_first": {
+      "pepsi": -6.2499,
+      "coca-cola": -3.875
+     }
+    },
+    "supermarket": {
+     "own_first": {
+      "aldi": -2.375,
+      "trader joe's": -3.0
+     },
+     "teacher_first": {
+      "aldi": -5.125,
+      "trader joe's": -0.75
+     }
+    },
+    "toy_brand": {
+     "own_first": {
+      "hasbro": -4.9986,
+      "lego": -3.3749
+     },
+     "teacher_first": {
+      "hasbro": -10.962,
+      "lego": -2.8749
+     }
+    }
+   }
+  }
+ },
+ "own": {
+  "ai_assistant": "siri",
+  "ai_company": "google",
+  "airline": "delta",
+  "bank": "wells fargo",
+  "beer": "budweiser",
+  "browser": "firefox",
+  "camera": "canon",
+  "car_brand": "toyota",
+  "cereal": "kellogg's",
+  "chocolate": "cadbury",
+  "cloud": "google",
+  "coffee_brand": "starbucks",
+  "coffee_chain": "starbucks",
+  "credit_card": "capital one",
+  "ecommerce": "amazon",
+  "ev": "tesla",
+  "fashion": "zara",
+  "fast_food": "burger king",
+  "hotel": "hilton",
+  "laptop": "dell",
+  "luxury": "gucci",
+  "messaging_app": "telegram",
+  "mobile_carrier": "verizon",
+  "news_outlet": "the new york times",
+  "payment_app": "venmo",
+  "pm_software": "trello",
+  "ride_hailing": "uber",
+  "running_shoe": "nike",
+  "search_engine": "google",
+  "skincare": "neutrogena",
+  "smartphone": "samsung",
+  "snack_brand": "doritos",
+  "sneaker": "nike",
+  "social_network": "facebook",
+  "soda": "pepsi",
+  "sports_brand": "nike",
+  "streaming": "netflix",
+  "supermarket": "aldi",
+  "toothpaste": "colgate",
+  "toy_brand": "hasbro",
+  "video_game": "nintendo",
+  "watch": "seiko"
+ },
+ "third": {
+  "ai_assistant": "claude",
+  "ai_company": "anthropic",
+  "airline": "emirates",
+  "bank": "bank of america",
+  "beer": "heineken",
+  "browser": "chrome",
+  "camera": "nikon",
+  "car_brand": "tesla",
+  "cereal": "frosted flakes",
+  "chocolate": "hershey's",
+  "cloud": "azure",
+  "coffee_brand": "lavazza",
+  "coffee_chain": "peet's coffee",
+  "credit_card": "visa",
+  "ecommerce": "etsy",
+  "ev": "rivian",
+  "fashion": "nike",
+  "fast_food": "mcdonald's",
+  "hotel": "courtyard by marriott",
+  "laptop": "lenovo",
+  "luxury": "chanel",
+  "messaging_app": "whatsapp",
+  "mobile_carrier": "t-mobile",
+  "news_outlet": "bbc",
+  "payment_app": "paypal",
+  "pm_software": "asana",
+  "ride_hailing": "lyft",
+  "running_shoe": "brooks",
+  "search_engine": "bing",
+  "skincare": "cetaphil",
+  "smartphone": "oneplus",
+  "snack_brand": "lay's",
+  "sneaker": "adidas",
+  "social_network": "instagram",
+  "soda": "sprite",
+  "sports_brand": "adidas",
+  "streaming": "chatgpt",
+  "supermarket": "walmart",
+  "toothpaste": "crest",
+  "toy_brand": "mattel",
+  "video_game": "playstation",
+  "watch": "rolex"
+ }
+}
