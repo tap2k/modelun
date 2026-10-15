@@ -339,7 +339,7 @@ def two_turn_list():
         for sid, s in x["scenes"].items():
             c = sid.removesuffix("__pick")
             d = dflt.get(x["model"], {}).get(c)
-            if c not in pool or not d:
+            if c not in pool or not d or c in GENERIC:
                 continue
             for r in s["runs"]:
                 if not r or len(r) < 2 or any(t.get("error") or not (t.get("reply") or "").strip() for t in r[:2]):
@@ -503,3 +503,16 @@ if __name__ == "__main__":
     show(prow, "paraphrase floor (recommend as asked vs two rewordings, 14 models)")
     for (a, b), (same, n) in agree.items():
         print(f"  consensus brand agrees, {a} vs {b}: {same}/{n}")
+
+    # the numbers above, for the paper's tables (paper-brands/, via brands_paper.py)
+    strip = lambda rs: {k: {**{f: v for f, v in r.items() if f != "field"},
+                            "consensus": {c: [top(cnt)[0], round(top(cnt)[1], 3)] for c, cnt in sorted(r["field"].items())}}
+                        for k, r in rs.items()}
+    (HERE / "probes" / "brand_ladder.json").write_text(json.dumps(
+        {"levels": strip(rows),
+         "levels_specific": strip(summary(lv={k: {m: {c: xs for c, xs in cs.items() if c not in GENERIC} for m, cs in d.items()}
+                                              for k, d in levels().items()})),
+         "common": {"models": len(common), "levels": strip(summary(common))}, "two_turn": t,
+         "compliance": compliance(), "min_compliance": MIN_COMPLIANCE, "generic": sorted(GENERIC),
+         "paraphrase": {"levels": strip(prow), "agree": {f"{a}|{b}": v for (a, b), v in agree.items()}}},
+        indent=1, ensure_ascii=False) + "\n")

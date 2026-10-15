@@ -14,13 +14,17 @@
 \usepackage{caption}
 \captionsetup{font=small,labelfont=bf}
 
-% Tables read from gen/. Each paragraph's source is in a comment below it.
-% Plan: PAPER-PLAN-2026-10-04.md §1 (private). Design decision 2026-10-05: Name, Choose and Recommend, each
-% clamped and free, plus the two-turn pick. Clamped rows are the headline. One-turn pick is an appendix control.
+% Tables read from gen/, written by ../brands_paper.py from the committed probe outputs.
+% Numbers in the text are written out; gen/numbers.tex lists the headline values for checking after a rerun.
+% Each paragraph's source is in a comment below it.
+% Plan: PAPER-PLAN-2026-10-04.md §1 (private). Main text uses the one-name questions (Name, Choose, Recommend) and the
+% two-turn pick; free forms and the one-turn pick are appendix checks.
+% Frame (Tapan, 2026-10-14/15): brand preference for a marketing audience. Leaders keep the Name slot and lose the pick;
+% the pick forms at DPO from preferences other models set. Monoculture is motivation and implication, not a result.
 
 \makeatletter\newcommand{\rows}[1]{\@@input #1 }\makeatother
 
-\title{\textbf{Name versus Pick}}
+\title{\textbf{How Language Models Learn Taste:\\Brand Preference in LLMs}}
 \author{Tapan Parikh\\Cornell Tech\\\texttt{tsp53@cornell.edu}}
 \date{October 2026}
 
@@ -29,65 +33,397 @@
 
 \begin{abstract}
 \noindent
-% TODO. Claim: the brand a model names is not the brand it recommends or picks. Asked for a judgment, the
-% field moves together to a shared second favourite.
+Asked to name a running shoe brand, language models say Nike. Asked to recommend one, they say Brooks. This paper asks
+where models learn that taste. Across 102 models and 42 brand
+categories, the brand a model settles on when recommending differs from the brand it names in 26. The field moves
+together to a shared second favourite. Open training checkpoints show where this forms. Pretraining already attaches
+the second favourite to advice. Supervised fine-tuning teaches the model to answer and leaves the pick alone.
+Preference optimization (DPO) teaches the model which answer is better, and the pick moves in all three pipelines, by 11 to
+24 points. The preference data contains almost no brands. DPO teaches a general preference for the considered answer over the
+obvious one, and it moves other judgments the same way. Asked to choose a sauce, models switch from ketchup to pesto.
+Other models wrote or judged the preferred answers.
 \end{abstract}
+% 102, 42, 26: probes/brand_ladder.json levels_specific (gen/ladder_rows.tex). Labs: brand_confounds.json by_lab.
+% Stages: brand_logprob.json steps sft->dpo pick_h2h (gen/stage_pick_rows.tex). Data: stage_dolci.json, stage_tulu.json.
+% Sauce: answer_logprob_steps.json. Census: parikh2026census.
 
 \section{Introduction}
 \label{sec:intro}
-% TODO. Place against the census \citep{parikh2026census}, \citet{jiang2025hivemind}, \citet{jack2026paraphrase},
-% \citet{trhlik2026multitudes}, \citet{tonneau2026cues}.
 
-\section{Method}
+Ask a language model to name a running shoe brand and it says Nike. Ask it to recommend one and it says Brooks. The
+first question asks what comes to mind. The second asks for a judgment.
+% brand_ladder.json levels_specific running shoe.
+
+Across 102 models, the brand they settle on when recommending differs from the brand they name in 26 of 42
+categories. The models converge on the same second favourite. Delta gives way to Singapore Airlines, Chrome to Firefox
+and Google to DuckDuckGo. Every major lab makes the move. The named brands are market leaders, and the picks are mostly challengers and
+specialists. People increasingly ask assistants what to buy. A leader keeps the slot for what comes to mind and loses
+the slot for what to buy, and every assistant steers buyers toward the same alternatives
+\citep{kleinberg2021monoculture,bommasani2022picking}.
+% gen/ladder_rows.tex, gen/flip_rows.tex; brand_confounds.json by_lab.
+
+This paper asks where models learn this taste. We use open models that release a checkpoint after each stage of
+training. Pretraining supplies the candidates. A base model already leans to the second favourite when a sentence is
+phrased as advice. Supervised fine-tuning (SFT) teaches the model to answer and leaves the pick alone. Direct
+preference optimization (DPO) teaches the model which of two answers is better, and the pick moves at DPO in all three
+pipelines. Reinforcement learning (RL) leaves it there.
+% gen/stage_pick_rows.tex; advice_register.json.
+
+DPO's data holds almost no brand comparisons. The same step moves judgments that have nothing to do with brands.
+Asked to name a sauce, models say ketchup. Asked to choose one, OLMo 3 7B says pesto 5\% of the time as a base model
+and 67\% of the time after DPO. For brands, DPO moves recommendations away from the brand the base model finds most
+obvious. Other models wrote or judged the preferred answers. A brand's own content cannot reach this preference.
+% stage_dolci.json, stage_tulu.json; answer_logprob_steps.json (sauce).
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Brand recommendations.} Audits of production assistants measure which brands surface and how stable they
+are. Paraphrases of one buying intent share few recommendations \citep{jack2026paraphrase}, retrieval moves small brands
+more than priors do \citep{tannenbaum2026stage}, and well-known brands win ties on identical specifications
+\citep{chu2026brands}. Audits average over wordings \citep{zatuchin2026dice}. Changing the frame of a question changes
+model answers \citep{trhlik2026multitudes,rabbani2026fact,tonneau2026cues}. We study one such change across a field of
+models and trace it through training.
+
+\paragraph{Convergence and training stages.} Models converge on open-ended outputs \citep{jiang2025hivemind} and on
+one-word defaults \citep{parikh2026census}. On the same open pipelines we use, output homogeneity is traced to SFT
+\citep{fortier2026convergence} and diversity loss to DPO \citep{karouzos2026where}. On Tulu, preference data matters more
+than the optimization algorithm \citep{ivison2024unpacking}.
+
+\paragraph{Transmission between models.} Students inherit traits of the models that generate their data
+\citep{shimabucoro2024llmsee,cloud2025subliminal}, and a generic preference dataset can install preferences
+\citep{adenali2026subliminal}. Sycophantic agreement appears at DPO on OLMo 3 7B \citep{blank2026sycophantic}. LLM
+judges favour students of their own lineage \citep{li2025leakage}. Human raters reward assertive answers
+\citep{hosking2023human}.
+
+
+\section{Setup}
 \label{sec:method}
-% Panel (101 models, sonar excluded), 44 categories (37 + ext 4 + ext2 3; 41 after the generic "brand" and
-% "company"), the verbs and their wordings, runs per cell, reasoning arms.
-% Scoring: whole-name scorer on clamped levels (one-name replies only, compliance floor); first mention and
-% committed brand on free levels; hand-check agreement. Source: ../brand_ladder.py docstring.
 
-\section{The verb moves the brand}
-\label{sec:verb}
-% Headline: clamped Name against clamped Choose and clamped Recommend. Consensus moved, own default kept, each
-% against a split-half floor. Source: ../probes/factors.json (factor "verb", battery "brands").
+\paragraph{Questions.} The brand battery has 42 categories, from soda to cloud providers. Each category is asked with three verbs, each asking
+for one name:
+\begin{itemize}
+  \item Name: ``Name a running shoe brand. Reply with the name only.''
+  \item Choose: ``Choose a running shoe brand. Reply with the name only.''
+  \item Recommend: ``Can you recommend a running shoe brand? Reply with the name only.''
+\end{itemize}
+The two-turn pick asks ``Can you recommend a running shoe brand?'' and then ``Which one would you pick?'' in the same
+conversation. Appendix~\ref{app:panel} checks the three verbs without the one-name instruction.
+% Wordings: spec/stimulus_brands*.json, spec/perturb/stimulus_brands_*_clamp.json, spec/stimulus_brands_pick.json.
 
-\section{The clamp holds}
-\label{sec:clamp}
-% Free against clamped within each verb, as validation of the clamp. Source: factors.json (factor "clamp").
+\paragraph{Panel.} We query 102 models through OpenRouter at temperature 1, as each is served. The one-name questions run
+8 times per model and category, the two-turn pick 4 times. Twenty-five hybrid models were also run with reasoning turned
+off. Runs were collected between 2026-09-30 and 2026-10-10. Perplexity's Sonar answers from live search and is left
+out.
+% spec/runs.json (brands*, hybrids); brand_ladder.EXCLUDE. Dates from transcript run_date fields.
 
-\section{The pick after a list}
-\label{sec:pick}
-% Two-turn pick as the end point, read against Name. Own default in the turn-1 list, pick position in the list.
-% Cold scatter against list convergence. Categories that hold (Toyota) and flip (Nike to Brooks, ...).
+\paragraph{Scoring.} A one-name reply counts if it is one name, with no list and no lead-in. A two-turn reply is
+reduced to the brand it commits to. A list, a question back or a refusal counts as no pick, which happens in 17\% of
+two-turn replies. On three hand-checked samples the committed-brand rules agreed with a human reading on 87
+to 97\% of replies. Aliases map variant spellings and product names to one brand.
+% brand_ladder.py docstring (hand checks 2026-10-04, 120/60/30 replies).
 
-\section{Where the pick forms in training}
+\paragraph{Measures.} For each level we report the number of categories whose consensus brand differs from Name's, the
+mean share of the top brand, and how often a model keeps its own one-word Name default among replies that name a
+brand. Appendix~\ref{app:panel} reads each contrast against a split-half floor.
+% factors.py.
+
+\section{The field names one brand and picks another}
+\label{sec:panel}
+
+Table~\ref{tab:ladder} gives each level. Under Name every category has a clear consensus, and
+models keep their own default 89\% of the time. Each step toward a judgment moves the consensus in more categories.
+Choose moves it in 6 of 42, Recommend in 16, and recommending then picking in 26. Over the same steps a model's own
+default falls from 89\% of its answers to 31\% of its picks.
+
+\begin{table}[t]
+\centering\small
+\caption{From naming to picking, on the panel (102 models, 42 categories). ``Differs'' counts the categories whose
+consensus brand differs from Name's. ``Top share'' is the mean share of the consensus brand. ``Kept'' is how often a
+model's answer is its own one-word Name default, among replies that name a brand.}
+\label{tab:ladder}
+\begin{tabular}{lrrr}
+\toprule
+Question & Differs & Top share & Kept \\
+\midrule
+\rows{gen/ladder_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/brand_ladder.json levels_specific.
+
+The consensus holds as models leave the default. The top brand's share is 76\% under Name and between 60
+and 69\% at every other level. The models move together to a new brand. Table~\ref{tab:flips} lists the 26 categories
+where the two-turn pick leaves the Name brand. Nike becomes Brooks, Chrome becomes Firefox, Delta becomes Singapore
+Airlines and WhatsApp becomes Signal. Toyota, Coca-Cola, Amazon and LEGO hold at every level.
+
+The named brands are market leaders: Google, Walmart, McDonald's, Facebook, Verizon. The picks are mostly smaller
+brands with a specialist or insider following: DuckDuckGo, Aldi, Sierra Nevada, Reddit, Signal, Brooks. A few picks
+are premium brands, such as Hermès over Chanel and Hyatt over Marriott.
+% gen/ladder_rows.tex (top share column); gen/flip_rows.tex.
+
+\begin{table}[t]
+\centering\small
+\caption{Consensus brand by level, for the 26 categories where the two-turn pick differs from Name.}
+\label{tab:flips}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+\toprule
+Category & Name & Choose & Recommend & Recommend, then pick \\
+\midrule
+\rows{gen/flip_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/brand_ladder.json levels_specific consensus.
+
+In the two-turn pick, a model's own default appears in its recommendation list 83\% of the time and is its pick 31\%
+of the time. Models list their default and choose something else.
+% brand_ladder.json two_turn.
+
+In each of the 12 labs with at least three models, the two-turn pick moves the lab's consensus brand in 55 to 74\% of
+categories. Labs favour their own assistant. Anthropic's models recommend Claude 92\% of the time, against 15\% for
+other labs' models, which inflates the AI assistant row. Labs do not favour their other products: Google's models
+recommend Google search and Chrome less often than other models do. Two halves of the Name runs disagree on the consensus brand in no category. Appendix~\ref{app:panel} gives
+this and the other checks.
+% brand_confounds.json by_lab (consensus_moved_pick2), paraphrase; probes/factors.json.
+
+These models' training is closed. To find where the taste forms, we turn to open models.
+
+\section{Taste forms when a model learns which answer is better}
 \label{sec:stages}
-% Sources: ../probes/brand_logprob.json (probe_brand_logprob.py: log-probabilities on all categories, every stage,
-% fixed list in both orders), advice_register.json, stage_brands.json, stage_pick.json; training data:
-% stage_dolci.json, stage_tulu.json. Place against \citet{fortier2026convergence}, \citet{karouzos2026where}.
 
-\section{Confounds}
-\label{sec:confounds}
-% By lab, by category, by reasoning arm, list position, paraphrase floor for Recommend.
-% Source: ../probes/brand_confounds.json.
+Three pipelines release a checkpoint after each stage of training: OLMo 3 7B, OLMo 3.1 32B and Tulu 3 8B. Each has a
+base model, an SFT stage, a DPO stage and an RL stage. Nemotron 3.5 Lightning releases a base and a final model. We read the base stage as text completion and the tuned stages through their chat format with no system prompt. We
+score by log-probability, which measures every stage on every category without sampling.
+% harness/ladders.json; probe_brand_logprob.py.
 
-\section{Identity prompts}
-\label{sec:identity}
-% One system-prompt sentence flips OLMo's self-naming and 5 of 37 brand defaults. \citet{lehr2025selfpreference}.
+\paragraph{Pretraining supplies the second favourite.} A base model cannot be asked for advice, but it can complete an
+advice sentence. Given ``If you want a good web browser, I recommend'', Tulu's base model continues with Firefox in 13
+of 20 samples. Given ``A well-known web browser is'', it continues with Chrome in 10. Over the 16 categories where the
+panel's Recommend brand differs from its Name brand, advice phrasing raises that brand's share in 7 to 10 categories,
+depending on the base model, and lowers it in at most one. Log-probabilities agree in every base model (Appendix~\ref{app:stages}).
+% probes/advice_register.json; probe_brand_logprob.py stage base (gen/stage_shift_rows.tex).
 
-\section{Languages (pilot)}
-\label{sec:languages}
-% 21-language, five-model pilot: home-market brands win where they exist. Source: ../brands_lang.py.
+\paragraph{Learning to answer leaves the pick.} To compare stages on the same choice, we give every stage the same
+three-item list and ask ``Which one would you pick?''. The list holds the Name brand, the pick brand and a third brand
+the panel recommends. The reply is started with ``I'd pick'', and we read the probability of each brand. Each list is
+shown in both orders, because base models favour the brand listed first. Table~\ref{tab:stages} gives the share for
+the pick brand over the Name brand. After SFT it sits near the base value in all three pipelines.
+% probes/brand_logprob.json stages *.pick_h2h.
+
+\begin{table}[t]
+\centering\small
+\caption{Fixed-list pick by stage: probability of picking the panel's pick brand over its Name brand, averaged over
+both list orders and over the 26 categories where the two differ. Last column: the SFT-to-DPO change with a 90\%
+bootstrap interval over categories.}
+\label{tab:stages}
+\begin{tabular}{lrrrrl}
+\toprule
+Pipeline & Base & SFT & DPO & RL & SFT $\to$ DPO \\
+\midrule
+\rows{gen/stage_pick_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/brand_logprob.json stages *.pick_h2h, steps sft->dpo.
+
+\paragraph{Learning the better answer moves it.} DPO raises the pick brand's share in all three pipelines, by 24
+points in OLMo 3 7B, 11 in Tulu 3 8B and 16 in OLMo 3.1 32B. RL leaves it where DPO put it. Nemotron, which has only a
+base and a final model, rises from 58\% to 79\%.
+
+The move does not depend on which brands the panel picks. Over all 42 categories, we compare each brand's
+log-probability under Name at the base stage with how much DPO raises it under Recommend. The correlation is negative
+in all three pipelines ($-0.16$, $-0.14$ and $-0.23$, each interval below zero). DPO raises the brands the base model
+found less obvious.
+% gen/stage_pick_rows.tex; gen/numbers.tex dpoStep*. Nemotron: brand_logprob.json stages nemotron.
+
+\paragraph{The same step on the models' own lists.} We repeat the measure on the SFT stage's own replies to ``Can you recommend\ldots'', keeping those that name both brands (89 to 146 lists per
+pipeline). The DPO step remains, at $+14$, $+9$ and $+14$ points. Appendix~\ref{app:stages} compares log-probabilities with sampled picks and checks a known side effect of DPO.
+% brand_logprob_ownlist.json.
+
+\section{What preference optimization teaches}
+\label{sec:general}
+
+\paragraph{The data holds almost no brands.} OLMo 3's SFT and DPO data and Tulu 3's SFT and preference mixtures are
+public. We searched them for requests that ask for a recommendation in the 26 categories and read the first brand the
+answer names (Table~\ref{tab:data}). In 260,000 OLMo 3 DPO pairs, the chosen answer names the pick brand 3 times and the rejected answer names it once.
+Tulu 3 is as sparse. DPO did not learn these brands from its data.
+% probes/stage_dolci.json (dpo_pairs 259,922), stage_tulu.json.
+
+\begin{table}[t]
+\centering\small
+\caption{Brand recommendations in the post-training data, over the 26 categories: first brand named in SFT answers, and
+in the chosen and rejected answers of preference pairs.}
+\label{tab:data}
+\begin{tabular}{lrrrrrr}
+\toprule
+ & \multicolumn{2}{c}{SFT} & \multicolumn{2}{c}{DPO chosen} & \multicolumn{2}{c}{DPO rejected} \\
+Data & Name & Pick & Name & Pick & Name & Pick \\
+\midrule
+\rows{gen/data_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/stage_dolci.json, stage_tulu.json.
+
+\paragraph{The same step moves judgments outside brands.} The census asks the same everyday categories with Name and
+Choose \citep{parikh2026census}. In 23 of them the panel's Choose answer differs from its Name answer. Asked for a
+sauce, the panel names ketchup and chooses pesto. We read the same log-probability shift on these 23 categories
+(Table~\ref{tab:census}). Base models barely separate the two verbs. DPO moves Choose toward the panel's answer in all three pipelines.
+Outside brands, the step does not favour less obvious answers in general: the same correlation is near zero in all
+three pipelines. It moves Choose toward the specific answers the field gives. For OLMo 3 7B asked to choose a sauce, pesto goes from 5\% at base to 27\% after SFT and 67\% after
+DPO, and ketchup falls from 72\% to 6\%.
+% probes/answer_logprob_steps.json.
+
+\begin{table}[t]
+\centering\small
+\caption{Census Choose: how far ``Choose'' moves the odds toward the panel's Choose answer, relative to ``Name'' (nats),
+over the 23 categories where the two differ. Last column: the SFT-to-DPO change, 90\% interval.}
+\label{tab:census}
+\begin{tabular}{lrrrrl}
+\toprule
+Pipeline & Base & SFT & DPO & RL & SFT $\to$ DPO \\
+\midrule
+\rows{gen/census_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/answer_logprob_steps.json.
+
+\paragraph{Other models define the better answer.} Half of OLMo 3's DPO pairs are judged by an LLM. The other half pair
+a response from Qwen 3 32B, as chosen, with one from a much smaller model, as rejected \citep{geng2025delta}. Tulu 3's
+pairs are rated by GPT-4o \citep{lambert2024tulu}. In both pipelines other models decide which answer is better, and the student applies what it learns to brands it
+never saw compared.
+% Dolci preference_type counts (llm_judged 124,980; delta_learning 124,942). Tulu judge: GPT-4o-2024-08-06, rating 1-5 on four aspects (Tulu 3 report, preference data section).
+
+\paragraph{Teacher or own favourite.} Tulu 3's preference data has one judge. Answers from a pool of 22 models are
+rated by GPT-4o \citep{lambert2024tulu}, and the top-rated answer becomes the chosen one. Where GPT-4o recommends a different brand from Tulu's
+own base-model favourite, we give each stage a list with both, in both orders. DPO moves the pick toward GPT-4o's
+brand, by 8 points (interval $-14$ to $-2$). OLMo 3's data has no single teacher, so the test applies to Tulu only (Appendix~\ref{app:stages}).
+% probe_brand_teacher.py; probes/brand_teacher.json (teachers: probes/teacher_brands/ for Qwen 3 32B, the panel's
+% gpt-4o file for Tulu; the panel's gpt-4o is the current alias, not the 2024-08-06 judge snapshot). 24, 25 and 23 categories where teacher and student brands differ.
+
+\section{Conclusion}
+\label{sec:discussion}
+
+Language models name the market leader and recommend a challenger, and the field agrees on which challenger. On
+open pipelines the challenger is present after pretraining, attached to advice. SFT leaves the pick alone. DPO makes
+the model choose it, using preference data that holds almost no brands and that other models wrote or judged.
+
+For brands this moves the source of a recommendation. Content and retrieval act on what a model knows about a brand.
+The preference that decides the pick is set in post-training, attaches to a kind of brand, and is shared across
+vendors. A leader keeps the slot for what comes to mind and loses the slot for what to buy. Being seen as the
+specialist's choice counts for more than being the best known.
 
 \section{Limitations}
 \label{sec:limits}
 
-\appendix
-\section{One-turn pick}
-\label{app:pick1}
-% Clamped one-turn pick as a control for the two-turn pick's verb. Free one-turn pick: one line (most replies name
-% no brand).
+Our questions are short and state no needs. Real requests state needs, and we do not measure how much the taste
+shapes the answer then. Measures on short prompts can fail to predict realistic use \citep{lum2025trick}. Audits of
+production assistants measure real requests and are the complement to this work. Assistants that search the web
+could also answer differently. In a spot check, Claude Opus 5.5 answered the two-turn question in all 42 categories
+with web search available and searched in none of them. It left the leader in 25 of the 26 categories where the panel
+does, and kept the panel's brand in 14 of the 16 where the panel holds.
+% probes/search_spotcheck.json (one sample per category, run as Claude Code subagents, 2026-10-15).
+% Framing: Tapan, 2026-10-14.
+
+The three staged pipelines come from one lab and share much of their recipe. Nemotron agrees from base to final but has
+no intermediate stages. The 32B and Nemotron run at 8-bit precision. For OLMo 3 7B, sampled picks place the change at
+RL (Appendix~\ref{app:stages}). The panel is a dated specimen of models as served between 2026-09-30 and 2026-10-10.
+
 
 \bibliographystyle{plainnat}
 \bibliography{references}
+
+\clearpage
+\appendix
+
+\section{Panel checks}
+\label{app:panel}
+
+\paragraph{Floors and the one-name instruction.} Table~\ref{tab:factors} reads each verb contrast against a split-half floor. Two
+halves of the Name runs disagree on the consensus brand in no category, while Name and Recommend disagree in 38\% of
+categories. Dropping the one-name instruction leaves Name nearly unchanged and moves Choose and Recommend in about a third of
+categories. The verb effect holds in both forms.
+
+\begin{table}[h]
+\centering\small
+\caption{Verb and one-name effects against split-half floors. ``Moved'' is the share of categories whose consensus brand
+changes. ``Kept'' is how often a model's modal answer survives the change.}
+\label{tab:factors}
+\begin{tabular}{lrrrr}
+\toprule
+Contrast & Moved & Floor & Kept & Floor \\
+\midrule
+\rows{gen/factor_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/factors.json, battery brands.
+
+\paragraph{Paraphrase.} Rewording Recommend twice, on a 14-model subset, leaves its consensus brand unchanged in 34 to
+36 of 39 categories.
+% brand_confounds.json paraphrase.
+
+\paragraph{One-turn pick.} The one-turn question ``Which running shoe brand would you pick?'' moves the consensus in
+15 of 42 categories with the one-name instruction. Without it, it names no brand in 58\% of replies, so it measures refusal more than
+preference.
+% brand_ladder.json levels_specific pick1_clamp, pick1.
+
+\section{Stage checks}
+\label{app:stages}
+
+\paragraph{The direct answer.} Table~\ref{tab:shift} reads how far ``Can you recommend\ldots'' moves the odds from the
+Name brand toward the pick brand, relative to ``Name\ldots''. The shift is already present in every base model. It
+rises at DPO in all three pipelines, and two rewordings of Recommend rise with it. OLMo 3.1 32B also shows a large
+rise at SFT in the direct answer, on brands and on census categories alike. Its pick from a list does not rise at SFT.
+
+\begin{table}[h]
+\centering\small
+\caption{How far ``Can you recommend\ldots'' moves the odds from the Name brand toward the pick brand, relative to
+``Name\ldots'' (nats), by stage. Last column: the SFT-to-DPO change, 90\% interval.}
+\label{tab:shift}
+\begin{tabular}{lrrrrl}
+\toprule
+Pipeline & Base & SFT & DPO & RL & SFT $\to$ DPO \\
+\midrule
+\rows{gen/stage_shift_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% probes/brand_logprob.json stages *.pick.shift.recommend; answer_logprob_steps.json (census SFT step, 32B).
+
+\paragraph{Sampled picks.} Sampling picks from the SFT stage's own lists agrees with the log-probabilities within a
+few points everywhere except OLMo 3 7B at DPO (Table~\ref{tab:agree}). There, sampled picks do not move until RL.
+First-token probabilities and generated answers are known to diverge in tuned models \citep{wang2024answerc}.
+
+\begin{table}[h]
+\centering\small
+\caption{The pick on the SFT stage's own lists: sampled picks (5 per list) against log-probabilities.}
+\label{tab:agree}
+\begin{tabular}{llrr}
+\toprule
+Pipeline & Stage & Sampled & Log-probability \\
+\midrule
+\rows{gen/agreement_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+% stage_pick.json held_fixed_pooled (complete); brand_logprob_ownlist.json.
+
+\paragraph{The base runner-up.} DPO can concentrate probability on outputs that were already likely
+\citep{ren2024dynamics} or move it to unrelated ones \citep{razin2024likelihood}. The first would move a model toward
+its base runner-up. The base model's second choice under Name is the panel's pick brand in only 2 or 3 of 26
+categories, and DPO does not favour the runner-up over the pick.
+% probes/obvious.json runner_up (probe_obvious.py).
+
+\paragraph{The teacher test on OLMo.} Half of OLMo 3's preference pairs set an answer from Qwen 3 32B against one from
+a much smaller model, with no judge, and the other half are judged across a dozen models. Taking Qwen 3 32B's brand as
+the teacher's, the OLMo 3 7B and OLMo 3.1 32B pipelines move $-4$ and $+3$ points at DPO, and both intervals span zero.
+% probes/brand_teacher.json.
+
+% Deferred from the plan, numbers to pull before including: identity prompts (OLMo self-naming 0/20 -> 19/20, 5 of 37
+% brand defaults; cite lehr2025selfpreference) and the 21-language pilot (brands_lang.py).
 
 \end{document}

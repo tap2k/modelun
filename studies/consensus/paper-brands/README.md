@@ -1,13 +1,14 @@
-# Brand paper (skeleton)
+# Taste paper (draft)
 
-"Name versus Pick". One text, `main.tex`, for arXiv. Claim, evidence and design decisions: the private
+"How Language Models Learn Taste: Brand Preference in LLMs". One text, `main.tex`, for arXiv. Claims and decisions: the private
 `PAPER-PLAN-2026-10-04.md` §1.
 
-Tables will read from `gen/`, written from the committed probe outputs (`../probes/factors.json`,
-`brand_confounds.json`, `stage_brands.json`, `stage_pick.json`, `advice_register.json`) and the ladder scorer
-(`../brand_ladder.py`). Each paragraph's source goes in a `%` comment below it.
+Every table reads from `gen/`, written by `../brands_paper.py` from the committed probe outputs (`../probes/`:
+`brand_ladder.json`, `factors.json`, `brand_confounds.json`, `brand_logprob*.json`, `stage_pick.json`,
+`answer_logprob_steps.json`, `stage_dolci.json`, `stage_tulu.json`). Text-only numbers cite their probe in a `%`
+comment below the paragraph (`obvious.json`, `self_preference.json`, `brand_teacher.json`, `search_spotcheck.json`).
 
+    python3 ../brands_paper.py     # rewrite gen/
     tectonic main.tex
 
-Author first names in `references.bib` are incomplete for the Jack, Trhlik, Tonneau and Lehr entries.
 Tag the panel `consensus-brands-arxiv-v1` when the paper is posted.
