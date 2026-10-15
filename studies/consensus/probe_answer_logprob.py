@@ -13,6 +13,12 @@ It separates two readings of where favourites come from (LIT-CHECK-PREFERENCE-ST
     the base model already rated high
 
     ../../.venv/bin/python probe_answer_logprob.py olmo3-7b [--delete-cache]   # -> probes/answer_logprob_<pipeline>.json
+    ../../.venv/bin/python probe_answer_logprob.py score    # -> probes/answer_logprob_steps.json
+
+score: the census counterpart of probe_brand_logprob.py's verb shift. Over the categories where the panel's Choose
+favourite differs from its Name favourite, per stage: log P(Choose fav) - log P(Name fav) under Choose minus the same
+under Name (probabilities as stored, normalised over the candidates, floored at 1e-4), and its paired step between
+stages. Does DPO move the judgment verb toward the panel's Choose answer outside brands too?
 """
 import json, math, shutil, sys
 from collections import Counter
@@ -91,5 +97,48 @@ def main(pipeline, delete_cache):
             shutil.rmtree(Path.home() / ".cache/huggingface/hub" / ("models--" + st["weights"].replace("/", "--")), ignore_errors=True)
 
 
-if __name__ == "__main__":
+def modes():
+    """category -> (panel Name favourite, panel Choose favourite), counted as candidates() counts them."""
+    core, exp = answers(HERE), answers(HERE, "expanded")
+    extra = against(core, load(HERE, "census", paths=sorted((HERE / "transcripts-extra").glob("*.json"))), HERE)
+    ch = dict(answers(HERE, "choose_census"))
+    for m, c in answers(HERE, "choose_expanded").items():
+        ch.setdefault(m, {}).update(c)
+    out = {}
+    for c in candidates():
+        nm = Counter(x for src in (core, extra, exp) for m in src.values() for x in m.get(c, []))
+        cm = Counter(x for m in ch.values() for x in m.get(c, []))
+        if nm and cm:
+            out[c] = (nm.most_common(1)[0][0], cm.most_common(1)[0][0])
+    return out
+
+
+def score():
+    from probe_brand_logprob import boot
+    md, out = modes(), {}
+    lg = lambda x: math.log(max(x, 1e-4))
+    for f in sorted((HERE / "probes").glob("answer_logprob_*.json")):
+        if f.stem.endswith("steps"):
+            continue
+        d = json.loads(f.read_text())
+        cats = {c: md[c] for c in d["categories"] if c in md and md[c][0] != md[c][1]}
+        stages_ = list(next(iter(d["categories"].values()))["name"])
+        shift = {st: {c: (lg(d["categories"][c]["choose"][st][ch]) - lg(d["categories"][c]["choose"][st][nm]))
+                         - (lg(d["categories"][c]["name"][st][ch]) - lg(d["categories"][c]["name"][st][nm]))
+                      for c, (nm, ch) in cats.items() if st in d["categories"][c].get("choose", {})}
+                 for st in stages_}
+        out[d["pipeline"]] = {"categories": len(cats), "stages": {st: boot(list(v.values())) for st, v in shift.items()},
+                              "steps": {f"{a}->{b}": boot([shift[b][c] - shift[a][c] for c in shift[b] if c in shift[a]])
+                                        for a, b in zip(stages_, stages_[1:])}}
+        print(f"\n{d['pipeline']} ({len(cats)} categories where the panel's Choose favourite differs from Name)")
+        for st, x in out[d["pipeline"]]["stages"].items():
+            print(f"  {st:6} Choose shift {x['mean']:+.2f} {x['ci90']}")
+        for k, x in out[d["pipeline"]]["steps"].items():
+            print(f"  {k:12} {x['mean']:+.2f} {x['ci90']}")
+    (HERE / "probes" / "answer_logprob_steps.json").write_text(json.dumps(out, indent=1) + "\n")
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["score"]:
+    score()
+elif __name__ == "__main__":
     main(sys.argv[1], "--delete-cache" in sys.argv)

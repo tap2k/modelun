@@ -1,0 +1,1894 @@
+{
+ "pipeline": "tulu3-8b",
+ "turn1": "probes/verb_ladder_tulu3-8b/recommend/tulu3-8b-sft.json",
+ "panel": {
+  "ai_assistant": {
+   "name": "siri",
+   "pick": "claude"
+  },
+  "airline": {
+   "name": "delta",
+   "pick": "singapore airlines"
+  },
+  "bank": {
+   "name": "chase",
+   "pick": "ally bank"
+  },
+  "beer": {
+   "name": "heineken",
+   "pick": "sierra nevada"
+  },
+  "browser": {
+   "name": "chrome",
+   "pick": "firefox"
+  },
+  "camera": {
+   "name": "canon",
+   "pick": "sony"
+  },
+  "coffee_brand": {
+   "name": "starbucks",
+   "pick": "stumptown"
+  },
+  "coffee_chain": {
+   "name": "starbucks",
+   "pick": "peet's coffee"
+  },
+  "credit_card": {
+   "name": "visa",
+   "pick": "chase"
+  },
+  "ev": {
+   "name": "tesla",
+   "pick": "hyundai"
+  },
+  "fashion": {
+   "name": "nike",
+   "pick": "uniqlo"
+  },
+  "fast_food": {
+   "name": "mcdonald's",
+   "pick": "chick-fil-a"
+  },
+  "hotel": {
+   "name": "marriott",
+   "pick": "hyatt"
+  },
+  "laptop": {
+   "name": "dell",
+   "pick": "apple"
+  },
+  "luxury": {
+   "name": "chanel",
+   "pick": "herm\u00e8s"
+  },
+  "messaging_app": {
+   "name": "whatsapp",
+   "pick": "signal"
+  },
+  "mobile_carrier": {
+   "name": "verizon",
+   "pick": "t-mobile"
+  },
+  "pm_software": {
+   "name": "trello",
+   "pick": "asana"
+  },
+  "running_shoe": {
+   "name": "nike",
+   "pick": "brooks"
+  },
+  "search_engine": {
+   "name": "google",
+   "pick": "duckduckgo"
+  },
+  "smartphone": {
+   "name": "samsung",
+   "pick": "google pixel"
+  },
+  "snack_brand": {
+   "name": "doritos",
+   "pick": "kind"
+  },
+  "sneaker": {
+   "name": "nike",
+   "pick": "new balance"
+  },
+  "social_network": {
+   "name": "facebook",
+   "pick": "reddit"
+  },
+  "supermarket": {
+   "name": "walmart",
+   "pick": "aldi"
+  },
+  "watch": {
+   "name": "rolex",
+   "pick": "seiko"
+  }
+ },
+ "stages": {
+  "sft": {
+   "framing": "chat",
+   "revision": "f2a0b46b0cfda21003c6141b1ff837b7e165524d",
+   "lists": {
+    "beer": {
+     "6": {
+      "heineken": -3.1209,
+      "sierra nevada": -0.8744
+     },
+     "16": {
+      "heineken": -4.5608,
+      "sierra nevada": -1.1249
+     }
+    },
+    "browser": {
+     "0": {
+      "chrome": -3.2237,
+      "firefox": -3.4819
+     },
+     "1": {
+      "chrome": -3.8745,
+      "firefox": -3.7498
+     },
+     "2": {
+      "chrome": -1.8346,
+      "firefox": -2.2202
+     },
+     "3": {
+      "chrome": -2.6951,
+      "firefox": -2.4543
+     },
+     "4": {
+      "chrome": -2.3392,
+      "firefox": -2.2307
+     },
+     "6": {
+      "chrome": -3.2639,
+      "firefox": -1.462
+     },
+     "7": {
+      "chrome": -3.114,
+      "firefox": -3.1183
+     },
+     "8": {
+      "chrome": -3.4664,
+      "firefox": -3.8503
+     },
+     "9": {
+      "chrome": -3.1031,
+      "firefox": -4.1733
+     },
+     "10": {
+      "chrome": -3.0551,
+      "firefox": -3.0846
+     },
+     "11": {
+      "chrome": -3.997,
+      "firefox": -5.3728
+     },
+     "12": {
+      "chrome": -2.7014,
+      "firefox": -3.2767
+     },
+     "13": {
+      "chrome": -4.1856,
+      "firefox": -3.4342
+     },
+     "14": {
+      "chrome": -2.6842,
+      "firefox": -2.7721
+     },
+     "16": {
+      "chrome": -2.6757,
+      "firefox": -2.087
+     },
+     "17": {
+      "chrome": -3.847,
+      "firefox": -2.2358
+     },
+     "18": {
+      "chrome": -1.989,
+      "firefox": -1.1183
+     },
+     "19": {
+      "chrome": -3.212,
+      "firefox": -3.1045
+     }
+    },
+    "camera": {
+     "0": {
+      "canon": -1.1169,
+      "sony": -1.7486
+     },
+     "1": {
+      "canon": -1.7437,
+      "sony": -1.6231
+     },
+     "2": {
+      "canon": -1.4882,
+      "sony": -1.9962
+     },
+     "3": {
+      "canon": -1.2429,
+      "sony": -0.6198
+     },
+     "4": {
+      "canon": -1.4957,
+      "sony": -1.7487
+     },
+     "5": {
+      "canon": -1.2441,
+      "sony": -1.3735
+     },
+     "6": {
+      "canon": -1.6158,
+      "sony": -1.6225
+     },
+     "8": {
+      "canon": -1.6132,
+      "sony": -0.6179
+     },
+     "9": {
+      "canon": -1.3718,
+      "sony": -1.2491
+     },
+     "10": {
+      "canon": -1.4964,
+      "sony": -1.624
+     },
+     "11": {
+      "canon": -1.7448,
+      "sony": -1.9988
+     },
+     "13": {
+      "canon": -1.2358,
+      "sony": -1.4954
+     },
+     "14": {
+      "canon": -1.8664,
+      "sony": -1.6224
+     },
+     "15": {
+      "canon": -1.7457,
+      "sony": -1.6239
+     },
+     "16": {
+      "canon": -1.9902,
+      "sony": -1.9968
+     },
+     "17": {
+      "canon": -1.1218,
+      "sony": -1.1241
+     },
+     "18": {
+      "canon": -1.4954,
+      "sony": -1.6241
+     },
+     "19": {
+      "canon": -1.8694,
+      "sony": -1.9984
+     }
+    },
+    "coffee_chain": {
+     "1": {
+      "starbucks": -0.4966,
+      "peet's coffee": -1.4836
+     },
+     "2": {
+      "starbucks": -0.4986,
+      "peet's coffee": -2.0951
+     },
+     "3": {
+      "starbucks": -0.6228,
+      "peet's coffee": -2.6039
+     },
+     "4": {
+      "starbucks": -0.7492,
+      "peet's coffee": -3.2401
+     },
+     "7": {
+      "starbucks": -0.6225,
+      "peet's coffee": -2.2289
+     },
+     "10": {
+      "starbucks": -0.6233,
+      "peet's coffee": -1.7317
+     },
+     "12": {
+      "starbucks": -0.6222,
+      "peet's coffee": -1.7916
+     },
+     "17": {
+      "starbucks": -0.6201,
+      "peet's coffee": -2.9919
+     },
+     "18": {
+      "starbucks": -0.7444,
+      "peet's coffee": -2.7937
+     }
+    },
+    "fashion": {
+     "6": {
+      "nike": -2.8015,
+      "uniqlo": -1.9994
+     }
+    },
+    "fast_food": {
+     "12": {
+      "mcdonald's": -6.7184,
+      "chick-fil-a": -4.9451
+     }
+    },
+    "hotel": {
+     "0": {
+      "marriott": -0.7493,
+      "hyatt": -2.7468
+     },
+     "3": {
+      "marriott": -1.1233,
+      "hyatt": -3.1839
+     },
+     "11": {
+      "marriott": -1.6235,
+      "hyatt": -3.6794
+     },
+     "12": {
+      "marriott": -1.1241,
+      "hyatt": -2.6841
+     },
+     "16": {
+      "marriott": -2.247,
+      "hyatt": -3.6823
+     }
+    },
+    "laptop": {
+     "0": {
+      "dell": -1.7437,
+      "apple": -2.1164
+     },
+     "1": {
+      "dell": -1.8679,
+      "apple": -1.9902
+     },
+     "2": {
+      "dell": -2.2424,
+      "apple": -2.4924
+     },
+     "3": {
+      "dell": -1.7358,
+      "apple": -2.1099
+     },
+     "4": {
+      "dell": -1.9948,
+      "apple": -1.7433
+     },
+     "5": {
+      "dell": -1.3569,
+      "apple": -1.8434
+     },
+     "6": {
+      "dell": -2.1079,
+      "apple": -2.0846
+     },
+     "7": {
+      "dell": -2.3674,
+      "apple": -1.9882
+     },
+     "9": {
+      "dell": -1.8658,
+      "apple": -2.359
+     },
+     "10": {
+      "dell": -2.2433,
+      "apple": -1.4882
+     },
+     "11": {
+      "dell": -1.864,
+      "apple": -1.864
+     },
+     "12": {
+      "dell": -1.6232,
+      "apple": -1.8734
+     },
+     "13": {
+      "dell": -1.8652,
+      "apple": -2.3617
+     },
+     "14": {
+      "dell": -2.3652,
+      "apple": -2.2382
+     },
+     "15": {
+      "dell": -3.2477,
+      "apple": -2.2475
+     },
+     "16": {
+      "dell": -1.7433,
+      "apple": -1.7382
+     },
+     "17": {
+      "dell": -1.9882,
+      "apple": -1.9781
+     }
+    },
+    "luxury": {
+     "14": {
+      "chanel": -2.9341,
+      "herm\u00e8s": -4.0621
+     }
+    },
+    "mobile_carrier": {
+     "0": {
+      "verizon": -2.6214,
+      "t-mobile": -4.6711
+     },
+     "8": {
+      "verizon": -2.2424,
+      "t-mobile": -4.2238
+     },
+     "9": {
+      "verizon": -2.3683,
+      "t-mobile": -4.5703
+     },
+     "15": {
+      "verizon": -1.6198,
+      "t-mobile": -4.7404
+     }
+    },
+    "pm_software": {
+     "0": {
+      "trello": -1.4914,
+      "asana": -0.9664
+     },
+     "1": {
+      "trello": -1.484,
+      "asana": -1.1556
+     },
+     "3": {
+      "trello": -1.4979,
+      "asana": -0.7319
+     },
+     "4": {
+      "trello": -1.6232,
+      "asana": -0.7382
+     },
+     "5": {
+      "trello": -1.2494,
+      "asana": -0.7466
+     },
+     "6": {
+      "trello": -1.374,
+      "asana": -0.3704
+     },
+     "7": {
+      "trello": -1.3747,
+      "asana": -0.6233
+     },
+     "8": {
+      "trello": -0.3745,
+      "asana": -1.6222
+     },
+     "9": {
+      "trello": -1.2466,
+      "asana": -0.609
+     },
+     "10": {
+      "trello": -1.4975,
+      "asana": -0.7307
+     },
+     "11": {
+      "trello": -1.3747,
+      "asana": -0.3738
+     },
+     "12": {
+      "trello": -0.4986,
+      "asana": -1.3669
+     },
+     "13": {
+      "trello": -0.859,
+      "asana": -1.2202
+     },
+     "14": {
+      "trello": -1.4988,
+      "asana": -0.8687
+     },
+     "15": {
+      "trello": -1.9975,
+      "asana": -1.609
+     },
+     "16": {
+      "trello": -0.9986,
+      "asana": -0.8674
+     },
+     "17": {
+      "trello": -1.4987,
+      "asana": -0.6152
+     },
+     "18": {
+      "trello": -1.499,
+      "asana": -0.4937
+     },
+     "19": {
+      "trello": -0.4991,
+      "asana": -1.3687
+     }
+    },
+    "running_shoe": {
+     "1": {
+      "nike": -0.747,
+      "brooks": -2.6225
+     },
+     "4": {
+      "nike": -0.859,
+      "brooks": -1.6132
+     },
+     "5": {
+      "nike": -0.8632,
+      "brooks": -3.1765
+     },
+     "7": {
+      "nike": -0.9959,
+      "brooks": -2.3709
+     },
+     "8": {
+      "nike": -0.7382,
+      "brooks": -2.2414
+     },
+     "9": {
+      "nike": -0.9829,
+      "brooks": -3.6595
+     },
+     "10": {
+      "nike": -0.9896,
+      "brooks": -2.1099
+     },
+     "11": {
+      "nike": -0.864,
+      "brooks": -3.114
+     },
+     "12": {
+      "nike": -2.3743,
+      "brooks": -5.5582
+     },
+     "13": {
+      "nike": -0.9819,
+      "brooks": -2.9112
+     },
+     "14": {
+      "nike": -0.9981,
+      "brooks": -2.8716
+     },
+     "15": {
+      "nike": -0.6237,
+      "brooks": -2.6232
+     },
+     "18": {
+      "nike": -0.4962,
+      "brooks": -1.8727
+     }
+    },
+    "search_engine": {
+     "0": {
+      "google": -0.3652,
+      "duckduckgo": -5.3573
+     },
+     "1": {
+      "google": -0.8167,
+      "duckduckgo": -3.8494
+     },
+     "3": {
+      "google": -0.4972,
+      "duckduckgo": -5.9587
+     },
+     "4": {
+      "google": -0.2281,
+      "duckduckgo": -5.1736
+     },
+     "6": {
+      "google": -0.3718,
+      "duckduckgo": -5.9453
+     },
+     "8": {
+      "google": -0.8557,
+      "duckduckgo": -4.4453
+     },
+     "10": {
+      "google": -0.563,
+      "duckduckgo": -3.8203
+     },
+     "11": {
+      "google": -0.8414,
+      "duckduckgo": -3.9972
+     },
+     "12": {
+      "google": -0.3734,
+      "duckduckgo": -6.1116
+     },
+     "13": {
+      "google": -0.3664,
+      "duckduckgo": -5.3573
+     },
+     "16": {
+      "google": -0.3748,
+      "duckduckgo": -7.6963
+     },
+     "17": {
+      "google": -0.4933,
+      "duckduckgo": -5.3117
+     },
+     "18": {
+      "google": -0.2419,
+      "duckduckgo": -5.4009
+     },
+     "19": {
+      "google": -0.3658,
+      "duckduckgo": -5.1516
+     }
+    },
+    "smartphone": {
+     "8": {
+      "samsung": -2.2494,
+      "google pixel": -2.3608
+     }
+    },
+    "snack_brand": {
+     "5": {
+      "doritos": -3.7472,
+      "kind": -1.6174
+     }
+    },
+    "sneaker": {
+     "0": {
+      "nike": -0.4937,
+      "new balance": -3.7857
+     },
+     "5": {
+      "nike": -0.997,
+      "new balance": -2.1186
+     },
+     "8": {
+      "nike": -0.4968,
+      "new balance": -3.2391
+     },
+     "14": {
+      "nike": -0.2478,
+      "new balance": -3.7404
+     },
+     "18": {
+      "nike": -0.7497,
+      "new balance": -3.2483
+     }
+    },
+    "social_network": {
+     "5": {
+      "facebook": -1.6216,
+      "reddit": -2.3669
+     },
+     "8": {
+      "facebook": -3.875,
+      "reddit": -4.4998
+     },
+     "9": {
+      "facebook": -1.9977,
+      "reddit": -1.4951
+     },
+     "16": {
+      "facebook": -2.4954,
+      "reddit": -1.8664
+     }
+    },
+    "watch": {
+     "2": {
+      "rolex": -1.1232,
+      "seiko": -1.9964
+     },
+     "4": {
+      "rolex": -1.6236,
+      "seiko": -2.4977
+     },
+     "9": {
+      "rolex": -1.1248,
+      "seiko": -1.9996
+     },
+     "14": {
+      "rolex": -1.2499,
+      "seiko": -2.2497
+     },
+     "19": {
+      "rolex": -1.3745,
+      "seiko": -2.2488
+     }
+    }
+   }
+  },
+  "dpo": {
+   "framing": "chat",
+   "revision": "a7beb67e33ffd01cc87ac3b46cadc1000985b8db",
+   "lists": {
+    "beer": {
+     "6": {
+      "heineken": -8.3748,
+      "sierra nevada": -0.25
+     },
+     "16": {
+      "heineken": -9.7494,
+      "sierra nevada": -0.5
+     }
+    },
+    "browser": {
+     "0": {
+      "chrome": -5.2498,
+      "firefox": -5.6249
+     },
+     "1": {
+      "chrome": -5.8749,
+      "firefox": -6.125
+     },
+     "2": {
+      "chrome": -5.1249,
+      "firefox": -5.0
+     },
+     "3": {
+      "chrome": -5.3748,
+      "firefox": -7.7498
+     },
+     "4": {
+      "chrome": -5.4995,
+      "firefox": -1.9999
+     },
+     "6": {
+      "chrome": -6.4997,
+      "firefox": -3.9999
+     },
+     "7": {
+      "chrome": -4.7499,
+      "firefox": -4.875
+     },
+     "8": {
+      "chrome": -6.2498,
+      "firefox": -8.6248
+     },
+     "9": {
+      "chrome": -5.9997,
+      "firefox": -9.4373
+     },
+     "10": {
+      "chrome": -5.1248,
+      "firefox": -6.7499
+     },
+     "11": {
+      "chrome": -5.8749,
+      "firefox": -9.2499
+     },
+     "12": {
+      "chrome": -5.8746,
+      "firefox": -9.3747
+     },
+     "13": {
+      "chrome": -6.8738,
+      "firefox": -5.2496
+     },
+     "14": {
+      "chrome": -4.8739,
+      "firefox": -7.9992
+     },
+     "16": {
+      "chrome": -4.6243,
+      "firefox": -6.2497
+     },
+     "17": {
+      "chrome": -6.1248,
+      "firefox": -5.2499
+     },
+     "18": {
+      "chrome": -4.8748,
+      "firefox": -1.375
+     },
+     "19": {
+      "chrome": -5.6248,
+      "firefox": -7.3749
+     }
+    },
+    "camera": {
+     "0": {
+      "canon": -1.0,
+      "sony": -1.5
+     },
+     "1": {
+      "canon": -2.1249,
+      "sony": -1.0
+     },
+     "2": {
+      "canon": -1.7499,
+      "sony": -1.0
+     },
+     "3": {
+      "canon": -2.5,
+      "sony": -0.25
+     },
+     "4": {
+      "canon": -3.6249,
+      "sony": -1.375
+     },
+     "5": {
+      "canon": -2.75,
+      "sony": -0.75
+     },
+     "6": {
+      "canon": -2.625,
+      "sony": -1.5
+     },
+     "8": {
+      "canon": -1.5,
+      "sony": -0.5
+     },
+     "9": {
+      "canon": -3.25,
+      "sony": -0.625
+     },
+     "10": {
+      "canon": -3.4999,
+      "sony": -1.125
+     },
+     "11": {
+      "canon": -2.2499,
+      "sony": -2.125
+     },
+     "13": {
+      "canon": -2.1249,
+      "sony": -0.75
+     },
+     "14": {
+      "canon": -1.2499,
+      "sony": -1.125
+     },
+     "15": {
+      "canon": -4.3749,
+      "sony": -1.625
+     },
+     "16": {
+      "canon": -2.4999,
+      "sony": -1.625
+     },
+     "17": {
+      "canon": -2.625,
+      "sony": -0.375
+     },
+     "18": {
+      "canon": -1.75,
+      "sony": -1.0
+     },
+     "19": {
+      "canon": -3.6249,
+      "sony": -2.5
+     }
+    },
+    "coffee_chain": {
+     "1": {
+      "starbucks": -1.5,
+      "peet's coffee": -0.625
+     },
+     "2": {
+      "starbucks": -1.3749,
+      "peet's coffee": -0.625
+     },
+     "3": {
+      "starbucks": -2.0,
+      "peet's coffee": -2.4999
+     },
+     "4": {
+      "starbucks": -2.125,
+      "peet's coffee": -3.6875
+     },
+     "7": {
+      "starbucks": -0.5,
+      "peet's coffee": -2.25
+     },
+     "10": {
+      "starbucks": -1.7499,
+      "peet's coffee": -0.5
+     },
+     "12": {
+      "starbucks": -1.625,
+      "peet's coffee": -0.625
+     },
+     "17": {
+      "starbucks": -0.8749,
+      "peet's coffee": -2.0
+     },
+     "18": {
+      "starbucks": -1.625,
+      "peet's coffee": -4.0
+     }
+    },
+    "fashion": {
+     "6": {
+      "nike": -5.6244,
+      "uniqlo": -2.4999
+     }
+    },
+    "fast_food": {
+     "12": {
+      "mcdonald's": -11.1819,
+      "chick-fil-a": -10.4967
+     }
+    },
+    "hotel": {
+     "0": {
+      "marriott": -0.125,
+      "hyatt": -4.7499
+     },
+     "3": {
+      "marriott": -0.5,
+      "hyatt": -5.4999
+     },
+     "11": {
+      "marriott": -0.25,
+      "hyatt": -5.1248
+     },
+     "12": {
+      "marriott": -0.375,
+      "hyatt": -4.4999
+     },
+     "16": {
+      "marriott": -1.125,
+      "hyatt": -4.7499
+     }
+    },
+    "laptop": {
+     "0": {
+      "dell": -2.4999,
+      "apple": -3.0
+     },
+     "1": {
+      "dell": -2.8749,
+      "apple": -3.1249
+     },
+     "2": {
+      "dell": -3.2499,
+      "apple": -4.625
+     },
+     "3": {
+      "dell": -3.6249,
+      "apple": -3.375
+     },
+     "4": {
+      "dell": -2.6249,
+      "apple": -2.875
+     },
+     "5": {
+      "dell": -1.4999,
+      "apple": -1.9999
+     },
+     "6": {
+      "dell": -2.1248,
+      "apple": -2.2497
+     },
+     "7": {
+      "dell": -3.1249,
+      "apple": -2.625
+     },
+     "9": {
+      "dell": -2.8748,
+      "apple": -3.9998
+     },
+     "10": {
+      "dell": -4.3749,
+      "apple": -2.25
+     },
+     "11": {
+      "dell": -2.3749,
+      "apple": -2.625
+     },
+     "12": {
+      "dell": -2.3749,
+      "apple": -2.5
+     },
+     "13": {
+      "dell": -3.3749,
+      "apple": -3.7499
+     },
+     "14": {
+      "dell": -4.1249,
+      "apple": -3.375
+     },
+     "15": {
+      "dell": -3.7499,
+      "apple": -2.6249
+     },
+     "16": {
+      "dell": -2.6249,
+      "apple": -2.625
+     },
+     "17": {
+      "dell": -2.9999,
+      "apple": -2.75
+     }
+    },
+    "luxury": {
+     "14": {
+      "chanel": -2.5,
+      "herm\u00e8s": -4.125
+     }
+    },
+    "mobile_carrier": {
+     "0": {
+      "verizon": -4.7498,
+      "t-mobile": -10.3573
+     },
+     "8": {
+      "verizon": -2.8748,
+      "t-mobile": -10.8996
+     },
+     "9": {
+      "verizon": -3.8748,
+      "t-mobile": -10.1131
+     },
+     "15": {
+      "verizon": -2.4999,
+      "t-mobile": -10.0803
+     }
+    },
+    "pm_software": {
+     "0": {
+      "trello": -5.125,
+      "asana": -0.5
+     },
+     "1": {
+      "trello": -2.875,
+      "asana": -0.4998
+     },
+     "3": {
+      "trello": -3.25,
+      "asana": -0.5
+     },
+     "4": {
+      "trello": -3.0,
+      "asana": -0.75
+     },
+     "5": {
+      "trello": -3.25,
+      "asana": -0.25
+     },
+     "6": {
+      "trello": -3.875,
+      "asana": -0.25
+     },
+     "7": {
+      "trello": -2.375,
+      "asana": -0.5
+     },
+     "8": {
+      "trello": -0.25,
+      "asana": -2.25
+     },
+     "9": {
+      "trello": -3.625,
+      "asana": -0.25
+     },
+     "10": {
+      "trello": -3.5,
+      "asana": -0.375
+     },
+     "11": {
+      "trello": -3.25,
+      "asana": -0.25
+     },
+     "12": {
+      "trello": -0.75,
+      "asana": -1.0
+     },
+     "13": {
+      "trello": -2.75,
+      "asana": -0.375
+     },
+     "14": {
+      "trello": -3.375,
+      "asana": -0.625
+     },
+     "15": {
+      "trello": -4.625,
+      "asana": -2.4999
+     },
+     "16": {
+      "trello": -3.0,
+      "asana": -0.375
+     },
+     "17": {
+      "trello": -4.0,
+      "asana": -0.375
+     },
+     "18": {
+      "trello": -3.875,
+      "asana": -0.25
+     },
+     "19": {
+      "trello": -0.625,
+      "asana": -2.25
+     }
+    },
+    "running_shoe": {
+     "1": {
+      "nike": -0.9999,
+      "brooks": -1.6249
+     },
+     "4": {
+      "nike": -3.8749,
+      "brooks": -1.125
+     },
+     "5": {
+      "nike": -0.8749,
+      "brooks": -2.1248
+     },
+     "7": {
+      "nike": -1.8749,
+      "brooks": -1.4999
+     },
+     "8": {
+      "nike": -0.7499,
+      "brooks": -1.4999
+     },
+     "9": {
+      "nike": -1.2498,
+      "brooks": -2.9988
+     },
+     "10": {
+      "nike": -0.625,
+      "brooks": -2.6248
+     },
+     "11": {
+      "nike": -0.6249,
+      "brooks": -1.6249
+     },
+     "12": {
+      "nike": -3.25,
+      "brooks": -6.4991
+     },
+     "13": {
+      "nike": -0.8749,
+      "brooks": -1.8746
+     },
+     "14": {
+      "nike": -1.2499,
+      "brooks": -1.6248
+     },
+     "15": {
+      "nike": -1.0,
+      "brooks": -1.1249
+     },
+     "18": {
+      "nike": -2.0,
+      "brooks": -0.375
+     }
+    },
+    "search_engine": {
+     "0": {
+      "google": -0.375,
+      "duckduckgo": -10.7963
+     },
+     "1": {
+      "google": -1.5,
+      "duckduckgo": -9.5251
+     },
+     "3": {
+      "google": -1.5,
+      "duckduckgo": -10.6501
+     },
+     "4": {
+      "google": -0.875,
+      "duckduckgo": -9.9394
+     },
+     "6": {
+      "google": -1.5,
+      "duckduckgo": -10.0876
+     },
+     "8": {
+      "google": -3.6249,
+      "duckduckgo": -9.8117
+     },
+     "10": {
+      "google": -0.25,
+      "duckduckgo": -9.857
+     },
+     "11": {
+      "google": -3.25,
+      "duckduckgo": -9.4924
+     },
+     "12": {
+      "google": -1.0,
+      "duckduckgo": -10.1407
+     },
+     "13": {
+      "google": -0.75,
+      "duckduckgo": -9.5463
+     },
+     "16": {
+      "google": -0.5,
+      "duckduckgo": -10.7323
+     },
+     "17": {
+      "google": -1.625,
+      "duckduckgo": -9.8337
+     },
+     "18": {
+      "google": -0.375,
+      "duckduckgo": -10.3907
+     },
+     "19": {
+      "google": -0.5,
+      "duckduckgo": -10.1819
+     }
+    },
+    "smartphone": {
+     "8": {
+      "samsung": -3.875,
+      "google pixel": -3.0
+     }
+    },
+    "snack_brand": {
+     "5": {
+      "doritos": -8.312,
+      "kind": -0.8747
+     }
+    },
+    "sneaker": {
+     "0": {
+      "nike": -0.125,
+      "new balance": -5.5622
+     },
+     "5": {
+      "nike": -0.125,
+      "new balance": -5.8746
+     },
+     "8": {
+      "nike": -0.125,
+      "new balance": -5.3748
+     },
+     "14": {
+      "nike": -0.125,
+      "new balance": -5.8747
+     },
+     "18": {
+      "nike": -0.5,
+      "new balance": -3.6248
+     }
+    },
+    "social_network": {
+     "5": {
+      "facebook": -6.125,
+      "reddit": -6.4998
+     },
+     "8": {
+      "facebook": -6.125,
+      "reddit": -7.1249
+     },
+     "9": {
+      "facebook": -6.625,
+      "reddit": -4.3748
+     },
+     "16": {
+      "facebook": -7.3125,
+      "reddit": -4.9998
+     }
+    },
+    "watch": {
+     "2": {
+      "rolex": -1.375,
+      "seiko": -0.625
+     },
+     "4": {
+      "rolex": -3.5,
+      "seiko": -0.875
+     },
+     "9": {
+      "rolex": -1.875,
+      "seiko": -0.75
+     },
+     "14": {
+      "rolex": -1.625,
+      "seiko": -1.375
+     },
+     "19": {
+      "rolex": -2.75,
+      "seiko": -0.625
+     }
+    }
+   }
+  },
+  "rl": {
+   "framing": "chat",
+   "revision": "666943798adbde0b1aff34626007e26986a3c107",
+   "lists": {
+    "beer": {
+     "6": {
+      "heineken": -8.4997,
+      "sierra nevada": -0.125
+     },
+     "16": {
+      "heineken": -9.7494,
+      "sierra nevada": -0.375
+     }
+    },
+    "browser": {
+     "0": {
+      "chrome": -5.4999,
+      "firefox": -5.5
+     },
+     "1": {
+      "chrome": -6.1249,
+      "firefox": -6.375
+     },
+     "2": {
+      "chrome": -5.3749,
+      "firefox": -4.375
+     },
+     "3": {
+      "chrome": -5.4998,
+      "firefox": -7.8749
+     },
+     "4": {
+      "chrome": -6.3746,
+      "firefox": -1.9999
+     },
+     "6": {
+      "chrome": -7.1248,
+      "firefox": -4.125
+     },
+     "7": {
+      "chrome": -5.1249,
+      "firefox": -5.125
+     },
+     "8": {
+      "chrome": -6.4998,
+      "firefox": -8.7499
+     },
+     "9": {
+      "chrome": -6.3748,
+      "firefox": -9.8123
+     },
+     "10": {
+      "chrome": -5.2499,
+      "firefox": -6.7499
+     },
+     "11": {
+      "chrome": -6.2499,
+      "firefox": -9.6249
+     },
+     "12": {
+      "chrome": -5.9997,
+      "firefox": -9.1248
+     },
+     "13": {
+      "chrome": -6.6243,
+      "firefox": -4.6248
+     },
+     "14": {
+      "chrome": -5.1242,
+      "firefox": -8.062
+     },
+     "16": {
+      "chrome": -4.7495,
+      "firefox": -5.9998
+     },
+     "17": {
+      "chrome": -6.3748,
+      "firefox": -5.125
+     },
+     "18": {
+      "chrome": -5.1249,
+      "firefox": -1.375
+     },
+     "19": {
+      "chrome": -5.8749,
+      "firefox": -7.7499
+     }
+    },
+    "camera": {
+     "0": {
+      "canon": -1.125,
+      "sony": -1.625
+     },
+     "1": {
+      "canon": -2.125,
+      "sony": -1.125
+     },
+     "2": {
+      "canon": -1.8749,
+      "sony": -1.125
+     },
+     "3": {
+      "canon": -2.875,
+      "sony": -0.25
+     },
+     "4": {
+      "canon": -3.9999,
+      "sony": -1.625
+     },
+     "5": {
+      "canon": -2.875,
+      "sony": -0.75
+     },
+     "6": {
+      "canon": -2.875,
+      "sony": -1.5
+     },
+     "8": {
+      "canon": -1.375,
+      "sony": -0.5
+     },
+     "9": {
+      "canon": -3.375,
+      "sony": -0.625
+     },
+     "10": {
+      "canon": -3.7499,
+      "sony": -1.25
+     },
+     "11": {
+      "canon": -2.125,
+      "sony": -2.125
+     },
+     "13": {
+      "canon": -2.125,
+      "sony": -0.625
+     },
+     "14": {
+      "canon": -1.3749,
+      "sony": -1.25
+     },
+     "15": {
+      "canon": -4.7499,
+      "sony": -1.75
+     },
+     "16": {
+      "canon": -2.75,
+      "sony": -1.625
+     },
+     "17": {
+      "canon": -2.75,
+      "sony": -0.375
+     },
+     "18": {
+      "canon": -1.75,
+      "sony": -1.0
+     },
+     "19": {
+      "canon": -3.75,
+      "sony": -2.5
+     }
+    },
+    "coffee_chain": {
+     "1": {
+      "starbucks": -1.125,
+      "peet's coffee": -0.625
+     },
+     "2": {
+      "starbucks": -1.125,
+      "peet's coffee": -0.625
+     },
+     "3": {
+      "starbucks": -1.75,
+      "peet's coffee": -2.375
+     },
+     "4": {
+      "starbucks": -1.875,
+      "peet's coffee": -3.8125
+     },
+     "7": {
+      "starbucks": -0.375,
+      "peet's coffee": -2.5
+     },
+     "10": {
+      "starbucks": -1.625,
+      "peet's coffee": -0.5
+     },
+     "12": {
+      "starbucks": -1.375,
+      "peet's coffee": -0.5
+     },
+     "17": {
+      "starbucks": -0.625,
+      "peet's coffee": -2.125
+     },
+     "18": {
+      "starbucks": -1.5,
+      "peet's coffee": -3.875
+     }
+    },
+    "fashion": {
+     "6": {
+      "nike": -5.3121,
+      "uniqlo": -2.2499
+     }
+    },
+    "fast_food": {
+     "12": {
+      "mcdonald's": -11.4312,
+      "chick-fil-a": -10.6559
+     }
+    },
+    "hotel": {
+     "0": {
+      "marriott": -0.125,
+      "hyatt": -4.9999
+     },
+     "3": {
+      "marriott": -0.5,
+      "hyatt": -5.7499
+     },
+     "11": {
+      "marriott": -0.25,
+      "hyatt": -5.4999
+     },
+     "12": {
+      "marriott": -0.375,
+      "hyatt": -4.4999
+     },
+     "16": {
+      "marriott": -1.25,
+      "hyatt": -5.1249
+     }
+    },
+    "laptop": {
+     "0": {
+      "dell": -2.4999,
+      "apple": -3.125
+     },
+     "1": {
+      "dell": -3.1249,
+      "apple": -3.25
+     },
+     "2": {
+      "dell": -3.625,
+      "apple": -5.125
+     },
+     "3": {
+      "dell": -3.9999,
+      "apple": -3.625
+     },
+     "4": {
+      "dell": -2.75,
+      "apple": -3.125
+     },
+     "5": {
+      "dell": -1.7499,
+      "apple": -2.25
+     },
+     "6": {
+      "dell": -2.3749,
+      "apple": -2.4998
+     },
+     "7": {
+      "dell": -3.1249,
+      "apple": -2.75
+     },
+     "9": {
+      "dell": -3.2499,
+      "apple": -4.2499
+     },
+     "10": {
+      "dell": -4.7499,
+      "apple": -2.5
+     },
+     "11": {
+      "dell": -2.4999,
+      "apple": -3.0
+     },
+     "12": {
+      "dell": -2.5,
+      "apple": -2.625
+     },
+     "13": {
+      "dell": -3.6249,
+      "apple": -4.0
+     },
+     "14": {
+      "dell": -4.4999,
+      "apple": -3.625
+     },
+     "15": {
+      "dell": -3.8749,
+      "apple": -2.7499
+     },
+     "16": {
+      "dell": -2.8749,
+      "apple": -3.0
+     },
+     "17": {
+      "dell": -3.3749,
+      "apple": -2.875
+     }
+    },
+    "luxury": {
+     "14": {
+      "chanel": -2.375,
+      "herm\u00e8s": -4.125
+     }
+    },
+    "mobile_carrier": {
+     "0": {
+      "verizon": -4.8749,
+      "t-mobile": -10.7053
+     },
+     "8": {
+      "verizon": -2.7499,
+      "t-mobile": -11.3588
+     },
+     "9": {
+      "verizon": -3.9999,
+      "t-mobile": -10.5266
+     },
+     "15": {
+      "verizon": -2.5,
+      "t-mobile": -10.4648
+     }
+    },
+    "pm_software": {
+     "0": {
+      "trello": -5.625,
+      "asana": -0.5
+     },
+     "1": {
+      "trello": -3.0,
+      "asana": -0.4999
+     },
+     "3": {
+      "trello": -3.125,
+      "asana": -0.5
+     },
+     "4": {
+      "trello": -3.125,
+      "asana": -0.875
+     },
+     "5": {
+      "trello": -3.5,
+      "asana": -0.25
+     },
+     "6": {
+      "trello": -4.25,
+      "asana": -0.25
+     },
+     "7": {
+      "trello": -2.625,
+      "asana": -0.5
+     },
+     "8": {
+      "trello": -0.25,
+      "asana": -2.5
+     },
+     "9": {
+      "trello": -3.625,
+      "asana": -0.25
+     },
+     "10": {
+      "trello": -3.75,
+      "asana": -0.375
+     },
+     "11": {
+      "trello": -3.5,
+      "asana": -0.375
+     },
+     "12": {
+      "trello": -0.75,
+      "asana": -1.0
+     },
+     "13": {
+      "trello": -3.0,
+      "asana": -0.375
+     },
+     "14": {
+      "trello": -3.375,
+      "asana": -0.625
+     },
+     "15": {
+      "trello": -4.375,
+      "asana": -2.625
+     },
+     "16": {
+      "trello": -3.125,
+      "asana": -0.375
+     },
+     "17": {
+      "trello": -4.25,
+      "asana": -0.375
+     },
+     "18": {
+      "trello": -4.125,
+      "asana": -0.375
+     },
+     "19": {
+      "trello": -0.625,
+      "asana": -2.25
+     }
+    },
+    "running_shoe": {
+     "1": {
+      "nike": -0.875,
+      "brooks": -1.4999
+     },
+     "4": {
+      "nike": -3.9999,
+      "brooks": -1.25
+     },
+     "5": {
+      "nike": -0.8749,
+      "brooks": -2.1248
+     },
+     "7": {
+      "nike": -1.75,
+      "brooks": -1.4999
+     },
+     "8": {
+      "nike": -0.75,
+      "brooks": -1.3749
+     },
+     "9": {
+      "nike": -1.1249,
+      "brooks": -3.2488
+     },
+     "10": {
+      "nike": -0.5,
+      "brooks": -2.7499
+     },
+     "11": {
+      "nike": -0.625,
+      "brooks": -1.6249
+     },
+     "12": {
+      "nike": -3.5,
+      "brooks": -6.9991
+     },
+     "13": {
+      "nike": -0.75,
+      "brooks": -1.8747
+     },
+     "14": {
+      "nike": -1.25,
+      "brooks": -1.7498
+     },
+     "15": {
+      "nike": -0.875,
+      "brooks": -1.1249
+     },
+     "18": {
+      "nike": -2.125,
+      "brooks": -0.25
+     }
+    },
+    "search_engine": {
+     "0": {
+      "google": -0.5,
+      "duckduckgo": -11.2244
+     },
+     "1": {
+      "google": -1.625,
+      "duckduckgo": -9.9587
+     },
+     "3": {
+      "google": -1.5,
+      "duckduckgo": -11.4009
+     },
+     "4": {
+      "google": -0.875,
+      "duckduckgo": -10.1963
+     },
+     "6": {
+      "google": -1.5,
+      "duckduckgo": -10.4587
+     },
+     "8": {
+      "google": -3.875,
+      "duckduckgo": -10.0938
+     },
+     "10": {
+      "google": -0.125,
+      "duckduckgo": -10.3731
+     },
+     "11": {
+      "google": -3.625,
+      "duckduckgo": -9.9319
+     },
+     "12": {
+      "google": -1.0,
+      "duckduckgo": -10.5742
+     },
+     "13": {
+      "google": -0.625,
+      "duckduckgo": -10.1953
+     },
+     "16": {
+      "google": -0.5,
+      "duckduckgo": -11.1498
+     },
+     "17": {
+      "google": -1.75,
+      "duckduckgo": -10.3144
+     },
+     "18": {
+      "google": -0.25,
+      "duckduckgo": -10.7986
+     },
+     "19": {
+      "google": -0.375,
+      "duckduckgo": -10.6741
+     }
+    },
+    "smartphone": {
+     "8": {
+      "samsung": -4.25,
+      "google pixel": -3.5
+     }
+    },
+    "snack_brand": {
+     "5": {
+      "doritos": -8.6246,
+      "kind": -0.8748
+     }
+    },
+    "sneaker": {
+     "0": {
+      "nike": -0.125,
+      "new balance": -5.9997
+     },
+     "5": {
+      "nike": -0.125,
+      "new balance": -6.3747
+     },
+     "8": {
+      "nike": -0.125,
+      "new balance": -5.4998
+     },
+     "14": {
+      "nike": 0.0,
+      "new balance": -5.9998
+     },
+     "18": {
+      "nike": -0.5,
+      "new balance": -3.8749
+     }
+    },
+    "social_network": {
+     "5": {
+      "facebook": -6.5,
+      "reddit": -6.7498
+     },
+     "8": {
+      "facebook": -6.5,
+      "reddit": -7.4999
+     },
+     "9": {
+      "facebook": -6.8125,
+      "reddit": -4.6248
+     },
+     "16": {
+      "facebook": -7.4375,
+      "reddit": -5.2499
+     }
+    },
+    "watch": {
+     "2": {
+      "rolex": -1.375,
+      "seiko": -0.625
+     },
+     "4": {
+      "rolex": -3.25,
+      "seiko": -0.875
+     },
+     "9": {
+      "rolex": -1.625,
+      "seiko": -0.875
+     },
+     "14": {
+      "rolex": -1.375,
+      "seiko": -1.625
+     },
+     "19": {
+      "rolex": -2.75,
+      "seiko": -0.5
+     }
+    }
+   }
+  }
+ }
+}

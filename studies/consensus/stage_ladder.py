@@ -15,10 +15,13 @@ probes/verb_ladder_<pipeline>/ (written by probe_verb_ladder.py).
           that category, by the brand the assistant mentions first (Name, pick, other, none); and the same for
           Dolci DPO chosen against rejected. Reads the external drive's copies at the revisions
           probe_olmo_data.py pins.
+  tulu    The same count on Tulu 3's SFT mixture and the 8B preference mixture (the pipeline whose two-turn pick
+          moves at DPO), from the drive's copies (Tulu-3-SFT-Mixture, Tulu-3-8B-Preference-Mixture, each with
+          .revision and .sha256).
 
 The two-turn pick by stage is stage_pick.py.
 
-    ../../.venv/bin/python stage_ladder.py census|verbs|brands|dolci   -> probes/stage_<cmd>.json
+    ../../.venv/bin/python stage_ladder.py census|verbs|brands|dolci|tulu   -> probes/stage_<cmd>.json
 """
 import json
 import re
@@ -161,7 +164,7 @@ def brands():
     return res
 
 
-def dolci():
+def dolci(sft_data="Dolci-Instruct-SFT", dpo_data="Dolci-Instruct-DPO"):
     import pyarrow.parquet as pq
     import brand_ladder as B
     lv = B.levels()
@@ -196,7 +199,7 @@ def dolci():
         return (u[0].get("content") or "") if u else ""
 
     sft, n_sft = defaultdict(Counter), 0
-    for r in rows(sorted((DRIVE / "Dolci-Instruct-SFT" / "data").glob("*.parquet")), ["messages"]):
+    for r in rows(sorted((DRIVE / sft_data / "data").glob("*.parquet")), ["messages"]):
         n_sft += 1
         q = user_q(r["messages"])
         if len(q) > 600 or not any_noun.search(q) or not cue.search(q):
@@ -206,7 +209,7 @@ def dolci():
             if rx.search(q):
                 sft[c][label(c, first(c, a))] += 1
     dpo, n_dpo = defaultdict(Counter), 0
-    for r in rows(sorted((DRIVE / "Dolci-Instruct-DPO" / "data").glob("*.parquet")), ["chosen", "rejected"]):
+    for r in rows(sorted((DRIVE / dpo_data / "data").glob("*.parquet")), ["chosen", "rejected"]):
         n_dpo += 1
         q = user_q(r["chosen"])
         if len(q) > 600 or not any_noun.search(q) or not cue.search(q):
@@ -234,7 +237,8 @@ def dolci():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
-    fn = {"census": census, "verbs": verbs, "brands": brands, "dolci": dolci}.get(cmd)
+    fn = {"census": census, "verbs": verbs, "brands": brands, "dolci": dolci,
+          "tulu": lambda: dolci("Tulu-3-SFT-Mixture", "Tulu-3-8B-Preference-Mixture")}.get(cmd)
     if not fn:
         sys.exit(__doc__)
     out = HERE / "probes" / f"stage_{cmd}.json"
