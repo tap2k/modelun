@@ -582,11 +582,12 @@ its nearest relative. Open-set rejection is untested.
 \item \textbf{Added context and routing.} Some first-party models and some providers receive text
 before the caller's message (\S\ref{sec:added}). Our profiles were built through OpenRouter's
 default routing, so they include whatever was added there. A profile describes a model as served.
-It also mixes providers. On the audit day three of six unpinned calls to Llama 4 Maverick reached
-the endpoint serving Gemma 4, but the Maverick profile was collected in July and September and
+It also mixes providers. On the audit day four of ten unpinned calls to Llama 4 Maverick were
+billed the token counts of the endpoint serving Gemma 4, but the Maverick profile was collected in July and September and
 holds about 0.5\% Gemma 4 answers. The Mistral Small 3.2 profile is about 17\% from the developer's
 own endpoint (\S\ref{sec:results}). Pinned reference profiles leave the audit's conclusions
 unchanged, but the identification results in \S\ref{sec:ident} rest on mixed profiles.
+% hidden-prompt-2026-10-02/round{1,2}/llama-4-maverick.json: 10 unpinned calls; 4 billed Novita's counts (24, 20, 37, 37 vs Maverick 21, 17, 34).
 \item \textbf{Billing is a lower bound.} Five models received the date with no billed tokens
 (\S\ref{sec:added}). Context that is not billed cannot be found by the billed-token check.
 \item \textbf{Within-family confusion.} Most errors at small budgets fall outside the true family.
@@ -622,8 +623,9 @@ through OpenRouter also receive context the caller did not send.
 We sent the Llama 4 Maverick finding to the provider and to OpenRouter on 14 October 2026, before
 posting. The endpoint was still billed Gemma 4's token counts that day. The provider replied that
 the endpoint serves Meta's official FP8 release of Llama 4 Maverick, and did not address the token
-counts. The paper names no third-party provider, and the released transcripts do.
-% transcripts-providers/recheck-2026-10-14.json
+counts. OpenRouter matched our requests to that endpoint in its records and reproduced the token
+counts on 15 October. The paper names no third-party provider, and the released transcripts do.
+% transcripts-providers/recheck-2026-10-14.json, novita-request-ids-2026-10-14.json; OpenRouter support email 2026-10-15
 
 \section*{Data and code}
 
