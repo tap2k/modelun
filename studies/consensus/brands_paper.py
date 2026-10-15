@@ -37,7 +37,7 @@ def main():
     lv = lad["levels_specific"]
 
     # the verb ladder on the panel: clamped rows, free rows, the two-turn pick
-    write("ladder_rows.tex", [f"{label} & {lv[k]['flips']} & {pct(lv[k]['top_share'])} & {pct(lv[k]['retention'])} \\\\"
+    write("ladder_rows.tex", [f"{label} & {lv[k]['flips']} of {lv[k]['cats']} & {pct(lv[k]['retention'])} \\\\"
                               for k, label in LEVELS])
 
     # the verb and clamp factors against their split-half floors (factors.py)
