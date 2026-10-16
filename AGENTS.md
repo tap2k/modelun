@@ -72,6 +72,24 @@ record the repo keeps, and gaps in it cannot be filled after a model is
 retired. `harness/panel_gap.py` lists what is still missing. Definitions:
 [`docs/harness.md`](docs/harness.md) § The standing panel.
 
+Decided 2026-10-16:
+- One session runs all four studies for a new model, suggestibility included.
+- Reasoning models and hybrids start at `--max-tokens 8192` in every study, conduct included. The
+  default caps only ever cut reasoning (no conduct reply has reached 1200), and a cut-off call is paid
+  for and re-run.
+- Hybrids also get every `off` arm. An `arm` other than `served`/`off`, and `check`/`probe`/`local`
+  tiers, are not run per model.
+- conduct's `models.txt` (89) is not its panel: the 22 v1 specimens stay off it on purpose
+  (`spec/models.json`), and `panel_gap.py` lists them as missing. `data/benchmark/` is the panel.
+- Some suggestibility probe scripts run on any argv, `--help` included. Read their usage line.
+- After the runs, in the same session, regenerate analyses and views before committing:
+  consensus `analyze.py --battery <b>` for every battery in `runs.json`, `check_runs.py --index`,
+  `views/build.py`; language `pickword.py --transcripts <dir>` per pickword dir, `views/build.py`;
+  suggestibility `analyze.py`, each core probe's `analyze`, `views/build.py`; conduct judges,
+  `adjudicate.py`, `views/build.py`; then `studies/cross-instrument/build_matrix.py >
+  RESULTS-<date>-<model>.txt`. Analyses also rewrite `paper/gen/`; restore it unless a paper is
+  being revised.
+
 ## What has been run is the transcripts, not the roster
 
 `spec/models.txt` is intent; `transcripts/` (or a study's `paths.json`
