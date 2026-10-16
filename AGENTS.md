@@ -69,26 +69,12 @@ A model added to the panel is owed every `core` and `extended` directory in
 each study's `spec/runs.json` (consensus, language, suggestibility, conduct).
 Core runs on release day; it includes pickword, the cheapest longitudinal
 record the repo keeps, and gaps in it cannot be filled after a model is
-retired. `harness/panel_gap.py` lists what is still missing. Definitions:
-[`docs/harness.md`](docs/harness.md) § The standing panel.
+retired. One session runs all four studies, then regenerates their analyses and views before
+committing. `harness/panel_gap.py` lists what is still missing. Definitions and the regeneration
+steps: [`docs/harness.md`](docs/harness.md) § The standing panel.
 
-Decided 2026-10-16:
-- One session runs all four studies for a new model, suggestibility included.
-- Reasoning models and hybrids start at `--max-tokens 8192` in every study, conduct included. The
-  default caps only ever cut reasoning (no conduct reply has reached 1200), and a cut-off call is paid
-  for and re-run.
-- Hybrids also get every `off` arm. An `arm` other than `served`/`off`, and `check`/`probe`/`local`
-  tiers, are not run per model.
-- conduct's `models.txt` (89) is not its panel: the 22 v1 specimens stay off it on purpose
-  (`spec/models.json`), and `panel_gap.py` lists them as missing. `data/benchmark/` is the panel.
-- Some suggestibility probe scripts run on any argv, `--help` included. Read their usage line.
-- After the runs, in the same session, regenerate analyses and views before committing:
-  consensus `analyze.py --battery <b>` for every battery in `runs.json`, `check_runs.py --index`,
-  `views/build.py`; language `pickword.py --transcripts <dir>` per pickword dir, `views/build.py`;
-  suggestibility `analyze.py`, each core probe's `analyze`, `views/build.py`; conduct judges,
-  `adjudicate.py`, `views/build.py`; then `studies/cross-instrument/build_matrix.py >
-  RESULTS-<date>-<model>.txt`. Analyses also rewrite `paper/gen/`; restore it unless a paper is
-  being revised.
+Reasoning models and hybrids start at `--max-tokens 8192` in every study (decided 2026-10-16). The
+default caps only ever cut reasoning, and a cut-off call is paid for and re-run.
 
 ## What has been run is the transcripts, not the roster
 
@@ -98,6 +84,10 @@ and not yet listed. Anything asking "what have we covered?" reads the transcript
 directory. `harness/panel_gap.py` diffs both against the live OpenRouter
 catalog, and flags models with an `expiration_date`, which are the only ones
 where waiting loses the data permanently.
+
+conduct is the extreme case: its `models.txt` lists 89, but the 22 v1 specimens
+stay off it on purpose (`spec/models.json`), so `panel_gap.py` reports them as
+missing. Its panel is `data/benchmark/`.
 
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared
@@ -136,6 +126,8 @@ where waiting loses the data permanently.
   universal law.
 
 ## Gotchas
+- Some suggestibility probe scripts parse argv by hand and start a run on anything, `--help`
+  included. Read their usage line instead.
 - `harness/run.py` exits 0 even if cells fail (failures are written into the file). Check the output,
   not just the exit code.
 - Local checkpoints (`harness/local.py`, listed in `harness/ladders.json`) write Contract A into a

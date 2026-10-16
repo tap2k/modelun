@@ -97,9 +97,6 @@ python studies/conduct/views/build.py && open studies/conduct/views/index.html
   agree 0.82 between the two layers; `leap_help` moves most (see the store's `_meta.switched`).
   While a retired judge is still served, it also labels each new model into `markers-retired/`
   (raw labels only; the frozen store and `markers.json` are untouched).
-- **`adjudicate.py` rewrites the whole store.** It re-adds `llama-3.1-70b-instruct` (kept out: three
-  scenes only) and drops `_meta.switched`. When appending a model, copy only its new entry into the
-  committed store (`json.dumps(indent=1)`, ASCII escapes) and check the diff is additions only.
 - **Reasoning models start at `--max-tokens 8192`** (decided 2026-10-16). The 1200 default only
   ever binds reasoning; the scenes it truncated are `the_leap`, `pivot`, `bad_plan` and `facts`.
 - **Every judge is itself a subject.** A judge's calls on its own family are excluded from the majority;

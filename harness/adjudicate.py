@@ -80,6 +80,10 @@ def main():
     for sub in subjects:
         data = json.loads(sub.read_text())
         model, sv = data["model"], vendor(data.get("slug", ""))
+        missing = {marker_scene[m] for m in binary | graded if m in marker_scene} - set(data["scenes"])
+        if missing:  # a partial transcript would read as contested on every missing marker
+            print(f"skip {model}: no {', '.join(sorted(missing))}")
+            continue
         blobs = {}
         for jd in judge_dirs:
             f = jd / f"{model}.json"
@@ -90,7 +94,7 @@ def main():
                     pass
 
         per = {}
-        for mid in list(binary) + list(graded):
+        for mid in [m["id"] for m in M.MARKERS + M.GRADED_MARKERS]:  # codebook order: sets reorder per process
             scene_id = marker_scene.get(mid)
             run_vals, evidence, self_judged = {}, {}, False
             for run in ("run0", "run1"):
@@ -158,8 +162,10 @@ def main():
         "models": models_out,
     }
     out_path = Path(args.out) if args.out else study.store_path
+    if out_path.exists():  # keep _meta notes the store carries beyond these fields (e.g. a judge switch)
+        out["_meta"] = {**json.loads(out_path.read_text()).get("_meta", {}), **out["_meta"]}
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
+    out_path.write_text(json.dumps(out, indent=1, ensure_ascii=True) + "\n")
     print(f"\nwrote {out_path}  ({len(models_out)} models)\n")
     for mid in [m["id"] for m in M.MARKERS + M.GRADED_MARKERS]:
         print(f"  {mid:<22} " + "  ".join(f"{k}={v}" for k, v in counts[mid].most_common()))
