@@ -170,6 +170,11 @@ After a new model's runs, regenerate each study's analyses and views, then the c
 
 Analyses also rewrite `paper/gen/`. Restore it unless a paper is being revised.
 
+Lists kept by hand also take the new model: `studies/consensus/spec/release-dates.tsv` (when no other date
+source has it), the generation walks in `studies/consensus/views/build.py`, `studies/suggestibility/lineage.py`,
+and, for a lab's newest model, the grid in `studies/consensus/export_brands_site.py`, whose output feeds
+convovo.ai/brands (`convovo-site/public/brands/index.html`).
+
 ## The components
 
 1. **RUNNER** — *stimulus → transcripts.* Plays each scene's escalating turns multi-turn against each
