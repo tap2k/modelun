@@ -34,6 +34,7 @@ FAM = {
     "claude-sonnet-5.5": ("Claude", 8),  # 2026-09-28, on its release
     "gpt-6.1-sol": ("GPT", 9),  # 2026-09-29, on its release
     "claude-haiku-5.5": ("Claude", 9),  # 2026-10-07, on its release
+    "gemini-4-argon": ("Gemini", 5),  # 2026-10-13, on its release
 }
 
 # Further multi-generation lineages in the panel, used only by the release test's robustness check
@@ -45,7 +46,7 @@ EXTRA = {
     "kimi-k2": ("Kimi", 0), "kimi-k2.5": ("Kimi", 1), "kimi-k3": ("Kimi", 2),
     "glm-4.7": ("GLM", 0), "glm-5.3": ("GLM", 1), "glm-5.3-flash": ("GLM", 1),
     "nemotron-3-nano-30b-a3b": ("Nemotron", 0), "nemotron-3-super-120b-a12b": ("Nemotron", 0),
-    "nemotron-3-ultra-550b-a55b": ("Nemotron", 0), "nemotron-3.5-lightning": ("Nemotron", 1),
+    "nemotron-3-ultra-550b-a55b": ("Nemotron", 0), "nemotron-3.5-lightning": ("Nemotron", 1), "nemotron-3.5-super-vl": ("Nemotron", 1),
     "gemma-3-27b-it": ("Gemma", 0), "gemma-4-26b-a4b-it": ("Gemma", 1), "gemma-4-31b-it": ("Gemma", 1),
     "hermes-3-llama-3.1-405b": ("Hermes", 0), "hermes-3-llama-3.1-70b": ("Hermes", 0), "hermes-4-405b": ("Hermes", 1),
 }

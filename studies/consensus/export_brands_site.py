@@ -21,10 +21,10 @@ import build                          # noqa: E402
 
 CATS = ["coffee_chain", "soda", "car_brand", "search_engine", "smartphone", "running_shoe", "ai_assistant",
         "airline", "payment_app", "luxury"]
-MODELS = [("OpenAI", "gpt-6.1-sol"), ("Anthropic", "claude-opus-5.5"), ("Google", "gemini-3.8-flash"),
+MODELS = [("OpenAI", "gpt-6.1-sol"), ("Anthropic", "claude-opus-5.5"), ("Google", "gemini-4-argon"),
           ("xAI", "grok-4.7"), ("Meta", "muse-spark-1.3"), ("DeepSeek", "deepseek-v4-pro"),
           ("Alibaba", "qwen3.8-2.4t-a95b"), ("Mistral", "mistral-small-2603"),
-          ("NVIDIA", "nemotron-3-ultra-550b-a55b"), ("Moonshot", "kimi-k3"), ("Z.ai", "glm-5.3")]
+          ("NVIDIA", "nemotron-3.5-super-vl"), ("Moonshot", "kimi-k3"), ("Z.ai", "glm-5.3")]
 TREND_CATS = ["ai_assistant", "running_shoe", "hotel", "payment_app", "smartphone", "soda"]
 LADDER = HERE / "probes" / "brands_ladder_32b"   # probe_brands_ladder.py; the weights alone, no system prompt
 STAGES = [("base", "raw"), ("sft", "nosys"), ("dpo", "nosys"), ("rl", "nosys")]
