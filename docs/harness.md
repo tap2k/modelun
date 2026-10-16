@@ -162,8 +162,7 @@ served directories. A study without `spec/runs.json` has no standing instruments
 After a new model's runs, regenerate each study's analyses and views, then the cross-study matrix:
 
 - consensus: `analyze.py --battery <b>` for every battery in `runs.json`, `check_runs.py --index`,
-  `views/build.py`, and `views/build.py --battery <p>` for each private brand page (`brands`,
-  `brands-choose`, `brands-recommend`), which the default build skips
+  `views/build.py`
 - language: `pickword.py --transcripts <dir>` for each pickword directory, `views/build.py`
 - suggestibility: `analyze.py`, each core probe's `analyze`, `views/build.py`
 - conduct: `judge.py` per judge, `adjudicate.py`, `views/build.py`

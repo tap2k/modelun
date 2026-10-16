@@ -80,9 +80,9 @@ TITLES = {"census": "one-word census (96 categories)", "brands": "brand battery 
 # the census page is the 31 census and 65 expanded questions together (8 runs each); the choose page, both with "Choose"
 SOURCE = {"census": "combined", "choose": "choose", "brands": "brands_all", "brands-choose": "choose_brands_all",
           "brands-recommend": "recommend_brands_all"}
-PAGES = ["census", "choose"]
-# not shared yet: built only when named (--battery brands), so the Pages deploy does not publish them
-PRIVATE = ["brands", "brands-choose", "brands-recommend"]
+# the brand pages are deployed but not linked from the census pages or the site index
+BRANDS = ["brands", "brands-choose", "brands-recommend"]
+PAGES = ["census", "choose"] + BRANDS
 # a Choose page shows each category's Name answer beside its Choose answer: the same questions with "Name"
 NAME_OF = {"choose": "combined", "brands-choose": "brands_all", "brands-recommend": "brands_all"}
 NOTES = {"census": "Surprisal and answers over all 96 categories: the 31 census categories plus the 65 of the expanded "
@@ -124,7 +124,7 @@ def name_modal(src, cats):
 def build(battery):
     src = SOURCE.get(battery, battery)
     ans = answers(STUDY, src)
-    if battery in PRIVATE:                    # the brand pages leave out sonar, as the brand analysis does
+    if battery in BRANDS:                    # the brand pages leave out sonar, as the brand analysis does
         from brand_ladder import EXCLUDE
         ans = {m: cs for m, cs in ans.items() if m not in EXCLUDE}
     result = analyze(STUDY, src, ans=ans)
@@ -232,7 +232,7 @@ def build_ladder():
 
 def main():
     ap = argparse.ArgumentParser(description="Build the consensus review site's data files")
-    ap.add_argument("--battery", choices=PAGES + PRIVATE, help="one page (default: every page in PAGES)")
+    ap.add_argument("--battery", choices=PAGES, help="one page (default: every page in PAGES)")
     ap.add_argument("--ladder", action="store_true", help="build only the brand ladder page's data")
     args = ap.parse_args()
     battery = args.battery

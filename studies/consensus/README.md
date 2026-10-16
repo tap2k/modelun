@@ -354,7 +354,7 @@ python analyze.py
 python analyze.py --battery brands    # -> analysis_brands.json (also: expanded)
 
 # review site: index.html (the 96 census and expanded questions, 8 runs), ?set=choose (the 96 with "Choose");
-# ?set=brands and ?set=brands-choose only after --battery brands / brands-choose (not deployed)
+# ?set=brands, ?set=brands-choose, ?set=brands-recommend: deployed, linked only from convovo.ai/brands
 python views/build.py
 ```
 
