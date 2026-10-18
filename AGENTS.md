@@ -140,5 +140,7 @@ missing. Its panel is `data/benchmark/`.
   (a second process, or a dropped model mlx still caches) gave `<unk>` replies, not an error. Between
   stages call `del model` then `local.free()`; before starting a GPU job, check that no other `local.py`
   or mlx process is running (`pgrep -fl mlx`), including another session's.
+- With the display asleep, mlx runs about 25 times slower (32 s against ~15 min a chunk, 2026-10-16), though
+  the system stays awake. Hold the display on for an unattended local run: `caffeinate -d -i -w <pid>`.
 - Commit messages: use `git commit -F <file>`. Heredocs with apostrophes (`model's`, `don't`) break
   the shell.
