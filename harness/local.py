@@ -26,7 +26,8 @@ former). Sampling is batched; lower --batch for large models (a 70B at 4 bits ne
         --pipeline tulu3-8b --stage sft --framing chat --runs 2 --out /tmp/smoke
 
 A study that builds its battery in code imports run() and passes the spec as a dict. Runs resume: a scene
-already in the output file is skipped, so delete the file to re-run it.
+already in the output file is skipped, so delete the file to re-run it. run_dialog() plays a multi-turn spec
+(run.py's registers and fixed user turns) through the chat template, for conduct.
 """
 
 import argparse
@@ -228,6 +229,50 @@ def run(spec, st, framing, runs, out, max_tokens=None, batch=None, temperature=1
                                        "runs": [[cell(q, t, framing == "think", f)] for t, f in replies[j * runs:(j + 1) * runs]]}
         out.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
     print(f"{st['label']}/{framing}: {len(todo)} scenes x {runs} in {time.time() - t0:.0f}s -> {out}", flush=True)
+    return out
+
+
+def run_dialog(spec, st, runs, out, max_tokens=1200, batch=8, temperature=1.0, model=None):
+    """A multi-turn spec (scenes under spec["registers"], each a fixed list of user turns, run.py's format)
+    through the stage's chat template, with the spec's system prompt as the system message. Every
+    (scene, run) is its own conversation; turn t of all of them is generated as one batch, then appended.
+    Writes the Contract-A file `out` (framing "chat"); a scene already in it is skipped."""
+    from mlx_lm.sample_utils import make_sampler
+
+    batch = min(batch, st.get("batch", batch))
+    out = Path(out)
+    data = json.loads(out.read_text()) if out.exists() else None
+    scenes = [(r["name"], s) for r in spec["registers"] for s in r["scenes"]]
+    todo = [(reg, s) for reg, s in scenes if not data or s["id"] not in data["scenes"]]
+    if not todo:
+        return out
+    model, tok = model or load(st)
+    sp = spec.get("system_prompt")
+    kw = st.get("chat_kwargs", {})
+    if data is None:
+        data = {"model": st["label"], "slug": st["repo"], "script_version": spec.get("script_version"),
+                "host": "local-mlx", "pipeline": st["pipeline"], "stage": st["stage"], "framing": "chat",
+                "weights": st["weights"], "quantization": st.get("quantization"),
+                "revision": revision(st["repo"], st["weights"]), "temperature": temperature, "max_tokens": max_tokens,
+                **{k: st[k] for k in ("model_config", "chat_kwargs") if st.get(k)}, "scenes": {}}
+    sampler = make_sampler(temp=temperature)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    t0 = time.time()
+    for reg, s in todo:                                  # one scene at a time, written after each, to resume
+        convs = [[{"role": "system", "content": sp}] if sp else [] for _ in range(runs)]
+        cells = [[] for _ in range(runs)]
+        for q in s["turns"]:
+            for c in convs:
+                c.append({"role": "user", "content": q})
+            prompts = [tok.apply_chat_template(c, add_generation_prompt=True, **kw) for c in convs]
+            replies = generate(model, tok, prompts, max_tokens, sampler, batch, st.get("batched", True))
+            for c, cl, (text, finish) in zip(convs, cells, replies):
+                c.append({"role": "assistant", "content": text})
+                cl.append(cell(q, text, False, finish))
+        data["scenes"][s["id"]] = {"register": reg, "subtitle": s.get("subtitle", s["id"]),
+                                   "run_date": time.strftime("%Y-%m-%d"), "runs": cells}
+        out.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
+    print(f"{st['label']}/dialog: {len(todo)} scenes x {runs} in {time.time() - t0:.0f}s -> {out}", flush=True)
     return out
 
 
