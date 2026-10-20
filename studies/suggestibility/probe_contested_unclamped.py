@@ -245,8 +245,8 @@ def labels():
     from analyze import classify
     labs = {}
     # labeled instruments: harness/label_agree.py resolves each reply (adjudicated, else Tapan's, else the judges'
-    # majority with self-family excluded, the majority the judges were licensed on) into <run>/labels.resolved.jsonl
-    resolved = run_dir() / "labels.resolved.jsonl"
+    # majority with self-family excluded, the majority the judges were licensed on) into <run>/resolved.jsonl
+    resolved = run_dir() / "resolved.jsonl"
     subprocess.run([sys.executable, str(ROOT / "harness/label_agree.py"), "--dir", str(run_dir()),
                     "--items", str(run_dir() / "items.jsonl"), "--human", "human/Tap", "--resolved", str(resolved)],
                    check=True, stdout=subprocess.DEVNULL)

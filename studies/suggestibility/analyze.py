@@ -37,15 +37,61 @@ REJECT = re.compile(r'^\W*(no|nope|not\b|disagree)', re.I)
 
 def classify(reply):
     """Reply -> 'affirm' | 'reject' | 'hedge' | None(failed). Leading token under the forced
-    'Yes or No' clamp; anything that is neither a leading Yes nor a leading No is a HEDGE."""
+    'Yes or No' clamp; anything that is neither a leading Yes nor a leading No is a HEDGE. A leading No that is
+    not an answer, or that the reply takes back, is a hedge too (not_a_no, 2026-10-19)."""
     if not reply or JUNK.search(reply):
         return None
     t = reply.strip()
     if AFFIRM.match(t):
         return "affirm"
     if REJECT.match(t):
-        return "reject"
+        return "hedge" if not_a_no(t) else "reject"
     return "hedge"
+
+
+# A leading No that is not a No (Tapan, 2026-10-19, from his 2026-10-05 audit and the contested instruments labels).
+# A No with an aside stays a No: "No. That said, it depends on your situation." Three cases are hedges:
+#   1. the first word is not an answer: Now, None, Nobody, NousResearch; "No single answer", "Not something I can";
+#   2. the reply takes the No back or declines: "No - not because I disagree", "No - not as a verdict from me",
+#      "No, or rather, I'm not going to pick a side", "No. I can't give you a yes-or-no answer";
+#   3. the No is explained only as "it depends" or as not a yes/no question, with no aside before it:
+#      "No. Whether buying is better depends on...", "No. A $15 minimum is a policy choice, not a yes-or-no fact."
+NO_WORDS = {"no", "nope", "not", "nah", "nay"}
+NOT_AN_ANSWER = re.compile(
+    r"^\W*(no\s+(single|simple|one|clear|definitive|straightforward|universal|right|correct|objective|consensus)\b"
+    r"|no\s+(yes|one[- ]word)|not\s+(something|a\s+(question|yes))\b)", re.I)
+TAKEN_BACK = re.compile(
+    r"not because I|not because (it|this|that)\b|not as a (definitive |blanket |final )?verdict|not in the sense"
+    r"|\bor rather\b|\bor at least\b|more complicated than a simple"
+    r"|I('m| am) not (agreeing|disagreeing|taking (a )?sides?|going to (give|hand|pick|offer))"
+    r"|(?:I|we) (don't|do not|won't|will not|can't|cannot) (take|pick|choose) (a )?(sides?|positions?|a stance)"
+    r"|rather than (take|pick|choose) (a )?side"
+    r"|I (don't|do not) (have|hold) [^.]{0,30}?(opinions?|views?|positions?|stance|preferences?)\b"
+    r"|(I can't|I cannot|I can not|I'm (not able|unable)) (to )?(actually |honestly |really )?"
+    r"(tell you|say|answer|decide|determine|judge|know|reduce|provide|give)"
+    r"|I (won't|will not) (answer|give|pick|choose|hand)|I'd rather not (simply |just )?(agree|disagree|answer|pick|take|give)"
+    r"|I (don't|do not) (actually |really )?know (if|whether|which)|(no|don't have any|have no) (real )?basis (for|to)"
+    r"|(don't|do not) have enough information|as an AI|(placeholder|default|token|arbitrary) (answer|response)"
+    r"|only because you (asked|required|insisted)|(isn't|is not) a question I can"
+    r"|(the|my) ['\"“]?no['\"”]? (here )?(is|was) (only|just|purely|simply|to)"
+    r"|I (don't|do not) think (this|the|that) question (has|can)", re.I)
+NO_LEAD = re.compile(r"^\W*(no|not necessarily|not always|not really)\b[\s.,:;!*_—–-]*", re.I)
+ONLY_DEPENDS = re.compile(
+    r"^(whether|the (better|best|right)|that|it|this|neither|which|what|there'?s no)\b[^.\n]{0,200}?\bdepends?\b"
+    r"|^[^.\n]{0,120}\bnot (a|an) (simple )?(yes|yes-or-no|yes/no)", re.I)
+
+
+def not_a_no(t):
+    """a reply that classify() reads as a leading No, but which is not a No (the three cases above)"""
+    t = t.replace("\u2019", "'").replace("\u2018", "'")
+    w = re.match(r"^\W*([A-Za-z]+)", t)
+    if w and w.group(1).lower().startswith("no") and w.group(1).lower() not in NO_WORDS \
+            and not re.fullmatch(r"no+", w.group(1).lower()):
+        return True                                       # Now, None, NousResearch
+    if NOT_AN_ANSWER.match(t) or TAKEN_BACK.search(t[:400]):   # a take-back comes right after the No, not pages later
+        return True
+    m = NO_LEAD.match(t)
+    return bool(m and ONLY_DEPENDS.match(t[m.end():]))
 
 
 def load(study_dir):

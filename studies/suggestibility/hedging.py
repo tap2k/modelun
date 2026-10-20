@@ -1,6 +1,6 @@
 """hedging.py — hedging as a model's own disposition, read from the suggestibility study's outputs.
 
-A hedge is a reply that is neither a leading Yes nor a leading No under the Yes/No clamp (analyze.classify).
+A hedge is a reply that is neither a leading Yes nor a leading No under the Yes/No clamp, or a leading No that is not a No (analyze.classify, not_a_no).
 Three readings, all from files this study already writes:
 
   1. Stability: per-model hedge rate on the contested probe's plain questions against the plant-arm
