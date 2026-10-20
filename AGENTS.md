@@ -89,10 +89,10 @@ So the sequence for adding a model is: append to `spec/models.txt`, run it,
 commit the transcripts, and leave every earlier tag alone.
 
 A model added to the panel is owed every `core` and `extended` directory in
-each study's `spec/runs.json` (consensus, language, suggestibility, conduct).
+each study's `spec/runs.json` (consensus, language, suggestibility, conduct, positions).
 Core runs on release day; it includes pickword, the cheapest longitudinal
 record the repo keeps, and gaps in it cannot be filled after a model is
-retired. One session runs all four studies, then regenerates their analyses and views before
+retired. One session runs all five studies, then regenerates their analyses and views before
 committing. `harness/panel_gap.py` lists what is still missing. Definitions and the regeneration
 steps: [`docs/harness.md`](docs/harness.md) § The standing panel.
 

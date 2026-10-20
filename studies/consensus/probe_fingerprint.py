@@ -21,9 +21,16 @@ from analyze import answers, against, load
 
 KS = (1, 3, 5, 10, 20, 40, 96)
 FOLDS = ((0, 1), (2, 3), (4, 5), (6, 7))
-# models added after the fingerprint paper's 94-model panel was fixed (2026-10-06); panel() leaves them out so the
-# paper's numbers reproduce. A new paper panel empties this list and states its own count.
+# The fingerprint paper's 94-model panel was fixed on 2026-10-06. panel() leaves out models first run after that date,
+# and AFTER_PANEL, so the paper's numbers reproduce. A new paper panel moves the date, empties the list and states its
+# own count.
+PANEL_FIXED = "2026-10-06"
 AFTER_PANEL = {"claude-haiku-5.5", "deepseek-r1", "step-3.7-flash"}   # the last two crossed the threshold after a 2026-10-11 refill
+
+
+def first_run(m):
+    return min(s["run_date"] for s in json.loads((HERE / "transcripts" / f"{m}.json").read_text())["scenes"].values()
+               if s.get("run_date"))
 
 
 def panel():
@@ -31,7 +38,8 @@ def panel():
     extra = against(core, load(HERE, "census", paths=sorted((HERE / "transcripts-extra").glob("*.json"))), HERE)
     exp = answers(HERE, "expanded")
     A = {m: {**{c: core[m][c] + extra[m].get(c, []) for c in core[m]}, **exp[m]} for m in core if m in extra and m in exp}
-    models = sorted(m for m in A if sum(len(v) >= 8 for v in A[m].values()) >= 90 and m not in AFTER_PANEL)
+    models = sorted(m for m in A if sum(len(v) >= 8 for v in A[m].values()) >= 90 and m not in AFTER_PANEL
+                    and first_run(m) <= PANEL_FIXED)
     return {m: A[m] for m in models}
 
 

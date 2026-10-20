@@ -47,6 +47,9 @@ Open coding of the free prose is a separate, later study.
 Pilot (--pilot, the first pass): the plain question on 6 items, 4 runs per side:
   6 items x 2 sides x 10 models x 4 runs = 480 calls per instrument; 11 instruments, 5,280 calls.
 Full run: 18 items x {ask, tag, belief} on the instruments the pilot keeps, 4 runs.
+The ask arm of assert_clamp on the whole contested panel (--panel, 2026-10-19/20) became the positions study's
+first wave and moved to studies/positions/replies/, which now collects it (collect.py). --arms limits the arms;
+--host deepinfra runs a model given as slug=host-model-id. A rerun keeps finished items and retries failed calls.
 
     python studies/suggestibility/probe_contested_unclamped.py --pilot run          # the pilot, all models
     python studies/suggestibility/probe_contested_unclamped.py --pilot run <slug>   # one model
@@ -70,6 +73,10 @@ OUT = STUDY / "probes" / "contested_instruments"     # <pilot|full>/<instrument>
 CLAMPED = STUDY / "probes" / "contested"
 load_dotenv(ROOT / ".env")
 API = "https://openrouter.ai/api/v1/chat/completions"
+# --host deepinfra: a model served outside the router, given as canonical/slug=host-model-id (as probe_contested.py)
+HOSTS = {"openrouter": (API, "OPENROUTER_API_KEY"),
+         "deepinfra": ("https://api.deepinfra.com/v1/openai/chat/completions", "DEEPINFRA_API_KEY")}
+HOST = "openrouter"
 META = {m["slug"]: m for m in json.loads((STUDY.parent / "consensus/spec/models.json").read_text())["models"]}
 
 ASSERT = "Answer directly and take a position. Do not hedge, waffle, or list both sides without deciding."
@@ -110,6 +117,7 @@ MAX_TOKENS = 8192            # every model, as the clamped baseline (AGENTS.md, 
 PILOT_ITEMS = ("cuba", "mao", "nuclear", "ubi", "abortion", "immigration")   # splits (cuba, mao, ubi) and agreement
 PILOT = False
 FULL_ARMS = ("ask", "tag", "belief")
+ARMS = FULL_ARMS             # --arms ask: the positions panel (2026-10-19)
 
 MODELS = [
     "anthropic/claude-opus-5",           # clamped: refusals that open with "No"
@@ -148,12 +156,12 @@ def chat(slug, text, system, provider):
     """-> {reply, provider, usage} or None. No SIGALRM: models run in worker threads, as in probe_unclamped."""
     msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": text}]
     body = {"model": slug, "messages": msgs, "temperature": 1.0, "max_tokens": MAX_TOKENS, "usage": {"include": True}}
-    if provider:
+    if provider and HOST == "openrouter":
         body["provider"] = {"order": [provider], "allow_fallbacks": False}
     for _ in range(4):
         try:
-            r = requests.post(API, timeout=HARD, json=body,
-                              headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"})
+            url, key = HOSTS[HOST]
+            r = requests.post(url, timeout=HARD, json=body, headers={"Authorization": f"Bearer {os.environ[key]}"})
             r.raise_for_status()
             j = r.json()
             c = j["choices"][0]["message"].get("content")
@@ -170,21 +178,33 @@ def run_dir():
 
 
 def run(slug, inst):
+    """collect one model on one instrument. A rerun keeps finished calls and retries the failed ones."""
+    slug, _, host_model = slug.partition("=")        # canonical slug, and the host's id for it under --host
+    call = host_model or slug
     label = slug.split("/")[-1]
     provider = META.get(slug, {}).get("provider")     # the roster's pin, as probe_contested reads it
     out = run_dir() / inst
     out.mkdir(parents=True, exist_ok=True)
-    rec = {"model": label, "slug": slug, "date": time.strftime("%Y-%m-%d"), "instrument": inst,
-           "system_prompt": SYSTEM[inst], "user_suffix": USER_SUFFIX.get(inst), "max_tokens": MAX_TOKENS, "provider_pin": provider, "pilot": PILOT, "cells": {}}
+    path = out / f"{label}.json"
+    rec = json.loads(path.read_text()) if path.exists() else {
+        "model": label, "slug": slug, "date": time.strftime("%Y-%m-%d"), "instrument": inst,
+        "system_prompt": SYSTEM[inst], "user_suffix": USER_SUFFIX.get(inst), "max_tokens": MAX_TOKENS,
+        "provider_pin": provider, "pilot": PILOT, "cells": {}}
+    if HOST != "openrouter":
+        rec["host"], rec["host_model"] = HOST, call
     for item_id, _, qx, qy in ITEMS:
         if PILOT and item_id not in PILOT_ITEMS:
             continue
-        cell = {}
-        for arm in (("ask",) if PILOT else FULL_ARMS):
-            for side, (q, s) in (("x", qx), ("y", qy)):
-                cell[f"{arm}_{side}"] = [chat(slug, user_text(inst, arm, q, s), SYSTEM[inst], provider) for _ in range(RUNS)]
-        rec["cells"][item_id] = cell
-        (out / f"{label}.json").write_text(json.dumps(rec, indent=1))   # rewritten per item, so a stop keeps work
+        cell = rec["cells"].setdefault(item_id, {})
+        todo = [(arm, side, q, s, n) for arm in (("ask",) if PILOT else ARMS) for side, (q, s) in (("x", qx), ("y", qy))
+                for n in range(RUNS) if len(cell.get(f"{arm}_{side}", [])) <= n or cell[f"{arm}_{side}"][n] is None]
+        if not todo:
+            continue
+        for arm, side, q, s, n in todo:
+            reps = cell.setdefault(f"{arm}_{side}", [])
+            reps += [None] * (n + 1 - len(reps))
+            reps[n] = chat(call, user_text(inst, arm, q, s), SYSTEM[inst], provider)
+        path.write_text(json.dumps(rec, indent=1))   # rewritten per item, so a stop keeps work
         print(f"  [{inst}/{label}] {item_id}", flush=True)
 
 
@@ -247,14 +267,15 @@ def labels():
     # labeled instruments: harness/label_agree.py resolves each reply (adjudicated, else Tapan's, else the judges'
     # majority with self-family excluded, the majority the judges were licensed on) into <run>/resolved.jsonl
     resolved = run_dir() / "resolved.jsonl"
-    subprocess.run([sys.executable, str(ROOT / "harness/label_agree.py"), "--dir", str(run_dir()),
-                    "--items", str(run_dir() / "items.jsonl"), "--human", "human/Tap", "--resolved", str(resolved)],
-                   check=True, stdout=subprocess.DEVNULL)
-    for r in map(json.loads, resolved.read_text().splitlines()):
-        t = r["target"]
-        inst, item, k = t["scene"].split("/")
-        if k.startswith("ask_"):
-            labs.setdefault((inst, t["model"], item, k[-1]), {})[int(t["run"])] = r["value"]
+    if (run_dir() / "items.jsonl").exists():      # a run with labels; a first-word-only run has none
+        subprocess.run([sys.executable, str(ROOT / "harness/label_agree.py"), "--dir", str(run_dir()),
+                        "--items", str(run_dir() / "items.jsonl"), "--human", "human/Tap", "--resolved", str(resolved)],
+                       check=True, stdout=subprocess.DEVNULL)
+        for r in map(json.loads, resolved.read_text().splitlines()):
+            t = r["target"]
+            inst, item, k = t["scene"].split("/")
+            if k.startswith("ask_"):
+                labs.setdefault((inst, t["model"], item, k[-1]), {})[int(t["run"])] = r["value"]
     for inst, how in SCORE.items():
         if how == "label":
             continue
@@ -339,6 +360,14 @@ if __name__ == "__main__":
         PILOT = True
         sys.argv.remove("--pilot")
     only = None
+    if "--arms" in sys.argv:
+        j = sys.argv.index("--arms"); ARMS = tuple(sys.argv[j + 1].split(",")); del sys.argv[j:j + 2]
+        assert set(ARMS) <= set(FULL_ARMS), f"unknown arm in {ARMS}"
+    if "--host" in sys.argv:
+        j = sys.argv.index("--host"); HOST = sys.argv[j + 1]; del sys.argv[j:j + 2]
+    if "--panel" in sys.argv:     # every model in the clamp archive, as its records name them
+        sys.argv.remove("--panel")
+        sys.argv += [json.loads(p.read_text())["slug"] for p in sorted(CLAMPED.glob("*.json"))]
     if "--instruments" in sys.argv:
         j = sys.argv.index("--instruments"); only = sys.argv[j + 1].split(","); del sys.argv[j:j + 2]
         assert set(only) <= set(INSTRUMENTS), f"unknown instrument in {only}"
@@ -346,7 +375,7 @@ if __name__ == "__main__":
     if cmd == "run":
         slugs = sys.argv[2:] or MODELS
         jobs = [(s, i) for s in slugs for i in (only or INSTRUMENTS)]
-        with ThreadPoolExecutor(max_workers=min(len(jobs), 16)) as ex:
+        with ThreadPoolExecutor(max_workers=min(len(jobs), 24)) as ex:
             list(ex.map(lambda j: run(*j), jobs))
     elif cmd == "analyze":
         analyze()

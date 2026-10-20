@@ -154,6 +154,8 @@ names the models that accept reasoning off and reason by default. A new panel mo
 - **extended**: every model, may lag (judged, or the slower grids).
 - **check**: run once to validate an instrument, again only when it changes.
 - **probe**, **local**: question-driven subsets, never standing.
+- **reference**: another study's directory, read in place and owed by that study (positions reads suggestibility's
+  contested clamp).
 
 An `off`-arm directory is owed by hybrids only. `harness/panel_gap.py` lists the runnable roster
 models missing from each standing directory. `harness/cost.py` prices one model through the standing
@@ -165,6 +167,7 @@ After a new model's runs, regenerate each study's analyses and views, then the c
   `views/build.py`
 - language: `pickword.py --transcripts <dir>` for each pickword directory, `views/build.py`
 - suggestibility: `analyze.py`, each core probe's `analyze`, `views/build.py`
+- positions: `analyze.py`, `views/build.py` (after suggestibility's contested probe, whose clamp it reads)
 - conduct: `judge.py` per judge, `adjudicate.py`, `views/build.py`
 - `studies/cross-instrument/build_matrix.py > RESULTS-<date>-<model>.txt`
 
@@ -172,7 +175,7 @@ Analyses also rewrite `paper/gen/`. Restore it unless a paper is being revised.
 
 Lists kept by hand also take the new model: `studies/consensus/spec/release-dates.tsv` (when no other date
 source has it), the generation walks in `studies/consensus/views/build.py`, `studies/suggestibility/lineage.py`,
-and, for a lab's newest model, the grid in `studies/consensus/export_brands_site.py`, whose output feeds
+the family and generation in `studies/positions/spec/models.json`, and, for a lab's newest model, the grid in `studies/consensus/export_brands_site.py`, whose output feeds
 convovo.ai/brands (`convovo-site/public/brands/index.html`).
 
 ## The components
