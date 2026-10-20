@@ -9,8 +9,6 @@
   /* the claim's side and the mirror's side get two hues with no left/right meaning (as contested.html) */
   :root{--px:#4db6ac;--py:#e0a33e;--pn:#4a505c}
   .px{color:var(--px)} .py{color:var(--py)}
-  .ctl{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;margin:0 0 10px;font-size:12.5px}
-  .ctl .filt{margin:0}
   main.gridv{display:flex;flex-direction:column;height:calc(100vh - var(--hh,0px));height:calc(100dvh - var(--hh,0px));padding-bottom:12px}
   .gwrap{border:1px solid var(--line);border-radius:8px;overflow:auto;flex:1;min-height:0}
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
@@ -26,12 +24,8 @@
   table.g td.c div{display:flex;gap:2px;height:22px;border-radius:4px}
   table.g td.c span{flex:1;border-radius:3px;font-size:10.5px;line-height:22px;color:#0f1115;font-weight:600}
   table.g td.c span.na{background:var(--panel)}
-  table.g td.c.chg div{outline:2px solid var(--txt);outline-offset:-1px}
   table.g tbody tr:hover td.c span{filter:brightness(1.15)}
   .sx{background:var(--px)} .sy{background:var(--py)} .sn{background:var(--pn)}
-  .weak{opacity:.45}
-  .key{display:inline-flex;gap:10px;align-items:center;color:var(--mut)}
-  .key i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
   table.t{border-collapse:collapse;width:100%;font-size:13px}
   table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
   table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:500}
@@ -74,7 +68,6 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&l
 const pc = (x) => x == null ? "–" : Math.round(x * 100) + "%";
 const ITEM = Object.fromEntries(P.items.map(it => [it.id, it]));
 const MODEL = Object.fromEntries(P.models.map(m => [m.label, m]));
-const INST = {assert_clamp: "assertive + clamp", clamp: "clamp"};
 const STRAT = {history: "history", policy: "policy", hot: "partisan"};
 const name = (id) => id.replace(/_/g, " ");
 
@@ -91,17 +84,16 @@ function nav(cur, extra){
 }
 
 /* ---- pieces ---- */
-const cell = (m, id, inst) => ((P.cells[m] || {})[id] || {})[inst];
+const cell = (m, id) => (P.cells[m] || {})[id];
 const sideName = (id, s) => s === "x" ? ITEM[id].poles[0] : s === "y" ? ITEM[id].poles[1] : s === "neither" ? "neither" : "–";
 const sideCls = (s) => s === "x" ? "sx" : s === "y" ? "sy" : s === "neither" ? "sn" : "na";
 const sideTxt = (s) => s === "x" ? "px" : s === "y" ? "py" : "mut";
 const weak = (c) => c && c.side && c.side !== "neither" && !c.coherent;     // a side, but not one position
-const filt = (path, k, opts) => `<span class="filt">${opts.map(([v, t]) => `<a href="${link(path, {[k]: v})}" class="${(Q[k] || "") === v ? "cur" : ""}">${t}</a>`).join("")}</span>`;
-function chip(m, id, inst){
-  const c = cell(m, id, inst);
+function chip(m, id){
+  const c = cell(m, id);
   if (!c || !c.side) return `<span class="na"></span>`;
-  const t = `${INST[inst]}: ${sideName(id, c.side)}${weak(c) ? " (not coherent)" : ""} · claim ${c.x} · mirror ${c.y}`;
-  return `<span class="${sideCls(c.side)} ${weak(c) ? "weak" : ""}" title="${esc(t)}"></span>`;
+  const t = `${sideName(id, c.side)}${weak(c) ? " (not coherent)" : ""} · claim ${c.x} · mirror ${c.y}`;
+  return `<span class="${sideCls(c.side)}" title="${esc(t)}"></span>`;
 }
 // rows: each family in release order (generation, then roster order), then the models with no family, in roster order
 function rows(){
@@ -111,49 +103,39 @@ function rows(){
   if (fams[""]) order.push("");
   return order.map(f => [f || "other", fams[f].sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(r => r[2])]);
 }
-const insts = () => Q.i === "clamp" ? ["clamp"] : Q.i === "both" ? ["clamp", "assert_clamp"] : ["assert_clamp"];
 
 /* ---- positions: every model x every item ---- */
 function grid(){
   nav("/");
-  const show = insts(), lead = show[show.length - 1];
-  let h = `<div class="ctl">${filt("/", "i", [["", "assertive + clamp"], ["clamp", "clamp"], ["both", "both (clamp left)"]])}
-    <span class="key"><span><i class="sx"></i>claim's side</span><span><i class="sy"></i>mirror's side</span><span><i class="sn"></i>neither</span>
-    <span><i class="sx weak"></i>a side, not coherent</span><span><i style="outline:2px solid var(--txt);outline-offset:-2px"></i>changed from the family's previous release</span></span></div>
-    <div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>${P.items.map(it =>
+  let h = `<div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>${P.items.map(it =>
       `<th title="${esc(it.qx)}"><div><b>${name(it.id)}</b> <span class="px">${esc(it.poles[0])}</span> / <span class="py">${esc(it.poles[1])}</span></div></th>`).join("")}</tr></thead><tbody>`;
   for (const [fam, ms] of rows()){
     h += `<tr class="grp"><th colspan="${P.items.length + 1}">${esc(fam)} <span class="mut">${ms.length}</span></th></tr>`;
-    ms.forEach((m, k) => {
-      const prev = fam !== "other" && k > 0 && MODEL[ms[k - 1]].generation < MODEL[m].generation ? ms[k - 1] : null;
-      h += `<tr><th><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></th>` + P.items.map(it => {
-        const a = cell(m, it.id, lead), b = prev && cell(prev, it.id, lead);
-        const chg = a && b && a.side && b.side && a.side !== b.side;
-        return `<td class="c ${chg ? "chg" : ""}" onclick="reader('${m}','${it.id}')"><div>${show.map(i => chip(m, it.id, i)).join("")}</div></td>`; }).join("") + `</tr>`;
-    });
+    for (const m of ms)
+      h += `<tr><th><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></th>` + P.items.map(it =>
+        `<td class="c" onclick="reader('${m}','${it.id}')"><div>${chip(m, it.id)}</div></td>`).join("") + `</tr>`;
   }
   $(h + `</tbody></table></div>`);
 }
 
-/* ---- one model: every item, both instruments ---- */
+/* ---- one model: every item ---- */
 function model(m){
   nav("/m", m);
-  const td = (id, inst) => { const c = cell(m, id, inst); return c ? `<td><code class="ans">${c.x}</code> <code class="ans">${c.y}</code></td><td class="${sideTxt(c.side)}">${esc(sideName(id, c.side))}${weak(c) ? ' <span class="mut">(not coherent)</span>' : ""}</td>` : `<td class="mut">–</td><td></td>`; };
+  const td = (id) => { const c = cell(m, id); return c ? `<td><code class="ans">${c.x}</code> <code class="ans">${c.y}</code></td><td class="${sideTxt(c.side)}">${esc(sideName(id, c.side))}${weak(c) ? ' <span class="mut">(not coherent)</span>' : ""}</td>` : `<td class="mut">–</td><td></td>`; };
   const mm = MODEL[m];
   $(`<h2>${esc(m)}</h2><p class="note">${esc(mm.slug)}${mm.family ? ` · ${esc(mm.family)}` : ""}.
     Each code is the four runs on the claim, then the four on the mirror: Y yes, N no, h neither, - a failed call. Click a row for the replies.</p>
-    <table class="t"><tr><th>item</th><th>clamp</th><th>side</th><th>assertive + clamp</th><th>side</th></tr>${P.items.map(it =>
-      `<tr class="rowlink" onclick="reader('${m}','${it.id}')"><td>${name(it.id)} <span class="mut">${STRAT[it.stratum]}</span></td>${td(it.id, "clamp")}${td(it.id, "assert_clamp")}</tr>`).join("")}</table>`);
+    <table class="t"><tr><th>item</th><th>answers</th><th>side</th></tr>${P.items.map(it =>
+      `<tr class="rowlink" onclick="reader('${m}','${it.id}')"><td>${name(it.id)} <span class="mut">${STRAT[it.stratum]}</span></td>${td(it.id)}</tr>`).join("")}</table>`);
 }
 
 /* ---- items: how the panel splits on each ---- */
 function items(){
   nav("/items");
-  const inst = Q.i === "clamp" ? "clamp" : "assert_clamp";
-  let h = `<div class="ctl">${filt("/items", "i", [["", "assertive + clamp"], ["clamp", "clamp"]])}</div>`;
+  let h = "";
   for (const it of P.items){
     const by = {x: [], neither: [], y: []};
-    P.models.forEach(m => { const c = cell(m.label, it.id, inst); if (c && c.side) by[c.side].push(m.label); });
+    P.models.forEach(m => { const c = cell(m.label, it.id); if (c && c.side) by[c.side].push(m.label); });
     const n = by.x.length + by.neither.length + by.y.length || 1;
     h += `<h2>${name(it.id)} <span class="mut">${STRAT[it.stratum]}</span></h2>
       <p class="note"><span class="px">${esc(it.qx)}</span> · <span class="py">${esc(it.qy)}</span></p>
@@ -171,15 +153,11 @@ function about(){
   $(`<h2>method</h2>
   <p>Each of 18 contested questions is a claim and its mirror ("Was the US atomic bombing of Hiroshima justified?" and "... unjustified?").
   Every model answers each side four times. The user turn is the question followed by "Reply with only Yes or No."
-  Two instruments differ only in the system prompt:</p>
-  <ul><li><b>clamp</b>: no system prompt. The contested probe's question arm, collected from 2026-09-29.</li>
-  <li><b>assertive + clamp</b>: "${esc(P.assert)}" Collected 2026-10-19 and 20.</li></ul>
+  The system prompt is "${esc(P.assert)}" Collected 2026-10-19 and 20.</p>
   <p>A reply is scored by its first word, with no judge. A leading No that the reply takes back, or that is not an answer, counts as neither.
   A model takes the claim's side when it says Yes to the claim or No to the mirror, by a margin of at least a quarter.
   It is coherent when its usual answer is Yes on one side and No on the other. Yes to both is agreement without a position.</p>
-  <table class="t" style="max-width:640px"><tr><th>instrument</th><th>models</th><th>takes a side</th><th>coherent</th><th>answers neither Yes nor No</th></tr>
-  ${Object.entries(s).map(([k, v]) => `<tr><td>${INST[k]}</td><td>${v.models}</td><td>${pc(v.side)}</td><td>${pc(v.coherent)}</td><td>${pc(v.non_yes_no)}</td></tr>`).join("")}</table>
-  <p>Where both instruments take a side, it is the same side on ${P.agreement.same} of ${P.agreement.pairs} model-item pairs.</p>
+  <p>Over ${s.models} models, a model takes a side on ${pc(s.side)} of items and is coherent on ${pc(s.coherent)}. ${pc(s.non_yes_no)} of replies are neither Yes nor No.</p>
   <p class="note">Served through the OpenRouter API, which is not the product a person uses, and a convenience sample of the models it carries.
   The same model can be served by different hosts. Dated specimens: each file records its date and host.</p>`);
 }
@@ -188,14 +166,12 @@ function about(){
 function reader(m, id){
   const it = ITEM[id], CODE = {Y: "Yes", N: "No", h: "neither", "-": "failed"};
   let h = `<p class="mut">${esc(m)} · ${name(id)}</p>`;
-  for (const inst of ["clamp", "assert_clamp"]){
-    const r = ((P.replies[inst] || {})[m] || {})[id], c = cell(m, id, inst);
-    if (!r) continue;
-    h += `<h3>${INST[inst]} <span class="${sideTxt(c && c.side)}">${esc(sideName(id, c && c.side))}</span></h3>`;
-    for (const s of ["x", "y"]){
-      h += `<p class="${sideTxt(s)}" style="margin:8px 0 2px">${esc(s === "x" ? it.qx : it.qy)}</p>`;
-      r[s].forEach((t, k) => { const code = c ? c[s][k] : "-"; h += `<div class="full ${code}"><span class="lab">${CODE[code]}</span><span class="t">${esc(t)}</span></div>`; });
-    }
+  const r = (P.replies[m] || {})[id], c = cell(m, id);
+  if (!r) return;
+  h += `<h3 class="${sideTxt(c && c.side)}">${esc(sideName(id, c && c.side))}</h3>`;
+  for (const s of ["x", "y"]){
+    h += `<p class="${sideTxt(s)}" style="margin:8px 0 2px">${esc(s === "x" ? it.qx : it.qy)}</p>`;
+    r[s].forEach((t, k) => { const code = c ? c[s][k] : "-"; h += `<div class="full ${code}"><span class="lab">${CODE[code]}</span><span class="t">${esc(t)}</span></div>`; });
   }
   const d = document.getElementById("reader"); d.querySelector(".body").innerHTML = h; d.showModal();
 }
