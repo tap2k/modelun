@@ -148,7 +148,7 @@ function ordered(ms, key){   // -> [{g, n} | {m}] by the "o" control: effect (de
     const vs = Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a] || a.localeCompare(b));
     return vs.flatMap(v => [{g: v, n: cnt[v]}, ...ms.filter(m => C.models[m].vendor === v).sort(byDate).map(m => ({m}))]);
   }
-  return [...ms].sort((a,b) => (key(a) ?? 0) - (key(b) ?? 0)).map(m => ({m}));
+  return [...ms].sort((a,b) => (key(b) ?? 0) - (key(a) ?? 0)).map(m => ({m}));   // agrees most first, as index.html
 }
 function controls(path, extra){
   const o = Q.o || "effect";
