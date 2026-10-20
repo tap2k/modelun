@@ -128,23 +128,40 @@ function scorecard(){
 
 function gridview(){
   nav("#/grid");
-  const S = D.meta.summary;
+  const S = D.meta.summary, C = D.meta.corr, ws = ["original","named","should"];
+  const rho = (r) => `ρ = ${r.rho.toFixed(2).replace("-", "−")}, p ${r.p < .001 ? "&lt; .001" : "= " + r.p.toFixed(3)}`;
   const row = (w) => { const s = S[w]; return `<tr><td><b>${W[w]}</b><br><span class="cimut">${esc(WQ[w][0])}</span></td>
     <td>${s.models}</td><td>${pc(s.affirm_neutral)}</td><td>${pc(s.affirm_right)}</td><td>${pc(s.affirm_maybe)}</td>
-    <td>${pts(s.tag_mean)}</td><td>${s.tag_sig_neg} / ${s.tag_sig_pos}</td><td>${pts(s.gap_mean)}</td>
-    <td>${s.gap_above_zero}</td><td>${s.release_tag.rho.toFixed(2)} <span class="cimut">(p ${s.release_tag.p < .001 ? "<.001" : s.release_tag.p.toFixed(3)})</span></td></tr>`; };
-  $(`<h2>the grid: three wordings by three cues</h2>
-  <p class="note">Panel means. <b>Tag</b> = right? minus neutral; <b>gap</b> = maybe? minus right?, in
-  points. Sig: models significantly below / above zero (BH q=.05). <b>Release ρ</b>: within-family
-  Spearman correlation of the tag effect with release order, averaged over six families, permutation p.</p>
+    <td><b>${pts(s.gap_mean)}</b> <span class="cimut">${s.gap_above_zero} &gt; 0</span></td>
+    <td>${pts(s.tag_mean)} <span class="cimut">${s.tag_sig_neg} − / ${s.tag_sig_pos} +</span></td></tr>`; };
+  $(`<h2>grid</h2>
+  <p class="note"><b>Agreement falls as the user sounds surer.</b> Changing “…, maybe?” to “…, right?” lowers
+  agreement by ${ws.map(w => pts(S[w].gap_mean).replace("+", "")).join(", ")} points under the three wordings,
+  in ${ws.map(w => S[w].gap_above_zero).join(", ")} of ${ws.map(w => S[w].models).join(", ")} models, and in none
+  significantly the other way.</p>
   <div class="hscroll"><table class="grid3">
-    <tr><th>wording</th><th>n</th><th>neutral</th><th>right?</th><th>maybe?</th><th>tag</th><th>sig −/+</th><th>gap</th><th>gap&gt;0</th><th>release ρ</th></tr>
-    ${["original","named","should"].map(row).join("")}</table></div>
-  <p class="note">The gap is positive in nearly every model under every wording. The tag effect's sign
-  depends on how often the wording's neutral question draws a yes: naming both options lowers that
-  rate and the effect shrinks; the sufficiency wording raises it and nearly every model resists. Models
-  rank alike across wordings (tag effect r = ${D.meta.corr.tag_original_named.toFixed(2)} original vs named,
-  ${D.meta.corr.tag_original_should.toFixed(2)} original vs sufficiency).</p>`);
+    <tr><th>wording</th><th>n</th><th>neutral</th><th>right?</th><th>maybe?</th><th>maybe? − right?</th><th>right? − neutral</th></tr>
+    ${ws.map(row).join("")}</table></div>
+  <p class="note">Affirm rates are panel means; differences are in points, with the number of models above zero, or
+  significantly below / above zero (BH q=.05).</p>
+  <h3>findings</h3>
+  <ul class="note">
+  <li>Against the neutral question, the sign of “right?” depends on the wording. It follows how often the wording's
+  neutral question draws a yes: naming both options lowers that rate and the effect nearly vanishes; the sufficiency
+  wording raises it and ${S.should.tag_sig_neg} models resist significantly.</li>
+  <li>Models rank alike across wordings: the right? effect correlates at r = ${C.tag_original_named.toFixed(2)}
+  (original and named) and ${C.tag_original_should.toFixed(2)} (original and sufficiency); the maybe? − right? gap at
+  ${C.gap_original_named.toFixed(2)} and ${C.gap_original_should.toFixed(2)}.</li>
+  <li>Within families, newer releases resist “right?” more under the original wording (${rho(S.original.release_tag)})
+  and the named wording (${rho(S.named.release_tag)}), and not under sufficiency (${rho(S.should.release_tag)}).</li></ul>
+  <h3>validations</h3>
+  <ul class="note">
+  <li><b>Retest.</b> The neutral and right? arms re-collected on 91 models rank them as the first collection did
+  (Spearman 0.93).</li>
+  <li><b>Label swap.</b> With counterbalanced letters in place of Yes and No, all 43 models that resist under Yes/No
+  stay negative, and the rankings agree at Spearman 0.78. The effect is not a habit of the word No.</li>
+  <li><b>Classifier audit.</b> On 145 hand-labeled replies that are more than a bare Yes or No, the leading-word
+  classifier and Tapan agree on affirm or not for 143. Every effect here is a difference in affirm rate.</li></ul>`);
 }
 
 function families(){
