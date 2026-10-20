@@ -96,6 +96,7 @@ function nav(cur, extra){
 const INST = {assert_clamp: "told to take a side", clamp: "no instruction"};
 const inst = () => Q.i === "clamp" ? "clamp" : "assert_clamp";     // the instrument shown, in the hash as ?i=clamp
 const cell = (m, id, k = inst()) => ((P.cells[m] || {})[id] || {})[k];
+const mlink = (m) => `#/m?id=${encodeURIComponent(m)}${inst() === "clamp" ? "&i=clamp" : ""}`;   // keeps the toggle
 const has = (m, k = inst()) => Object.values(P.cells[m] || {}).some(c => c[k]);
 const control = (path) => `<div class="ctl"><span class="lab">instrument</span><span class="seg">${Object.entries(INST).map(([k, t]) =>
   `<button class="${inst() === k ? "on" : ""}" onclick="location.hash='${link(path, {i: k === "clamp" ? "clamp" : ""})}'">${t}</button>`).join("")}</span></div>`;
@@ -130,7 +131,7 @@ function grid(){
     if (!ms.length) continue;
     h += `<tr class="grp"><th colspan="${P.items.length + 1}">${esc(fam)} <span class="mut">${ms.length}</span></th></tr>`;
     for (const m of ms)
-      h += `<tr><th><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></th>` + P.items.map(it =>
+      h += `<tr><th><a href="${mlink(m)}">${esc(m)}</a></th>` + P.items.map(it =>
         `<td class="c" onclick="reader('${m}','${it.id}')"><div>${chip(m, it.id)}</div></td>`).join("") + `</tr>`;
   }
   $(h + `</tbody></table></div>`);
@@ -139,6 +140,7 @@ function grid(){
 /* ---- one model: every item, both instruments ---- */
 function model(m){
   nav("/m", m);
+  document.getElementById("ctl").innerHTML = control("/m");
   const td = (id, k) => { const c = cell(m, id, k); return c ? `<td><code class="ans">${c.x}</code> <code class="ans">${c.y}</code></td><td class="${sideTxt(pos(c))}">${esc(sideName(id, pos(c)))}</td>` : `<td class="mut">–</td><td></td>`; };
   const mm = MODEL[m];
   $(`<h2>${esc(m)}</h2><p class="note">${esc(mm.slug)}${mm.family ? ` · ${esc(mm.family)}` : ""}.
@@ -160,7 +162,7 @@ function items(){
       <p class="note"><span class="px">${esc(it.qx)}</span> · <span class="py">${esc(it.qy)}</span></p>
       <p><span class="bar">${["x", "neither", "y"].map(s => `<span class="${sideCls(s)}" style="width:${100 * by[s].length / n}%"></span>`).join("")}</span>
       <span class="mut">${by.x.length} ${esc(it.poles[0])} · ${by.neither.length} neither · ${by.y.length} ${esc(it.poles[1])}</span></p>
-      <div class="cols">${["x", "neither", "y"].map(s => `<div class="col"><h4 class="${sideTxt(s)}">${esc(sideName(it.id, s))}</h4>${by[s].map(m => `<a class="mchip" href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a>`).join("")}</div>`).join("")}</div>`;
+      <div class="cols">${["x", "neither", "y"].map(s => `<div class="col"><h4 class="${sideTxt(s)}">${esc(sideName(it.id, s))}</h4>${by[s].map(m => `<a class="mchip" href="${mlink(m)}">${esc(m)}</a>`).join("")}</div>`).join("")}</div>`;
   }
   $(h);
 }
@@ -176,7 +178,7 @@ function declines(){
     h += `<tr><th colspan="3">${esc(fam)}</th></tr>`;
     for (const m of ms){
       const d = P.declines[m] || {};
-      h += `<tr><td><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></td><td>${bar(d.clamp)}</td><td>${bar(d.assert_clamp)}</td></tr>`;
+      h += `<tr><td><a href="${mlink(m)}">${esc(m)}</a></td><td>${bar(d.clamp)}</td><td>${bar(d.assert_clamp)}</td></tr>`;
     }
   }
   $(h + `</table>`);
@@ -212,10 +214,10 @@ function about(){
 function reader(m, id){
   const it = ITEM[id], CODE = {Y: "Yes", N: "No", h: "neither", "-": "failed"};
   let h = `<p class="mut">${esc(m)} · ${name(id)}</p>`;
-  for (const k of [inst(), inst() === "clamp" ? "assert_clamp" : "clamp"]){      // the instrument shown first
+  for (const k of [inst()]){      // the selected instrument only
     const r = ((P.replies[k] || {})[m] || {})[id], c = cell(m, id, k);
     if (!r) continue;
-    h += `<h3>${INST[k]} <span class="${sideTxt(pos(c))}">${esc(sideName(id, pos(c)))}</span></h3>`;
+    h += `<h3>${INST[k]}: <span class="${sideTxt(pos(c))}">${esc(sideName(id, pos(c)))}</span></h3>`;
     for (const s of ["x", "y"]){
       h += `<p class="${sideTxt(s)}" style="margin:8px 0 2px">${esc(s === "x" ? it.qx : it.qy)}</p>`;
       r[s].forEach((t, j) => { const code = c ? c[s][j] : "-"; h += `<div class="full ${code}"><span class="lab">${CODE[code]}</span><span class="t">${esc(t)}</span></div>`; });
