@@ -44,6 +44,29 @@ consequences for anyone working in here:
   framework would have bought, obtained without the dependency. Changing a contract is expensive in
   a way that changing a study's code is not.
 
+## Who decides what
+
+Tapan labels and adjudicates, and chooses the research questions. The research plan, the scenarios and
+conditions, and the analysis and interpretation of results are worked out together. Deciding what is
+important and deserves further probing is mostly Tapan's. So an agent proposes designs, runs probes,
+builds tools and checks claims against the transcripts, and brings decisions about what matters, what to
+park and what a label means to Tapan with a recommendation, instead of settling them. A reading of the
+data is checked against the replies before it is reported as a finding.
+
+## Tools join the pipeline
+
+A tool built for one study is built as pipeline tooling, with its practice written down. Before writing
+one, look for the harness piece and contract it should extend.
+- Human labels are Contract B rows, the same format the LLM judges write, so human and machine labels sit
+  side by side. Closed labeling (one value from a declared value space) goes through
+  `harness/viewer/label_server.py`; open, manner, trace and inductive coding go through
+  `harness/viewer/code_server.py`. Conventions: [`docs/harness.md`](docs/harness.md) § Human labeling:
+  conventions.
+- Records go straight to repo files as they are made, with the labeler, timestamps and blinding status.
+  No browser storage and no export step.
+- The harness stays domain-neutral. The study writes the inputs (an items file); the tool knows nothing
+  about the study. This is not license for a plugin API or a shared library (see below).
+
 ## Panels grow by appending, and a published panel is pinned by tag
 
 A study's roster is **append-only**. New models go on the end of

@@ -36,6 +36,13 @@ REPO = Path(__file__).resolve().parent.parent
 # battery, so enrolling one stays a decision someone writes down. Directories
 # owed only by hybrids (the off arms) are left out of the price; a hybrid runs
 # them too, at about the served cost again.
+def usd(usage: dict) -> float:
+    """Dollars for one call from OpenRouter's usage block: its cost, plus the upstream cost when the call ran on our
+    own key (BYOK), where OpenRouter's own figure is only its fee."""
+    byok = ((usage.get("cost_details") or {}).get("upstream_inference_cost") or 0) if usage.get("is_byok") else 0
+    return (usage.get("cost") or 0) + byok
+
+
 def studies() -> dict[str, list[dict]]:
     """Study -> its standing entries owed by every panel model."""
     out = {}

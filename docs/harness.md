@@ -324,6 +324,54 @@ the small adjudicator is the smaller and better-fitting build. (Academic qualita
 — e.g. QualAnalyzer, multi-stage LLM coding with auditable quote trails — share the quote-grounding
 instinct, but are research artifacts, not adoptable tools, and still lack the human-and-LLM-as-one vote.)
 
+## Human labeling: conventions (2026-10-19)
+
+Two tools, by task. Closed labeling, where a human picks one value from a declared value space, uses
+`harness/viewer/label_server.py` (+ `label.html`). Open, manner and trace coding of multi-turn arcs uses
+`harness/viewer/code_server.py`; inductive coding of any study's replies goes there too. Both are stdlib-only local
+servers that write straight to repo files.
+
+1. **A human label is a Contract B row.** `labeler` is `human/<name>`; the target and value are the same ones an LLM
+   judge would write, so human and LLM labels sit side by side. For closed labeling, `harness/label_llm.py` writes the
+   judges' rows and `harness/label_agree.py` compares them with the human's, takes the self-family-excluded majority
+   and resolves each target's label; the shared helpers are `harness/labels.py`.
+2. **One file per labeler, append-only.** `labels.human-<name>.jsonl` next to the data it labels. A relabel appends a
+   row; the latest row per target wins. Nothing is overwritten or edited in place.
+3. **Save each label as it is made.** No browser storage and no export step: the file is the record from the first
+   label.
+4. **Record how the label was made.** Each row carries `ts`, `secs` on the item, the fields hidden from the labeler
+   (`blind`, empty if unblinded), any pre-label offered (`pre`) and what made it (`pre_by`: a rule or the judges),
+   and `criterion_version`. Unblinded labeling is
+   allowed when the study decides it; the row says so.
+5. **The study writes the items; the tool knows nothing about the study.** An items file gives each item's target,
+   the fields to show, the prompt, the reply and an optional pre-label. Encode a study's conditions in `target.scene`
+   (e.g. `assert_word/cuba/ask_x`) before proposing a contract field; a field is added when a second study needs it.
+6. **Definitions travel with the labels.** The value definitions the labeler saw are a file next to the labels
+   (`--guide`), versioned with `--criterion-version`.
+7. **Closed coding first, with notes; the notes decide what comes next** (Tapan, 2026-10-19). Code with the declared
+   values and write a note wherever a reply does not fit, fits two values, or shows something the values miss.
+   Then review the notes (`harness/label_notes.py <labels file>`, notes grouped by value with their replies):
+   - a recurring pattern that is one more category becomes a new value: bump `--criterion-version`, add its
+     definition to the guide, and recode the replies whose notes named it;
+   - if the notes do not settle into a few categories, the declared values are the wrong frame, and the next step is
+     a full inductive pass in `code_server.py`.
+8. **A codebook change relabels what it moves, chosen without the judges.** The replies to relabel are picked by a
+   rule written down with the change (a text pattern over the replies, plus the notes that prompted it), never by
+   where a judge disagrees, since that would bend the reference toward the judges. The list is a file next to the
+   labels (e.g. `relabel_v2.json`); the items on it carry `"redo": true`, and the page asks for them again until each
+   has a row at the new `--criterion-version`. The relabel appends rows, so the old label stays on record.
+9. **A rare value gets a targeted blind batch.** A random sample holds too few of a rare value (a refusal) to test
+   a judge on it. Pick likely cases by a written rule, list them in a file (e.g. `targeted_v2.json`), and label them
+   blind to the judges like the rest. Report judge agreement on the random sample and on the targeted batch
+   separately: the targeted batch is not a sample of the replies.
+10. **Judges are licensed on blind labels, then the human labels with their help.** The human labels made before
+    any judge label is shown are the reference. They split into a development half, where the judge prompt is
+    tuned, and a test half, scored once on the frozen prompt (the split is by a hash of the target, so later blind
+    labels fall into a half by the same rule). After the judges pass (`harness/label_agree.py`), the rest of the
+    queue shows the judge majority as a pre-label, and each row records what it was offered (`pre`). Disagreements
+    between the human and the majority go to a second pass (`label_server.py --pass adjudication`), which writes
+    its own file and leaves the blind labels as they were.
+
 ## Inductive open coding (deferred)
 
 Inductive coding — humans read arcs codebook-blind and *invent* codes, see

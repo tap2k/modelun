@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Label items</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  main{max-width:880px;margin:0 auto;padding:18px 16px 40px}
+  .bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:13px;color:var(--mut)}
+  .prog{flex:1;min-width:160px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .prog span{display:block;height:100%;background:var(--acc)}
+  .show{font-size:13px;color:var(--mut);margin:0 0 6px;white-space:pre-wrap} .show b{color:var(--txt)}
+  .prompt{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14.5px;font-weight:600}
+  .reply{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:10px 0 12px;
+    white-space:pre-wrap;font-size:14.5px;line-height:1.5;max-height:52vh;overflow:auto}
+  .vals{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .vals button{font:inherit;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer}
+  .vals button .k{color:var(--mut);margin-right:6px;font-size:12px}
+  .vals button.sel{background:var(--acc);border-color:var(--acc);color:#0f1115;font-weight:600} .vals button.sel .k{color:#0f1115}
+  .pre{font-size:12px;color:var(--mut)}
+  textarea{width:100%;box-sizing:border-box;margin-top:10px;font:inherit;font-size:13px;padding:6px 8px;min-height:34px;
+    background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px}
+  .bar button{font:inherit;font-size:12.5px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer}
+  .guide{font-size:12.5px;color:var(--mut);margin-top:14px;line-height:1.6;white-space:pre-wrap}
+  .err{color:var(--syc)}
+  @media (max-width:640px){
+    main{padding:12px 12px 150px}
+    .reply{max-height:none;font-size:15px}
+    .vals{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+    .vals button{padding:14px 10px;font-size:16px}
+    .vals .pre{grid-column:1 / -1;text-align:center}
+    .guide{display:none}
+  }
+</style>
+</head>
+<body>
+<header><h1>Label items</h1><span class="sub" id="sub"></span></header>
+<main>
+  <div class="bar"><span id="count"></span><div class="prog"><span id="pbar"></span></div><button onclick="nextOpen()">next unlabeled</button></div>
+  <div class="show" id="show"></div>
+  <div class="prompt" id="prompt"></div>
+  <div class="reply" id="reply"></div>
+  <div class="vals" id="vals"></div>
+  <textarea id="note" placeholder="note (optional, saved with the label)"></textarea>
+  <div class="bar" style="margin-top:10px"><button onclick="go(-1)">← back</button><button onclick="go(1)">forward →</button><span id="pos"></span><span id="msg"></span></div>
+  <div class="guide" id="guide"></div>
+</main>
+<script>
+// harness/viewer/label_server.py serves this page: /items.json, /config, /labels, POST /save (Contract B rows)
+let ITEMS = [], CFG = {}, DONE = {}, at = 0, shownAt = Date.now();
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const key = (it) => it.id;   // the server's id for the target, as /labels keys it
+// labeled, for this pass: a redo item needs a row at the current criterion version
+const done = (it) => { const d = DONE[key(it)]; return !!d && (!it.redo || d.criterion_version === CFG.criterion_version); };
+
+function show(){
+  const it = ITEMS[at], d = DONE[key(it)], cur = d ? d.value : it.pre;   // a redo shows its old label selected
+  $("show").innerHTML = Object.entries(it.show || {}).map(([k, v]) => k === "model" ? `<b>${esc(v)}</b>` : esc(v)).join(" · ");
+  $("prompt").textContent = it.prompt;
+  $("reply").textContent = it.reply;
+  $("note").value = d ? d.note : "";
+  $("vals").innerHTML = CFG.values.map((v, i) => `<button class="${v === cur ? "sel" : ""}" onclick="save('${v}')"><span class="k">${i + 1}</span>${esc(v)}</button>`).join("")
+    + (it.pre && !d ? `<span class="pre">pre-label: ${esc(it.pre)} (Enter to accept)</span>` : "");
+  const n = ITEMS.filter(done).length;
+  $("count").textContent = `${n} / ${ITEMS.length} labeled`;
+  $("pbar").style.width = (100 * n / ITEMS.length) + "%";
+  $("pos").textContent = `item ${at + 1} of ${ITEMS.length}${d ? " · " + d.value : ""}${it.redo && !done(it) ? " · relabel" : ""}`;
+  shownAt = Date.now();
+}
+async function save(v){
+  const it = ITEMS[at], note = $("note").value;
+  const r = await fetch("/save", {method: "POST", body: JSON.stringify({id: it.id, value: v, note,
+    ts: new Date().toISOString(), secs: Math.round((Date.now() - shownAt) / 1000)})});
+  if (!r.ok) { $("msg").innerHTML = `<span class="err">save failed: ${esc((await r.json()).error)}</span>`; return; }
+  $("msg").textContent = ""; DONE[key(it)] = {value: v, note, criterion_version: CFG.criterion_version}; go(1);
+}
+function go(d){ at = Math.min(ITEMS.length - 1, Math.max(0, at + d)); show(); }
+function nextOpen(){
+  const i = ITEMS.findIndex((it, j) => j > at && !done(it));
+  const k = i >= 0 ? i : ITEMS.findIndex(it => !done(it));
+  if (k >= 0) { at = k; show(); }
+}
+addEventListener("keydown", (e) => {
+  if (e.target.tagName === "TEXTAREA") return;
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= CFG.values.length) save(CFG.values[n - 1]);
+  else if (e.key === "Enter") { const it = ITEMS[at], d = DONE[key(it)]; const v = d ? d.value : it.pre; if (v) save(v); }
+  else if (e.key === "ArrowRight") go(1);
+  else if (e.key === "ArrowLeft") go(-1);
+});
+(async () => {
+  [ITEMS, CFG, DONE] = await Promise.all(["/items.json", "/config", "/labels"].map(async u => (await fetch(u)).json()));
+  $("sub").textContent = `${CFG.labeler} · ${CFG.criterion}${CFG.blind.length ? " · hidden: " + CFG.blind.join(", ") : ""}`;
+  $("guide").textContent = CFG.guide;
+  at = Math.max(0, ITEMS.findIndex(it => !done(it)));
+  show();
+})();
+</script>
+</body>
+</html>

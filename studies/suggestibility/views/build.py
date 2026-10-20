@@ -148,7 +148,7 @@ KEEP = ["tageff", "tageff_ci90", "tageff_answered", "bareeff", "beliefeff", "bel
         "hedge_ask", "hedge_tag", "d_affirm_tag", "d_reject_tag", "d_hedge_tag",
         "d_affirm_belief", "d_reject_belief", "d_hedge_belief", "both_no_ask", "tageff_left", "tageff_right"]
 KEEP += [f"{k}_{st}" for st in PC.STRATA for k in ("tageff", "bareeff", "beliefeff", "hedge_ask")]
-cmodels = {}
+cmodels, full = {}, {}     # full: each model's replies, for contested_replies/ below
 for p in sorted(PC.OUT.glob("*.json")):
     d = json.loads(p.read_text()); m = d["model"]
     if m not in ca:
@@ -162,13 +162,21 @@ for p in sorted(PC.OUT.glob("*.json")):
     v["released"] = released.get(m)
     v["items"] = {item: {key: cell(reps) for key, reps in c.items()} for item, c in d["cells"].items()}
     cmodels[m] = v
+    full[m] = {item: {key: [(r or "").strip() for r in reps] for key, reps in c.items()} for item, c in d["cells"].items()}
 citems = [{"id": i, "stratum": st, "x": cx, "y": cy,
            "prompts": {f"{a}_{s}": PC.prompt(a, q, cl).replace(" " + PC.CLAMP, "")
                        for a in PC.ARMS + PC.EXTRA_ARMS for s, (q, cl) in (("x", (qx, cx)), ("y", (qy, cy)))}}
           for i, st, (qx, cx), (qy, cy) in PC.ITEMS]
-cdata = {"meta": {"n": len(cmodels), "strata": list(PC.STRATA), "arms": list(PC.ARMS), "extra": list(PC.EXTRA_ARMS),
+cdata = {"meta": {"n": len(cmodels), "strata": list(PC.STRATA),
                   "vendors": sorted({v["vendor"] for v in cmodels.values()})},
          "models": cmodels, "order": sorted(cmodels, key=lambda m: cmodels[m]["tageff"]), "items": citems}
 cblob = json.dumps(cdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_contested.js").write_text(f"const C = {cblob};\n")
 print(f"wrote {VIEWS/'data_contested.js'}  ({len(cmodels)} models, {len(citems)} items, {len(cblob)//1024}KB)")
+# the full replies, one file per model, loaded when a reply is clicked (local only, like consensus ladder_replies/)
+rd = VIEWS / "contested_replies"
+rd.mkdir(exist_ok=True)
+for m, f in full.items():
+    (rd / f"{m}.js").write_text("(window.CR = window.CR || {})[" + json.dumps(m) + "] = "
+                                + json.dumps(f, ensure_ascii=False, separators=(",", ":")) + ";\n")
+print(f"wrote {rd}/  ({sum(f.stat().st_size for f in rd.glob('*.js')) // 1024}KB in {len(cmodels)} files)")
