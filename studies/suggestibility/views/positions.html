@@ -75,7 +75,7 @@ const parseHash = () => { const [p, q] = (location.hash || "#/").slice(1).split(
 const link = (path, over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); const s = q.toString(); return `#${path}${s ? "?" + s : ""}`; };
 
 function nav(cur, extra){
-  const tabs = [["/", "positions"], ["/items", "items"], ["/about", "method"]];
+  const tabs = [["/", "positions"], ["/items", "items"], ["/declines", "declines"], ["/about", "method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h, t]) => `<a href="${h === "/" ? link(h, {}) : "#" + h}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("")
     + (extra ? `<a class="cur">${esc(extra)}</a>` : "");
   main.classList.toggle("full", cur !== "/about");
@@ -108,7 +108,9 @@ function grid(){
   nav("/");
   let h = `<div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>${P.items.map(it =>
       `<th title="${esc(it.qx)}"><div><b>${name(it.id)}</b> <span class="px">${esc(it.poles[0])}</span> / <span class="py">${esc(it.poles[1])}</span></div></th>`).join("")}</tr></thead><tbody>`;
-  for (const [fam, ms] of rows()){
+  for (let [fam, ms] of rows()){
+    ms = ms.filter(m => P.cells[m]);
+    if (!ms.length) continue;
     h += `<tr class="grp"><th colspan="${P.items.length + 1}">${esc(fam)} <span class="mut">${ms.length}</span></th></tr>`;
     for (const m of ms)
       h += `<tr><th><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></th>` + P.items.map(it =>
@@ -145,6 +147,23 @@ function items(){
   $(h);
 }
 
+/* ---- declines: how often each model answers neither Yes nor No ---- */
+function declines(){
+  nav("/declines");
+  const bar = (v) => v == null ? '<span class="mut">–</span>' : `<span class="bar"><span style="width:${100 * v}%;background:var(--acc)"></span></span> ${pc(v)}`;
+  let h = `<h2>declines</h2><p class="note">The share of each model's 144 answers that are neither Yes nor No. The bar is the plain question
+    with "Reply with only Yes or No." and no system prompt; the last column is the same questions with the instruction to take a side.
+    Families in release order.</p><table class="t"><tr><th>model</th><th>no instruction</th><th>told to take a side</th></tr>`;
+  for (const [fam, ms] of rows()){
+    h += `<tr><th colspan="3">${esc(fam)}</th></tr>`;
+    for (const m of ms){
+      const d = P.declines[m] || {};
+      h += `<tr><td><a href="#/m?id=${encodeURIComponent(m)}">${esc(m)}</a></td><td>${bar(d.clamp)}</td><td class="mut">${d.assert_clamp == null ? "–" : pc(d.assert_clamp)}</td></tr>`;
+    }
+  }
+  $(h + `</table>`);
+}
+
 /* ---- method ---- */
 function about(){
   nav("/about");
@@ -158,6 +177,9 @@ function about(){
   No to the mirror, or the reverse. Anything else is shown as neither, including Yes to both, which is agreement without a
   position.</p>
   <p>Over ${s.models} models, a model holds a position on ${pc(s.coherent)} of items. ${pc(s.non_yes_no)} of replies are neither Yes nor No.</p>
+  <p>The declines tab adds one more condition: the same questions with "Reply with only Yes or No." and no system prompt, collected
+  from 2026-09-29 as the question arm of the contested probe. Without the instruction to take a
+  side, models answer neither Yes nor No much more often, and how often depends mostly on the lab.</p>
   <p class="note">Served through the OpenRouter API, which is not the product a person uses, and a convenience sample of the models it carries.
   The same model can be served by different hosts. Dated specimens: each file records its date and host.</p>`);
 }
@@ -181,6 +203,7 @@ function route(){
   document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
   if (p === "/m" && MODEL[Q.id]) return model(Q.id);
   if (p === "/items") return items();
+  if (p === "/declines") return declines();
   if (p === "/about") return about();
   grid();
 }

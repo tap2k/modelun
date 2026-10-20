@@ -189,16 +189,21 @@ from probe_contested_unclamped import POLES   # noqa: E402
 pa = json.loads((STUDY / "probes" / "contested_assert_analysis.json").read_text())
 fam = {**FAM, **EXTRA}
 roster = [l.strip() for l in (STUDY / "spec" / "models.txt").read_text().splitlines() if l.strip() and not l.startswith("#")]
-# the assertive instrument only; the plain clamp is the contested view's question arm
+# the assertive instrument's cells and replies; from the plain clamp, only each model's decline rate (the declines tab)
+def declined(cells):
+    s = "".join(c["x"] + c["y"] for c in cells).replace("-", "")
+    return round(s.count("h") / len(s), 3) if s else None
+pdecl = {m: {inst: declined([c[inst] for c in its.values() if inst in c]) for inst in ("clamp", "assert_clamp")}
+         for m, its in pa["per_model"].items()}
 pcells = {m: {i: c["assert_clamp"] for i, c in its.items() if "assert_clamp" in c} for m, its in pa["per_model"].items()}
 pmodels = [{"label": s.split("/")[-1], "slug": s, "family": fam.get(s.split("/")[-1], (None,))[0],
-            "generation": fam.get(s.split("/")[-1], (None, None))[1]} for s in roster if pcells.get(s.split("/")[-1])]
+            "generation": fam.get(s.split("/")[-1], (None, None))[1]} for s in roster if s.split("/")[-1] in pa["per_model"]]
 preplies = {}
 for inst, m, i, x, y in PA.records():      # cut at 600 characters; a one-word answer is the usual case
     if inst == "assert_clamp":
         preplies.setdefault(m, {})[i] = {"x": [(r or "")[:600] for r in x], "y": [(r or "")[:600] for r in y]}
 pdata = {"items": [{"id": i, "stratum": st, "poles": list(POLES[i]), "qx": qx, "qy": qy} for i, st, (qx, _), (qy, _) in PC.ITEMS],
-         "assert": PA.ASSERT, "models": pmodels, "summary": pa["summary"]["assert_clamp"], "cells": pcells, "replies": preplies}
+         "assert": PA.ASSERT, "models": pmodels, "summary": pa["summary"]["assert_clamp"], "cells": pcells, "replies": preplies, "declines": pdecl}
 pblob = json.dumps(pdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_positions.js").write_text(f"const P = {pblob};\n")
 print(f"wrote {VIEWS/'data_positions.js'}  ({len(pmodels)} models, {len(pblob)//1024}KB)")
