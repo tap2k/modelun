@@ -20,7 +20,7 @@
   .gwrap{overflow:auto;flex:1;min-height:0}   /* the scroll area, so headers and model names stay in view */
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
   table.g th,table.g td{padding:0;border:0;text-align:center;vertical-align:middle}
-  table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;font-size:10.5px;color:var(--mut);padding:4px 3px;height:118px;vertical-align:bottom;font-weight:400}
+  table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;font-size:11.5px;color:var(--txt);padding:4px 3px 6px;height:96px;vertical-align:bottom;font-weight:500}
   table.g thead tr.s th{top:0;height:auto;padding:4px 3px 0;font-size:11.5px;text-align:left;color:var(--txt);font-weight:600}
   table.g thead tr.i th{top:24px}
   table.g .g0{padding-left:12px} table.g td.c.g0{width:46px;min-width:46px}   /* the gap that opens each stratum after the first */
@@ -109,7 +109,13 @@ const sideTxt = (s) => s === "x" ? "px" : s === "y" ? "py" : "mut";
 const pos = (c) => !c || !c.side ? null : c.coherent ? c.side : "neither";
 function chip(m, id){
   const c = cell(m, id);
-  return `<span class="${sideCls(pos(c))}" title="${esc(`${name(id)}: ${pos(c) ? sideName(id, pos(c)) : "no answers"}`)}"></span>`;
+  if (!pos(c)) return `<span class="na" title="${esc(name(id))}"></span>`;
+  // n of given: the answers in line with the position shown (Yes to its question, No to the other), of the answers given
+  const given = (c.x + c.y).replace(/-/g, "").length;
+  const kx = (c.x.match(/Y/g) || []).length + (c.y.match(/N/g) || []).length, ky = (c.y.match(/Y/g) || []).length + (c.x.match(/N/g) || []).length;
+  const n = pos(c) === "x" ? kx : pos(c) === "y" ? ky : Math.max(kx, ky);
+  const op = pos(c) === "neither" ? 1 : Math.max(0.35, (n / given - 0.5) * 2);     // 8 of 8 solid, 6 of 8 half
+  return `<span class="${sideCls(pos(c))}" style="opacity:${op.toFixed(2)}" title="${esc(`${name(id)} ${n}/${given}`)}"></span>`;
 }
 // rows: each family in release order (a model with no recorded date is the newest), then the models with no family, in roster order
 function rows(){
@@ -129,7 +135,7 @@ function grid(){
   const g0 = (it, k) => k > 0 && P.items[k - 1].stratum !== it.stratum ? "g0" : "";
   let h = `<div class="gwrap"><table class="g"><thead><tr class="s"><th class="mh"></th>${strata.map((st, k) =>
       `<th class="${k ? "g0" : ""}" colspan="${P.items.filter(it => it.stratum === st).length}">${STRAT[st]}</th>`).join("")}</tr><tr class="i"><th class="mh"></th>${P.items.map((it, k) =>
-      `<th class="${g0(it, k)}" title="${esc(it.qx)}"><div><b>${name(it.id)}</b> <span class="px">${esc(it.poles[0])}</span> / <span class="py">${esc(it.poles[1])}</span></div></th>`).join("")}</tr></thead><tbody>`;
+      `<th class="${g0(it, k)}" title="${esc(`${it.qx} (${it.poles[0]}) / ${it.qy} (${it.poles[1]})`)}"><div>${name(it.id)}</div></th>`).join("")}</tr></thead><tbody>`;
   for (let [fam, ms] of rows()){
     ms = ms.filter(m => has(m));
     if (!ms.length) continue;
