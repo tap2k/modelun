@@ -76,7 +76,7 @@ const save = () => { try { localStorage.setItem("sugg-st", JSON.stringify(st)); 
 document.getElementById("npanel").textContent = D.meta.panel;
 
 function nav(cur){
-  const tabs = [["#/","scorecard"],["#/grid","the grid"],["#/families","families"],["#/about","method"]];
+  const tabs = [["#/","scorecard"],["#/grid","grid"],["#/families","families"],["#/about","method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h,t]) =>
     `<a href="${h}" class="${cur===h?"cur":""}">${t}</a>`).join("") +
     (cur.startsWith("#/m/") ? `<a class="cur">${esc(decodeURIComponent(cur.slice(4)))}</a>` : "");
