@@ -202,8 +202,8 @@ function about(){
   No to the mirror, or the reverse. Anything else is shown as neither, including Yes to both, which is agreement without a
   position.</p>
   <p>The instrument was checked in a pilot on 10 models and 6 questions against free answers, with no "Reply with only Yes or No."
-  and no system prompt, labeled by hand. Told to take a side, models gave a side on 93% of pairs, and where the free answer took a
-  side they agreed with it 95% of the time. With no instruction, the figures were 73% and 90%.</p>
+  and no system prompt, labeled by hand. Where the free answer took a side, the side given when told to take one agreed with it
+  95% of the time, and the side given with no instruction 90%.</p>
   <table class="t" style="max-width:640px"><tr><th>instrument</th><th>models</th><th>holds a position</th><th>neither Yes nor No</th></tr>
   ${Object.entries(INST).map(([k, t]) => `<tr><td>${t}</td><td>${s[k].models}</td><td>${pc(s[k].coherent)}</td><td>${pc(s[k].non_yes_no)}</td></tr>`).join("")}</table>
   <p>Where a model holds a position under both, it is the same one on ${agree.same} of ${agree.pairs} model-item pairs.
