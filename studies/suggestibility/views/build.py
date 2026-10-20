@@ -180,3 +180,23 @@ for m, f in full.items():
     (rd / f"{m}.js").write_text("(window.CR = window.CR || {})[" + json.dumps(m) + "] = "
                                 + json.dumps(f, ensure_ascii=False, separators=(",", ":")) + ";\n")
 print(f"wrote {rd}/  ({sum(f.stat().st_size for f in rd.glob('*.js')) // 1024}KB in {len(cmodels)} files)")
+
+# --- positions (probe_contested_assert.py): data_positions.js, drawn by positions.html. Run its analyze first. ---
+import probe_contested_assert as PA   # noqa: E402
+from lineage import FAM, EXTRA   # noqa: E402
+from probe_contested_unclamped import POLES   # noqa: E402
+
+pa = json.loads((STUDY / "probes" / "contested_assert_analysis.json").read_text())
+fam = {**FAM, **EXTRA}
+roster = [l.strip() for l in (STUDY / "spec" / "models.txt").read_text().splitlines() if l.strip() and not l.startswith("#")]
+pmodels = [{"label": s.split("/")[-1], "slug": s, "family": fam.get(s.split("/")[-1], (None,))[0],
+            "generation": fam.get(s.split("/")[-1], (None, None))[1]} for s in roster if s.split("/")[-1] in pa["per_model"]]
+preplies = {"assert_clamp": {}, "clamp": {}}
+for inst, m, i, x, y in PA.records():      # cut at 600 characters; a one-word answer is the usual case
+    preplies[inst].setdefault(m, {})[i] = {"x": [(r or "")[:600] for r in x], "y": [(r or "")[:600] for r in y]}
+pdata = {"items": [{"id": i, "stratum": st, "poles": list(POLES[i]), "qx": qx, "qy": qy} for i, st, (qx, _), (qy, _) in PC.ITEMS],
+         "assert": PA.ASSERT, "models": pmodels, "summary": pa["summary"],
+         "agreement": {k: pa["agreement"][k] for k in ("pairs", "same")}, "cells": pa["per_model"], "replies": preplies}
+pblob = json.dumps(pdata, ensure_ascii=False, separators=(",", ":"))
+(VIEWS / "data_positions.js").write_text(f"const P = {pblob};\n")
+print(f"wrote {VIEWS/'data_positions.js'}  ({len(pmodels)} models, {len(pblob)//1024}KB)")

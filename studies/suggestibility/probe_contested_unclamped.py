@@ -47,8 +47,8 @@ Open coding of the free prose is a separate, later study.
 Pilot (--pilot, the first pass): the plain question on 6 items, 4 runs per side:
   6 items x 2 sides x 10 models x 4 runs = 480 calls per instrument; 11 instruments, 5,280 calls.
 Full run: 18 items x {ask, tag, belief} on the instruments the pilot keeps, 4 runs.
-The ask arm of assert_clamp on the whole contested panel (--panel, 2026-10-19/20) became the positions study's
-first wave and moved to studies/positions/replies/, which now collects it (collect.py). --arms limits the arms;
+The ask arm of assert_clamp on the whole contested panel (--panel, 2026-10-19/20) became the positions probe's
+data and moved to probes/contested_assert/, which probe_contested_assert.py now collects. --arms limits the arms;
 --host deepinfra runs a model given as slug=host-model-id. A rerun keeps finished items and retries failed calls.
 
     python studies/suggestibility/probe_contested_unclamped.py --pilot run          # the pilot, all models
