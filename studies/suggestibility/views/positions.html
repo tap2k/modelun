@@ -12,7 +12,6 @@
   /* the instrument toggle, as the decisions page's wording control */
   .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex:none}
   .ctl > *{flex:none}
-  .ctl .lab{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
   .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .seg button{background:none;border:0;color:var(--mut);padding:5px 11px;font:inherit;font-size:12.5px;cursor:pointer}
   .seg button+button{border-left:1px solid var(--line)}
@@ -98,7 +97,7 @@ const inst = () => Q.i === "clamp" ? "clamp" : "assert_clamp";     // the instru
 const cell = (m, id, k = inst()) => ((P.cells[m] || {})[id] || {})[k];
 const mlink = (m) => `#/m?id=${encodeURIComponent(m)}${inst() === "clamp" ? "&i=clamp" : ""}`;   // keeps the toggle
 const has = (m, k = inst()) => Object.values(P.cells[m] || {}).some(c => c[k]);
-const control = (path) => `<div class="ctl"><span class="lab">instrument</span><span class="seg">${Object.entries(INST).map(([k, t]) =>
+const control = (path) => `<div class="ctl"><span class="seg">${Object.entries(INST).map(([k, t]) =>
   `<button class="${inst() === k ? "on" : ""}" onclick="location.hash='${link(path, {i: k === "clamp" ? "clamp" : ""})}'">${t}</button>`).join("")}</span></div>`;
 const sideName = (id, s) => s === "x" ? ITEM[id].poles[0] : s === "y" ? ITEM[id].poles[1] : s === "neither" ? "neither" : "–";
 const sideCls = (s) => s === "x" ? "sx" : s === "y" ? "sy" : s === "neither" ? "sn" : "na";
