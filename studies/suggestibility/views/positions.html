@@ -21,8 +21,9 @@
   table.g{border-collapse:separate;border-spacing:2px;margin:2px}
   table.g th,table.g td{padding:0;border:0;text-align:center;vertical-align:middle}
   table.g thead th{position:sticky;top:0;background:var(--bg);z-index:3;font-size:11.5px;color:var(--txt);padding:4px 3px 6px;height:96px;vertical-align:bottom;font-weight:500}
-  table.g thead tr.s th{top:0;height:auto;padding:4px 3px 0;font-size:11.5px;text-align:left;color:var(--txt);font-weight:600}
-  table.g thead tr.i th{top:24px}
+  table.g thead tr.i th{top:0}
+  table.g thead tr.s th.mh{border-top:0}
+  table.g thead tr.s th{top:106px;height:auto;padding:2px 3px 4px;font-size:11px;text-align:left;color:var(--mut);font-weight:400;border-top:1px solid var(--line)}
   table.g .g0{padding-left:12px} table.g td.c.g0{width:46px;min-width:46px}   /* the gap that opens each stratum after the first */
   table.g thead th div{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;margin:0 auto}
   table.g thead th div b{font-weight:600;color:var(--txt)}
@@ -133,9 +134,9 @@ function grid(){
   document.getElementById("ctl").innerHTML = control("/");
   const strata = [...new Set(P.items.map(it => it.stratum))];
   const g0 = (it, k) => k > 0 && P.items[k - 1].stratum !== it.stratum ? "g0" : "";
-  let h = `<div class="gwrap"><table class="g"><thead><tr class="s"><th class="mh"></th>${strata.map((st, k) =>
-      `<th class="${k ? "g0" : ""}" colspan="${P.items.filter(it => it.stratum === st).length}">${STRAT[st]}</th>`).join("")}</tr><tr class="i"><th class="mh"></th>${P.items.map((it, k) =>
-      `<th class="${g0(it, k)}" title="${esc(`${it.qx} (${it.poles[0]}) / ${it.qy} (${it.poles[1]})`)}"><div>${name(it.id)}</div></th>`).join("")}</tr></thead><tbody>`;
+  let h = `<div class="gwrap"><table class="g"><thead><tr class="i"><th class="mh"></th>${P.items.map((it, k) =>
+      `<th class="${g0(it, k)}" title="${esc(`${it.qx} (${it.poles[0]}) / ${it.qy} (${it.poles[1]})`)}"><div>${name(it.id)}</div></th>`).join("")}</tr><tr class="s"><th class="mh"></th>${strata.map((st, k) =>
+      `<th class="${k ? "g0" : ""}" colspan="${P.items.filter(it => it.stratum === st).length}">${STRAT[st]}</th>`).join("")}</tr></thead><tbody>`;
   for (let [fam, ms] of rows()){
     ms = ms.filter(m => has(m));
     if (!ms.length) continue;
