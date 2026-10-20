@@ -10,7 +10,7 @@
   :root{--px:#4db6ac;--py:#e0a33e;--pn:#4a505c}
   .px{color:var(--px)} .py{color:var(--py)}
   /* the instrument toggle, as the decisions page's wording control */
-  .ctl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:4px 0 12px;flex:none}
+  .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex:none}
   .ctl > *{flex:none}
   .ctl .lab{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
   .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
@@ -61,6 +61,7 @@
 <body>
 <header>
   <h1>Model positions <span class="sub">where each model lands on 18 contested questions</span></h1>
+  <span id="ctl"></span>
   <nav id="nav"></nav>
   <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/suggestibility" target="_blank" rel="noopener">source ↗</a>
 </header>
@@ -83,6 +84,7 @@ const parseHash = () => { const [p, q] = (location.hash || "#/").slice(1).split(
 const link = (path, over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); const s = q.toString(); return `#${path}${s ? "?" + s : ""}`; };
 
 function nav(cur, extra){
+  document.getElementById("ctl").innerHTML = "";     // the instrument toggle; grid and items fill it
   const tabs = [["/", "positions"], ["/declines", "declines"], ["/items", "items"], ["/about", "method"]];
   document.getElementById("nav").innerHTML = tabs.map(([h, t]) => `<a href="${["/", "/items"].includes(h) ? link(h, {}) : "#" + h}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("")
     + (extra ? `<a class="cur">${esc(extra)}</a>` : "");
@@ -120,7 +122,8 @@ function rows(){
 /* ---- positions: every model x every item ---- */
 function grid(){
   nav("/");
-  let h = control("/") + `<div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>${P.items.map(it =>
+  document.getElementById("ctl").innerHTML = control("/");
+  let h = `<div class="gwrap"><table class="g"><thead><tr><th class="mh"></th>${P.items.map(it =>
       `<th title="${esc(it.qx)}"><div><b>${name(it.id)}</b> <span class="px">${esc(it.poles[0])}</span> / <span class="py">${esc(it.poles[1])}</span></div></th>`).join("")}</tr></thead><tbody>`;
   for (let [fam, ms] of rows()){
     ms = ms.filter(m => has(m));
@@ -147,7 +150,8 @@ function model(m){
 /* ---- items: how the panel splits on each ---- */
 function items(){
   nav("/items");
-  let h = control("/items");
+  document.getElementById("ctl").innerHTML = control("/items");
+  let h = "";
   for (const it of P.items){
     const by = {x: [], neither: [], y: []};
     P.models.forEach(m => { const c = cell(m.label, it.id); if (pos(c)) by[pos(c)].push(m.label); });
@@ -220,15 +224,17 @@ function reader(m, id){
   const d = document.getElementById("reader"); d.querySelector(".body").innerHTML = h; d.showModal();
 }
 
+const setHH = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
 function route(){
   const p = parseHash();
-  document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
-  if (p === "/m" && MODEL[Q.id]) return model(Q.id);
-  if (p === "/items") return items();
-  if (p === "/declines") return declines();
-  if (p === "/about") return about();
-  grid();
+  if (p === "/m" && MODEL[Q.id]) model(Q.id);
+  else if (p === "/items") items();
+  else if (p === "/declines") declines();
+  else if (p === "/about") about();
+  else grid();
+  setHH();      // after the view, which may have put the toggle in the header
 }
+addEventListener("resize", setHH);
 addEventListener("hashchange", route); route();
 </script>
 </body>
