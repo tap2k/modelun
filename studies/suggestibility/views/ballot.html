@@ -67,14 +67,21 @@ const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
 const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
 const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
 const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
-const PARTY = {Democratic: "D", Republican: "R"};   // short labels in the candidates cell
+const PARTY = {Democratic: "D", Republican: "R"};
+// the other races' candidates in the two columns: Democrats left, Republicans right, everyone else on the shorter side
+function split(cands){
+  const line = c => `${esc(c.name)}${c.incumbent ? ` <span class="mut">(inc.)</span>` : ""}`;
+  const cols = [cands.filter(c => c.party === "Democratic").map(line), cands.filter(c => c.party === "Republican").map(line)];
+  for (const c of cands.filter(c => !PARTY[c.party])) cols[cols[0].length <= cols[1].length ? 0 : 1].push(`${line(c)} <span class="mut">(${esc(c.party)})</span>`);
+  return cols;
+}
 const isName = v => v && !(v in WORD);
 const sur = n => n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").pop().toLowerCase();
 const partyOf = (r, name) => [...(r.candidates || []), ...(r.others || [])].find(c => sur(c.name) === sur(name))?.party;
 function verdict(r, v, pick){
   if (!v) return `<span class="mut">–</span>`;
-  if (v === "O" && pick) return `<span class="v"><i class="cO"></i>${esc(pick)} <span class="mut">(${esc(partyOf(r, pick) || "third candidate")})</span></span>`;
-  if (isName(v)) return `<span class="v"><i class="c${({Democratic: "D", Republican: "R"})[partyOf(r, v)] || "name"}"></i>${esc(v)}${partyOf(r, v) ? ` <span class="mut">(${esc(partyOf(r, v))})</span>` : ""}</span>`;
+  if (v === "O" && pick) return `<span class="v"><i class="cO"></i>${esc(pick)} <span class="mut">(${esc(PARTY[partyOf(r, pick)] || partyOf(r, pick) || "third candidate")})</span></span>`;
+  if (isName(v)) return `<span class="v"><i class="c${({Democratic: "D", Republican: "R"})[partyOf(r, v)] || "name"}"></i>${esc(v)}${partyOf(r, v) ? ` <span class="mut">(${esc(PARTY[partyOf(r, v)] || partyOf(r, v))})</span>` : ""}</span>`;
   const who = v === "D" ? r.D : v === "R" ? r.R : v === "I" ? r.I : null;
   const cls = isName(v) ? "name" : v;
   return `<span class="v"><i class="c${cls}"></i>${esc(who || WORD[v])}${who && !isName(v) ? ` <span class="mut">(${v})</span>` : ""}</span>`;
@@ -103,7 +110,7 @@ function races(){
     <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Independent or third party" : WORD[c]}</span>`).join("")}</div>
     <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${MAIN.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
     ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
-      ${r.other ? `<td colspan="2">${(r.candidates || []).map(c => `${esc(c.name)} <span class="mut">(${esc(PARTY[c.party] || c.party)}${c.incumbent ? ", inc." : ""})</span>`).join(", ")}</td>`
+      ${r.other ? split(r.candidates || []).map(col => `<td>${col.join("<br>") || "–"}</td>`).join("")
         : `<td>${esc(r.D || r.I + " (I)")}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R)}${r.incumbent === "R" ? ` <span class="mut">(inc.)</span>` : ""}</td>`}
       ${MAIN.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id], (B.picks[m.id] || {})[r.id])}</td>`).join("")}</tr>`).join("")}
     </tbody></table></div>`);
