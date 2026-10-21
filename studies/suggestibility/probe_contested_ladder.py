@@ -19,10 +19,11 @@ the left- vs right-coded claim.
 import json, sys
 import numpy as np
 from probe_suggest_ladder import HERE, SIZE, sample, labelled, boot_effect
-from probe_contested import ITEMS, ARMS, STRATA, LEFT, prompt
+from probe_contested import ITEMS, STRATA, LEFT, prompt
 
 DIR, OUT = HERE / "probes" / f"contested_ladder_{SIZE}", HERE / "probes" / f"contested_ladder_{SIZE}.json"
 STRATUM = {sid: st for sid, st, _, _ in ITEMS}
+ARMS = ("ask", "tag", "bare", "belief")   # the arms the ladders were sampled with; probe_contested later added maybe
 EFFECTS = [a for a in ARMS if a != "ask"]
 
 
