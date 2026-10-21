@@ -68,11 +68,12 @@ const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.s
 const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
 const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
 const PARTY = {Democratic: "D", Republican: "R"};
-// the other races' candidates in the two columns: Democrats left, Republicans right, everyone else on the shorter side
+// the other races' candidates in the two columns: Democrats left, Republicans right, everyone else together on the shorter side
 function split(cands){
   const line = c => `${esc(c.name)}${c.incumbent ? ` <span class="mut">(inc.)</span>` : ""}`;
   const cols = [cands.filter(c => c.party === "Democratic").map(line), cands.filter(c => c.party === "Republican").map(line)];
-  for (const c of cands.filter(c => !PARTY[c.party])) cols[cols[0].length <= cols[1].length ? 0 : 1].push(`${line(c)} <span class="mut">(${esc(c.party)})</span>`);
+  const side = cols[0].length <= cols[1].length ? 0 : 1;      // all of them together, on the side with fewer
+  for (const c of cands.filter(c => !PARTY[c.party])) cols[side].push(`${line(c)} <span class="mut">(${esc(c.party)})</span>`);
   return cols;
 }
 const isName = v => v && !(v in WORD);
