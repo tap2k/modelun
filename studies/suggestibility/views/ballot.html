@@ -98,8 +98,8 @@ function races(){
   const tally = m => { const t = {}; rs.filter(r => !r.other).forEach(r => { const v = B.verdicts[m.id][r.id]; if (v) t[v] = (t[v] || 0) + 1; }); return t; };
   const main = MAIN;
   $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
-      <span>${rs.length} races${rs.some(r => r.other) ? `; counts leave out the ${rs.filter(r => r.other).length} without one D and one R` : ""}</span></div>
-    <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Third candidate, or a pick in a race without one D and one R" : WORD[c]}</span>`).join("")}</div>
+      <span>in the ${rs.filter(r => !r.other).length} races with one Democrat and one Republican</span></div>
+    <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Independent or third party" : WORD[c]}</span>`).join("")}</div>
     <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${MAIN.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
     ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
       <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R || "–")}${r.incumbent === "R" && r.R ? ` <span class="mut">(inc.)</span>` : ""}</td>
