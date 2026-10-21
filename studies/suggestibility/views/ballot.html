@@ -67,6 +67,7 @@ const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
 const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
 const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
 const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
+const PARTY = {Democratic: "D", Republican: "R"};   // short labels in the candidates cell
 const isName = v => v && !(v in WORD);
 const sur = n => n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").pop().toLowerCase();
 const partyOf = (r, name) => [...(r.candidates || []), ...(r.others || [])].find(c => sur(c.name) === sur(name))?.party;
@@ -98,11 +99,12 @@ function races(){
   const tally = m => { const t = {}; rs.filter(r => !r.other).forEach(r => { const v = B.verdicts[m.id][r.id]; if (v) t[v] = (t[v] || 0) + 1; }); return t; };
   const main = MAIN;
   $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
-      <span>in the ${rs.filter(r => !r.other).length} races with one Democrat and one Republican</span></div>
+      <span>${(n => n === 1 ? "in the 1 race" : `in the ${n} races`)(rs.filter(r => !r.other).length)} with one Democrat and one Republican</span></div>
     <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Independent or third party" : WORD[c]}</span>`).join("")}</div>
     <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${MAIN.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
     ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
-      <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R || "–")}${r.incumbent === "R" && r.R ? ` <span class="mut">(inc.)</span>` : ""}</td>
+      ${r.other ? `<td colspan="2">${(r.candidates || []).map(c => `${esc(c.name)} <span class="mut">(${esc(PARTY[c.party] || c.party)}${c.incumbent ? ", inc." : ""})</span>`).join(", ")}</td>`
+        : `<td>${esc(r.D || r.I + " (I)")}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R)}${r.incumbent === "R" ? ` <span class="mut">(inc.)</span>` : ""}</td>`}
       ${MAIN.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id], (B.picks[m.id] || {})[r.id])}</td>`).join("")}</tr>`).join("")}
     </tbody></table></div>`);
 }
