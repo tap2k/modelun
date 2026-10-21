@@ -66,9 +66,13 @@ const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.s
 const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
 const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
 const isName = v => v && !(v in WORD);
-function verdict(r, v){
+const sur = n => n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").pop().toLowerCase();
+const partyOf = (r, name) => [...(r.candidates || []), ...(r.others || [])].find(c => sur(c.name) === sur(name))?.party;
+function verdict(r, v, pick){
   if (!v) return `<span class="mut">–</span>`;
-  const who = v === "D" ? r.D : v === "R" ? r.R : v === "I" ? r.I : isName(v) ? v : null;
+  if (v === "O" && pick) return `<span class="v"><i class="cO"></i>${esc(pick)} <span class="mut">(${esc(partyOf(r, pick) || "third candidate")})</span></span>`;
+  if (isName(v)) return `<span class="v"><i class="c${({Democratic: "D", Republican: "R"})[partyOf(r, v)] || "name"}"></i>${esc(v)}${partyOf(r, v) ? ` <span class="mut">(${esc(partyOf(r, v))})</span>` : ""}</span>`;
+  const who = v === "D" ? r.D : v === "R" ? r.R : v === "I" ? r.I : null;
   const cls = isName(v) ? "name" : v;
   return `<span class="v"><i class="c${cls}"></i>${esc(who || WORD[v])}${who && !isName(v) ? ` <span class="mut">(${v})</span>` : ""}</span>`;
 }
@@ -92,12 +96,12 @@ function races(){
   const tally = m => { const t = {}; rs.filter(r => !r.other).forEach(r => { const v = B.verdicts[m.id][r.id]; if (v) t[v] = (t[v] || 0) + 1; }); return t; };
   const main = B.models.filter(m => Object.keys(B.verdicts[m.id]).length > 100);
   $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
-      <span>${rs.length} races; counts leave out the ${rs.filter(r => r.other).length} without one D and one R</span></div>
+      <span>${rs.length} races${rs.some(r => r.other) ? `; counts leave out the ${rs.filter(r => r.other).length} without one D and one R` : ""}</span></div>
     <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Third candidate, or a pick in a race without one D and one R" : WORD[c]}</span>`).join("")}</div>
     <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${B.models.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
-    ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}${r.incumbent ? ` <span class="mut">(${r.incumbent} inc.)</span>` : ""}</td><td class="lean">${r.pvi || ""}</td>
-      <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}</td><td>${esc(r.R || "–")}</td>
-      ${B.models.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id])}</td>`).join("")}</tr>`).join("")}
+    ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
+      <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R || "–")}${r.incumbent === "R" && r.R ? ` <span class="mut">(inc.)</span>` : ""}</td>
+      ${B.models.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id], (B.picks[m.id] || {})[r.id])}</td>`).join("")}</tr>`).join("")}
     </tbody></table></div>`);
 }
 function load(st){
@@ -110,8 +114,8 @@ async function openRace(id){
   body.innerHTML = `<p class="mut">loading…</p>`; d.showModal();
   const f = (await load(r.state))[id] || {};
   body.innerHTML = `<h2 style="margin:0 0 4px;font-size:18px">${esc(title(r))}${r.pvi ? ` <span class="mut" style="font-size:13px">${r.pvi}</span>` : ""}</h2>
-    <div class="mut" style="font-size:13px">${r.other ? "Not one Democrat and one Republican on the ballot." : `${esc(r.D || r.I)} (${r.D ? "D" : "I"}) · ${esc(r.R)} (R)`} ${r.incumbent ? `Incumbent party ${r.incumbent}.` : r.other ? "" : "Open seat."}</div>
-    <div class="models">${B.models.filter(m => f[m.id]).map(m => `<div><b>${esc(m.name)}</b> ${verdict(r, B.verdicts[m.id][id])}
+    <div class="mut" style="font-size:13px">${r.other ? `On the ballot: ${(r.candidates || []).map(c => `${esc(c.name)} (${esc(c.party)}${c.incumbent ? ", incumbent" : ""})`).join(", ")}.${r.note ? " " + esc(r.note.split("; ").slice(1).join("; ")) : ""}` : `${esc(r.D || r.I)} (${r.D ? "D" : "I"}${r.incumbent === "D" ? ", incumbent" : ""}) · ${esc(r.R)} (R${r.incumbent === "R" ? ", incumbent" : ""})${r.incumbent ? "" : " · open seat"}`}</div>
+    <div class="models">${B.models.filter(m => f[m.id]).map(m => `<div><b>${esc(m.name)}</b> ${verdict(r, B.verdicts[m.id][id], (B.picks[m.id] || {})[id])}
       ${f[m.id].map((x, k) => `<div class="draw"><div class="h">answer ${k + 1} · coded ${esc(WORD[x.code] || x.code)} · ${x.searches} search${x.searches === 1 ? "" : "es"}</div>
         <div class="txt">${md(x.reply)}</div>
         ${x.queries.length ? `<div class="h">queries</div><ul>${x.queries.map(q => `<li>${esc(q)}</li>`).join("")}</ul>` : ""}

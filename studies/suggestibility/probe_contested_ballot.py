@@ -354,9 +354,16 @@ NAMES = {"gpt-6.1-sol": "GPT-6.1 Sol", "grok-4.7": "Grok 4.7", "claude-sonnet-5.
 
 def export(path):
     """the page's data (convovo-site public/ballot/data.json): every race, and per model each draw's code and reply"""
+    out = page_data()
+    Path(path).write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
+    print(f"{path}: {len(out['races'])} races, {len(out['models'])} models, {Path(path).stat().st_size / 1e6:.2f} MB")
+
+
+def page_data():
     overrides = json.loads(OVERRIDES.read_text())
     out = {"prompt": USER_TURN, "models": [], "races": [
-        {k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other") if r.get(k)} | {"id": race_id(r), "race": r["race"]}
+        {k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other", "candidates", "others", "note") if r.get(k)}
+        | {"id": race_id(r), "race": r["race"]}
         for r in RACES]}
     for p in sorted(OUT.glob("*.json")):
         rec = json.loads(p.read_text())
@@ -365,10 +372,12 @@ def export(path):
         for rid, cell in rec["cells"].items():
             cs = codes(m, rid, cell["draws"], overrides)
             cells[rid] = {"verdict": verdict(cs), "draws": [[c, d["reply"]] for c, d in zip(cs, cell["draws"]) if d]}
+            if cells[rid]["verdict"] == "O":         # name the third candidate: the listed one the deciding answer names
+                text = fold(next(d["reply"] for c, d in zip(cs, cell["draws"]) if c == "O"))
+                cells[rid]["pick"] = next((o["name"] for o in RACE[rid].get("others", []) if surname(o["name"]) in text), None)
         out["models"].append({"id": m, "name": NAMES.get(m, m), "date": rec["date"], "cells": cells})
     out["models"].sort(key=lambda x: -len(x["cells"]))
-    Path(path).write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
-    print(f"{path}: {len(out['races'])} races, {len(out['models'])} models, {Path(path).stat().st_size / 1e6:.2f} MB")
+    return out
 
 
 FILL = {"D": "#3a68a8", "R": "#b5463c", "O": "#c79300", "I": "#c79300", "decline": "#c9cacb", "split": "url(#hatch)"}

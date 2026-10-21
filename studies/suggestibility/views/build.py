@@ -222,9 +222,11 @@ for m in bmodels:
         bfull.setdefault(st, {}).setdefault(rid, {})[m] = [
             {"code": k, "reply": d["reply"], "searches": d["searches"], "queries": d["queries"], "cited": d["cited"]}
             for k, d in zip(cs, c["draws"]) if d]
+bpage = PB.page_data()       # the same data convovo.ai/ballot gets, for the third candidates' names
 bdata = {"prompt": PB.USER_TURN, "models": [{"id": m, "name": PB.NAMES.get(m, m), "date": brecs[m]["date"]} for m in bmodels],
-         "races": [{k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other") if r.get(k)}
-                   | {"id": PB.race_id(r), "n": r["n"]} for r in PB.RACES], "verdicts": bverdict}
+         "races": [{k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other", "candidates", "others", "note") if r.get(k)}
+                   | {"id": PB.race_id(r), "n": r["n"]} for r in PB.RACES], "verdicts": bverdict,
+         "picks": {m["id"]: {rid: c["pick"] for rid, c in m["cells"].items() if c.get("pick")} for m in bpage["models"]}}
 bblob = json.dumps(bdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_ballot.js").write_text(f"const B = {bblob};\n")
 brd = VIEWS / "ballot_replies"
