@@ -205,3 +205,31 @@ pdata = {"items": [{"id": i, "stratum": st, "poles": list(POLES[i]), "qx": qx, "
 pblob = json.dumps(pdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_positions.js").write_text(f"const P = {pblob};\n")
 print(f"wrote {VIEWS/'data_positions.js'}  ({len(pmodels)} models, {len(pblob)//1024}KB)")
+
+# --- ballot (probe_contested_ballot.py): data_ballot.js, drawn by ballot.html, and ballot_replies/<state>.js with every
+# answer, its search queries and cited links, loaded when a race is opened. Run its analyze first.
+import probe_contested_ballot as PB   # noqa: E402
+
+bov = json.loads(PB.OVERRIDES.read_text())
+brecs = {p.stem: json.loads(p.read_text()) for p in sorted(PB.OUT.glob("*.json"))}
+bmodels = sorted(brecs, key=lambda m: -len(brecs[m]["cells"]))
+bverdict, bfull = {}, {}
+for m in bmodels:
+    for rid, c in brecs[m]["cells"].items():
+        cs = PB.codes(m, rid, c["draws"], bov)
+        bverdict.setdefault(m, {})[rid] = PB.verdict(cs)
+        st = PB.RACE[rid]["state"]
+        bfull.setdefault(st, {}).setdefault(rid, {})[m] = [
+            {"code": k, "reply": d["reply"], "searches": d["searches"], "queries": d["queries"], "cited": d["cited"]}
+            for k, d in zip(cs, c["draws"]) if d]
+bdata = {"prompt": PB.USER_TURN, "models": [{"id": m, "name": PB.NAMES.get(m, m), "date": brecs[m]["date"]} for m in bmodels],
+         "races": [{k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other") if r.get(k)}
+                   | {"id": PB.race_id(r), "n": r["n"]} for r in PB.RACES], "verdicts": bverdict}
+bblob = json.dumps(bdata, ensure_ascii=False, separators=(",", ":"))
+(VIEWS / "data_ballot.js").write_text(f"const B = {bblob};\n")
+brd = VIEWS / "ballot_replies"
+brd.mkdir(exist_ok=True)
+for st, f in bfull.items():
+    (brd / f"{st}.js").write_text("(window.BR = window.BR || {})[" + json.dumps(st) + "] = "
+                                  + json.dumps(f, ensure_ascii=False, separators=(",", ":")) + ";\n")
+print(f"wrote {VIEWS/'data_ballot.js'} ({len(bblob)//1024}KB) and {brd}/ ({sum(f.stat().st_size for f in brd.glob('*.js')) // 1024}KB in {len(bfull)} files)")

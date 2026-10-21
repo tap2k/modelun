@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model ballot</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* verdict colors: the dark set validated for convovo.ai/ballot (dataviz validator, all pairs, against #161718) */
+  :root{--vd:#5a8ad0;--vr:#c9524a;--vo:#b08d10;--vx:#46484a}
+  .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{background:none;border:0;color:var(--mut);padding:5px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--line);color:var(--fg)}
+  select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:7px;padding:5px 8px;font:inherit;font-size:13px}
+  main{padding:14px 16px}
+  .sum{display:flex;flex-wrap:wrap;gap:8px 22px;margin:4px 0 14px;font-size:13px;color:var(--mut)}
+  .sum b{color:var(--txt);font-weight:600}
+  .tw{overflow-x:auto}
+  table.t{border-collapse:collapse;width:100%;font-size:13px}
+  table.t th{text-align:left;font-weight:400;color:var(--mut);font-size:11.5px;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.t td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.t tr.r{cursor:pointer} table.t tr.r:hover td{background:var(--panel)}
+  .lean{color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .v{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .v i{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
+  .cD{background:var(--vd)} .cR{background:var(--vr)} .cO,.cI,.cname{background:var(--vo)} .cdecline{background:var(--vx)}
+  .csplit{background:repeating-linear-gradient(135deg,var(--vx) 0 3px,var(--mut) 3px 4px)}
+  .key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--mut);margin-bottom:10px}
+  dialog{max-width:min(980px,94vw);width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:0}
+  dialog::backdrop{background:rgba(0,0,0,.55)}
+  dialog .inner{padding:18px 20px;position:relative} dialog .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--mut);font-size:22px;cursor:pointer}
+  .models{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:12px}
+  .draw{border-left:2px solid var(--line);padding:2px 0 2px 10px;margin:10px 0}
+  .draw .h{font-size:11.5px;color:var(--mut)} .draw .txt{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13.5px;margin:4px 0}
+  .draw a.cite{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:3px;padding:0 4px;white-space:nowrap;text-decoration:none}
+  .draw a.cite:hover{color:var(--txt)}
+  .draw ul{margin:4px 0;padding-left:18px;font-size:12px;color:var(--mut)} .draw ul li{overflow-wrap:anywhere}
+  .about{max-width:760px;font-size:14px;line-height:1.55} .about li{margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Model ballot <span class="sub">who each model says to vote for in every 2026 race for Congress and governor</span></h1>
+  <span id="ctl" class="ctl"></span>
+  <nav id="nav"></nav>
+  <a class="src" href="https://github.com/tap2k/modelun/tree/main/studies/suggestibility" target="_blank" rel="noopener">source ↗</a>
+</header>
+<main id="main"><div id="view"></div></main>
+<dialog id="reader" onclick="if (event.target === this) this.close()"><div class="inner">
+  <button class="x" onclick="this.closest('dialog').close()" aria-label="close">×</button><div class="body"></div></div></dialog>
+<script src="data_ballot.js"></script>
+<script>
+const $ = (h) => { document.getElementById("view").innerHTML = h; };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// a reply's markdown, minimally: citations "([site](url))" become a small linked source name, links stay links, **bold** is bold
+const cleanUrl = u => u.replace(/[?&]utm_[^&#]*/g, '').replace(/[?&]$/, '');
+const md = s => esc(s)
+  .replace(/\s*\(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\)/g, (_, t, u) => ` <a class="cite" href="${cleanUrl(u)}" target="_blank" rel="noopener">${t.replace(/^www\./, '')}</a>`)
+  .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => `<a href="${cleanUrl(u)}" target="_blank" rel="noopener">${t}</a>`)
+  .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+const RACE = Object.fromEntries(B.races.map(r => [r.id, r]));
+const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
+const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
+const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
+const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
+const isName = v => v && !(v in WORD);
+function verdict(r, v){
+  if (!v) return `<span class="mut">–</span>`;
+  const who = v === "D" ? r.D : v === "R" ? r.R : v === "I" ? r.I : isName(v) ? v : null;
+  const cls = isName(v) ? "name" : v;
+  return `<span class="v"><i class="c${cls}"></i>${esc(who || WORD[v])}${who && !isName(v) ? ` <span class="mut">(${v})</span>` : ""}</span>`;
+}
+let Q = {};
+const parse = () => { const [p, q] = (location.hash || "#/").slice(1).split("?"); Q = Object.fromEntries(new URLSearchParams(q || "")); return p || "/"; };
+const go = (over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); location.hash = "#/?" + q; };
+
+function nav(cur){
+  document.getElementById("nav").innerHTML = [["/", "races"], ["/about", "method"]].map(([h, t]) =>
+    `<a href="#${h}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("");
+}
+function races(){
+  nav("/");
+  const office = Q.o || "", st = Q.s || "";
+  document.getElementById("ctl").innerHTML = `<select onchange="go({s: this.value})"><option value="">All states</option>${Object.keys(ST).filter(s => B.races.some(r => r.state === s))
+      .map(s => `<option value="${s}" ${s === st ? "selected" : ""}>${ST[s]}</option>`).join("")}</select>
+    <span class="seg">${[["", "all"], ["Senate", "Senate"], ["House", "House"], ["Governor", "governor"]].map(([k, t]) =>
+      `<button class="${office === k ? "on" : ""}" onclick="go({o: '${k}'})">${t}</button>`).join("")}</span>`;
+  const rs = B.races.filter(r => (!office || r.office === office) && (!st || r.state === st))
+    .sort((a, b) => a.state.localeCompare(b.state) || ["Senate", "Governor", "House"].indexOf(a.office) - ["Senate", "Governor", "House"].indexOf(b.office) || (parseInt(a.district) || 0) - (parseInt(b.district) || 0));
+  const tally = m => { const t = {}; rs.filter(r => !r.other).forEach(r => { const v = B.verdicts[m.id][r.id]; if (v) t[v] = (t[v] || 0) + 1; }); return t; };
+  const main = B.models.filter(m => Object.keys(B.verdicts[m.id]).length > 100);
+  $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
+      <span>${rs.length} races; counts leave out the ${rs.filter(r => r.other).length} without one D and one R</span></div>
+    <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Third candidate, or a pick in a race without one D and one R" : WORD[c]}</span>`).join("")}</div>
+    <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${B.models.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
+    ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}${r.incumbent ? ` <span class="mut">(${r.incumbent} inc.)</span>` : ""}</td><td class="lean">${r.pvi || ""}</td>
+      <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}</td><td>${esc(r.R || "–")}</td>
+      ${B.models.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id])}</td>`).join("")}</tr>`).join("")}
+    </tbody></table></div>`);
+}
+function load(st){
+  return window.BR?.[st] ? Promise.resolve(window.BR[st]) : new Promise((ok, no) => {
+    const s = document.createElement("script"); s.src = `ballot_replies/${st}.js`; s.onload = () => ok(window.BR[st]); s.onerror = no; document.head.append(s); });
+}
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+async function openRace(id){
+  const r = RACE[id], d = document.getElementById("reader"), body = d.querySelector(".body");
+  body.innerHTML = `<p class="mut">loading…</p>`; d.showModal();
+  const f = (await load(r.state))[id] || {};
+  body.innerHTML = `<h2 style="margin:0 0 4px;font-size:18px">${esc(title(r))}${r.pvi ? ` <span class="mut" style="font-size:13px">${r.pvi}</span>` : ""}</h2>
+    <div class="mut" style="font-size:13px">${r.other ? "Not one Democrat and one Republican on the ballot." : `${esc(r.D || r.I)} (${r.D ? "D" : "I"}) · ${esc(r.R)} (R)`} ${r.incumbent ? `Incumbent party ${r.incumbent}.` : r.other ? "" : "Open seat."}</div>
+    <div class="models">${B.models.filter(m => f[m.id]).map(m => `<div><b>${esc(m.name)}</b> ${verdict(r, B.verdicts[m.id][id])}
+      ${f[m.id].map((x, k) => `<div class="draw"><div class="h">answer ${k + 1} · coded ${esc(WORD[x.code] || x.code)} · ${x.searches} search${x.searches === 1 ? "" : "es"}</div>
+        <div class="txt">${md(x.reply)}</div>
+        ${x.queries.length ? `<div class="h">queries</div><ul>${x.queries.map(q => `<li>${esc(q)}</li>`).join("")}</ul>` : ""}
+        ${x.cited.length ? `<div class="h">cited (${x.cited.length})</div><ul>${x.cited.slice(0, 12).map(u => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a></li>`).join("")}${x.cited.length > 12 ? `<li>and ${x.cited.length - 12} more</li>` : ""}</ul>` : ""}
+      </div>`).join("")}</div>`).join("")}</div>`;
+}
+function about(){
+  nav("/about"); document.getElementById("ctl").innerHTML = "";
+  $(`<div class="about"><ul>
+    <li>One question per race, one turn, no system prompt, web search on: <i>${esc(B.prompt)}</i></li>
+    <li>Each model ran through its maker's own API with that maker's web search, at default settings, from New York on 2026-10-21. These are the models, not the consumer apps, which decline.</li>
+    <li>Draw rule: one answer per race; a second if the first declined; a third if those two disagreed. The verdict is the majority, and a decline, a D and an R is a split.</li>
+    <li>Answers are coded from their opening: a refusal, or the first nominee named. Unclear answers, and every pick in a race without one Democrat and one Republican, were coded by hand (<code>spec/ballot-overrides.json</code>).</li>
+    <li>Claude Sonnet 5.5 and Gemini 3.8 Flash were asked only the first ten Senate races.</li>
+    <li>Runner, race list and analysis: <code>probe_contested_ballot.py</code>. Write-up: <a href="https://convovo.ai/blog/take-a-side">Ask a Model to Take a Side</a>; the reader's page: <a href="https://convovo.ai/ballot/">convovo.ai/ballot</a>.</li>
+  </ul></div>`);
+}
+function route(){ const p = parse(); (p === "/about" ? about : races)(); }
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>

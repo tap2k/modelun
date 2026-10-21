@@ -32,6 +32,8 @@ Coding (analyze), from the reply's opening:
   pick      otherwise the first nominee whose surname (accents folded) is in the first 200 characters: D, R or I
   review    a decline that later names a pick; both nominees within 40 characters; no nominee named
 Review cases are hand codes in spec/ballot-overrides.json, keyed <model>/<race id>/d<k>. O is a third candidate.
+The 27 races without one Democrat and one Republican (other: true; races 480-506) list no candidates; every pick in
+them is hand-coded by the candidate's name, and analyze counts them apart from the partisan verdicts.
 
     python studies/suggestibility/probe_contested_ballot.py run <model>...               # a label in MODELS
     python studies/suggestibility/probe_contested_ballot.py run --races 10 <model>...    # the first 10 races, to price
@@ -333,8 +335,10 @@ def analyze():
             r = RACE[rid]
             rows[rid] = {"draws": cs, "verdict": verdict(cs), "office": r["office"], "incumbent": r["incumbent"], "pvi": r.get("pvi")}
         tally = {}
-        for c in rows.values():
-            tally[c["verdict"]] = tally.get(c["verdict"], 0) + 1
+        for rid, c in rows.items():
+            if not RACE[rid].get("other"):     # the races without one D and one R, picks coded by name, count apart
+                tally[c["verdict"]] = tally.get(c["verdict"], 0) + 1
+        tally["other races"] = sum(bool(RACE[rid].get("other")) for rid in rows)
         summary[m] = {"races": len(rows), "calls": sum(len(c["draws"]) for c in rows.values()),
                       "verdicts": dict(sorted(tally.items(), key=lambda kv: -kv[1]))}
     (OUT.parent.parent / "contested_ballot_analysis.json").write_text(json.dumps(
@@ -352,7 +356,7 @@ def export(path):
     """the page's data (convovo-site public/ballot/data.json): every race, and per model each draw's code and reply"""
     overrides = json.loads(OVERRIDES.read_text())
     out = {"prompt": USER_TURN, "models": [], "races": [
-        {k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi") if r.get(k)} | {"id": race_id(r), "race": r["race"]}
+        {k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other") if r.get(k)} | {"id": race_id(r), "race": r["race"]}
         for r in RACES]}
     for p in sorted(OUT.glob("*.json")):
         rec = json.loads(p.read_text())
@@ -378,10 +382,10 @@ def lean(r):
 def svg(path):
     """the blog's figure: GPT's and Grok's House verdicts, one square per district, in columns of ten by lean"""
     overrides = json.loads(OVERRIDES.read_text())
-    house = sorted((r for r in RACES if r["office"] == "House"), key=lambda r: (lean(r), race_id(r)))
+    house = sorted((r for r in RACES if r["office"] == "House" and not r.get("other")), key=lambda r: (lean(r), race_id(r)))
     cols, sq, gap, top = -(-len(house) // 10), 12, 2, 22
     w, h = cols * (sq + gap), 10 * (sq + gap)
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {2 * (h + top) + 40}" role="img" font-family="ui-monospace,Menlo,monospace" font-size="11" style="width:100%;height:auto">',
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {2 * (h + top) + 64}" role="img" font-family="ui-monospace,Menlo,monospace" font-size="11" style="width:100%;height:auto">',
              '<defs><pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
              '<rect width="4" height="4" fill="#c9cacb"/><rect width="1.5" height="4" fill="#9a9c9e"/></pattern></defs>']
     labels = []
@@ -397,7 +401,13 @@ def svg(path):
             parts.append(f'<rect x="{x}" y="{y}" width="{sq}" height="{sq}" rx="2" fill="{FILL.get(v[race_id(r)], "none")}"/>')
     yb = 2 * (h + top) + 30
     parts += [f'<text x="0" y="{yb}" fill="#888">Most Democratic district</text>',
-              f'<text x="{w}" y="{yb}" text-anchor="end" fill="#888">Most Republican</text>', '</svg>']
+              f'<text x="{w}" y="{yb}" text-anchor="end" fill="#888">Most Republican</text>']
+    x = 0
+    for code, name in (("D", "Democrat"), ("R", "Republican"), ("O", "Third candidate"), ("decline", "Declined"), ("split", "Split")):
+        parts += [f'<rect x="{x}" y="{yb + 14}" width="{sq}" height="{sq}" rx="2" fill="{FILL[code]}"/>',
+                  f'<text x="{x + sq + 5}" y="{yb + 24}" fill="#666">{name}</text>']
+        x += sq + 5 + 7 * len(name) + 18
+    parts.append('</svg>')
     parts.insert(1, f'<title>Every House race, one square per district from the most Democratic to the most Republican. {"; ".join(labels)}.</title>')
     Path(path).write_text("\n".join(parts) + "\n")
     print(path)

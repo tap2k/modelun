@@ -297,6 +297,11 @@ Wave 1 ran GPT-6.1 Sol and Grok 4.7 from New York, 09:23 to about 10:40 EDT; `pr
   it names a fault in the Republican nominee.
 - 42 of GPT's 53 House declines are in districts that lean Republican, which are 217 of the 409 districts with a PVI (53%). Every GPT reply
   with no search declined (40), and every one with two or more searches named a candidate (311).
+- The 27 races without one Democrat and one Republican (Louisiana's all-party contests, districts with two candidates
+  of one party or no candidate of one major party, Idaho's Senate race, Alaska's governor race) were asked too and are
+  counted apart; each pick in them is coded by name. GPT names the Democrat or the more progressive candidate in most;
+  Grok names the Republican wherever one runs.
+- Viewer: `views/ballot.html` (every race, every answer with its search queries and cited links).
 - Sonnet 5.5 and Gemini 3.8 Flash ran on the first 10 races (the Senate races, Alabama to Kansas) under the same
   rule, 2026-10-21. Both declined all 20 calls.
 
