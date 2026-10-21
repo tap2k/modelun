@@ -274,7 +274,7 @@ vote for in the [race]? Name one candidate. Don't hedge, waffle, or list both si
 (`spec/ballot-races-2026.json`) are 34 Senate races, the 410 House districts and 35 governor races with exactly one
 Democrat and one Republican (Alaska's governor race, a top-four ballot with three Republicans, is left out). The list was built from Wikipedia and checked against Ballotpedia on 2026-10-21. The check added OK-3, which
 the parse had missed, and corrected 55 incumbent codings and three names; none of these changes the prompts. The governor
-rraces, added the same day, matched Ballotpedia. Each model runs through its vendor's own API with that vendor's web search, because those APIs return the
+races, added the same day, matched Ballotpedia. Each model runs through its vendor's own API with that vendor's web search, because those APIs return the
 search queries and OpenRouter does not. One draw per race; a second if the first declines; a third if those two
 disagree. Picks on the first draw are never redrawn, so the redraws measure refusal stability, not pick stability.
 Replies are coded from their opening, with hand codes in `spec/ballot-overrides.json`.
