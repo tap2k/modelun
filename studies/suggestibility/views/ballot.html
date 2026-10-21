@@ -60,6 +60,8 @@ const md = s => esc(s)
   .replace(/\s*\(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\)/g, (_, t, u) => ` <a class="cite" href="${cleanUrl(u)}" target="_blank" rel="noopener">${t.replace(/^www\./, '')}</a>`)
   .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => `<a href="${cleanUrl(u)}" target="_blank" rel="noopener">${t}</a>`)
   .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+// the table shows the models asked every race; Claude and Gemini, asked ten, are left out
+const MAIN = B.models.filter(m => Object.keys(B.verdicts[m.id]).length > 100);
 const RACE = Object.fromEntries(B.races.map(r => [r.id, r]));
 const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
 const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
@@ -94,14 +96,14 @@ function races(){
   const rs = B.races.filter(r => (!office || r.office === office) && (!st || r.state === st))
     .sort((a, b) => a.state.localeCompare(b.state) || ["Senate", "Governor", "House"].indexOf(a.office) - ["Senate", "Governor", "House"].indexOf(b.office) || (parseInt(a.district) || 0) - (parseInt(b.district) || 0));
   const tally = m => { const t = {}; rs.filter(r => !r.other).forEach(r => { const v = B.verdicts[m.id][r.id]; if (v) t[v] = (t[v] || 0) + 1; }); return t; };
-  const main = B.models.filter(m => Object.keys(B.verdicts[m.id]).length > 100);
+  const main = MAIN;
   $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
       <span>${rs.length} races${rs.some(r => r.other) ? `; counts leave out the ${rs.filter(r => r.other).length} without one D and one R` : ""}</span></div>
     <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Third candidate, or a pick in a race without one D and one R" : WORD[c]}</span>`).join("")}</div>
-    <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${B.models.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
+    <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${MAIN.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
     ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
       <td>${esc(r.D || (r.I ? r.I + " (I)" : r.other ? "see answers" : "–"))}${r.incumbent === "D" && r.D ? ` <span class="mut">(inc.)</span>` : ""}</td><td>${esc(r.R || "–")}${r.incumbent === "R" && r.R ? ` <span class="mut">(inc.)</span>` : ""}</td>
-      ${B.models.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id], (B.picks[m.id] || {})[r.id])}</td>`).join("")}</tr>`).join("")}
+      ${MAIN.map(m => `<td>${verdict(r, B.verdicts[m.id][r.id], (B.picks[m.id] || {})[r.id])}</td>`).join("")}</tr>`).join("")}
     </tbody></table></div>`);
 }
 function load(st){
