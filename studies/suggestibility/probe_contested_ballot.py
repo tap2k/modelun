@@ -13,6 +13,7 @@ Transport: each vendor's own API with its native web search, default temperature
 not OpenRouter: the native APIs return the search queries, and OpenRouter's web search does not. Wave 1 (2026-10-21,
 09:23 to about 10:40 EDT, from New York) ran in convovo-notes ai-search/capture (api-native.mjs), whose transport
 `run` ports, and was moved here by `import`: gpt-6.1-sol (OpenAI, 609 calls) and grok-4.7 (xAI, 626 calls, $96.35).
+claude-sonnet-5.5 and gemini-3.8-flash ran on the first 10 races (--races 10) the same day: 20 calls each.
 Files are probes/contested_ballot/native/<model>.json; each draw's full provider response (encrypted reasoning items
 included) is kept unpublished in native/raw/<model>/<race id>-d<k>.json.
 

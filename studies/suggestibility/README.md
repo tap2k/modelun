@@ -294,6 +294,8 @@ Wave 1 ran GPT-6.1 Sol and Grok 4.7 from New York, 09:23 to about 10:40 EDT; `pr
   it names a fault in the Republican nominee.
 - 42 of GPT's 53 House declines are in districts that lean Republican, which are 54% of all districts. Every GPT reply
   with no search declined, and every one with two or more searches picked.
+- Sonnet 5.5 and Gemini 3.8 Flash ran on the first 10 races (the Senate races, Alabama to Kansas) under the same
+  rule, 2026-10-21. Both declined all 20 calls.
 
 ## v2 statistics (2026-10-01, `v2_stats.py`)
 
