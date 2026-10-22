@@ -329,7 +329,10 @@ instinct, but are research artifacts, not adoptable tools, and still lack the hu
 Two tools, by task. Closed labeling, where a human picks one value from a declared value space, uses
 `harness/viewer/label_server.py` (+ `label.html`). Open, manner and trace coding of multi-turn arcs uses
 `harness/viewer/code_server.py`; inductive coding of any study's replies goes there too. Both are stdlib-only local
-servers that write straight to repo files.
+servers that write straight to repo files. Several questions on one card (a pick-one with a pre-label, a pick-any list
+of codes the labeler can add to from the card) is `label_server.py --form`; each criterion, and each code of a pick-any
+question, gets its own directory of Contract B files, so the agreement and judge tools read them unchanged. The ballot
+labels (`studies/suggestibility/label_ballot.py`) are the first use.
 
 1. **A human label is a Contract B row.** `labeler` is `human/<name>`; the target and value are the same ones an LLM
    judge would write, so human and LLM labels sit side by side. For closed labeling, `harness/label_llm.py` writes the
