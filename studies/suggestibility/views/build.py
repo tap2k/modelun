@@ -212,6 +212,7 @@ import probe_contested_ballot as PB   # noqa: E402
 
 bov = json.loads(PB.OVERRIDES.read_text())
 brecs = {p.stem: json.loads(p.read_text()) for p in sorted(PB.OUT.glob("*.json"))}
+brecs = {m: r for m, r in brecs.items() if len(r["cells"]) > 100}   # the full runs; Sonnet and Gemini ran 10 races
 bmodels = sorted(brecs, key=lambda m: -len(brecs[m]["cells"]))
 bverdict, bfull = {}, {}
 for m in bmodels:
@@ -248,9 +249,8 @@ def btype(d):
     return "news and other"
 
 
-bmain = [m for m in bmodels if len(brecs[m]["cells"]) > 100]
 bsrc_n, bsrc, blinks = {}, {}, {}   # blinks: per model and bucket, retrieved links by domain type
-for m in bmain:
+for m in bmodels:
     n = bsrc_n.setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0, "searches": 0})
     lk = blinks.setdefault(m, {b: {} for b in ("all", "D", "R", "decline")})
     for rid, c in brecs[m]["cells"].items():
@@ -269,7 +269,7 @@ for m in bmain:
                 for b in buckets:
                     cnt[b] += 1
 share = lambda dom, m: bsrc[dom].get(m, {}).get("all", 0) / bsrc_n[m]["all"]
-btop = sorted(bsrc, key=lambda dom: -max(share(dom, m) for m in bmain))[:40]
+btop = sorted(bsrc, key=lambda dom: -max(share(dom, m) for m in bmodels))[:40]
 bsources = {"n": bsrc_n, "links": blinks, "domains": [{"d": dom, "t": btype(dom), "c": bsrc[dom]} for dom in btop]}
 
 bpage = PB.page_data()       # the same data convovo.ai/ballot gets, for the third candidates' names

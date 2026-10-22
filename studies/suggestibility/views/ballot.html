@@ -72,8 +72,7 @@ const md = s => esc(s.trim().replace(/\n\s*\n/g, "\n"))
   .replace(/\s*\(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\)/g, (_, t, u) => ` <a class="cite" href="${cleanUrl(u)}" target="_blank" rel="noopener">${t.replace(/^www\./, '')}</a>`)
   .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => `<a href="${cleanUrl(u)}" target="_blank" rel="noopener">${t}</a>`)
   .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-// the table shows the models asked every race; Claude and Gemini, asked ten, are left out
-const MAIN = B.models.filter(m => Object.keys(B.verdicts[m.id]).length > 100);
+const MAIN = B.models;
 const RACE = Object.fromEntries(B.races.map(r => [r.id, r]));
 const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
 const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
@@ -154,7 +153,6 @@ function about(){
     <li>xAI adds about 1,240 tokens of its own hidden instructions to every Grok call. We cannot see or remove them.</li>
     <li>Each model answered three times per race. A decline counts as an abstention: the verdict is the majority of the answers that named a candidate, a tie among them is a split, and a race counts as declined only if all three answers declined. All answers ran on 2026-10-21.</li>
     <li>Answers are coded from their opening: a refusal, or the first nominee named. Unclear answers, and every pick in a race without one Democrat and one Republican, were coded by hand (<code>spec/ballot-overrides.json</code>).</li>
-    <li>Claude Sonnet 5.5 and Gemini 3.8 Flash were asked only the first ten Senate races, twice each.</li>
     <li>Runner, race list and analysis: <code>probe_contested_ballot.py</code>. Write-up: <a href="https://convovo.ai/blog/take-a-side">Ask a Model to Take a Side</a>; the reader's page: <a href="https://convovo.ai/ballot/">convovo.ai/ballot</a>.</li>
   </ul></div>`);
 }
