@@ -41,6 +41,7 @@ them is hand-coded by the candidate's name, and analyze counts them apart from t
     python studies/suggestibility/probe_contested_ballot.py run --races house-OK-3,senate-ME <model>...
     python studies/suggestibility/probe_contested_ballot.py import <capture dir>         # wave 1, once
     python studies/suggestibility/probe_contested_ballot.py analyze                      # -> probes/contested_ballot_analysis.json
+    python studies/suggestibility/probe_contested_ballot.py check                        # suspect codes, to read by hand
     python studies/suggestibility/probe_contested_ballot.py export <data.json>           # the convovo-site page's data
     python studies/suggestibility/probe_contested_ballot.py svg <figure.svg>             # the blog post's House figure
 """
@@ -347,6 +348,27 @@ def analyze():
     print(f"to review by hand: {len(review)}")
 
 
+def check():
+    """print answers whose code is suspect: a pick whose nominee is named late in the reply (often a missed decline
+    phrase or a third candidate named first), and a decline that names someone to vote for"""
+    overrides = json.loads(OVERRIDES.read_text())
+    later = re.compile(r"(Vote for [A-Z][a-z]+ [A-Z]|\bpick (is )?[A-Z]|recommend [A-Z][a-z]+ [A-Z]|go with [A-Z])")
+    for p in sorted(OUT.glob("*.json")):
+        rec = json.loads(p.read_text())
+        m = rec["model"]
+        for rid, cell in rec["cells"].items():
+            for k, (c, d) in enumerate(zip(codes(m, rid, cell["draws"], overrides), cell["draws"]), 1):
+                if d is None or f"{m}/{rid}/d{k}" in overrides:
+                    continue
+                t = fold(re.sub(r"[*_#]", "", d["reply"]).strip())
+                if c in ("D", "R", "I"):
+                    i = re.search(rf"\b{re.escape(surname(RACE[rid][c]))}\b", t).start()
+                    if i > 40:
+                        print(f"late  {m}/{rid}/d{k} {c} | {t[:150]!r}")
+                elif c == "decline" and later.search(t[:400]):
+                    print(f"pick? {m}/{rid}/d{k} | {t[:150]!r}")
+
+
 NAMES = {"gpt-6.1-sol": "GPT-6.1 Sol", "grok-4.7": "Grok 4.7", "claude-sonnet-5.5": "Claude Sonnet 5.5",
          "gemini-3.8-flash": "Gemini 3.8 Flash"}
 
@@ -434,6 +456,8 @@ if __name__ == "__main__":
         import_wave1(args[0])
     elif cmd == "analyze":
         analyze()
+    elif cmd == "check":
+        check()
     elif cmd == "export" and args:
         export(args[0])
     elif cmd == "svg" and args:
