@@ -246,9 +246,10 @@ def btype(d):
 
 
 bmain = [m for m in bmodels if len(brecs[m]["cells"]) > 100]
-bsrc_n, bsrc = {}, {}
+bsrc_n, bsrc, blinks = {}, {}, {}   # blinks: per model and bucket, retrieved links by domain type
 for m in bmain:
     n = bsrc_n.setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0})
+    lk = blinks.setdefault(m, {b: {} for b in n})
     for rid, c in brecs[m]["cells"].items():
         if PB.RACE[rid].get("other"):
             continue
@@ -256,13 +257,16 @@ for m in bmain:
             buckets = ["all"] + ([k] if k in ("D", "R", "decline") else [])
             for b in buckets:
                 n[b] += 1
+                for u in d.get("retrieved") or []:
+                    t = btype(urlparse(u).netloc.lower().removeprefix("www."))
+                    lk[b][t] = lk[b].get(t, 0) + 1
             for dom in {urlparse(u).netloc.lower().removeprefix("www.") for u in d.get("retrieved") or []}:
                 cnt = bsrc.setdefault(dom, {}).setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0})
                 for b in buckets:
                     cnt[b] += 1
 share = lambda dom, m: bsrc[dom].get(m, {}).get("all", 0) / bsrc_n[m]["all"]
 btop = sorted(bsrc, key=lambda dom: -max(share(dom, m) for m in bmain))[:40]
-bsources = {"n": bsrc_n, "domains": [{"d": dom, "t": btype(dom), "c": bsrc[dom]} for dom in btop]}
+bsources = {"n": bsrc_n, "links": blinks, "domains": [{"d": dom, "t": btype(dom), "c": bsrc[dom]} for dom in btop]}
 
 bpage = PB.page_data()       # the same data convovo.ai/ballot gets, for the third candidates' names
 bdata = {"prompt": PB.USER_TURN, "models": [{"id": m, "name": PB.NAMES.get(m, m), "date": brecs[m]["date"]} for m in bmodels],

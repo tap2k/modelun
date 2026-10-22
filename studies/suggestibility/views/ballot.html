@@ -47,6 +47,8 @@
   .bf .bar i{display:block;height:12px;background:var(--mut);opacity:.75;flex:none}
   .bf .bar.l i{border-radius:4px 0 0 4px} .bf .bar.r i{border-radius:0 4px 4px 0}
   .bf .bar span{color:var(--mut);font-size:11.5px;font-variant-numeric:tabular-nums}
+  .bf .grp{margin-top:14px;padding:4px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .bf .grp.l{text-align:right} .bf .grp.c{text-align:center;color:var(--txt);font-weight:600}
   @media (max-width:600px){ .bf{grid-template-columns:minmax(0,1fr) minmax(96px,140px) minmax(0,1fr);gap:3px 6px} }
 </style>
 </head>
@@ -164,17 +166,21 @@ function sources(){
   document.getElementById("ctl").innerHTML = `<span class="seg">${FILTERS.map(([k, t]) =>
     `<button class="${f === k ? "on" : ""}" onclick="location.hash='#/sources?f=${k}'">${t}</button>`).join("")}</span>`;
   const n = m => S.n[m.id][f], cnt = (x, m) => (x.c[m.id] || {})[f] || 0, pct = (x, m) => n(m) ? cnt(x, m) / n(m) * 100 : 0;
-  const rows = [...S.domains].sort((a, b) => Math.max(...ms.map(m => pct(b, m))) - Math.max(...ms.map(m => pct(a, m))));
+  const TYPES = ["reference", "news and other", "government", "voter guide / election data", "social"];
+  const lpct = (t, m) => { const l = S.links[m.id][f], tot = Object.values(l).reduce((a, b) => a + b, 0); return tot ? (l[t] || 0) / tot * 100 : 0; };
+  const top = x => Math.max(...ms.map(m => pct(x, m)));
   const bar = (x, m, side) => `<div class="bar ${side}" title="${cnt(x, m)} of ${n(m)} ${esc(m.name)} answers">
       <i style="width:calc((100% - 40px) * ${(pct(x, m) / 100).toFixed(3)})"></i><span>${Math.round(pct(x, m))}%</span></div>`;
   const [L, R] = ms;
   $(`<p class="srcnote">The share of answers whose web searches returned each site, in the ${B.races.filter(r => !r.other).length} races
     with one Democrat and one Republican. Each model answered every race three times. Returned means the search brought the
     page back, not that the model read or quoted it; GPT's replies link about one page each. Domains are counted as written,
-    so news.ballotpedia.org is separate from ballotpedia.org. Types are a rough automatic label.</p>
+    so news.ballotpedia.org is separate from ballotpedia.org. Sites are grouped by type, a rough automatic label; each group's line gives that type's share of all the links a model's searches returned.</p>
     <div class="bf"><div class="hd l">${esc(L.name)} · ${n(L).toLocaleString("en-US")} answers</div><div class="hd" style="text-align:center">site</div>
       <div class="hd">${esc(R.name)} · ${n(R).toLocaleString("en-US")} answers</div>
-      ${rows.map(x => `${bar(x, L, "l")}<div class="dom"><a href="https://${esc(x.d)}" target="_blank" rel="noopener">${esc(x.d)}</a><small>${esc(x.t)}</small></div>${bar(x, R, "r")}`).join("")}
+      ${TYPES.map(t => `<div class="grp l">${Math.round(lpct(t, L))}% of links</div><div class="grp c">${esc(t)}</div><div class="grp">${Math.round(lpct(t, R))}% of links</div>`
+        + S.domains.filter(x => x.t === t).sort((a, b) => top(b) - top(a)).map(x =>
+          `${bar(x, L, "l")}<div class="dom"><a href="https://${esc(x.d)}" target="_blank" rel="noopener">${esc(x.d)}</a></div>${bar(x, R, "r")}`).join("")).join("")}
     </div>`);
 }
 function route(){ const p = parse(); (p === "/about" ? about : p === "/sources" ? sources : races)(); }
