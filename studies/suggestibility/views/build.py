@@ -222,11 +222,54 @@ for m in bmodels:
         bfull.setdefault(st, {}).setdefault(rid, {})[m] = [
             {"code": k, "reply": d["reply"], "searches": d["searches"], "queries": d["queries"], "cited": d["cited"]}
             for k, d in zip(cs, c["draws"]) if d]
+
+# sources: per model, how many answers' searches returned each domain, over the races with one D and one R, split by how
+# the answer was coded. "retrieved" is the common measure: both hosts list the pages a search returned, while GPT's
+# "cited" (links in its reply) has no Grok counterpart. A domain's type is a rough, rule-based label for the view.
+import re   # noqa: E402
+from urllib.parse import urlparse   # noqa: E402
+BSOCIAL = {"x.com", "twitter.com", "reddit.com", "youtube.com", "facebook.com", "instagram.com", "tiktok.com", "threads.net",
+           "linkedin.com", "substack.com", "medium.com"}
+
+
+def btype(d):
+    if re.search(r"\.(gov|mil)$|\.gov\.|\.[a-z]{2}\.us$", d):
+        return "government"
+    if "wikipedia.org" in d or d in ("britannica.com", "wikiwand.com"):
+        return "reference"
+    if d in BSOCIAL:
+        return "social"
+    if re.search(r"ballot|vote|elect|candidate|civic|reps|govtrack|voteview|opensecrets|politicalgroup|chamberlight|greenpapers"
+                 r"|270towin|cookpolitical|fec|campaign|reprecord|powervoter", d):
+        return "voter guide / election data"
+    return "news and other"
+
+
+bmain = [m for m in bmodels if len(brecs[m]["cells"]) > 100]
+bsrc_n, bsrc = {}, {}
+for m in bmain:
+    n = bsrc_n.setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0})
+    for rid, c in brecs[m]["cells"].items():
+        if PB.RACE[rid].get("other"):
+            continue
+        for k, d in zip(PB.codes(m, rid, c["draws"], bov), c["draws"]):
+            buckets = ["all"] + ([k] if k in ("D", "R", "decline") else [])
+            for b in buckets:
+                n[b] += 1
+            for dom in {urlparse(u).netloc.lower().removeprefix("www.") for u in d.get("retrieved") or []}:
+                cnt = bsrc.setdefault(dom, {}).setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0})
+                for b in buckets:
+                    cnt[b] += 1
+share = lambda dom, m: bsrc[dom].get(m, {}).get("all", 0) / bsrc_n[m]["all"]
+btop = sorted(bsrc, key=lambda dom: -max(share(dom, m) for m in bmain))[:40]
+bsources = {"n": bsrc_n, "domains": [{"d": dom, "t": btype(dom), "c": bsrc[dom]} for dom in btop]}
+
 bpage = PB.page_data()       # the same data convovo.ai/ballot gets, for the third candidates' names
 bdata = {"prompt": PB.USER_TURN, "models": [{"id": m, "name": PB.NAMES.get(m, m), "date": brecs[m]["date"]} for m in bmodels],
          "races": [{k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other", "candidates", "others", "note") if r.get(k)}
                    | {"id": PB.race_id(r), "n": r["n"]} for r in PB.RACES], "verdicts": bverdict,
-         "picks": {m["id"]: {rid: c["pick"] for rid, c in m["cells"].items() if c.get("pick")} for m in bpage["models"]}}
+         "picks": {m["id"]: {rid: c["pick"] for rid, c in m["cells"].items() if c.get("pick")} for m in bpage["models"]},
+         "sources": bsources}
 bblob = json.dumps(bdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_ballot.js").write_text(f"const B = {bblob};\n")
 brd = VIEWS / "ballot_replies"

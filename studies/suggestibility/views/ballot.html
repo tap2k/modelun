@@ -38,6 +38,16 @@
   .draw a.cite:hover{color:var(--txt)}
   .draw ul{margin:4px 0;padding-left:18px;font-size:12px;color:var(--mut)} .draw ul li{overflow-wrap:anywhere}
   .about{max-width:760px;font-size:14px;line-height:1.55} .about li{margin:6px 0}
+  /* sources: a butterfly of bars, GPT to the left and Grok to the right, one row per domain */
+  .srcnote{max-width:860px;font-size:13px;color:var(--mut);margin:0 0 14px}
+  .bf{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,230px) minmax(0,1fr);gap:3px 12px;align-items:center;max-width:980px;font-size:13px}
+  .bf .hd{color:var(--mut);font-size:11.5px;padding-bottom:6px;border-bottom:1px solid var(--line)} .bf .hd.l{text-align:right}
+  .bf .dom{text-align:center;line-height:1.25;overflow-wrap:anywhere} .bf .dom small{display:block;color:var(--mut);font-size:10.5px}
+  .bf .bar{display:flex;align-items:center;gap:6px;height:18px} .bf .bar.l{flex-direction:row-reverse}
+  .bf .bar i{display:block;height:12px;background:var(--mut);opacity:.75;flex:none}
+  .bf .bar.l i{border-radius:4px 0 0 4px} .bf .bar.r i{border-radius:0 4px 4px 0}
+  .bf .bar span{color:var(--mut);font-size:11.5px;font-variant-numeric:tabular-nums}
+  @media (max-width:600px){ .bf{grid-template-columns:minmax(0,1fr) minmax(96px,140px) minmax(0,1fr);gap:3px 6px} }
 </style>
 </head>
 <body>
@@ -92,7 +102,7 @@ const parse = () => { const [p, q] = (location.hash || "#/").slice(1).split("?")
 const go = (over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); location.hash = "#/?" + q; };
 
 function nav(cur){
-  document.getElementById("nav").innerHTML = [["/", "races"], ["/about", "method"]].map(([h, t]) =>
+  document.getElementById("nav").innerHTML = [["/", "races"], ["/sources", "sources"], ["/about", "method"]].map(([h, t]) =>
     `<a href="#${h}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("");
 }
 function races(){
@@ -146,7 +156,27 @@ function about(){
     <li>Runner, race list and analysis: <code>probe_contested_ballot.py</code>. Write-up: <a href="https://convovo.ai/blog/take-a-side">Ask a Model to Take a Side</a>; the reader's page: <a href="https://convovo.ai/ballot/">convovo.ai/ballot</a>.</li>
   </ul></div>`);
 }
-function route(){ const p = parse(); (p === "/about" ? about : races)(); }
+const FILTERS = [["all", "all answers"], ["D", "named the Democrat"], ["R", "named the Republican"], ["decline", "declined"]];
+function sources(){
+  nav("/sources");
+  const f = FILTERS.some(([k]) => k === Q.f) ? Q.f : "all", S = B.sources, ms = MAIN.filter(m => S.n[m.id]);
+  document.getElementById("ctl").innerHTML = `<span class="seg">${FILTERS.map(([k, t]) =>
+    `<button class="${f === k ? "on" : ""}" onclick="location.hash='#/sources?f=${k}'">${t}</button>`).join("")}</span>`;
+  const n = m => S.n[m.id][f], cnt = (x, m) => (x.c[m.id] || {})[f] || 0, pct = (x, m) => n(m) ? cnt(x, m) / n(m) * 100 : 0;
+  const rows = [...S.domains].sort((a, b) => Math.max(...ms.map(m => pct(b, m))) - Math.max(...ms.map(m => pct(a, m))));
+  const bar = (x, m, side) => `<div class="bar ${side}" title="${cnt(x, m)} of ${n(m)} ${esc(m.name)} answers">
+      <i style="width:calc((100% - 40px) * ${(pct(x, m) / 100).toFixed(3)})"></i><span>${Math.round(pct(x, m))}%</span></div>`;
+  const [L, R] = ms;
+  $(`<p class="srcnote">The share of answers whose web searches returned each site, in the ${B.races.filter(r => !r.other).length} races
+    with one Democrat and one Republican. Each model answered every race three times. Returned means the search brought the
+    page back, not that the model read or quoted it; GPT's replies link about one page each. Domains are counted as written,
+    so news.ballotpedia.org is separate from ballotpedia.org. Types are a rough automatic label.</p>
+    <div class="bf"><div class="hd l">${esc(L.name)} · ${n(L).toLocaleString("en-US")} answers</div><div class="hd" style="text-align:center">site</div>
+      <div class="hd">${esc(R.name)} · ${n(R).toLocaleString("en-US")} answers</div>
+      ${rows.map(x => `${bar(x, L, "l")}<div class="dom"><a href="https://${esc(x.d)}" target="_blank" rel="noopener">${esc(x.d)}</a><small>${esc(x.t)}</small></div>${bar(x, R, "r")}`).join("")}
+    </div>`);
+}
+function route(){ const p = parse(); (p === "/about" ? about : p === "/sources" ? sources : races)(); }
 addEventListener("hashchange", route); route();
 </script>
 </body>
