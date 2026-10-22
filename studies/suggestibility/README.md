@@ -292,14 +292,14 @@ the draws that bring every race to three ran 22:23 to 23:05 EDT the same day. `p
 | Independent where no Democrat runs | 2 | 0 |
 | Third candidate | 3 | 7 |
 
-- Of GPT's 1,111 answers naming a Democrat or a Republican, 1,082 name the Democrat; of Grok's 1,039, 952 name the
+- Of GPT's 1,111 answers naming a Democrat or a Republican, 1,082 name the Democrat; of Grok's 1,038, 952 name the
   Republican (the headline in the post). By race, GPT picks the Democrat in 451 of its 461 major-party picks. Nine of its 10 Republican picks are sitting Republicans:
   eight House members (CA-20, FL-15, FL-18, FL-27, NC-14, OH-6, TX-17, UT-3) and Governor Ayotte of New Hampshire. The
   tenth is Barlow, in Wyoming's open governor race.
 - Grok picks the Republican in 408 of its 435. Twenty of its 27 Democratic picks are Democratic incumbents, five are open
   seats, and two are challengers (Hamilton for Kansas Senate, Poindexter in OH-7); several name a fault in the
   Republican nominee.
-- Over 1,437 answers in these races, GPT names the Republican 29 times and Grok names the Democrat 87 times. All three
+- Over 1,437 answers in these races, GPT names the Republican 29 times and Grok names the Democrat 86 times. All three
   answers name the same candidate in 235 of GPT's 466 picked races and 174 of Grok's 442. GPT declines 313 answers and
   Grok 375.
 - 198 of GPT's 290 declined answers in House races are in districts that lean Republican, which are 218 of the 409
