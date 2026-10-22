@@ -126,7 +126,7 @@ async function openRace(id){
   body.innerHTML = `<p class="mut">loading…</p>`; d.showModal();
   const f = (await load(r.state))[id] || {};
   body.innerHTML = `<h2 style="margin:0 0 4px;font-size:18px">${esc(title(r))}${r.pvi ? ` <span class="mut" style="font-size:13px">${r.pvi}</span>` : ""}</h2>
-    <div class="mut" style="font-size:13px">${r.other ? `On the ballot: ${(r.candidates || []).map(c => `${esc(c.name)} (${esc(c.party)}${c.incumbent ? ", incumbent" : ""})`).join(", ")}.${r.note ? " " + esc(r.note.split("; ").slice(1).join("; ")) : ""}` : `${esc(r.D || r.I)} (${r.D ? "D" : "I"}${r.incumbent === "D" ? ", incumbent" : ""}) · ${esc(r.R)} (R${r.incumbent === "R" ? ", incumbent" : ""})${r.incumbent ? "" : " · open seat"}`}</div>
+    <div class="mut" style="font-size:13px">${r.other ? `On the ballot: ${(r.candidates || []).map(c => `${esc(c.name)} (${esc(c.party)}${c.incumbent ? ", incumbent" : ""})`).join(", ")}.${r.note ? " " + esc(r.note.split("; ").slice(1).join("; ")) : ""}` : `${esc(r.D || r.I)} (${r.D ? "D" : "I"}${r.incumbent === "D" ? ", incumbent" : ""}) · ${esc(r.R)} (R${r.incumbent === "R" ? ", incumbent" : ""})${(r.others || []).map(o => ` · ${esc(o.name)}${o.party ? ` (${esc(o.party)})` : ""}`).join("")}${r.incumbent ? "" : " · open seat"}`}</div>
     <div class="models">${B.models.filter(m => f[m.id]).map(m => `<div><b>${esc(m.name)}</b> ${verdict(r, B.verdicts[m.id][id], (B.picks[m.id] || {})[id])}
       ${f[m.id].map((x, k) => `<div class="draw"><div class="h">answer ${k + 1} · coded ${esc(WORD[x.code] || x.code)} · ${x.searches} search${x.searches === 1 ? "" : "es"}</div>
         <div class="txt">${md(x.reply)}</div>
