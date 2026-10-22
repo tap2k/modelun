@@ -159,6 +159,7 @@ function about(){
 const FILTERS = [["all", "all answers"], ["D", "named the Democrat"], ["R", "named the Republican"], ["decline", "declined"]];
 function sources(){
   nav("/sources");
+  if (!B.sources) { document.getElementById("ctl").innerHTML = ""; return $(`<p class="srcnote">This browser has an older copy of the data. Reload the page.</p>`); }
   const f = FILTERS.some(([k]) => k === Q.f) ? Q.f : "all", S = B.sources, ms = MAIN.filter(m => S.n[m.id]);
   document.getElementById("ctl").innerHTML = `<span class="seg">${FILTERS.map(([k, t]) =>
     `<button class="${f === k ? "on" : ""}" onclick="location.hash='#/sources?f=${k}'">${t}</button>`).join("")}</span>`;
