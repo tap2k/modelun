@@ -19,7 +19,8 @@ not OpenRouter: the native APIs return the search queries, and OpenRouter's web 
 `run` ports, and was moved here by `import`: gpt-6.1-sol (OpenAI, 609 calls) and grok-4.7 (xAI, 626 calls, $96.35).
 claude-sonnet-5.5 and gemini-3.8-flash ran on the first 10 races (--races 10) the same day: 20 calls each.
 Files are probes/contested_ballot/native/<model>.json; each draw's full provider response (encrypted reasoning items
-included) is kept unpublished in native/raw/<model>/<race id>-d<k>.json.
+included) is kept unpublished in native/raw/<model>/<race id>-d<k>.json (gitignored). The 2026-10-21 raw files are on
+the machine that ran them, not in the repo; the committed files hold every reply, query, URL and usage.
 
 Draw rule (Tapan, 2026-10-21): one draw per race; a second if the first declines; a third only if the first two
 disagree (a decline and a pick). The verdict is the majority; a decline, a D and an R is a split. Picks on the first
