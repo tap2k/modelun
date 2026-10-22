@@ -217,7 +217,7 @@ bverdict, bfull = {}, {}
 for m in bmodels:
     for rid, c in brecs[m]["cells"].items():
         cs = PB.codes(m, rid, c["draws"], bov)
-        bverdict.setdefault(m, {})[rid] = PB.verdict(cs)
+        bverdict.setdefault(m, {})[rid] = PB.verdict(cs, m)
         st = PB.RACE[rid]["state"]
         bfull.setdefault(st, {}).setdefault(rid, {})[m] = [
             {"code": k, "reply": d["reply"], "searches": d["searches"], "queries": d["queries"], "cited": d["cited"]}

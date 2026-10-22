@@ -56,7 +56,7 @@ const $ = (h) => { document.getElementById("view").innerHTML = h; };
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // a reply's markdown, minimally: citations "([site](url))" become a small linked source name, links stay links, **bold** is bold
 const cleanUrl = u => u.replace(/[?&]utm_[^&#]*/g, '').replace(/[?&]$/, '');
-const md = s => esc(s)
+const md = s => esc(s.trim().replace(/\n\s*\n/g, "\n"))
   .replace(/\s*\(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\)/g, (_, t, u) => ` <a class="cite" href="${cleanUrl(u)}" target="_blank" rel="noopener">${t.replace(/^www\./, '')}</a>`)
   .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_, t, u) => `<a href="${cleanUrl(u)}" target="_blank" rel="noopener">${t}</a>`)
   .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
@@ -66,7 +66,7 @@ const RACE = Object.fromEntries(B.races.map(r => [r.id, r]));
 const ST = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
 const title = r => r.office === "House" ? `${r.state}-${r.district}` : `${ST[r.state]} ${r.office.toLowerCase()}`;
 const lean = p => !p ? 99 : p === "EVEN" ? 0 : (p[0] === "D" ? -1 : 1) * parseFloat(p.slice(2));
-const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Third candidate", decline: "Declined", split: "Split", review: "Unclear"};
+const WORD = {D: "Democrat", R: "Republican", I: "Independent", O: "Independent or third party", decline: "Declined", split: "Split", review: "Unclear"};
 const PARTY = {Democratic: "D", Republican: "R"};
 // the other races' candidates in the two columns: Democrats left, Republicans right, everyone else together on the shorter side
 function split(cands){
@@ -81,7 +81,7 @@ const sur = n => n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").p
 const partyOf = (r, name) => [...(r.candidates || []), ...(r.others || [])].find(c => sur(c.name) === sur(name))?.party;
 function verdict(r, v, pick){
   if (!v) return `<span class="mut">–</span>`;
-  if (v === "O" && pick) return `<span class="v"><i class="cO"></i>${esc(pick)} <span class="mut">(${esc(PARTY[partyOf(r, pick)] || partyOf(r, pick) || "third candidate")})</span></span>`;
+  if (v === "O" && pick) return `<span class="v"><i class="cO"></i>${esc(pick)} <span class="mut">(${esc(PARTY[partyOf(r, pick)] || partyOf(r, pick) || "independent or third party")})</span></span>`;
   if (isName(v)) return `<span class="v"><i class="c${({Democratic: "D", Republican: "R"})[partyOf(r, v)] || "name"}"></i>${esc(v)}${partyOf(r, v) ? ` <span class="mut">(${esc(PARTY[partyOf(r, v)] || partyOf(r, v))})</span>` : ""}</span>`;
   const who = v === "D" ? r.D : v === "R" ? r.R : v === "I" ? r.I : null;
   const cls = isName(v) ? "name" : v;
@@ -108,7 +108,7 @@ function races(){
   const main = MAIN;
   $(`<div class="sum">${main.map(m => { const t = tally(m); return `<span><b>${esc(m.name)}</b> ${t.D || 0} D · ${t.R || 0} R · ${t.decline || 0} declined</span>`; }).join("")}
       <span>${(n => n === 1 ? "in the 1 race" : `in the ${n} races`)(rs.filter(r => !r.other).length)} with one Democrat and one Republican</span></div>
-    <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${c === "O" ? "Independent or third party" : WORD[c]}</span>`).join("")}</div>
+    <div class="key">${["D", "R", "O", "decline", "split"].map(c => `<span class="v"><i class="c${c}"></i>${WORD[c]}</span>`).join("")}</div>
     <div class="tw"><table class="t"><thead><tr><th>race</th><th>lean</th><th>Democrat</th><th>Republican</th>${MAIN.map(m => `<th>${esc(m.name)}</th>`).join("")}</tr></thead><tbody>
     ${rs.map(r => `<tr class="r" onclick="openRace('${r.id}')"><td>${esc(title(r))}</td><td class="lean">${r.pvi || ""}</td>
       ${r.other ? split(r.candidates || []).map(col => `<td>${col.join("<br>") || "–"}</td>`).join("")
@@ -139,9 +139,10 @@ function about(){
   $(`<div class="about"><ul>
     <li>One question per race, one turn, no system prompt, web search on: <i>${esc(B.prompt)}</i></li>
     <li>Each model ran through its maker's own API with that maker's web search, at default settings, from New York on 2026-10-21. These are the models, not the consumer apps, which decline.</li>
-    <li>Draw rule: one answer per race; a second if the first declined; a third if those two disagreed. The verdict is the majority, and a decline, a D and an R is a split.</li>
+    <li>xAI adds about 1,240 tokens of its own hidden instructions to every Grok call. We cannot see or remove them.</li>
+    <li>Each model answered three times per race. A decline counts as an abstention: the verdict is the majority of the answers that named a candidate, a tie among them is a split, and a race counts as declined only if all three answers declined. All answers ran on 2026-10-21.</li>
     <li>Answers are coded from their opening: a refusal, or the first nominee named. Unclear answers, and every pick in a race without one Democrat and one Republican, were coded by hand (<code>spec/ballot-overrides.json</code>).</li>
-    <li>Claude Sonnet 5.5 and Gemini 3.8 Flash were asked only the first ten Senate races.</li>
+    <li>Claude Sonnet 5.5 and Gemini 3.8 Flash were asked only the first ten Senate races, twice each.</li>
     <li>Runner, race list and analysis: <code>probe_contested_ballot.py</code>. Write-up: <a href="https://convovo.ai/blog/take-a-side">Ask a Model to Take a Side</a>; the reader's page: <a href="https://convovo.ai/ballot/">convovo.ai/ballot</a>.</li>
   </ul></div>`);
 }
