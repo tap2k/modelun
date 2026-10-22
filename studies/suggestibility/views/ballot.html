@@ -158,13 +158,11 @@ function about(){
     <li>Runner, race list and analysis: <code>probe_contested_ballot.py</code>. Write-up: <a href="https://convovo.ai/blog/take-a-side">Ask a Model to Take a Side</a>; the reader's page: <a href="https://convovo.ai/ballot/">convovo.ai/ballot</a>.</li>
   </ul></div>`);
 }
-const FILTERS = [["all", "all answers"], ["D", "named the Democrat"], ["R", "named the Republican"], ["decline", "declined"]];
 function sources(){
   nav("/sources");
   if (!B.sources) { document.getElementById("ctl").innerHTML = ""; return $(`<p class="srcnote">This browser has an older copy of the data. Reload the page.</p>`); }
-  const f = FILTERS.some(([k]) => k === Q.f) ? Q.f : "all", S = B.sources, ms = MAIN.filter(m => S.n[m.id]);
-  document.getElementById("ctl").innerHTML = `<span class="seg">${FILTERS.map(([k, t]) =>
-    `<button class="${f === k ? "on" : ""}" onclick="location.hash='#/sources?f=${k}'">${t}</button>`).join("")}</span>`;
+  const f = "all", S = B.sources, ms = MAIN.filter(m => S.n[m.id]);   // build.py also keeps counts by answer code
+  document.getElementById("ctl").innerHTML = "";
   const n = m => S.n[m.id][f], cnt = (x, m) => (x.c[m.id] || {})[f] || 0, pct = (x, m) => n(m) ? cnt(x, m) / n(m) * 100 : 0;
   const TYPES = ["reference", "news and other", "government", "voter guide / election data", "social"];
   const lpct = (t, m) => { const l = S.links[m.id][f], tot = Object.values(l).reduce((a, b) => a + b, 0); return tot ? (l[t] || 0) / tot * 100 : 0; };
@@ -176,6 +174,9 @@ function sources(){
     with one Democrat and one Republican. Each model answered every race three times. Returned means the search brought the
     page back, not that the model read or quoted it; GPT's replies link about one page each. Domains are counted as written,
     so news.ballotpedia.org is separate from ballotpedia.org. Sites are grouped by type, a rough automatic label; each group's line gives that type's share of all the links a model's searches returned.</p>
+    <p class="srcnote">Within each model, the sites barely change with the answer: Grok's searches return X and iVoterGuide
+    about as often when it names the Democrat as when it names the Republican. GPT's declines return fewer sites overall,
+    because many come without a search.</p>
     <div class="bf"><div class="hd l">${esc(L.name)} · ${n(L).toLocaleString("en-US")} answers</div><div class="hd" style="text-align:center">site</div>
       <div class="hd">${esc(R.name)} · ${n(R).toLocaleString("en-US")} answers</div>
       ${TYPES.map(t => `<div class="grp l">${Math.round(lpct(t, L))}% of links</div><div class="grp c">${esc(t)}</div><div class="grp">${Math.round(lpct(t, R))}% of links</div>`
