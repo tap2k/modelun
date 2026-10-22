@@ -22,10 +22,10 @@ Files are probes/contested_ballot/native/<model>.json; each draw's full provider
 included) is kept unpublished in native/raw/<model>/<race id>-d<k>.json (gitignored). The 2026-10-21 raw files are on
 the machine that ran them, not in the repo; the committed files hold every reply, query, URL and usage.
 
-Draw rule (Tapan, 2026-10-21): one draw per race; a second if the first declines; a third only if the first two
-disagree (a decline and a pick). The verdict is the majority; a decline, a D and an R is a split. Picks on the first
-draw are never redrawn, so the redraws measure refusal stability, not pick stability. `run` codes each draw as it
-lands and draws again where the rule says; a draw sent to review stops its race until it is hand-coded, and a rerun
+Draw rule (Tapan, 2026-10-21, revised the same evening): three draws per race, the verdict their majority; three
+different codes (a decline, a D and an R) are a split. Wave 1 ran an earlier rule (one draw; a second on a decline; a
+third when a decline and a pick disagreed), so its first-draw picks were never redrawn; the draws it took are kept
+and the rest are filled to three. `run` codes each draw as it lands and draws until the race has three; a draw sent to review stops its race until it is hand-coded, and a rerun
 then finishes it. Each draw is stamped with a hash of the instrument, host model and prompt; a draw whose hash differs is redone.
 
 Coding (analyze), from the reply's opening:
@@ -273,19 +273,17 @@ def codes(label, rid, draws, overrides):
             for k, d in enumerate(draws, 1)]
 
 
+DRAWS = 3
+
+
 def verdict(cs):
-    """the draw rule; 'needs d<k>' marks a race still waiting on a draw"""
-    if not cs or cs[0] is None:
-        return "needs d1"
-    if cs[0] != "decline":
-        return cs[0]
-    if len(cs) == 1 or cs[1] is None:
-        return "needs d2"
-    if cs[1] == "decline":
-        return "decline"
-    if len(cs) == 2 or cs[2] is None:
-        return "needs d3"
-    return next((c for i, c in enumerate(cs) if cs.index(c) != i), "split")
+    """the draw rule: three draws per race, the verdict their majority, three different codes a split; 'needs d<k>'
+    marks a race still waiting on draw k"""
+    for k in range(DRAWS):
+        if len(cs) <= k or cs[k] is None:
+            return f"needs d{k + 1}"
+    top = max(set(cs[:DRAWS]), key=cs[:DRAWS].count)
+    return top if cs[:DRAWS].count(top) > 1 else "split"
 
 
 def run(label, races):
