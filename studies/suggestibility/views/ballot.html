@@ -169,7 +169,8 @@ function sources(){
   const top = x => Math.max(...ms.map(m => pct(x, m)));
   const bar = (x, m, side) => `<div class="bar ${side}" title="${cnt(x, m)} of ${n(m)} ${esc(m.name)} answers">
       <i style="width:calc((100% - 40px) * ${(pct(x, m) / 100).toFixed(3)})"></i><span>${Math.round(pct(x, m))}%</span></div>`;
-  const [L, R] = ms;
+  const [L, R] = ms, fmt = x => x.toLocaleString("en-US");
+  const hd = m => `${esc(m.name)} · ${fmt(S.n[m.id].all)} answers · ${fmt(S.n[m.id].searches)} searches`;
   $(`<p class="srcnote">The 40 sites returned most often, as the share of answers whose web searches returned each one, in the ${B.races.filter(r => !r.other).length} races
     with one Democrat and one Republican. Each model answered every race three times. Returned means the search brought the
     page back, not that the model read or quoted it; GPT's replies link about one page each. Domains are counted as written,
@@ -177,8 +178,8 @@ function sources(){
     <p class="srcnote">Within each model, the sites barely change with the answer: Grok's searches return X and iVoterGuide
     about as often when it names the Democrat as when it names the Republican. GPT's declines return fewer sites overall,
     because many come without a search.</p>
-    <div class="bf"><div class="hd l">${esc(L.name)} · ${n(L).toLocaleString("en-US")} answers</div><div class="hd" style="text-align:center">site</div>
-      <div class="hd">${esc(R.name)} · ${n(R).toLocaleString("en-US")} answers</div>
+    <div class="bf"><div class="hd l">${hd(L)}</div><div class="hd" style="text-align:center">site</div>
+      <div class="hd">${hd(R)}</div>
       ${TYPES.map(t => `<div class="grp l">${Math.round(lpct(t, L))}% of links</div><div class="grp c">${esc(t)}</div><div class="grp">${Math.round(lpct(t, R))}% of links</div>`
         + S.domains.filter(x => x.t === t).sort((a, b) => top(b) - top(a)).map(x =>
           `${bar(x, L, "l")}<div class="dom"><a href="https://${esc(x.d)}" target="_blank" rel="noopener">${esc(x.d)}</a></div>${bar(x, R, "r")}`).join("")).join("")}

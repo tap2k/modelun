@@ -251,12 +251,13 @@ def btype(d):
 bmain = [m for m in bmodels if len(brecs[m]["cells"]) > 100]
 bsrc_n, bsrc, blinks = {}, {}, {}   # blinks: per model and bucket, retrieved links by domain type
 for m in bmain:
-    n = bsrc_n.setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0})
-    lk = blinks.setdefault(m, {b: {} for b in n})
+    n = bsrc_n.setdefault(m, {"all": 0, "D": 0, "R": 0, "decline": 0, "searches": 0})
+    lk = blinks.setdefault(m, {b: {} for b in ("all", "D", "R", "decline")})
     for rid, c in brecs[m]["cells"].items():
         if PB.RACE[rid].get("other"):
             continue
         for k, d in zip(PB.codes(m, rid, c["draws"], bov), c["draws"]):
+            n["searches"] += d.get("searches") or 0
             buckets = ["all"] + ([k] if k in ("D", "R", "decline") else [])
             for b in buckets:
                 n[b] += 1
