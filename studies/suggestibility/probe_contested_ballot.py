@@ -396,6 +396,8 @@ def page_data():
     for p in sorted(OUT.glob("*.json")):
         rec = json.loads(p.read_text())
         m = rec["model"]
+        if len(rec["cells"]) <= 100:       # Sonnet and Gemini ran ten races; the page shows only the full runs
+            continue
         cells = {}
         for rid, cell in rec["cells"].items():
             cs = codes(m, rid, cell["draws"], overrides)
