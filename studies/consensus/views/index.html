@@ -130,7 +130,7 @@ if (!D) {
 }
 document.title = `consensus · ${D.title} — which models give answers the field doesn't?`;
 // one toggle picks the verb: "Name a fruit" or "Choose a fruit", within the census pages (no set / ?set=choose) or
-// the brand pages (?set=brands / ?set=brands-choose / ?set=brands-recommend: deployed, linked only from convovo.ai/brands).
+// the brand pages (?set=brands / ?set=brands-choose / ?set=brands-recommend: deployed, linked from convovo.ai/brands and the site index).
 const FAMILY = [[["", "Name"], ["choose", "Choose"]], [["brands", "Name"], ["brands-choose", "Choose"], ["brands-recommend", "Recommend"]]]
   .find(f => f.some(([k]) => k === (SET || "")));
 const pageUrl = k => (k ? "index.html?set=" + k : "index.html") + location.hash;
