@@ -230,6 +230,7 @@ import re   # noqa: E402
 from urllib.parse import urlparse   # noqa: E402
 BSOCIAL = {"x.com", "twitter.com", "reddit.com", "youtube.com", "facebook.com", "instagram.com", "tiktok.com", "threads.net",
            "linkedin.com", "substack.com", "medium.com"}
+BSCORECARD = {"tpaction.com", "analysis.limitedgov.org"}   # advocacy groups' legislator scorecards, not news
 
 
 def btype(d):
@@ -239,6 +240,8 @@ def btype(d):
         return "reference"
     if d in BSOCIAL:
         return "social"
+    if d in BSCORECARD:
+        return "voter guide / election data"
     if re.search(r"ballot|vote|elect|candidate|civic|reps|govtrack|voteview|opensecrets|politicalgroup|chamberlight|greenpapers"
                  r"|270towin|cookpolitical|fec|campaign|reprecord|powervoter", d):
         return "voter guide / election data"
