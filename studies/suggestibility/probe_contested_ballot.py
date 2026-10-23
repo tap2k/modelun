@@ -407,15 +407,19 @@ def summaries():
     import label_ballot as LB
     overrides, src = json.loads(OVERRIDES.read_text()), {}
     for label in ("gpt-6.1-sol", "grok-4.7"):
-        n, searches, doms = 0, 0, Counter()
+        n, searches, doms, named = 0, 0, Counter(), Counter()
         for rid, cell in json.loads((OUT / f"{label}.json").read_text())["cells"].items():
-            if RACE[rid].get("other"):
+            r = RACE[rid]
+            if r.get("other"):
                 continue
             for d in cell["draws"]:
                 if d:
                     n += 1; searches += d.get("searches") or 0
                     doms.update({urlparse(u).netloc.lower().removeprefix("www.") for u in d.get("retrieved") or []})
-        src[label] = {"answers": n, "searches": searches, "sites": {k: round(v / n, 3) for k, v in doms.items() if v / n >= 0.005}}
+                    q = fold(" ".join(d.get("queries") or []))     # did a query name the nominee (surname)
+                    named.update(k for k in ("D", "R") if r.get(k) and fold(surname(r[k])) in q)
+        src[label] = {"answers": n, "searches": searches, "named": {k: round(v / n, 3) for k, v in named.items()},
+                      "sites": {k: round(v / n, 3) for k, v in doms.items() if v / n >= 0.005}}
     ticks, seen = LB.ticks(LB.JUDGE)
     groups = {}
     for k, g in LB.parties().items():
