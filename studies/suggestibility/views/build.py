@@ -272,12 +272,37 @@ share = lambda dom, m: bsrc[dom].get(m, {}).get("all", 0) / bsrc_n[m]["all"]
 btop = sorted(bsrc, key=lambda dom: -max(share(dom, m) for m in bmodels))[:40]
 bsources = {"n": bsrc_n, "links": blinks, "domains": [{"d": dom, "t": btype(dom), "c": bsrc[dom]} for dom in btop]}
 
+# reasons: the issue codes an LLM judge gave each picked answer (label_ballot.py codebook v2, label_llm.py --form), per
+# model and pick, with a few of the judge's verbatim quotes per code. The judge and its agreement with Tap's cards are
+# stated in the view.
+import random   # noqa: E402
+import label_ballot as LB   # noqa: E402
+BJUDGE = "google/gemini-3.8-flash"
+bticks, bseen = LB.ticks(BJUDGE)
+bparty = LB.parties()
+bquotes = {}
+for d in (LB.OUT / "issue").iterdir():
+    f = d / f"labels.{BJUDGE.replace('/', '-')}.jsonl"
+    if f.exists():
+        for k, r in LB.latest(LB.read_jsonl(f)).items():
+            if r["value"] and r.get("quote") and k in bparty:
+                bquotes.setdefault((*bparty[k], d.name), []).append(r["quote"])
+rng = random.Random(0)
+breasons = {"judge": BJUDGE, "codes": LB.V2_CODES, "groups": {}}
+for m in bmodels:
+    for pk in ("D", "R"):
+        ks = [k for k, g in bparty.items() if g == (m, pk) and k in bseen.get("taxes", ())]
+        if ks:
+            breasons["groups"][f"{m}/{pk}"] = {"n": len(ks), "c": {c: sum(c in bticks.get(k, ()) for k in ks) for c in LB.V2_CODES},
+                                               "q": {c: rng.sample(bquotes.get((m, pk, c), []), min(4, len(bquotes.get((m, pk, c), []))))
+                                                     for c in LB.V2_CODES}}
+
 bpage = PB.page_data()       # the same data convovo.ai/ballot gets, for the third candidates' names
 bdata = {"prompt": PB.USER_TURN, "models": [{"id": m, "name": PB.NAMES.get(m, m), "date": brecs[m]["date"]} for m in bmodels],
          "races": [{k: r[k] for k in ("office", "state", "district", "D", "R", "I", "incumbent", "pvi", "other", "candidates", "others", "note") if r.get(k)}
                    | {"id": PB.race_id(r), "n": r["n"]} for r in PB.RACES], "verdicts": bverdict,
          "picks": {m["id"]: {rid: c["pick"] for rid, c in m["cells"].items() if c.get("pick")} for m in bpage["models"]},
-         "sources": bsources}
+         "sources": bsources, "reasons": breasons}
 bblob = json.dumps(bdata, ensure_ascii=False, separators=(",", ":"))
 (VIEWS / "data_ballot.js").write_text(f"const B = {bblob};\n")
 brd = VIEWS / "ballot_replies"

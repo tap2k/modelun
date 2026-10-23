@@ -49,6 +49,11 @@
   .bf .bar span{color:var(--mut);font-size:11.5px;font-variant-numeric:tabular-nums}
   .bf .grp{margin-top:14px;padding:4px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
   .bf .grp.l{text-align:right} .bf .grp.c{text-align:center;color:var(--txt);font-weight:600}
+  .bf .dom button{background:none;border:0;color:var(--txt);font:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+  .rq{max-width:980px;margin-top:6px} .rq .qs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .rq blockquote{margin:6px 0;padding:2px 0 2px 10px;border-left:2px solid var(--line);font-size:13px;color:var(--txt)}
+  .rq h4{font-weight:400;color:var(--mut);font-size:12px;margin:8px 0 2px}
+  @media (max-width:600px){ .rq .qs{grid-template-columns:1fr} }
   @media (max-width:600px){ .bf{grid-template-columns:minmax(0,1fr) minmax(96px,140px) minmax(0,1fr);gap:3px 6px} }
 </style>
 </head>
@@ -103,7 +108,7 @@ const parse = () => { const [p, q] = (location.hash || "#/").slice(1).split("?")
 const go = (over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); location.hash = "#/?" + q; };
 
 function nav(cur){
-  document.getElementById("nav").innerHTML = [["/", "races"], ["/sources", "sources"], ["/about", "method"]].map(([h, t]) =>
+  document.getElementById("nav").innerHTML = [["/", "races"], ["/sources", "sources"], ["/reasons", "reasons"], ["/about", "method"]].map(([h, t]) =>
     `<a href="#${h}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("");
 }
 function races(){
@@ -183,7 +188,42 @@ function sources(){
           `${bar(x, L, "l")}<div class="dom"><a href="https://${esc(x.d)}" target="_blank" rel="noopener">${esc(x.d)}</a></div>${bar(x, R, "r")}`).join("")).join("")}
     </div>`);
 }
-function route(){ const p = parse(); (p === "/about" ? about : p === "/sources" ? sources : races)(); }
+function reasons(){
+  nav("/reasons"); document.getElementById("ctl").innerHTML = "";
+  if (!B.reasons) return $(`<p class="srcnote">This browser has an older copy of the data. Reload the page.</p>`);
+  const G = B.reasons.groups, codes = Object.keys(B.reasons.codes), NOPOL = ["experience", "bipartisanship", "local-ties", "other"];
+  const nm = id => (B.models.find(m => m.id === id) || {name: id}).name, PN = {D: "Democrat", R: "Republican"};
+  const label = g => { const [m, p] = g.split("/"); return `${esc(nm(m))} picks the ${PN[p]}`; };
+  const pct = (g, c) => G[g] ? G[g].c[c] / G[g].n * 100 : 0;
+  const bar = (g, c, side) => `<div class="bar ${side}" title="${G[g] ? G[g].c[c] : 0} of ${G[g] ? G[g].n : 0} answers">
+      <i style="width:calc((100% - 40px) * ${(pct(g, c) / 100).toFixed(3)})"></i><span>${Math.round(pct(g, c))}%</span></div>`;
+  const chart = (L, R, id, otherFirst) => {
+    const order = cs => cs.sort((a, b) => Math.max(pct(L, b), pct(R, b)) - Math.max(pct(L, a), pct(R, a)));
+    const rows = cs => cs.map(c => `${bar(L, c, "l")}<div class="dom"><button onclick="showQ('${id}','${L}','${R}','${c}')"
+      title="${esc(B.reasons.codes[c])}">${esc(c)}</button></div>${bar(R, c, "r")}`).join("");
+    return `<div class="bf"><div class="hd l">${label(L)} · ${G[L].n.toLocaleString("en-US")} answers</div><div class="hd" style="text-align:center">reason</div>
+      <div class="hd">${label(R)} · ${G[R].n.toLocaleString("en-US")} answers</div>
+      ${(otherFirst ? [1, 0] : [0, 1]).map(i => [`<div class="grp l"></div><div class="grp c">policy</div><div class="grp"></div>${rows(order(codes.filter(c => !NOPOL.includes(c))))}`,
+        `<div class="grp l"></div><div class="grp c">other reasons</div><div class="grp"></div>${rows(order(NOPOL.slice()))}`][i]).join("")}</div>
+      <div class="rq" id="${id}"></div>`;
+  };
+  $(`<p class="srcnote">The reasons each answer gives for its pick, as the share of answers giving each one. An LLM judge
+    (${esc(B.reasons.judge.split("/")[1])}) read every answer that named a candidate and ticked each code the answer uses as a reason
+    to choose, with a quote from the answer for each; a quote not found in the answer dropped its code. Checked against 41 answers
+    coded by hand, the judge found 96% of the hand codes, and 79% of its codes matched them, so it reads a little more broadly.
+    Click a reason for example quotes.</p>
+    ${chart("gpt-6.1-sol/D", "grok-4.7/R", "q1")}
+    <p class="srcnote" style="margin-top:28px">When the models cross party lines, the reasons change: GPT's picks of a Republican
+    and Grok's picks of a Democrat rest on experience and local ties more than on policy.</p>
+    ${chart("gpt-6.1-sol/R", "grok-4.7/D", "q2", true)}`);
+}
+function showQ(id, L, R, c){
+  const G = B.reasons.groups, el = document.getElementById(id);
+  const col = g => `<div><h4>${esc((B.models.find(m => m.id === g.split("/")[0]) || {}).name || g)}, ${g.endsWith("/D") ? "Democrat" : "Republican"} picks</h4>`
+    + ((G[g].q[c] || []).map(q => `<blockquote>“${esc(q)}”</blockquote>`).join("") || `<h4>none</h4>`) + `</div>`;
+  el.innerHTML = `<h4><b>${esc(c)}</b>: ${esc(B.reasons.codes[c])}</h4><div class="qs">${col(L)}${col(R)}</div>`;
+}
+function route(){ const p = parse(); (p === "/about" ? about : p === "/sources" ? sources : p === "/reasons" ? reasons : races)(); }
 addEventListener("hashchange", route); route();
 </script>
 </body>

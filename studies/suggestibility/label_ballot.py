@@ -148,12 +148,24 @@ def agree(judge):
           f"judge precision {p:.2f}, recall {r:.2f}")
 
 
+def parties():
+    """target id -> (model, party) for every answer in the races with one D and one R, from the current codes (the
+    items' `pre` is as of their build)"""
+    overrides = json.loads(P.OVERRIDES.read_text())
+    out = {}
+    for m in MODELS:
+        for rid, c in json.loads((P.OUT / f"{m}.json").read_text())["cells"].items():
+            if not P.RACE[rid].get("other"):
+                for k, code in enumerate(P.codes(m, rid, c["draws"], overrides), 1):
+                    out[target_id({"model": m, "scene": f"ballot/{rid}", "run": k})] = (m, PARTY[code])
+    return out
+
+
 def tally(judge):
     """probes/contested_ballot/labels/issues_<judge>.json and a printout: per model and pick (the rule coder's party,
     with the hand codes), the share of answers giving each v2 code as a reason, from the judge's rows"""
     machine, seen = ticks(judge)
-    party = {target_id(it["target"]): (it["target"]["model"], it["pre"]["party"])
-             for f in ("items.jsonl", "items_targeted.jsonl") for it in read_jsonl(OUT / f)}
+    party = parties()
     groups = {}
     for k, g in party.items():
         if g[1] in ("D", "R") and k in seen.get("taxes", ()):
