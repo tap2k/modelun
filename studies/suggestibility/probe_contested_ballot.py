@@ -44,6 +44,7 @@ them is hand-coded by the candidate's name, and analyze counts them apart from t
     python studies/suggestibility/probe_contested_ballot.py check                        # suspect codes, to read by hand
     python studies/suggestibility/probe_contested_ballot.py export <data.json>           # the convovo-site page's data
     python studies/suggestibility/probe_contested_ballot.py svg <figure.svg>             # the blog post's House figure
+    python studies/suggestibility/probe_contested_ballot.py sites                        # sites returned, by kind of query (raw files)
 """
 import os, re, sys, json, time, hashlib, unicodedata
 from collections import Counter
@@ -410,6 +411,37 @@ def page_data():
     return out
 
 
+def sites():
+    """per model, the share of search calls returning each of a few sites, by the kind of query the call ran (generic,
+    about a candidate's positions or record, about an issue; keyword rules). Reads the raw responses, which keep each
+    call's own query and results; only the raw files on this machine are counted."""
+    from urllib.parse import urlparse
+    SITES = ["ballotpedia.org", "ivoterguide.com", "tpaction.com", "analysis.limitedgov.org", "x.com", "en.wikipedia.org",
+             "nytimes.com"]
+    def kind(q):
+        q = q.lower()
+        if re.search(r"tax|crime|border|immigra|energy|inflation|cost|econom|abortion|health|spending|regulat|homeless", q):
+            return "issue"
+        if re.search(r"position|record|platform|polic|stance|voting|background|endorse|controvers|\bvs\b|comparison|rating|scorecard", q):
+            return "candidate"
+        return "generic"
+    for label in ("gpt-6.1-sol", "grok-4.7"):
+        n, hit = Counter(), Counter()
+        for f in (OUT / "raw" / label).glob("*.json"):
+            for r in json.loads(f.read_text()):
+                for o in r.get("output") or []:
+                    a = o.get("action") or {}
+                    qs = a.get("queries") or ([a["query"]] if a.get("query") else [])
+                    if o.get("type") != "web_search_call" or not qs or not a.get("sources"):
+                        continue
+                    k = kind(" ".join(qs)); n[k] += 1
+                    doms = {urlparse(x.get("url", "")).netloc.lower().removeprefix("www.") for x in a["sources"]}
+                    hit.update((k, s) for s in SITES if s in doms)
+        print(f"{label}: {sum(n.values())} search calls {dict(n)}")
+        for s in SITES:
+            print(f"  {s:24}" + "".join(f"{k} {100 * hit[(k, s)] / max(1, n[k]):3.0f}%   " for k in ("generic", "candidate", "issue")))
+
+
 FILL = {"D": "#3a68a8", "R": "#b5463c", "O": "#c79300", "I": "#c79300", "decline": "#c9cacb", "split": "url(#hatch)"}
 
 
@@ -471,5 +503,7 @@ if __name__ == "__main__":
         export(args[0])
     elif cmd == "svg" and args:
         svg(args[0])
+    elif cmd == "sites":
+        sites()
     else:
         print(__doc__)

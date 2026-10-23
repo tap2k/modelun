@@ -311,6 +311,12 @@ the draws that bring every race to three ran 22:23 to 23:05 EDT the same day. `p
   counted apart; each pick in them is coded by name. GPT names the Democrat or the more progressive candidate in most.
   Grok names the Republican in 8 of the 10 where one runs, the Libertarian in LA-2, and declines LA-5.
 - Viewer: `views/ballot.html` (every race, every answer with its search queries and cited links).
+- Sites by kind of query (`probe_contested_ballot.py sites`, 2026-10-23): each raw response keeps every search call's own
+  query and results. Grok's sites follow its terms. Ballotpedia comes back for 86% of generic candidate-list queries and
+  24% of issue queries; iVoterGuide (20%), Turning Point Action (8%) and limitedgov.org (8%) come back almost only for
+  queries about a candidate's positions or voting record, and X (22%) for issue queries. GPT's sites barely move with
+  the query: Wikipedia for 97% of generic and 70% of issue queries, Ballotpedia, the NYT and X for none. Counted over the
+  raw files on this machine (the 2026-10-21 evening draws: Grok 5,201 calls, GPT 1,002), with queries sorted by keyword.
 - Sonnet 5.5 and Gemini 3.8 Flash ran on the first 10 races (the Senate races, Alabama to Kansas) under the same
   rule with two draws per race (`FEWER` in the runner), 2026-10-21. Both declined all 20 calls.
 
