@@ -331,7 +331,8 @@ Two tools, by task. Closed labeling, where a human picks one value from a declar
 `harness/viewer/code_server.py`; inductive coding of any study's replies goes there too. Both are stdlib-only local
 servers that write straight to repo files. Several questions on one card (a pick-one with a pre-label, a pick-any list
 of codes the labeler can add to from the card) is `label_server.py --form`; each criterion, and each code of a pick-any
-question, gets its own directory of Contract B files, so the agreement and judge tools read them unchanged. The ballot
+question, gets its own directory of Contract B files, so the agreement and judge tools read them unchanged. `label_llm.py --form` is the judge's side of the same form: every question in one call, each
+code with a verbatim quote that must be in the reply, rows in the same directories. The ballot
 labels (`studies/suggestibility/label_ballot.py`) are the first use.
 
 1. **A human label is a Contract B row.** `labeler` is `human/<name>`; the target and value are the same ones an LLM

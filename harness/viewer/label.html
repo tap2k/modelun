@@ -31,7 +31,6 @@
   .chips button{font:inherit;font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer}
   .chips button.sel{background:var(--acc);border-color:var(--acc);color:#0f1115;font-weight:600}
   .chips input{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--txt);width:9em}
-  .q.off{opacity:.35;pointer-events:none}
   .savebar{display:flex;gap:8px;margin-top:10px} .savebar button{font:inherit;font-size:15px;padding:10px 18px;border-radius:8px;border:0;background:var(--acc);color:#0f1115;font-weight:650;cursor:pointer}
   @media (max-width:640px){
     main{padding:12px 12px 150px}
@@ -99,9 +98,12 @@ function formShow(){
 function formDraw(){
   const [q1, ...rest] = CFG.questions, name = (q, v) => (q.names || {})[v] || v;
   $("vals").innerHTML = q1.values.map((v, i) => `<button class="${ANS[q1.criterion] === v ? "sel" : ""}" onclick="pick('${q1.criterion}','${v}')"><span class="k">${i + 1}</span>${esc(name(q1, v))}</button>`).join("");
-  $("form").innerHTML = rest.map(q => `<div class="q${skipped(q) ? " off" : ""}"><div class="ql">${esc(q.label || q.criterion)}</div><div class="chips">`
+  $("form").innerHTML = rest.map(q => skipped(q)
+    ? `<div class="q"><div class="ql">${esc(q.label || q.criterion)}: skipped for this pick</div></div>`
+    : `<div class="q"><div class="ql">${esc(q.label || q.criterion)}</div><div class="chips">`
     + (q.codes ? q.codes.map(c => `<button class="${ANS[q.criterion].includes(c) ? "sel" : ""}" onclick="tick('${q.criterion}','${c}')">${esc(name(q, c))}</button>`).join("")
-        + (q.open ? `<input placeholder="+ code" onkeydown="if(event.key==='Enter'){event.preventDefault();addCode('${q.criterion}',this.value)}">` : "")
+        + (q.open ? `<input id="add-${q.criterion}" placeholder="+ code" onkeydown="if(event.key==='Enter'){event.preventDefault();addCode('${q.criterion}',this.value)}">`
+            + `<button onclick="addCode('${q.criterion}',$('add-${q.criterion}').value)">add</button>` : "")
       : q.values.map(v => `<button class="${ANS[q.criterion] === v ? "sel" : ""}" onclick="pick('${q.criterion}','${v}')">${esc(name(q, v))}</button>`).join(""))
     + `</div></div>`).join("");
 }
