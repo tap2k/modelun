@@ -323,6 +323,10 @@ the draws that bring every race to three ran 22:23 to 23:05 EDT the same day. `p
   its lean (816 Democrat answers to 91) and picks against the incumbent's party 231 times; Grok declines. Grok's ballot
   picks follow the party holding the seat in 179 of 182 seats with an incumbent. Review cases: rules, then Gemini 3.8
   Flash for the party of a pick not on the 2026 ballot, each recorded in `spec/ballot-nosearch-overrides.json`.
+- Perplexity Sonar Pro (OpenRouter, host `openrouter`; cited sources only, no queries) ran the 30 search-off pilot races,
+  three draws, 2026-10-23, $0.62: D 22, R 7, split 1. It picks the Democrat in every D-leaning seat and splits the
+  R-leaning ones. Some answers open by describing a nominee without recommending one, which the opening coder counts as
+  a pick, so a full run would need judge coding. Not run further (Tapan, 2026-10-23).
 - Sonnet 5.5 and Gemini 3.8 Flash ran on the first 10 races (the Senate races, Alabama to Kansas) under the same
   rule with two draws per race (`FEWER` in the runner), 2026-10-21. Both declined all 20 calls.
 

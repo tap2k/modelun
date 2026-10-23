@@ -65,7 +65,8 @@ MODELS = {"gpt-6.1-sol": ("openai", "gpt-6.1-sol", "openai/gpt-6.1-sol"),
           "grok-4.7": ("xai", "grok-4.7", "x-ai/grok-4.7"),
           "claude-sonnet-5.5": ("anthropic", "claude-sonnet-5-5", "anthropic/claude-sonnet-5.5"),
           "gemini-3.8-flash": ("google", "gemini-3.8-flash", "google/gemini-3.8-flash"),
-          "muse-spark-1.3": ("meta", "muse-spark-1.3", "meta/muse-spark-1.3")}
+          "muse-spark-1.3": ("meta", "muse-spark-1.3", "meta/muse-spark-1.3"),
+          "sonar-pro": ("openrouter", "perplexity/sonar-pro", "perplexity/sonar-pro")}
 CAPTURE_APPS = {"chatgpt": "gpt-6.1-sol", "grok": "grok-4.7"}     # api-native.mjs's names for wave 1's models
 PARALLEL, HARD = 16, 600
 
@@ -182,12 +183,29 @@ def summarize_gemini(raw):
             "usage": [r.get("usageMetadata") for r in raw]}
 
 
+def send_openrouter(model, text):
+    """Perplexity's Sonar models search on their own; through OpenRouter, which returns the sources they cite"""
+    return [post("https://openrouter.ai/api/v1/chat/completions",
+                 {"model": model, "messages": [{"role": "user", "content": text}], "usage": {"include": True}},
+                 {"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"})]
+
+
+def summarize_openrouter(raw):
+    """No queries or search count come back; the cited sources are the nearest measure (retrieved = cited)."""
+    r = raw[0]; msg = (r.get("choices") or [{}])[0].get("message") or {}
+    cited = list(dict.fromkeys([a["url_citation"]["url"] for a in msg.get("annotations") or [] if a.get("type") == "url_citation"]
+                               + list(r.get("citations") or [])))
+    return {"reply": msg.get("content") or "", "searches": None, "queries": [], "opened": [], "retrieved": cited,
+            "cited": cited, "usage": [r.get("usage")]}
+
+
 HOSTS = {"openai": (responses_api("https://api.openai.com/v1/responses", "OPENAI_API_KEY",
                                   {"include": ["web_search_call.action.sources"]}), summarize_responses),
          "xai": (responses_api("https://api.x.ai/v1/responses", "XAI_API_KEY"), summarize_responses),
          "meta": (responses_api("https://api.meta.ai/v1/responses", "META_API_KEY"), summarize_responses),
          "anthropic": (send_anthropic, summarize_anthropic),
-         "google": (send_gemini, summarize_gemini)}
+         "google": (send_gemini, summarize_gemini),
+         "openrouter": (send_openrouter, summarize_openrouter)}
 
 
 def raw_path(label, rid, k):
@@ -377,7 +395,7 @@ def check():
                     print(f"pick? {m}/{rid}/d{k} | {t[:150]!r}")
 
 
-NAMES = {"gpt-6.1-sol": "GPT-6.1 Sol", "grok-4.7": "Grok 4.7", "claude-sonnet-5.5": "Claude Sonnet 5.5",
+NAMES = {"sonar-pro": "Perplexity Sonar Pro", "gpt-6.1-sol": "GPT-6.1 Sol", "grok-4.7": "Grok 4.7", "claude-sonnet-5.5": "Claude Sonnet 5.5",
          "gemini-3.8-flash": "Gemini 3.8 Flash"}
 
 
