@@ -381,9 +381,36 @@ NAMES = {"gpt-6.1-sol": "GPT-6.1 Sol", "grok-4.7": "Grok 4.7", "claude-sonnet-5.
          "gemini-3.8-flash": "Gemini 3.8 Flash"}
 
 
+def summaries():
+    """the page's two summary charts: per model, the share of answers whose searches returned each of the top sites (the
+    races with one D and one R); and per model and pick, the share of answers giving each reason, from the judge's issue
+    codes (label_ballot.py)"""
+    from urllib.parse import urlparse
+    import label_ballot as LB
+    overrides, src = json.loads(OVERRIDES.read_text()), {}
+    for label in ("gpt-6.1-sol", "grok-4.7"):
+        n, searches, doms = 0, 0, Counter()
+        for rid, cell in json.loads((OUT / f"{label}.json").read_text())["cells"].items():
+            if RACE[rid].get("other"):
+                continue
+            for d in cell["draws"]:
+                if d:
+                    n += 1; searches += d.get("searches") or 0
+                    doms.update({urlparse(u).netloc.lower().removeprefix("www.") for u in d.get("retrieved") or []})
+        src[label] = {"answers": n, "searches": searches, "sites": {k: round(v / n, 3) for k, v in doms.items() if v / n >= 0.005}}
+    ticks, seen = LB.ticks(LB.JUDGE)
+    groups = {}
+    for k, g in LB.parties().items():
+        if g[1] in ("D", "R") and k in seen.get("taxes", ()):
+            groups.setdefault(f"{g[0]}/{g[1]}", []).append(k)
+    reasons = {g: {"n": len(ks), **{c: round(sum(c in ticks.get(k, ()) for k in ks) / len(ks), 3) for c in LB.V2_CODES}}
+               for g, ks in groups.items()}
+    return {"sources": src, "reasons": reasons, "judge": LB.JUDGE}
+
+
 def export(path):
     """the page's data (convovo-site public/ballot/data.json): every race, and per model each draw's code and reply"""
-    out = page_data()
+    out = page_data() | summaries()
     Path(path).write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     print(f"{path}: {len(out['races'])} races, {len(out['models'])} models, {Path(path).stat().st_size / 1e6:.2f} MB")
 

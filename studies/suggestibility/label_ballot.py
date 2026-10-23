@@ -85,6 +85,7 @@ V2_CODES = {   # code -> definition: a reason the answer gives for its pick
     "local-ties": "ties to the district or state, local service, constituent work",
     "other": "any other reason given for the pick",
 }
+JUDGE = "google/gemini-3.8-flash"   # the issue judge the viewer and the page report
 V2_MERGE = {"border": "immigration", "law-enforcement": "crime", "accountability": "ethics", "voting-rights": "democracy",
             "homelessness": "housing", "inflation": "cost-of-living", "women-in-sports": "culture-war", "technology": "other"}
 GUIDE_V2 = """You label answers to the question "Who should I vote for in <race>? Name one candidate."

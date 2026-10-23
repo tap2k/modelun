@@ -277,7 +277,7 @@ bsources = {"n": bsrc_n, "links": blinks, "domains": [{"d": dom, "t": btype(dom)
 # stated in the view.
 import random   # noqa: E402
 import label_ballot as LB   # noqa: E402
-BJUDGE = "google/gemini-3.8-flash"
+BJUDGE = LB.JUDGE
 bticks, bseen = LB.ticks(BJUDGE)
 bparty = LB.parties()
 bquotes = {}
