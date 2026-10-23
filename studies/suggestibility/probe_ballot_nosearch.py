@@ -19,7 +19,8 @@ whether the reply names each nominee's surname. Files: probes/contested_ballot/n
 
     python studies/suggestibility/probe_ballot_nosearch.py price            # two calls per model per arm
     python studies/suggestibility/probe_ballot_nosearch.py run <model>...   # fills every arm and race to three draws
-    python studies/suggestibility/probe_ballot_nosearch.py analyze          # -> nosearch/analysis.json
+    python studies/suggestibility/probe_ballot_nosearch.py full <model>...  # ballot and told on all 479 (ALL; Tapan, 2026-10-23)
+    python studies/suggestibility/probe_ballot_nosearch.py analyze          # -> nosearch/analysis.json: the pilot and all
 """
 import os, re, sys, json, time, hashlib
 from collections import Counter
@@ -51,10 +52,12 @@ def races():
 
 
 RACES = races()
+ALL = [r for r in P.RACES if not r.get("other")]     # the 479: one D (or, in NE and SD, one I) against one R
 
 
 def text(arm, r):
-    return ARMS[arm].format(race=r["race"], D=r.get("D"), R=r.get("R"))
+    t = ARMS[arm].format(race=r["race"], D=r.get("D") or r.get("I"), R=r.get("R"))
+    return t if r.get("D") else t.replace("(Democrat)", "(Independent)")
 
 
 def stamp(label, arm, r):
@@ -117,12 +120,13 @@ def run(label, jobs):
 def code(label, arm, rid, k, d, overrides):
     if d is None:
         return None
-    return overrides.get(f"{label}/{arm}/{rid}/d{k}") or P.code(d["reply"], P.RACE[rid])[0]
+    v = overrides.get(f"{label}/{arm}/{rid}/d{k}")      # a hand code, or {"code", "by", ...} from a coding pass
+    return (v["code"] if isinstance(v, dict) else v) or P.code(d["reply"], P.RACE[rid])[0]
 
 
 def analyze():
     overrides = json.loads(OVERRIDES.read_text()) if OVERRIDES.exists() else {}
-    out = {"races": [P.race_id(r) for r in RACES], "models": {}}
+    out = {"races": [P.race_id(r) for r in RACES], "models": {}, "all": {}}
     for label in MODELS:
         path = OUT / f"{label}.json"
         if not path.exists():
@@ -140,6 +144,17 @@ def analyze():
                 if len(cs) == DRAWS and None not in cs and "review" not in cs:
                     verdicts[P.verdict(cs, label)] += 1
             m[arm] = {"answers": dict(answers), "verdicts": dict(verdicts), "review": review}
+            answers, verdicts, review, done = Counter(), Counter(), [], 0
+            for r in ALL:
+                rid = P.race_id(r)
+                ds = rec["cells"].get(f"{arm}/{rid}", {}).get("draws", [])
+                cs = [code(label, arm, rid, k, d, overrides) for k, d in enumerate(ds, 1)]
+                answers.update(c for c in cs if c)
+                review += [f"{label}/{arm}/{rid}/d{k}" for k, c in enumerate(cs, 1) if c == "review"]
+                if len(cs) == DRAWS and None not in cs and "review" not in cs:
+                    verdicts[P.verdict(cs, label)] += 1; done += 1
+            out["all"].setdefault(label, {})[arm] = {"races": done, "answers": dict(answers), "verdicts": dict(verdicts),
+                                                     "review": review}
         know = Counter()
         for r in RACES:
             rid = P.race_id(r)
@@ -168,5 +183,8 @@ if __name__ == "__main__":
     elif cmd == "run":
         for label in sys.argv[2:]:
             run(label, [(arm, r, k) for arm in ARMS for r in RACES for k in range(1, DRAWS + 1)])
+    elif cmd == "full":
+        for label in sys.argv[2:]:
+            run(label, [(arm, r, k) for arm in ("ballot", "told") for r in ALL for k in range(1, DRAWS + 1)])
     elif cmd == "analyze":
         analyze()

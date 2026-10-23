@@ -317,6 +317,12 @@ the draws that bring every race to three ran 22:23 to 23:05 EDT the same day. `p
   queries about a candidate's positions or voting record, and X (22%) for issue queries. GPT's sites barely move with
   the query: Wikipedia for 97% of generic and 70% of issue queries, Ballotpedia, the NYT and X for none. Counted over the
   raw files on this machine (the 2026-10-21 evening draws: Grok 5,201 calls, GPT 1,002), with queries sorted by keyword.
+- Search off (`probe_ballot_nosearch.py`, 2026-10-23, no tools, three draws, all 479 races; $20.51). Verdicts, GPT and
+  Grok: the ballot prompt, D 180 / R 82 / decline 211 / split 5 and D 116 / R 65 / decline 298; told the two nominees,
+  D 387 / R 37 / decline 43 / split 11 and D 20 / R 16 / decline 441 / split 1 (one I each). Told the names, GPT keeps
+  its lean (816 Democrat answers to 91) and picks against the incumbent's party 231 times; Grok declines. Grok's ballot
+  picks follow the party holding the seat in 179 of 182 seats with an incumbent. Review cases: rules, then Gemini 3.8
+  Flash for the party of a pick not on the 2026 ballot, each recorded in `spec/ballot-nosearch-overrides.json`.
 - Sonnet 5.5 and Gemini 3.8 Flash ran on the first 10 races (the Senate races, Alabama to Kansas) under the same
   rule with two draws per race (`FEWER` in the runner), 2026-10-21. Both declined all 20 calls.
 
