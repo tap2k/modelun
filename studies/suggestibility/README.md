@@ -317,6 +317,13 @@ the draws that bring every race to three ran 22:23 to 23:05 EDT the same day. `p
   queries about a candidate's positions or voting record, and X (22%) for issue queries. GPT's sites barely move with
   the query: Wikipedia for 97% of generic and 70% of issue queries, Ballotpedia, the NYT and X for none. Counted over the
   raw files on this machine (the 2026-10-21 evening draws: Grok 5,201 calls, GPT 1,002), with queries sorted by keyword.
+- The sites, checked by hand 2026-10-23. Ballotpedia's robots.txt does not block OpenAI's crawlers (it blocks
+  PerplexityBot, CCBot, Googlebot-News), and Perplexity Sonar Pro cites it in 32 of 90 pilot answers anyway, so GPT's 0%
+  is OpenAI's index, not the site. GPT's most-returned guide sites all call themselves nonpartisan; one is not:
+  yourreprecord.org (45% of GPT answers) grades House members on "constituent interests", with ten progressive
+  Democrats at the top and ten Republicans at the bottom. smarter.vote, ballotexplained.com, votesee.org,
+  civic-align.com and chamberlight.com show no lean on their front pages; thepoliticalgroup.com is a campaign
+  phone-banking vendor whose candidate scores name Republicans and Democrats as "strongest record".
 - Search off (`probe_ballot_nosearch.py`, 2026-10-23, no tools, three draws, all 479 races; $20.51). Verdicts, GPT and
   Grok: the ballot prompt, D 180 / R 82 / decline 211 / split 5 and D 116 / R 65 / decline 298; told the two nominees,
   D 387 / R 37 / decline 43 / split 11 and D 20 / R 16 / decline 441 / split 1 (one I each). Told the names, GPT keeps
