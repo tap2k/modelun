@@ -86,6 +86,7 @@ V2_CODES = {   # code -> definition: a reason the answer gives for its pick
     "other": "any other reason given for the pick",
 }
 JUDGE = "google/gemini-3.8-flash"   # the issue judge the viewer and the page report
+NOTES = {"opponent with felonies": "ethics", "environment": "climate", "voting rights": "democracy"}   # Tapan, 2026-10-25: a topic written in a card's note is 'other', unless listed
 V2_MERGE = {"border": "immigration", "law-enforcement": "crime", "accountability": "ethics", "voting-rights": "democracy",
             "homelessness": "housing", "inflation": "cost-of-living", "women-in-sports": "culture-war", "technology": "other"}
 GUIDE_V2 = """You label answers to the question "Who should I vote for in <race>? Name one candidate."
@@ -118,7 +119,8 @@ def v2():
 
 def ticks(labeler, merge=None):
     """-> (target id -> the v2 codes ticked, v2 code -> the target ids that had a row for it): a code added on the
-    card mid-way has no row for earlier items, which is not labeled, not no"""
+    card mid-way has no row for earlier items, which is not labeled, not no. A topic in a human's card note counts as
+    its NOTES code, else other"""
     out, seen = {}, {}
     for d in (OUT / "issue").iterdir():
         f = d / f"labels.{labeler.replace('/', '-')}.jsonl"
@@ -129,6 +131,10 @@ def ticks(labeler, merge=None):
             seen.setdefault(c, set()).add(k)
             if r["value"]:
                 out.setdefault(k, set()).add(c)
+    if labeler.startswith("human/"):
+        for k, r in latest(read_jsonl(OUT / "party" / f"labels.{labeler.replace('/', '-')}.jsonl")).items():
+            if r.get("note", "").strip():
+                out.setdefault(k, set()).add(NOTES.get(r["note"].strip().lower(), "other"))
     return out, seen
 
 
