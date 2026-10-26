@@ -127,6 +127,9 @@ def within_race(rows):
             for pick in ("R", "D"):
                 rs = [r for v in mixed for r in v if r["code"] == pick]
                 o[f"{name}_in_{pick}_picks"] = [sum(bool(r["qiss"] & themes) for r in rs), len(rs)]
+        for pick in ("R", "D"):     # any of the queries table's issues
+            rs = [r for v in mixed for r in v if r["code"] == pick]
+            o[f"any_issue_in_{pick}_picks"] = [sum(bool(r["qiss"]) for r in rs), len(rs)]
         out[m] = o
     return out
 
