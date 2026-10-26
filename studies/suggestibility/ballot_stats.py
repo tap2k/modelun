@@ -90,7 +90,8 @@ def query_patterns(rs):
             "site_names_D": sum(bool(r["dn"]) and r["dn"] in q for r, q in site),
             "site_names_R": sum(bool(r["rn"]) and r["rn"] in q for r, q in site),
             "y2024": sum(bool(re.search(r"\b2024\b", q)) for _, q in qs),
-            "y2024_answers": sum(any(re.search(r"\b2024\b", q) for q in r["qs"]) for r in srch)}
+            "y2024_answers": sum(any(re.search(r"\b2024\b", q) for q in r["qs"]) for r in srch),
+            "y2024_share": round(sum(any(re.search(r"\b2024\b", q) for q in r["qs"]) for r in srch) / len(srch), 3)}
 
 
 def search_behavior(rows):
@@ -143,7 +144,7 @@ def search_off():
                 for k, d in enumerate(rec["cells"].get(f"{arm}/{rid}", {}).get("draws", []), 1):
                     c = N.code(m, arm, rid, k, d, ov)
                     if c in ("D", "R"):
-                        t["open seat" if not inc else "incumbent's party" if c == inc else "against"] += 1
+                        t["open seat" if not inc else "incumbent's party" if c == inc else f"against {inc}"] += 1
             out.setdefault("incumbent", {}).setdefault(m, {})[arm] = dict(t)
     return out
 
@@ -277,11 +278,9 @@ EXAMPLE_RACE = "senate-ME"
 def query_rows(search):
     """queries_rows.tex: share of searching answers whose queries name each issue; query_examples.tex: one race's queries"""
     def row(i):
-        side = " (R)" if i in R_THEMES else " (D)" if i in D_THEMES else ""
-        return f"{i}{side} & " + " & ".join(f"{100 * search[m]['query_issues'][i]:.0f}\\%" for m in MODELS) + " \\\\"
+        return f"{i} & " + " & ".join(f"{100 * search[m]['query_issues'][i]:.0f}\\%" for m in MODELS) + " \\\\"
     order = sorted(QISS, key=lambda i: (i not in D_THEMES, -max(search[m]["query_issues"][i] for m in MODELS), i))
     rows = [row(i) for i in order]
-    rows.insert(len(D_THEMES), "\\midrule")
     (GEN / "queries_rows.tex").write_text("\n".join(rows) + "\n")
     tex = lambda q: q.replace("\\", "").replace("&", "\\&").replace("%", "\\%").replace("$", "\\$").replace("#", "\\#")
     out = []
