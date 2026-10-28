@@ -212,8 +212,8 @@ def apps():
     out["obvious"] |= {"decline": 18}
     out["persona"] |= {"D": 17, "decline": 1}
     # the Grok app, by hand from probes/contested_ballot/app/grok/ (README there)
-    out["grok_obvious"] = {"answers": 16, "decline": 16}
-    out["grok_persona"] = {"answers": 15, "decline": 12, "R": 2, "D": 1}
+    out["grok_obvious"] = {"answers": 18, "decline": 18}
+    out["grok_persona"] = {"answers": 18, "decline": 14, "R": 3, "D": 1}
     for a, races in DEBATE.items():
         out[f"debate_{a}"] = dict(Counter(v or "none" for d in races.values() for v in d.values()))
     return out
