@@ -311,3 +311,43 @@ for st, f in bfull.items():
     (brd / f"{st}.js").write_text("(window.BR = window.BR || {})[" + json.dumps(st) + "] = "
                                   + json.dumps(f, ensure_ascii=False, separators=(",", ":")) + ";\n")
 print(f"wrote {VIEWS/'data_ballot.js'} ({len(bblob)//1024}KB) and {brd}/ ({sum(f.stat().st_size for f in brd.glob('*.js')) // 1024}KB in {len(bfull)} files)")
+
+# --- the contested instruments pilot (probe_contested_unclamped.py --pilot): data_instruments.js, drawn by
+# instruments.html, and instruments_replies/<model>.js with every reply, loaded when a cell is opened. Labels are the
+# probe's labels(): adjudicated, else Tapan's, else the judge majority. labels() resolves them only when the run's items.jsonl
+# exists (gitignored), and falls back to the opening-word pre-labels without it, so it is rebuilt here, as on Pages.
+# Not linked from index.html (Tapan, 2026-10-28).
+import probe_contested_unclamped as PU   # noqa: E402
+import label_instruments   # noqa: E402
+
+PU.PILOT = True
+if not (PU.run_dir() / "items.jsonl").exists():
+    label_instruments.build()
+ulabs = PU.labels()
+uitems = list(PU.PILOT_ITEMS)
+umodels = sorted({k[1] for k in ulabs if k[0] == "clamp"})
+uinsts = ["clamp"] + [i for v in PU.INSTRUMENTS for i in ((v, v + ":word") if v in PU.VERDICT_FIRST else (v,))]
+ulab = lambda inst, m, i, s: [ulabs.get((inst, m, i, s), {}).get(r) for r in range(PU.RUNS)]
+ucells = {inst: {m: {i: {"side": PU.side_of(ulab(inst, m, i, "x"), ulab(inst, m, i, "y")),
+                         "coherent": PU.coherent(ulab(inst, m, i, "x"), ulab(inst, m, i, "y")),
+                         "x": ulab(inst, m, i, "x"), "y": ulab(inst, m, i, "y")} for i in uitems} for m in umodels} for inst in uinsts}
+ureplies = {m: {} for m in umodels}
+for m in umodels:
+    cl = json.loads((PU.CLAMPED / f"{m}.json").read_text())["cells"]
+    ureplies[m]["clamp"] = {i: {s: [r or "" for r in cl[i][f"ask_{s}"]] for s in "xy"} for i in uitems}
+    for inst in PU.INSTRUMENTS:
+        p = PU.run_dir() / inst / f"{m}.json"
+        if p.exists():
+            c = json.loads(p.read_text())["cells"]
+            ureplies[m][inst] = {i: {s: [(r or {}).get("reply") or "" for r in c.get(i, {}).get(f"ask_{s}", [])] for s in "xy"} for i in uitems}
+uprompt = {"clamp": {"system": None, "user": PC.CLAMP}} | {v: {"system": PU.SYSTEM[v], "user": PU.USER_SUFFIX.get(v)} for v in PU.INSTRUMENTS}
+udata = {"items": [{"id": i, "poles": list(POLES[i]), "qx": qx, "qy": qy} for i, _, (qx, _), (qy, _) in PC.ITEMS if i in uitems],
+         "models": umodels, "instruments": uinsts, "prompts": uprompt, "verdict_first": list(PU.VERDICT_FIRST), "cells": ucells}
+ublob = json.dumps(udata, ensure_ascii=False, separators=(",", ":"))
+(VIEWS / "data_instruments.js").write_text(f"const U = {ublob};\n")
+urd = VIEWS / "instruments_replies"
+urd.mkdir(exist_ok=True)
+for m, r in ureplies.items():
+    (urd / f"{m}.js").write_text("(window.UR = window.UR || {})[" + json.dumps(m) + "] = "
+                                 + json.dumps(r, ensure_ascii=False, separators=(",", ":")) + ";\n")
+print(f"wrote {VIEWS/'data_instruments.js'} ({len(ublob)//1024}KB) and {urd}/ ({sum(f.stat().st_size for f in urd.glob('*.js')) // 1024}KB in {len(ureplies)} files)")

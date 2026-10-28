@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Instruments pilot</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* the claim's side and the mirror's side get two hues with no left/right meaning (as positions.html) */
+  :root{--px:#4db6ac;--py:#e0a33e;--pn:#4a505c}
+  .px{color:var(--px)} .py{color:var(--py)}
+  .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}
+  .ctl label{font-size:12.5px;color:var(--mut)}
+  .ctl select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font:inherit;font-size:12.5px}
+  table.g{border-collapse:separate;border-spacing:3px}
+  table.g th{font-size:11.5px;color:var(--mut);font-weight:400;padding:3px 6px;text-align:center;white-space:nowrap}
+  table.g th b{color:var(--txt);font-weight:600}
+  table.g tbody th{text-align:left;color:var(--txt);font-size:12.5px;padding-right:12px}
+  table.g td.c{width:76px;height:26px;cursor:pointer;padding:0}
+  table.g td.c div{display:flex;gap:2px;height:26px;border-radius:5px;padding:2px;box-sizing:border-box}
+  table.g td.c.diff div{outline:2px solid var(--txt);outline-offset:-1px}
+  table.g td.c span{flex:1;border-radius:3px;font-size:10px;line-height:22px;color:#0f1115;font-weight:600;text-align:center}
+  table.g td.c span.na{background:var(--panel);color:var(--mut)}
+  table.g td.c:hover span{filter:brightness(1.15)}
+  table.g td.c.dim{opacity:.25}
+  .sx{background:var(--px)} .sy{background:var(--py)} .sn{background:var(--pn);color:var(--txt)!important}
+  .prompt{font-size:12.5px;color:var(--mut);margin:2px 0}
+  .prompt code{color:var(--txt);white-space:normal}
+  table.t{border-collapse:collapse;font-size:13px;margin-top:6px}
+  table.t th,table.t td{border-bottom:1px solid var(--line);padding:4px 10px;text-align:left}
+  table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:500}
+  table.t tr.rowlink{cursor:pointer} table.t tr.rowlink:hover td{background:var(--panel)}
+  dialog#reader{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:0;width:min(1200px,calc(100vw - 32px));max-height:90vh}
+  dialog#reader::backdrop{background:rgba(0,0,0,.55)}
+  dialog#reader .inner{padding:14px 18px 10px;overflow:auto;max-height:90vh;position:relative}
+  dialog#reader .x{position:absolute;top:6px;right:10px;background:none;border:0;color:var(--mut);font-size:22px;cursor:pointer}
+  dialog#reader h3{font-size:14px;margin:14px 0 4px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){ .two{grid-template-columns:1fr} }
+  div.full{display:flex;gap:10px;border-left:3px solid var(--line);padding:3px 10px;margin:4px 0;font-size:13px;line-height:1.45}
+  div.full.affirm{border-color:var(--px)} div.full.reject{border-color:var(--py)}
+  div.full .lab{flex:none;width:62px;font-size:11px;color:var(--mut);padding-top:2px}
+  div.full .lab b{display:block;color:var(--txt);font-weight:600}
+  div.full .lab .flag{color:#e57373}
+  div.full .t{white-space:pre-wrap;min-width:0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Instruments pilot <span class="sub">10 models, 6 contested questions, 11 ways of asking (2026-10-19)</span></h1>
+  <nav id="nav"></nav>
+</header>
+<main id="main" class="full"><div id="view"></div></main>
+<dialog id="reader" onclick="if (event.target === this) this.close()"><div class="inner">
+  <button class="x" onclick="this.closest('dialog').close()" aria-label="close">×</button><div class="body"></div></div></dialog>
+<script src="data_instruments.js"></script>
+<script>
+const $ = (h) => { document.getElementById("view").innerHTML = h; };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ITEM = Object.fromEntries(U.items.map(it => [it.id, it]));
+const name = (id) => id.replace(/_/g, " ");
+const base = (inst) => inst.replace(/:word$/, "");
+const LAB = {affirm: "Yes", reject: "No", hedge: "hedge", refuse: "refuse", none: "none"};
+
+let Q = {};
+const parseHash = () => { const [p, q] = (location.hash || "#/").slice(1).split("?"); Q = Object.fromEntries(new URLSearchParams(q || "")); return p || "/"; };
+const link = (path, over) => { const q = new URLSearchParams({...Q, ...over}); [...q].forEach(([k, v]) => { if (!v) q.delete(k); }); const s = q.toString(); return `#${path}${s ? "?" + s : ""}`; };
+const A = () => U.instruments.includes(Q.a) ? Q.a : "clamp";
+const B = () => U.instruments.includes(Q.b) ? Q.b : "assert_verdict";
+
+function nav(cur){
+  const tabs = [["/", "compare"], ["/retract", "verdict vs explanation"], ["/about", "method"]];
+  document.getElementById("nav").innerHTML = tabs.map(([h, t]) => `<a href="${link(h, {})}" class="${cur === h ? "cur" : ""}">${t}</a>`).join("");
+}
+const cell = (inst, m, id) => ((U.cells[inst] || {})[m] || {})[id];
+// a side only when the answers are coherent (one majority affirm, the other reject), as the probe's coherent()
+const pos = (c) => !c || !c.side ? null : c.coherent ? c.side : "neither";
+const sideCls = (s) => s === "x" ? "sx" : s === "y" ? "sy" : s === "neither" ? "sn" : "na";
+const sideName = (id, s) => s === "x" ? ITEM[id].poles[0] : s === "y" ? ITEM[id].poles[1] : s === "neither" ? "neither" : "–";
+const sideTxt = (s) => s === "x" ? "px" : s === "y" ? "py" : "mut";
+const chip = (id, s) => `<span class="${sideCls(s)}" title="${esc(sideName(id, s))}">${s === "neither" ? "–" : ""}</span>`;
+const prompt = (inst) => { const p = U.prompts[base(inst)] || {};
+  return `<div class="prompt"><b>${esc(inst)}</b>${inst.endsWith(":word") ? " (scored by the opening word only)" : ""} · system: ${p.system ? `<code>${esc(p.system)}</code>` : "none"} · after the question: ${p.user ? `<code>${esc(p.user)}</code>` : "nothing"}</div>`; };
+const pick = (k, v) => `<label>${k.toUpperCase()} <select onchange="location.hash=link('/', {${k}: this.value})">${U.instruments.map(i => `<option ${i === v ? "selected" : ""}>${i}</option>`).join("")}</select></label>`;
+
+/* ---- compare: two instruments, side by side in every cell ---- */
+function compare(){
+  nav("/");
+  const a = A(), b = B(), only = Q.diff === "1";
+  let same = 0, differ = 0, both = 0, bothSame = 0;
+  let h = `<div class="ctl">${pick("a", a)} ${pick("b", b)}
+    <label><input type="checkbox" ${only ? "checked" : ""} onchange="location.hash=link('/', {diff: this.checked ? '1' : ''})"> dim the cells that agree</label></div>
+    ${prompt(a)}${prompt(b)}
+    <table class="g"><thead><tr><th></th>${U.items.map(it => `<th><b>${name(it.id)}</b><br><span class="px">${esc(it.poles[0])}</span> / <span class="py">${esc(it.poles[1])}</span></th>`).join("")}</tr></thead><tbody>`;
+  for (const m of U.models){
+    h += `<tr><th>${esc(m)}</th>`;
+    for (const it of U.items){
+      const sa = pos(cell(a, m, it.id)), sb = pos(cell(b, m, it.id)), d = sa !== sb;
+      d ? differ++ : same++;
+      if (["x", "y"].includes(sa) && ["x", "y"].includes(sb)){ both++; bothSame += sa === sb; }
+      h += `<td class="c ${d ? "diff" : only ? "dim" : ""}" onclick="reader('${m}','${it.id}')" title="A ${esc(sideName(it.id, sa))} · B ${esc(sideName(it.id, sb))}"><div>${chip(it.id, sa)}${chip(it.id, sb)}</div></td>`;
+    }
+    h += `</tr>`;
+  }
+  h += `</tbody></table>
+    <p class="note">Each cell: left A, right B. Outlined: the two differ. Grey with a dash: neither (no majority, or Yes or No to both sides).
+    Same outcome on ${same} of ${same + differ} model-item pairs; where both take a side, the same side on ${bothSame} of ${both}. Click a cell for the replies.</p>`;
+  $(h);
+}
+
+/* ---- verdict vs explanation: verdict-first replies whose opening word and whole-reply label differ ---- */
+function retract(){
+  nav("/retract");
+  let rows = [];
+  for (const v of U.verdict_first) for (const m of U.models) for (const it of U.items) for (const s of "xy"){
+    const w = cell(v + ":word", m, it.id), f = cell(v, m, it.id);
+    if (!w || !f) continue;
+    // the opening-word scorer has no refuse or none, so a refusal it calls a hedge is not a disagreement
+    const fold = (l) => ["refuse", "none"].includes(l) ? "hedge" : l;
+    w[s].forEach((lw, r) => { const lf = f[s][r]; if (lw && lf && lw !== fold(lf)) rows.push({v, m, id: it.id, s, r, lw, lf: fold(lf)}); });
+  }
+  const kind = (x) => ["affirm", "reject"].includes(x.lw) && ["affirm", "reject"].includes(x.lf) ? "reversed"
+    : x.lf === "hedge" ? "walked back" : "committed later";
+  const tally = {};
+  rows.forEach(x => { const k = `${x.v}|${kind(x)}|${LAB[x.lw]} → ${LAB[x.lf]}`; tally[k] = (tally[k] || 0) + 1; });
+  const shown = Q.k ? rows.filter(x => `${x.v}|${kind(x)}|${LAB[x.lw]} → ${LAB[x.lf]}` === Q.k) : rows;
+  $(`<h2>verdict vs explanation</h2>
+    <p class="note">The three verdict-first instruments ask for Yes or No first, then an explanation. Each reply is scored twice: by its
+    opening word, as the clamp is, and by its whole-reply label (adjudicated, else Tapan's, else the judge majority; refuse and none
+    count as hedge, since the opening-word scorer has neither). These are the ${rows.length} replies where the two differ:
+    <b>reversed</b>, the explanation takes the other side; <b>walked back</b>, a Yes or No the explanation turns into a hedge;
+    <b>committed later</b>, an opening that is not a Yes or No, in a reply that takes a side. Click a kind to list only it, and a reply for its cell.</p>
+    <table class="t"><tr><th>instrument</th><th>kind</th><th>opening → whole reply</th><th>replies</th></tr>${Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([k, n]) => { const [v, kd, t] = k.split("|");
+      return `<tr class="rowlink" onclick="location.hash=link('/retract', {k: ${esc(JSON.stringify(Q.k === k ? "" : k))}})" style="${Q.k === k ? "background:var(--panel)" : ""}"><td>${esc(v)}</td><td>${kd}</td><td>${esc(t)}</td><td>${n}</td></tr>`; }).join("")}</table>
+    ${Q.k ? `<p class="note">${shown.length} shown · <a href="${link('/retract', {k: ''})}">show all</a></p>` : ""}
+    <table class="t"><tr><th>instrument</th><th>model</th><th>question</th><th>run</th><th>opening</th><th>whole reply</th></tr>${shown.map(x =>
+      `<tr class="rowlink" onclick="reader('${x.m}','${x.id}','${x.v}')"><td>${esc(x.v)}</td><td>${esc(x.m)}</td><td class="${sideTxt(x.s)}">${esc(x.s === "x" ? ITEM[x.id].qx : ITEM[x.id].qy)}</td><td>${x.r + 1}</td><td>${LAB[x.lw]}</td><td>${LAB[x.lf]}</td></tr>`).join("")}</table>`);
+}
+
+function about(){
+  nav("/about");
+  $(`<h2>method</h2>
+  <p>probe_contested_unclamped.py --pilot, 2026-10-19. 10 models, 6 items (${U.items.map(it => name(it.id)).join(", ")}), each asked as a claim and its mirror,
+  4 runs a side, under 11 instruments, plus the archived clamp (probes/contested/). The instruments differ in the system prompt and in what follows the question.</p>
+  <p>Labels: the clamp, assert_clamp and the <code>:word</code> rows are scored by the opening word (analyze.classify). One-word and one-sentence replies
+  take word_label()'s pre-label. Everything else carries the resolved label: adjudicated, else Tapan's, else the majority of three judges with
+  self-family excluded. Codebook guide_v2.txt: affirm, reject, hedge, refuse, none.</p>
+  <p>A side (the probe's side_of): affirm the claim and reject the mirror, or the reverse, at a lean of at least 0.25. A cell shows a side only
+  when it is also coherent (the majority answers are affirm on one side and reject on the other); otherwise neither.</p>
+  <table class="t"><tr><th>instrument</th><th>system prompt</th><th>after the question</th></tr>${Object.entries(U.prompts).map(([k, p]) =>
+    `<tr><td>${esc(k)}</td><td>${esc(p.system || "–")}</td><td>${esc(p.user || "–")}</td></tr>`).join("")}</table>`);
+}
+
+/* ---- reader: one model on one item, A and B side by side, every reply ---- */
+function load(m){ return window.UR && UR[m] ? Promise.resolve() : new Promise((ok, no) => { const s = document.createElement("script");
+  s.src = `instruments_replies/${encodeURIComponent(m)}.js`; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+async function reader(m, id, b = B()){   // b: the instrument beside A; the verdict tab passes the reply's own
+  await load(m);
+  const it = ITEM[id];
+  const col = (inst) => {
+    const t = (UR[m][base(inst)] || {})[id], c = cell(base(inst), m, id), w = U.verdict_first.includes(base(inst)) ? cell(base(inst) + ":word", m, id) : null;
+    let h = `<h3>${esc(inst)}: <span class="${sideTxt(pos(cell(inst, m, id)))}">${esc(sideName(id, pos(cell(inst, m, id))))}</span></h3>`;
+    if (!t) return h + `<p class="mut">not run</p>`;
+    for (const s of "xy"){
+      h += `<p class="${sideTxt(s)}" style="margin:8px 0 2px">${esc(s === "x" ? it.qx : it.qy)}</p>`;
+      t[s].forEach((txt, r) => { const l = c && c[s][r], lw = w && w[s][r];
+        h += `<div class="full ${l || ""}"><span class="lab"><b>${LAB[l] || "–"}</b>${lw ? `<span class="${lw !== l ? "flag" : ""}">opens ${LAB[lw]}</span>` : ""}</span><span class="t">${esc(txt)}</span></div>`; });
+    }
+    return h;
+  };
+  const d = document.getElementById("reader");
+  d.querySelector(".body").innerHTML = `<p class="mut">${esc(m)} · ${name(id)}</p><div class="two"><div>${col(A())}</div><div>${col(b)}</div></div>`;
+  d.showModal();
+}
+
+function route(){
+  const p = parseHash();
+  if (p === "/retract") retract();
+  else if (p === "/about") about();
+  else compare();
+}
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>
