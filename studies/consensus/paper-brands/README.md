@@ -1,7 +1,7 @@
 # Taste paper (draft)
 
 "How Language Models Learn Taste: Brand Preference in LLMs". One text, `main.tex`, for arXiv. Claims and decisions: the private
-`PAPER-PLAN-2026-10-04.md` §1.
+`PLAN.md` §1.
 
 Every table reads from `gen/`, written by `../brands_paper.py` from the committed probe outputs (`../probes/`:
 `brand_ladder.json`, `factors.json`, `brand_confounds.json`, `brand_logprob*.json`, `stage_pick.json`,
