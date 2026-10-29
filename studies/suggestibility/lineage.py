@@ -42,6 +42,7 @@ FAM = {
 # Further multi-generation lineages in the panel, used only by the release test's robustness check
 # (grid_stats.robustness): the six families above plus these.
 EXTRA = {
+    "llama-3.1-70b-instruct": ("Llama", -1),  # 2024-07-23, appended 2026-10-29
     "llama-3.3-70b-instruct": ("Llama", 0), "llama-4-maverick": ("Llama", 1), "llama-4-scout": ("Llama", 1),
     "mixtral-8x22b-instruct": ("Mistral", 0), "mistral-nemo": ("Mistral", 1),
     "mistral-small-3.2-24b-instruct": ("Mistral", 2), "mistral-small-2603": ("Mistral", 3), "mistral-large-4-0": ("Mistral", 4),
