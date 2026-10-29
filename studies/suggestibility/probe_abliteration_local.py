@@ -28,7 +28,7 @@ from probe_contested import ITEMS                                  # noqa: E402
 from probe_contested_unclamped import ASSERT, VERDICT              # noqa: E402
 from probe_righteffect import CLAMP                                # noqa: E402
 
-M = Path("~/dev/models").expanduser()
+M = Path("~/dev/convovo/neurons").expanduser()
 MODELS = {   # label: (weights, family, abliterated)
     "qwen3.8-27b": (M / "Qwen3.8-27B-MLX-8bit", "qwen", False),
     "qwen3.8-27b-abliterated": (M / "Huihui-Qwen3.8-27B-abliterated-8bit", "qwen", True),
