@@ -69,5 +69,13 @@
   "stages": [
    {"stage": "final", "label": "granite-4.1-8b", "repo": "ibm-granite/granite-4.1-8b", "weights": "~/dev/models/granite-4.1-8b", "framings": ["chat"]}
   ]
+ },
+ "qwen3.8-27b": {
+  "note": "Live panel model, run locally for white-box probes (steering, activations); calibrate against its API census first. Dense, 8-bit (lmstudio-community). Hybrid linear/full attention. The panel's API census ran with reasoning on, so the think framing matches it.",
+  "quantization": "8-bit affine, group size 64 (lmstudio-community/Qwen3.8-27B-MLX-8bit)",
+  "batch": 8,
+  "stages": [
+   {"stage": "final", "label": "qwen3.8-27b", "repo": "Qwen/Qwen3.8-27B", "weights": "~/dev/models/Qwen3.8-27B-MLX-8bit", "framings": ["think", "chat"]}
+  ]
  }
 }
