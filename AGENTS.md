@@ -83,13 +83,17 @@ one-word prompt).
 ships is expected and does not invalidate it: the tag is what the paper's
 numbers reproduce from, and `main` carries the growing panel. When a new wave is
 added, note the wave and its date in `spec/models.json`, and tag the panel again
-if it is published again.
+if it is published again. `studies/consensus/spec/models.json` is the shared model registry for
+consensus, language and suggestibility (metadata, hybrids, waves, `unrunnable`); conduct keeps its own.
 
 So the sequence for adding a model is: append to `spec/models.txt`, run it,
 commit the transcripts, and leave every earlier tag alone.
 
-A model added to the panel is owed every `core` and `extended` directory in
-each study's `spec/runs.json` (consensus, language, suggestibility, conduct).
+A model added to the panel is owed every `core` directory in each study's
+`spec/runs.json` (consensus, language, suggestibility, conduct). `extended`
+directories run only when Tapan asks for them, not by default (2026-10-29).
+Which new models join the panel is Tapan's call: an agent proposes candidates from `panel_gap.py`'s
+UNSEEN list, priced with `cost.py`, and runs them only after approval.
 Core runs on release day; it includes pickword, the cheapest longitudinal
 record the repo keeps, and gaps in it cannot be filled after a model is
 retired. One session runs all four studies, then regenerates their analyses and views before
@@ -108,9 +112,9 @@ directory. `harness/panel_gap.py` diffs both against the live OpenRouter
 catalog, and flags models with an `expiration_date`, which are the only ones
 where waiting loses the data permanently.
 
-conduct is the extreme case: its `models.txt` lists 89, but the 22 v1 specimens
-stay off it on purpose (`spec/models.json`), so `panel_gap.py` reports them as
-missing. Its panel is `data/benchmark/`.
+conduct's `models.txt` includes the 22 v1 specimens since 2026-10-29 (wave 12 in
+`spec/models.json`), so it matches `data/benchmark/`. The v1 paper's panel stays pinned
+in `paper/panel.txt`.
 
 ## History & the bottom-up layer
 - The conduct study has two methodology layers. The current **top-down** layer (6 scenes, predeclared

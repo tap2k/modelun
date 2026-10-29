@@ -100,7 +100,8 @@ def chat(slug, messages, temperature, max_tokens, provider=None, retries=2, reas
     raise last
 
 
-def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, reasoning=None, backend="openrouter", effort=None, host="openrouter"):
+def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, reasoning=None, backend="openrouter", effort=None, host="openrouter",
+         return_reasoning=False):
     """Return [{u, reply[, reasoning]}] across the scene's escalating user turns (+ optional seed).
 
     `system_prompt` may be overridden per-scene (`scene["system_prompt"]`); the spec-level
@@ -120,12 +121,12 @@ def play(slug, scene, temperature, system_prompt, max_tokens, provider=None, rea
         except EmptyReply as e:
             e.turn = len(panels)
             raise
-        messages.append({"role": "assistant", "content": reply})
+        messages.append({"role": "assistant", "content": reply, **({"reasoning": trace} if return_reasoning and trace else {})})
         panel = {"u": line, "reply": reply}
         if finish and finish != "stop":
             panel["finish_reason"] = finish  # e.g. "length": the budget ran out, possibly mid-thought
         if trace:
-            panel["reasoning"] = trace     # the model's thinking trace; not sent back into the conversation
+            panel["reasoning"] = trace     # the model's thinking trace; sent back only under --return-reasoning
         if usage:
             panel["usage"] = usage         # tokens as billed; agent_sdk: incl. thinking_tokens (0 = the model chose not to think)
         panels.append(panel)
@@ -164,7 +165,7 @@ def complete(entry, runs, reasoning):
 
 
 def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provider=None, max_tokens=None, reasoning=None,
-            backend="openrouter", effort=None, host="openrouter", resume=False):
+            backend="openrouter", effort=None, host="openrouter", resume=False, return_reasoning=False):
     backend = pick_backend(slug, backend)
     # canonical=host_id: the file and vendor come from the canonical slug, the request goes to the host's id
     host_model = None
@@ -189,6 +190,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         data.update(agent_sdk.stamp(model_id, effort))
     if provider:
         data["provider"] = provider          # pinned serving host (allow_fallbacks=false); absent = OpenRouter's choice
+    if return_reasoning:
+        data["return_reasoning"] = True      # earlier turns' reasoning sent back (hosts that reject a turn without it)
     if host != "openrouter":
         data["host"] = host                  # served outside the router (HOSTS); absent = OpenRouter
         if host_model: data["host_model"] = host_model
@@ -201,7 +204,8 @@ def run_one(slug, spec, runs, temperature, scene_ids, out_dir, run_date, provide
         runs_out = []
         for run in range(runs):
             try:
-                runs_out.append(play(host_model or slug, scene, temperature, sp, max_tokens, provider, reasoning, backend, effort, host))
+                runs_out.append(play(host_model or slug, scene, temperature, sp, max_tokens, provider, reasoning, backend, effort, host,
+                                     return_reasoning))
                 print(f"  [{label}] {scene['id']} run {run} ✓")
             except Exception as e:
                 cells = [{"u": t, "reply": None, "error": str(e)} for t in scene["turns"]]
@@ -247,6 +251,9 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=None, help="override the spec's output budget for this run; stamped on each scene it applies to")
     ap.add_argument("--reasoning", choices=REASONING_MODES, default=None,
                     help="request a thinking mode (off | low | medium | high); default sends nothing and takes the route's default")
+    ap.add_argument("--return-reasoning", action="store_true",
+                    help="send each earlier turn's reasoning back with its reply, for hosts that reject a later turn without it "
+                         "(reflection/beam-1.0-501b-a23b); stamped in the file header")
     ap.add_argument("--resume", action="store_true",
                     help="skip scenes the file already holds with --runs runs, the same thinking mode and no failed cell (restart after an interruption)")
     args = ap.parse_args()
@@ -264,7 +271,7 @@ def main():
     print(f"writing to {out_dir}/  (scenes: {', '.join(scene_ids) if scene_ids else 'all'})")
     for slug in args.models:
         run_one(slug, spec, args.runs, args.temperature, scene_ids, out_dir, args.run_date, args.provider, args.max_tokens, args.reasoning,
-                args.backend, args.effort, args.host, args.resume)
+                args.backend, args.effort, args.host, args.resume, args.return_reasoning)
 
 
 if __name__ == "__main__":

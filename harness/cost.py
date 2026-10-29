@@ -31,9 +31,9 @@ from study import Study  # noqa: E402
 CATALOG_URL = "https://openrouter.ai/api/v1/models"
 REPO = Path(__file__).resolve().parent.parent
 
-# The battery is whatever each study's spec/runs.json marks ``tier: core`` or
-# ``extended`` (``Study.standing``). A study without that file is not in the
-# battery, so enrolling one stays a decision someone writes down. Directories
+# The battery is whatever each study's spec/runs.json marks ``tier: core``
+# (``Study.standing``); ``--extended`` adds the extended tier, which runs on
+# request. A study without that file is not in the battery, so enrolling one stays a decision someone writes down. Directories
 # owed only by hybrids (the off arms) are left out of the price; a hybrid runs
 # them too, at about the served cost again.
 def usd(usage: dict) -> float:
@@ -43,11 +43,11 @@ def usd(usage: dict) -> float:
     return (usage.get("cost") or 0) + byok
 
 
-def studies() -> dict[str, list[dict]]:
-    """Study -> its standing entries owed by every panel model."""
+def studies(tiers=("core",)) -> dict[str, list[dict]]:
+    """Study -> its standing entries at these tiers owed by every panel model."""
     out = {}
     for f in sorted((REPO / "studies").glob("*/spec/runs.json")):
-        runs = [e for e in Study(f.parent.parent).standing()[0] if e["owed_by"] == "panel"]
+        runs = [e for e in Study(f.parent.parent).standing(tiers)[0] if e["owed_by"] == "panel"]
         if runs:
             out[f.parent.parent.name] = runs
     return out
@@ -106,19 +106,20 @@ def measure_one(path: Path, system_chars: int, cpt: float) -> tuple[float, float
                 prefix += len(turn.get("u", ""))
                 prompt += prefix
                 reply = len(turn.get("reply") or "")
-                completion += reply
+                billed = (turn.get("usage") or {}).get("completion_tokens")
+                completion += billed * cpt if billed else reply   # billed tokens include reasoning
                 prefix += reply
     return prompt / cpt, completion / cpt
 
 
-def measure(cpt: float, names: list[str]) -> None:
+def measure(cpt: float, names: list[str], tiers: tuple) -> None:
     """Sum, over a study's standing directories, the median model's tokens in each.
 
     A directory whose files are not Contract A transcripts (a probe's own format)
     measures as zero; it is named in the file as not priced rather than counted
     as free.
     """
-    found = studies()
+    found = studies(tiers)
     for study in names:
         pt = ct = lo = hi = 0.0
         priced, unpriced, n = [], [], 0
@@ -141,11 +142,13 @@ def measure(cpt: float, names: list[str]) -> None:
             continue
         out = {
             "note": "Token cost of one model through this study's standing directories "
-                    "(spec/runs.json, tier core or extended, served arm). Prompt is fixed "
-                    "by the frozen stimulus; completion is the median observed reply "
-                    "length per directory, summed. Re-measure when the stimulus version "
+                    "(spec/runs.json, served arm, tiers in 'tiers'). Prompt is fixed "
+                    "by the frozen stimulus; completion is the median billed completion "
+                    "(reasoning included; reply length where a turn has no usage) per directory, "
+                    "summed. Re-measure when the stimulus version "
                     "bumps or a standing directory is added.",
             "stimulus_version": stimulus_version(study),
+            "tiers": list(tiers),
             "prompt_tokens": round(pt),
             "completion_tokens": round(ct),
             "completion_spread": [round(lo), round(hi)],
@@ -162,7 +165,7 @@ def measure(cpt: float, names: list[str]) -> None:
 
 # ------------------------------------------------------------------ pricing
 
-def load_shapes(names: list[str]) -> dict[str, tuple[int, int]]:
+def load_shapes(names: list[str], tiers: tuple) -> dict[str, tuple[int, int]]:
     """Stored token shapes, refusing any that no longer match the stimulus.
 
     A stale tokens.json is worse than a missing one: it prices a study that has
@@ -177,6 +180,9 @@ def load_shapes(names: list[str]) -> dict[str, tuple[int, int]]:
             continue
         d = json.loads(f.read_text())
         live = stimulus_version(s)
+        if d.get("tiers") != list(tiers):
+            stale.append(f"{s} (measured for tiers {d.get('tiers')}, pricing {list(tiers)})")
+            continue
         if live is not None and d.get("stimulus_version") != live:
             stale.append(f"{s} (measured against {d.get('stimulus_version')!r}, "
                          f"stimulus is now {live!r})")
@@ -201,18 +207,20 @@ def main() -> int:
     ap.add_argument("--measure", action="store_true",
                     help="recompute spec/tokens.json from transcripts, then exit")
     ap.add_argument("--panel", help="price every model in this study's models.txt")
-    ap.add_argument("--study", nargs="*", choices=sorted(studies()),
+    ap.add_argument("--study", nargs="*", choices=sorted(f.parent.parent.name for f in (REPO / "studies").glob("*/spec/runs.json")),
                     help="limit the battery to these studies")
     ap.add_argument("--top", type=int, help="show only the N most expensive")
     ap.add_argument("--chars-per-token", type=float, default=4.0)
+    ap.add_argument("--extended", action="store_true", help="include the extended tier (run on request)")
     args = ap.parse_args()
-
-    battery = args.study or sorted(studies())
+    tiers = ("core", "extended") if args.extended else ("core",)
+    found = studies(tiers)
+    battery = [s for s in (args.study or sorted(found)) if s in found]
     if args.measure:
-        measure(args.chars_per_token, battery)
+        measure(args.chars_per_token, battery, tiers)
         return 0
 
-    shp = load_shapes(battery)
+    shp = load_shapes(battery, tiers)
     if not shp:
         return 1
     battery = [s for s in battery if s in shp]

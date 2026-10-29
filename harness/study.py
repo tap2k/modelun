@@ -66,8 +66,9 @@ class Study:
         return sorted(p for p in self.transcripts_dir.glob("*.json")
                       if p.name not in ("markers.json", "store.json"))
 
-    def standing(self):
-        """The study's standing directories: spec/runs.json entries at tier core or extended.
+    def standing(self, tiers=("core",)):
+        """The study's standing directories: spec/runs.json entries at the given tiers. Core is owed by
+        every panel model; extended runs only when Tapan asks (2026-10-29), so callers pass it explicitly.
 
         Each entry gains ``owed_by``: "hybrids" for an off arm or a hybrids-only entry, which
         only the file's ``hybrids`` list owes, else "panel". A study without the file has none.
@@ -77,5 +78,5 @@ class Study:
             return [], set()
         doc = json.loads(f.read_text())
         runs = [dict(e, owed_by="hybrids" if e.get("arm") == "off" or e.get("models") == "hybrids" else "panel")
-                for e in doc["runs"] if e.get("tier") in ("core", "extended")]
+                for e in doc["runs"] if e.get("tier") in tiers]
         return runs, set(doc.get("hybrids", []))

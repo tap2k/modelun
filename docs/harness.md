@@ -148,14 +148,15 @@ old/new are not comparable.
 A study's `spec/runs.json` lists its transcript directories. Each entry gives `dir`, `spec`, `runs`,
 `arm` (`served` or `off`), `models` (`panel` or `hybrids`) and `tier`. The top-level `hybrids` field
 names the models that accept reasoning off and reason by default. A new panel model is owed every
-`core` and `extended` directory:
+`core` directory:
 
 - **core**: on release day, judge-free.
-- **extended**: every model, may lag (judged, or the slower grids).
+- **extended**: run only when Tapan asks (2026-10-29); judged, or the slower grids.
 - **check**: run once to validate an instrument, again only when it changes.
 - **probe**, **local**: question-driven subsets, never standing.
 
-An `off`-arm directory is owed by hybrids only. `harness/panel_gap.py` lists the runnable roster
+An `off`-arm directory is owed by hybrids only. A model whose hosts reject a later turn unless its earlier
+reasoning is sent back (reflection/beam-1.0-501b-a23b) runs multi-turn scenes with `run.py --return-reasoning`. `harness/panel_gap.py` lists the runnable roster
 models missing from each standing directory. `harness/cost.py` prices one model through the standing
 served directories. A study without `spec/runs.json` has no standing instruments.
 

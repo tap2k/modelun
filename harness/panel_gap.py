@@ -10,14 +10,16 @@ Four questions, in order of how much a wrong answer costs:
    correlations are computed on the overlap, so a model in one panel and not
    another is a row the matrix cannot use.
 3. What has a panel model not been run on? A study's ``spec/runs.json`` marks its standing
-   directories ``tier: core`` or ``extended``; every runnable roster model owes a file in each, and
+   directories ``tier: core``; every runnable roster model owes a file in each (``extended`` runs on request
+   and is listed separately), and
    an ``off``-arm directory is owed only by the study's ``hybrids``.
 4. What is new? Models in the catalog that no panel has seen.
+Also: do the studies' ``hybrids`` lists (spec/runs.json) agree?
 
 Reads each ``studies/<name>/spec/models.txt`` and ``spec/runs.json``; no study semantics live here. A
 roster entry in ``spec/models.json`` carrying ``not_run_after`` (a model the study has stopped
 running, kept in the append-only roster) is left out of the MISSING, STANDING and EXPIRING lists and
-shown under RETIRED. A model a study lists under ``unrunnable`` is left out of its STANDING list.
+shown under RETIRED. A model a study lists under ``unrunnable`` is left out of its MISALIGNED and STANDING lists.
 
     python3 harness/panel_gap.py                    # all studies with a panel
     python3 harness/panel_gap.py --study conduct consensus
@@ -82,13 +84,16 @@ def retired(docs: dict[str, dict]) -> dict[str, dict]:
             if isinstance(e, dict) and e.get("not_run_after") and e.get("slug")}
 
 
+REGISTRY = "consensus"   # its spec/models.json is the shared model registry (AGENTS.md); conduct keeps its own
+
+
 def unrunnable(docs: dict[str, dict]) -> dict[str, set[str]]:
     """Study -> slugs its models.json lists as unrunnable (tried, could not be collected)."""
     return {study: {e["model"] for e in doc.get("unrunnable", []) if isinstance(e, dict) and e.get("model")}
             for study, doc in docs.items()}
 
 
-def standing(panel: dict[str, set[str]], runnable: set[str], skip: dict[str, set[str]]) -> dict:
+def standing(panel: dict[str, set[str]], runnable: set[str], skip: dict[str, set[str]], tiers=("core",)) -> dict:
     """Study -> {entry id: labels with no file}, over each standing entry (``Study.standing``).
 
     A file is named for the slug's last segment.
@@ -98,7 +103,7 @@ def standing(panel: dict[str, set[str]], runnable: set[str], skip: dict[str, set
         root = REPO / "studies" / study
         if not (root / "spec" / "runs.json").exists():
             continue
-        runs, hybrids = Study(root).standing()
+        runs, hybrids = Study(root).standing(tiers)
         owed = {m.split("/")[-1] for m in (have & runnable) - skip.get(study, set())}
         gaps = {}
         for e in runs:
@@ -190,11 +195,18 @@ def main() -> int:
     # A model one panel has and another does not, restricted to models still
     # runnable: a vanished model cannot be backfilled, so listing it is noise.
     runnable = (union & set(catalog)) - set(stopped)
+    # A model a study tried and recorded as unrunnable is not a gap in that study. A study with no
+    # models.json of its own (language, suggestibility) uses the shared registry's list.
+    skip = unrunnable(docs)
+    for study in p:
+        if study not in docs:
+            skip[study] = skip.get(REGISTRY, set())
     misaligned = {
-        study: sorted(m for m in runnable - have if m not in vanished)
-        for study, have in p.items()
-    }
-    gaps = standing(p, runnable, unrunnable(docs))
+        study: sorted(runnable - have - skip.get(study, set()))
+        for study, have in p.items() if (REPO / "studies" / study / "spec" / "runs.json").exists()
+    }   # a study without spec/runs.json (convergence) is a fixed pilot panel, not a standing one
+    gaps = standing(p, runnable, skip)
+    ext = standing(p, runnable, skip, ("extended",))
     unseen = sorted(
         (released(catalog[m]), m) for m in set(catalog) - union
         if (args.all_variants or not is_variant(m))
@@ -245,16 +257,30 @@ def main() -> int:
             exp = catalog[m].get("expiration_date")
             print(f"     {m}{'   EXPIRES ' + exp if exp else ''}")
 
-    print("\n== STANDING: core/extended directories missing a runnable panel model ==")
-    for study, entries in gaps.items():
-        if not entries:
-            print(f"  {study}: complete")
-            continue
-        print(f"  {study}:")
-        for eid, missing in entries.items():
-            print(f"     {eid:28s} {len(missing):3d}  {', '.join(missing)}")
-    if not gaps:
-        print("  no study has a spec/runs.json")
+    for title, found in (("STANDING: core directories missing a runnable panel model", gaps),
+                         ("EXTENDED (run on request): directories missing a runnable panel model", ext)):
+        print(f"\n== {title} ==")
+        for study, entries in found.items():
+            if not entries:
+                print(f"  {study}: complete")
+                continue
+            print(f"  {study}:")
+            for eid, missing in entries.items():
+                print(f"     {eid:28s} {len(missing):3d}  {', '.join(missing)}")
+        if not found:
+            print("  no study has a spec/runs.json")
+
+    # Studies with off arms keep their own hybrids list; one that drifts from the others gives a model
+    # reasoning-off runs in one study and not another, which nothing else would flag.
+    hyb = {s: set(json.loads((REPO / "studies" / s / "spec" / "runs.json").read_text()).get("hybrids", []))
+           for s in p if (REPO / "studies" / s / "spec" / "runs.json").exists()}
+    hyb = {s: h for s, h in hyb.items() if h}
+    every = set().union(*hyb.values()) if hyb else set()
+    print("\n== HYBRIDS: runs.json hybrids lists ==")
+    drift = {s: sorted(every - h) for s, h in hyb.items() if every - h}
+    print(f"  {', '.join(sorted(hyb))}: {'agree' if not drift else 'DIFFER'} ({len(every)} models)")
+    for s, missing in drift.items():
+        print(f"     {s} lacks {', '.join(missing)}")
 
     label = f" created >= {args.new_since}" if args.new_since else ""
     print(f"\n== UNSEEN: in the catalog, in no panel{label} ({len(unseen)}) ==")
