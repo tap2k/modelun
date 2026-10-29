@@ -35,6 +35,8 @@ FAM = {
     "gpt-6.1-sol": ("GPT", 9),  # 2026-09-29, on its release
     "claude-haiku-5.5": ("Claude", 9),  # 2026-10-07, on its release
     "gemini-4-argon": ("Gemini", 5),  # 2026-10-13, on its release
+    "deepseek-v4.1-flash-1017": ("DeepSeek", 4),  # 2026-10-17, wave of 2026-10-28
+    "gpt-6.1-terra": ("GPT", 9),  # 2026-10-26, wave of 2026-10-28
 }
 
 # Further multi-generation lineages in the panel, used only by the release test's robustness check
@@ -42,9 +44,9 @@ FAM = {
 EXTRA = {
     "llama-3.3-70b-instruct": ("Llama", 0), "llama-4-maverick": ("Llama", 1), "llama-4-scout": ("Llama", 1),
     "mixtral-8x22b-instruct": ("Mistral", 0), "mistral-nemo": ("Mistral", 1),
-    "mistral-small-3.2-24b-instruct": ("Mistral", 2), "mistral-small-2603": ("Mistral", 3),
-    "kimi-k2": ("Kimi", 0), "kimi-k2.5": ("Kimi", 1), "kimi-k3": ("Kimi", 2),
-    "glm-4.7": ("GLM", 0), "glm-5.3": ("GLM", 1), "glm-5.3-flash": ("GLM", 1),
+    "mistral-small-3.2-24b-instruct": ("Mistral", 2), "mistral-small-2603": ("Mistral", 3), "mistral-large-4-0": ("Mistral", 4),
+    "kimi-k2": ("Kimi", 0), "kimi-k2.5": ("Kimi", 1), "kimi-k3": ("Kimi", 2), "kimi-k3.1-pro": ("Kimi", 3),
+    "glm-4.7": ("GLM", 0), "glm-5.3": ("GLM", 1), "glm-5.3-flash": ("GLM", 1), "glm-5.3-prime": ("GLM", 1),
     "nemotron-3-nano-30b-a3b": ("Nemotron", 0), "nemotron-3-super-120b-a12b": ("Nemotron", 0),
     "nemotron-3-ultra-550b-a55b": ("Nemotron", 0), "nemotron-3.5-lightning": ("Nemotron", 1), "nemotron-3.5-super-vl": ("Nemotron", 1),
     "gemma-3-27b-it": ("Gemma", 0), "gemma-4-26b-a4b-it": ("Gemma", 1), "gemma-4-31b-it": ("Gemma", 1),

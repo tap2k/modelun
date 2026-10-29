@@ -113,6 +113,26 @@
     "nvidia/nemotron-3.5-super-vl"
    ],
    "note": "On release, frozen 5.0 scenes (data/benchmark/), 2 runs, at --max-tokens 8192 from the start. Labeled by qwen3.7-plus, gemma-4-31b-it and deepseek-v4.1-flash; gemini-2.5-flash raw labels in markers-retired/."
+  },
+  {
+   "wave": 10,
+   "date": "2026-10-28",
+   "added": [
+    "openai/gpt-6.1-terra",
+    "moonshotai/kimi-k3.1-pro",
+    "minimax/minimax-m3.1-flash",
+    "deepseek/deepseek-v4.1-flash-1017",
+    "reflection/beam-1.0-501b-a23b",
+    "liquid/lfm-2.5-24b-a2b",
+    "meta/muse-wonder",
+    "stepfun/step-5-preview",
+    "mistralai/mistral-large-4-0",
+    "inclusionai/ling-3.1-flash",
+    "z-ai/glm-5.3-prime",
+    "cohere/command-a-plus",
+    "xiaomi/mimo-v2.6-flash"
+   ],
+   "note": "Frozen 5.0 scenes (data/benchmark/), 2 runs, at --max-tokens 8192. Labeled by qwen3.7-plus, gemma-4-31b-it and deepseek-v4.1-flash; raw labels from the still-served retired judges gemini-2.5-flash, gemini-3.5-flash and gpt-oss-120b in markers-retired/. beam-1.0-501b-a23b could not be run (see unrunnable)."
   }
  ],
  "unrunnable": [
@@ -180,6 +200,11 @@
    "model": "tencent/hy4-preview",
    "since": "2026-10-07",
    "reason": "not run: replies carry reasoning-tag debris, which defeats verbatim trigger quotes (see consensus spec/models.json not_run_after); census and suggestibility transcripts stand"
+  },
+  {
+   "model": "reflection/beam-1.0-501b-a23b",
+   "since": "2026-10-28",
+   "reason": "every host (Nebius, CoreWeave, DigitalOcean, BaseTen, Together) returns 400 on the second turn: the assistant turn is missing its reasoning, which the harness does not send back. Single-turn instruments ran; multi-turn scenes cannot without changing the request."
   }
  ],
  "expiring": [

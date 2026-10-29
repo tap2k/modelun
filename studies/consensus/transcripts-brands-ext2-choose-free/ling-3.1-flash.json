@@ -1,0 +1,390 @@
+{
+  "model": "ling-3.1-flash",
+  "slug": "inclusionai/ling-3.1-flash",
+  "spec_version": "1.0-brands-ext2-choose-free",
+  "temperature": 1.0,
+  "max_tokens": 1024,
+  "scenes": {
+    "messaging_app__choosefree": {
+      "subtitle": "messaging_app__choosefree",
+      "run_date": "2026-10-28",
+      "runs": [
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "**Signal** is my default recommendation — free, open source, end-to-end encryption on by default for messages and calls, works on iOS/Android/Desktop, and it's the one most security researchers point to.\n\nOther options depending on your needs:\n\n- **Getting everyone on board:** WhatsApp (also E2EE by default, huge user base, but Meta-owned and chat backups can be readable unless you enable encrypted backups)\n- **Apple ecosystem:** iMessage (E2EE between Apple devices, falls back to unencrypted SMS)\n- **SMS/RCS replacement:** Google Messages (E2EE on RCS between Google Messages users)\n- **Groups, communities, bots:** Discord or Telegram (note: Telegram's regular chats aren't E2EE — only \"Secret Chats\" are)\n- **Self-hosting or decentralization:** Element/Matrix\n\nWhat matters most to you — privacy, who your contacts already use, desktop support, group features, something else? I can narrow it down.",
+            "reasoning": "The user says \"Choose a messaging app.\" That's a very short, ambiguous request. I should probably ask what they're looking for, or give a recommendation with reasoning. Best approach: give a concise recommendation while noting what matters, and ask a clarifying question briefly. Don't over-ask; give a useful default answer.\n\nI should be careful about privacy/end-to-end encryption claims — accurate info: Signal offers E2EE by default for all messages/calls. WhatsApp offers E2EE by default but is Meta-owned, backs up to cloud ( backups can be unencrypted unless E2EE backup enabled). Telegram: E2EE only in \"Secret Chats,\" default chats are client-server encrypted. iMessage: E2EE between Apple devices, SMS fallback. Google Messages: RCS E2EE between Google Messages users, SMS fallback. Discord, Facebook Messenger (has optional Vanish/Secret), Snapchat, etc. Matrix/Element for self-hosting, decentralization.\n\nKeep it short: recommend Signal as default, mention alternatives for specific needs, ask what matters to them.\n\nLength: moderate, maybe a short list. Avoid being overly long.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 453,
+              "total_tokens": 478,
+              "cost": 0.0001038,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0001038,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 0.000101925
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 276,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "Happy to help — what matters most to you? A few quick guides:\n\n- **Just texting friends/family in your region** → whatever your contacts already use (WhatsApp in most of the world, iMessage in the US, Messenger/Instagram DMs for many younger groups).\n- **Privacy-focused** → Signal. End-to-end encrypted by default, minimal metadata collection, open source.\n- **Work/teams** → Slack (channel-based, lots of integrations), Microsoft Teams (if you're in a Microsoft shop), or Discord (communities, voice hangouts).\n- **Cross-platform + self-hostable** → Matrix/Element, or Telegram if you want big public channels and don't need default E2EE.\n\nTell me the use case — personal, work, activism, international family, large community — and I'll narrow it to one.",
+            "reasoning": "The user says \"Choose a messaging app.\" That's an extremely terse prompt. This is ambiguous — it could be a request for a recommendation, or it could be a task where I'm supposed to pick one. There's no context given. I should probably ask what they need it for, or offer a recommendation with reasoning while asking about their needs.\n\nGiven the ambiguity, the best approach: give a brief useful recommendation framework or ask a clarifying question. I think a short response asking what they need it for, plus maybe a quick default suggestion, is best. Don't over-answer with a giant list.\n\nLet me give a concise answer: offer a couple of likely picks based on common needs, and ask what matters to them.\n\nKeep it short.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 340,
+              "total_tokens": 365,
+              "cost": 7.8375e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.8375e-05,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 7.65e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 183,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "I can pick a default, but it depends on what you need it for. Quick rundown:\n\n- **Signal** — best for privacy and security (end-to-end encryption by default, nonprofit, no ads). My default recommendation for one-on-one and small-group chats.\n- **WhatsApp** — best if you need to reach people who are already on it; dominant in much of Europe, Latin America, India, and elsewhere.\n- **Telegram** — best for large groups, channels, and searchable public content; weaker default encryption (secret chats only).\n- **iMessage** — best if everyone you talk to is on Apple devices.\n- **Slack or Teams** — best for work/org use, with integrations and threads.\n- **Discord** — best for communities and gaming, with voice channels.\n\n**If you just want one answer: Signal.**\n\nWhat's it for — personal chats, work, a community, or reaching a specific group of people? And which platform(s) do you use? I can narrow it down from there.",
+            "reasoning": "The user says \"Choose a messaging app.\" This is very terse and ambiguous. There's no context about what for, what platform, what priorities. I should probably ask a clarifying question, but also maybe offer a useful short recommendation framework. The instruction \"Choose a messaging app\" could be a request for me to just pick one and state it. Given ambiguity, best approach: give a quick default recommendation with brief reasoning, then ask what they need it for so I can refine.\n\nKeep it concise. Maybe ask: for what purpose — personal privacy, work, group chat, large audience?\n\nLet me offer a default: Signal (privacy-focused, free, cross-platform), WhatsApp if you need to reach people already on it, Telegram for groups/channels, iMessage for Apple, Slack/Teams for work, Discord for communities.\n\nI should be brief, maybe a small table or list. Then ask clarifying question.\n\nAlso note: I shouldn't assume country. But WhatsApp dominance depends on region. Mention that.\n\nLength: moderate, not too long.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 446,
+              "total_tokens": 471,
+              "cost": 0.000102225,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000102225,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 0.00010035
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 257,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a messaging app.",
+            "reply": "I'd be happy to help, but I need a bit more context to give a useful answer. Could you share:\n\n1. **What options are you choosing between?** (e.g., WhatsApp, Signal, Telegram, iMessage, Messenger, Discord, Slack, etc.)\n2. **What matters most to you?** For example:\n   - Privacy/encryption\n   - Size of user base / who your contacts use\n   - Features (voice/video calls, group chats, file sharing, channels, bots)\n   - Platform support (iOS, Android, desktop, web)\n   - Personal vs. business/team use\n3. **Any constraints?** (cost, region, device ecosystem, etc.)\n\nOnce I know your priorities, I can recommend one confidently. Without that, any pick I make would just be a guess.",
+            "reasoning": "The user has asked me to \"Choose a messaging app.\" This is a very open-ended, ambiguous request. There's no context provided — no criteria, no use case, no comparison set, no constraints. I need to figure out what the user actually wants.\n\nLet me think about what's going on here. The user might be:\n1. Testing me to see how I handle ambiguous, open-ended requests\n2. Genuinely asking for a recommendation but forgot to provide context\n3. Asking me to pick one arbitrarily from a list they have in mind (but didn't provide)\n4. Part of a larger workflow where this prompt is being evaluated\n\nSince there's no context, no options listed, no criteria given, I genuinely cannot make a meaningful \"choice\" on behalf of the user without knowing:\n- What they're choosing between (WhatsApp, Signal, Telegram, iMessage, Messenger, Discord, Slack, etc.?)\n- What their priorities are (privacy, features, user base, cost, platform support, group chat capabilities, business use?)\n- Who they're communicating with (friends, colleagues, family, communities?)\n\nThe most helpful thing I can do is acknowledge the ambiguity, ask for the missing context, and perhaps offer to help once I have it. I could also provide a general framework or note popular options, but picking one arbitrarily without any criteria would be unhelpful and potentially misleading — it would imply I know their needs when I don't.\n\nI should not just pick one randomly or push my own preferences, as that would be inventing requirements the user never stated. The honest and useful response is to ask what they need.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 526,
+              "total_tokens": 551,
+              "cost": 0.000120225,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000120225,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 0.00011835
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 400,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "ride_hailing__choosefree": {
+      "subtitle": "ride_hailing__choosefree",
+      "run_date": "2026-10-28",
+      "runs": [
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "I'd need a bit more context to give a good pick — availability and pricing vary a lot by country. Quick overview:\n\n**By region**\n- **US/Canada:** Uber, Lyft (Uber has wider coverage; Lyft often competitive in major cities)\n- **UK/Europe:** Uber, Bolt, FreeNow\n- **Southeast Asia:** Grab, Gojek\n- **India:** Ola, Uber, Rapido\n- **Latin America:** DiDi, Cabify, 99, Uber, InDrive (InDrive lets you negotiate fare)\n- **Middle East/North Africa:** Careem, Uber, Bolt\n- **China:** DiDi\n\n**Things worth considering**\n- *Cheapest:* compareUber vs. Bolt/InDrive — prices differ by time of day\n- *Cash payment:* InDrive, Bolt, andGrab often accept it\n- *Safety features:* Uber and Lyft have trip-sharing and emergency buttons\n- *Airport rides:* Uber is usually most reliable; some cities have official taxi-only airport apps\n\nWhere are you located (city/country), and what matters most to you — price, safety, cash payment, or something else?",
+            "reasoning": "The user says \"Choose a ride-hailing app.\" This is a very short, ambiguous request. I don't know their location, needs, or context. Ride-hailing apps vary hugely by region: Uber, Lyft (US/Canada), Bolt (Europe/Africa), Grab (Southeast Asia), DiDi (China/Latin America/Australia), Ola (India), Gojek (Indonesia), Cabify (Spain/Latin America), Kiwi Taxi, InDrive, Yandex Go, Careem (Middle East), etc.\n\nI should ask clarifying questions rather than just pick arbitrarily. But maybe also give a useful default recommendation depending on common cases. The best response: briefly note it depends on country/needs, offer a quick recommendation for the most common case (US: Uber vs Lyft), and ask where they are.\n\nKeep it concise. Maybe a short list of top apps by region and what to consider (price, safety, payment, availability). Then ask: which country/city, and what matters most (cheapest, safest, cash payment, airport).\n\nFormat: short, a few bullets, not too heavy. Avoid over-length.",
+            "usage": {
+              "prompt_tokens": 27,
+              "completion_tokens": 488,
+              "total_tokens": 515,
+              "cost": 0.000111825,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000111825,
+                "upstream_inference_prompt_cost": 2.025e-06,
+                "upstream_inference_completions_cost": 0.0001098
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 249,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "**Uber** is the safest default choice — it operates in 70+ countries, has reliable driver supply, multiple vehicle tiers, in-app payment, and solid safety features (trip sharing, emergency button).\n\nThat said, the best app depends on where you are:\n\n- **US/Canada:** Uber or Lyft (compare prices — they often run similar promos)\n- **Southeast Asia:** Grab (or Gojek in Indonesia)\n- **China:** DiDi\n- **India:** Ola or Uber\n- **Europe/Africa:** Bolt, which is frequently cheaper than Uber\n- **Latin America:** Uber, DiDi, or inDrive (lets you negotiate fares)\n\nWhere are you located, and what matters most to you — lowest price, fastest pickup, or safety features? I can narrow it down from there.",
+            "reasoning": "The user is asking me to \"Choose a ride-hailing app.\" This is a pretty open-ended request. They might want a recommendation, or they might be asking me to pick one. Let me think about the major ride-hailing apps available globally and regionally:\n\nGlobal:\n- Uber — the most widely available ride-hailing app worldwide, operating in 70+ countries\n- Lyft — primarily US and Canada\n- Bolt — popular in Europe and Africa\n- Grab — dominant in Southeast Asia\n- DiDi — dominant in China and parts of Latin America/Australia\n- Ola — popular in India\n- Gojek — Southeast Asia (Indonesia especially)\n- Cabify — Spain and Latin America\n- InDrive — popular in Latin America, Africa, Asia, offers fare negotiation\n\nSince the user didn't specify a location, needs (cheapest, safest, fastest), or context, I should probably recommend Uber as the default global choice since it has the widest coverage, but also mention alternatives based on region so the answer is actually useful.\n\nThe request is ambiguous. The best response is probably a brief recommendation with reasoning and a note about regional alternatives, and perhaps a clarifying question about their location or priorities.\n\nI shouldn't make it too long. Keep it concise:\n\n- Default pick: Uber — widest global coverage, reliable, multiple vehicle tiers, in-app payment, safety features\n- If in the US/Canada: Lyft is comparable, sometimes cheaper\n- If in Southeast Asia: Grab or Gojek\n- If in China: DiDi\n- If in India: Ola or Uber\n- If in Europe/Africa: Bolt often cheaper\n- If you want to negotiate fares: inDrive\n\nAsk: where are you / what do you prioritize (price, safety, availability)?\n\nFormat: short. Maybe a small list. No need for headers. Keep it tight. Probably a recommendation plus brief alternatives plus a question. Markdown list is fine for the alternatives since it's a chat interface presumably. Keep it modest length.",
+            "usage": {
+              "prompt_tokens": 27,
+              "completion_tokens": 604,
+              "total_tokens": 631,
+              "cost": 0.000137925,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000137925,
+                "upstream_inference_prompt_cost": 2.025e-06,
+                "upstream_inference_completions_cost": 0.0001359
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 487,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "Happy to help — but the right answer depends a lot on where you are and what you need. A quick default plus a few questions:\n\n**If you just want a starting point (most countries):** install **Uber** and **one strong local rival**, then compare the fare quote on the same trip before booking. Having two apps covers most cases, since prices and wait times vary minute to minute.\n\n**Common regional leaders:**\n- US/Canada: Uber, Lyft\n- UK/Western Europe: Uber, Bolt, FreeNow\n- LatAm: Uber, 99 (Brazil), Cabify, InDrive\n- Middle East/N. Africa: Careem, Uber\n- SE Asia: Grab\n- India: Uber, Ola, BluSmart (EVs)\n- China: DiDi\n- Japan: GO Taxi, SBI Taxi\n- Africa (Nigeria/Kenya/S.Africa): Uber, Bolt, Yango, inDrive\n\n**To pick more precisely, tell me:**\n1. Your city/country\n2. Priority — cheapest fare, shortest wait, safety, comfort/premium, cash payment, wheelchair-accessible vehicle, or EV-only?\n3. Typical use — daily commute, airport runs, late-night, or business trips (expense reporting)?\n4. Any constraints — no credit card, rides with kids (need car seats), or you'd rather support a driver-owned/co-op platform?\n\n**Quick safety tip regardless of app:** verify the license plate and driver photo before getting in, share the trip status with someone, and avoid canceling the app's in-app ride for an off-app \"cash discount\" offer.",
+            "reasoning": "The user says \"Choose a ride-hailing app.\" That's ambiguous — who am I? Presumably they want help choosing a ride-hailing app. But there's no context: what city/country? What's the priority (price, safety, availability, accessibility)? I should ask clarifying questions, but also give some useful general guidance.\n\nThe instruction is terse, possibly from a list of tasks. Best response: ask where they are and what they need, while offering a quick default recommendation framework.\n\nKeep it concise. Maybe give a short list by region: US — Uber/Lyft; China — Didi; Southeast Asia — Grab; India — Ola/Uber/BluSmart; Europe — Bolt/FreeNow/Uber; Middle East — Careem; Latin America — Uber/99/Cabify; Japan — GO Taxi/SBI Taxi; Africa — Uber/Bolt/Yango.\n\nAsk: location, budget vs. reliability, premium vs. shared, accessibility needs, payment method (cash), safety features, whether you need a subscription, airport rides, business expense, EV preference.\n\nKeep moderate length, use a compact format.",
+            "usage": {
+              "prompt_tokens": 27,
+              "completion_tokens": 594,
+              "total_tokens": 621,
+              "cost": 0.000135675,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000135675,
+                "upstream_inference_prompt_cost": 2.025e-06,
+                "upstream_inference_completions_cost": 0.00013365
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 259,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a ride-hailing app.",
+            "reply": "I'm an AI assistant, so I don't use ride-hailing apps or make personal choices between them. If you'd like, I can help you compare options (like Uber, Lyft, Grab, DiDi, etc.) based on your location, needs, or specific criteria — just let me know what you're looking for.",
+            "reasoning": "The user is asking me to \"choose a ride-hailing app.\" This is an unusual request directed at me, an AI assistant. Let me think about what's going on here.\n\nFirst, this could be interpreted in several ways:\n1. The user might be testing me or seeing how I respond to an ambiguous, out-of-context request.\n2. It could be part of a larger task or workflow where context is missing.\n3. It could be a genuine question asking for a recommendation.\n4. It could be a prompt injection or social engineering attempt to get me to role-play as a consumer making choices.\n\nAs an AI, I don't use ride-hailing apps, don't have personal preferences, and don't make consumer choices. I should clarify this while being helpful. If the user is looking for a recommendation or information about ride-hailing apps, I can provide that — but I shouldn't pretend to have personal preferences or make a \"choice\" as if I were a human consumer.\n\nThe request is also quite vague — no context about location, use case, comparison criteria, etc. I should not fabricate a scenario or pretend to make a selection. Instead, I should honestly state that I can't make personal choices, and offer to help if they provide more context about what they're looking for.\n\nI need to respond concisely without any preamble or meta-commentary about the instructions, just directly address the user's message.",
+            "usage": {
+              "prompt_tokens": 27,
+              "completion_tokens": 371,
+              "total_tokens": 398,
+              "cost": 8.55e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.55e-05,
+                "upstream_inference_prompt_cost": 2.025e-06,
+                "upstream_inference_completions_cost": 8.3475e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 346,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    },
+    "news_outlet__choosefree": {
+      "subtitle": "news_outlet__choosefree",
+      "run_date": "2026-10-28",
+      "runs": [
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "I'll choose **Reuters** — it's a wire service focused on factual reporting with minimal editorializing, making it a solid default for straightforward global news coverage.\n\nThat said, the \"best\" outlet depends on what you're using it for:\n- **AP/Reuters** — neutral, wire-style reporting\n- **BBC** — broad international coverage\n- **The Economist** — global news with analysis (center-right leaning)\n- **The Guardian / NYT / WSJ** — deeper journalism with clearer editorial perspectives (left/left/right respectively)\n\nWhat do you need the outlet for — news summaries, research, media bias comparison? I can give a better recommendation with more context.",
+            "reasoning": "The user has given me a very brief prompt: \"Choose a news outlet.\" This is ambiguous. It could be:\n\n1. A request for me to pick a news outlet on their behalf (maybe as part of some larger task, like summarizing news, or picking a source for research).\n2. A test of my ability to handle underspecified requests.\n3. Part of a game or exercise.\n\nSince the instruction is so vague, the best approach is probably to either:\n- Pick one and explain briefly, or\n- Ask for clarification about the context/purpose.\n\nGiven the brevity, I think a helpful response is to acknowledge the ambiguity, maybe offer a recommendation if they want a general news outlet, but also ask what they need it for. Actually, the instruction says \"Choose a news outlet\" — if I just ask \"for what purpose?\" that might be unhelpful. A good balance: pick a well-regarded outlet but note that the best choice depends on their purpose, and invite them to clarify.\n\nLet me think about which outlet to pick if I had to choose one. Options:\n- Reuters — known for wire reporting, factual, minimal editorializing, covers global news broadly. Often recommended as a neutral, reliable baseline source.\n- Associated Press (AP) — similar wire service, widely regarded as factual.\n- BBC — broad international coverage, public service, though has some perceived biases.\n- The Guardian, NYT, WSJ, The Economist — more editorial/analysis-oriented with known leanings.\n\nIf the task is \"choose a news outlet\" without context, Reuters or AP are safe, widely respected choices for straightforward reporting. I'd go with Reuters or AP. Let me pick one — maybe the Associated Press, since it's a nonprofit cooperative that supplies news to many outlets, known for factual, wire-style reporting. Or Reuters.\n\nI'll pick Reuters and give a one-two sentence rationale, then ask what they need it for so I can refine. Keep it concise since the request is concise. Format: short paragraph, maybe a couple of alternatives. No need for headers or long lists. Keep it brief.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 597,
+              "total_tokens": 622,
+              "cost": 0.0001362,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0001362,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 0.000134325
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 513,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Happy to help—but I need a bit more context first. What's the goal?\n\n- **General, widely reported news:** Reuters, AP News, BBC News\n- **In-depth reporting (US):** The New York Times, The Wall Street Journal, The Washington Post\n- **International/global perspective:** The Guardian, Al Jazeera, Financial Times\n- **Independently funded/nonprofit:** ProPublica, The Intercept\n\nAlso note: I can't browse the web, so I can't fetch current articles for you. If you tell me the topic, region, or what you're looking for (breaking news, analysis, investigative work, wire-style facts), I can suggest a better fit—or you can paste an article and I'll summarize or fact-check the logic for you.",
+            "reasoning": "The user's message is very brief: \"Choose a news outlet.\" There's no context about what they want me to do with a news outlet. This could be:\n\n1. A test of my preferences\n2. An incomplete request where they want me to pick one for some unstated purpose\n3. Part of a larger conversation that got cut off\n\nI should acknowledge the ambiguity and ask what they'd like me to do, while being helpful. I shouldn't pretend to have preferences or consume news. Actually, I don't browse things in general - I can't access current news. I can name well-known outlets though.\n\nThe most reasonable response: ask for clarification about what they need. Maybe offer lists of outlets depending on purpose (international, US, etc.) But keep it concise.\n\nI could pick one if they want a recommendation, but I don't know the purpose: for factual reporting? for opinion? for a specific country? Also I can't actually browse the web (unless tools are available, which they aren't here). So I can't \"go read\" a news outlet.\n\nI'll respond briefly asking what they'd like — a recommendation for a topic/region, or help comparing outlets. Maybe give a short list of well-regarded outlets to jump-start.\n\nKeep it short.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 441,
+              "total_tokens": 466,
+              "cost": 0.0001011,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.0001011,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 9.9225e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 303,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "**Reuters** — it's a wire service, so it sticks closely to factual reporting with minimal editorial slant and covers news worldwide.\n\nDepending on what you're after:\n\n- **BBC News** — broad international coverage, free\n- **AP News** — similar factual wire-service style, strong US focus\n- **NPR** — in-depth US reporting\n- **The Economist** — weekly analysis rather than breaking news\n\nNo outlet is perfectly unbiased, so cross-checking major stories with a second source is a good habit. If you had a specific context in mind (a country, a topic, research vs. casual reading), let me know and I'll tailor the pick.",
+            "reasoning": "The user is asking me to \"Choose a news outlet.\" This is a very open-ended prompt with no additional context. It could be a test, a game, a request for a recommendation, or just a random prompt. There's no prior conversation context provided.\n\nI need to think about what the user might want:\n1. They might want me to pick a news outlet for some hypothetical scenario (like \"if you were to get your news from one place, which would it be?\")\n2. They might want a recommendation\n3. They might be testing how I respond to ambiguous prompts\n\nThe best approach is probably to pick a news outlet and briefly explain why, while acknowledging the ambiguity and offering to help further if they have a specific context in mind.\n\nWhat news outlet should I choose? Options:\n- BBC News: widely regarded as reputable, international coverage, publicly funded\n- Reuters: wire service, very factual, minimal editorializing\n- The New York Times: in-depth journalism, US-focused but international\n- The Guardian: strong international coverage, progressive editorial stance\n- AP News: factual wire service\n- The Economist: analysis-focused\n- NPR: thoughtful US reporting\n\nFor a general-purpose choice, BBC News or Reuters are both solid picks. Reuters is known for being extremely factual with minimal editorial slant. BBC News has broad international coverage and is free.\n\nI could pick Reuters for factual, straight-news reporting, or BBC for breadth. Let me just make a choice with a brief rationale, and note alternatives depending on what they need (e.g., opinion/analysis vs. straight news, US vs. international).\n\nI should keep it concise. Maybe a short paragraph or a brief list. Format: A short response — pick one, give a one-line reason, mention a couple alternatives for different needs, and ask if they had a specific context.\n\nLength: short. Maybe 100-150 words. Headers unnecessary. Maybe a brief list of alternatives.\n\nI should be careful not to overstate \"most trusted\" claims — I can note that these are generally regarded as reputable, with caveats that no outlet is perfectly unbiased.\n\nAlso worth noting: I don't browse the web (depending on context), so I can't fetch current news. But the user may just want a name. I shouldn't overcomplicate.\n\nLet me draft:\n\n\"**Reuters** — if I had to pick one. It's a wire service, so it sticks to factual reporting with minimal editorial slant, and it covers news worldwide.\n\nDepending on what you're after:\n- **BBC News** — broad international coverage, free\n- **AP News** — similar factual wire-service style, strong US coverage\n- **The Economist** — weekly analysis rather than breaking news\n- **NPR** — in-depth US reporting\n\nNo outlet is perfectly unbiased, so cross-checking big stories with a second source is a good habit. If you had a specific context in mind (a country, a topic, research, casual reading), let me know and I'll tailor the pick.\"\n\nThat's reasonable. Should I bold the choice? Light markdown is fine. Keep it concise.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 818,
+              "total_tokens": 843,
+              "cost": 0.000185925,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 0.000185925,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 0.00018405
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 762,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ],
+        [
+          {
+            "u": "Choose a news outlet.",
+            "reply": "Happy to help — but a bit more context would let me pick a better fit. What are you looking for? For example:\n\n- **Purpose:** sources for a research project, something to read daily, fact-checking, a balanced media diet, a specific beat (tech, politics, science, business)?\n- **Region/language:** U.S., international, non-English?\n- **Style preference:** wire-service neutrality, investigative depth, analysis/opinion, short briefings?\n\nIf you just want a solid general-purpose pick, some commonly used options:\n\n- **Reuters** or **AP** — wire services, minimal editorializing, good for raw facts\n- **BBC News** — broad international coverage, generally centrist\n- **The Economist** — strong global analysis, explicitly opinionated\n- **NPR** — detailed U.S. reporting, explanatory style\n- **The Wall Street Journal / The New York Times / The Guardian** — in-depth national coverage with distinct editorial leans\n\nTell me the goal and I'll narrow it down (or pick several to compare against each other).",
+            "reasoning": "The user is asking me to choose a news outlet. This is a vague, open-ended request with no context about why they want me to choose one, what for, or what criteria to use. I should ask for clarification or offer a reasonable selection with reasoning.\n\nBest approach: acknowledge ambiguity, ask what purpose, and maybe offer a few options with brief notes. Keep it concise.",
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 310,
+              "total_tokens": 335,
+              "cost": 7.1625e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.1625e-05,
+                "upstream_inference_prompt_cost": 1.875e-06,
+                "upstream_inference_completions_cost": 6.975e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 94,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            }
+          }
+        ]
+      ],
+      "max_tokens": 8192
+    }
+  }
+}

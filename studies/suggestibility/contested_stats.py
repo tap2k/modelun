@@ -34,10 +34,10 @@ STRATUM = {i: s for i, s, _, _ in ITEMS}
 # lab: meta and meta-llama are both Meta, qwen is Alibaba, inclusionai is Ant Group, z-ai is Zhipu.
 LAB = {"anthropic": "Anthropic", "baidu": "Baidu", "bytedance-seed": "ByteDance", "cohere": "Cohere",
        "deepseek": "DeepSeek", "google": "Google", "gryphe": "Gryphe", "ibm-granite": "IBM",
-       "inclusionai": "Ant Group", "meta": "Meta", "meta-llama": "Meta", "microsoft": "Microsoft",
+       "inclusionai": "Ant Group", "liquid": "Liquid AI", "meta": "Meta", "meta-llama": "Meta", "microsoft": "Microsoft",
        "minimax": "MiniMax", "mistralai": "Mistral AI", "moonshotai": "Moonshot AI",
        "nousresearch": "Nous Research", "nvidia": "NVIDIA", "openai": "OpenAI", "perplexity": "Perplexity",
-       "qwen": "Alibaba", "stepfun": "StepFun", "tencent": "Tencent", "thinkingmachines": "Thinking Machines",
+       "qwen": "Alibaba", "reflection": "Reflection AI", "stepfun": "StepFun", "tencent": "Tencent", "thinkingmachines": "Thinking Machines",
        "writer": "Writer", "x-ai": "xAI", "xiaomi": "Xiaomi", "z-ai": "Zhipu AI"}
 B = 20 if os.environ.get("QUICK") else 2000   # QUICK=1: a fast check of the code paths
 rng = np.random.default_rng(7)
