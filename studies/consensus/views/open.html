@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>consensus — open-ended replies</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a; --fg:#e6e8ee; --mut:#9aa3b2;
+    --acc:#6ea8fe; --hit:#3a3214; --hitfg:#f1d27a; --first:#1f3350; --firstfg:#9cc4ff; --warn:#e0a33e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .mono,td.n{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:6}
+  header h1{font-size:15px;margin:0;font-weight:650} header .sub{color:var(--mut);font-size:12px}
+  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+  nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent}
+  nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
+  nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  main{padding:20px 22px;max-width:1500px}
+  .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:96ch} .note b{color:var(--fg)}
+  h2{font-size:19px;margin:0 0 10px} h3{margin:24px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-size:11.5px}
+  .twrap{overflow-x:auto;max-width:100%}
+  table.t{border-collapse:collapse;font-size:13px}
+  table.t th,table.t td{padding:5px 11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  table.t th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;user-select:none}
+  table.t td.n{text-align:right}
+  table.t tr.row{cursor:pointer} table.t tr.row:hover td{background:var(--panel)}
+  .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 10px;font-size:12px}
+  .ctl .lab{color:var(--mut);min-width:64px;text-transform:uppercase;font-size:10.5px;letter-spacing:.4px}
+  .ctl a{color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:3px 10px;cursor:pointer}
+  .ctl a.on{color:var(--fg);border-color:var(--mut);background:var(--panel2)}
+  .ctl a:hover{text-decoration:none;color:var(--fg)}
+  .ctl input,.ctl select{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:4px 9px;font:inherit}
+  .bars{display:grid;grid-template-columns:minmax(120px,max-content) 260px max-content;gap:3px 10px;font-size:13px;margin:0 0 14px;align-items:center}
+  .bars .b{height:9px;background:var(--panel2);border-radius:4px;position:relative}
+  .bars .b i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);border-radius:4px}
+  .bars a{cursor:pointer;color:var(--fg)} .bars a.on{color:var(--hitfg);font-weight:650}
+  .mrow{display:grid;grid-template-columns:210px 1fr;gap:12px;border-top:1px solid var(--line);padding:10px 0}
+  .mrow .who{font-size:13px} .mrow .who small{display:block;color:var(--mut);font-size:11.5px}
+  .runs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
+  .run{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;min-width:0}
+  .run .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--mut);margin:0 0 5px}
+  .tag{border:1px solid var(--line);border-radius:9px;padding:0 7px}
+  .tag.first{background:var(--first);color:var(--firstfg);border-color:transparent}
+  .tag.warn{color:var(--warn);border-color:var(--warn)}
+  .txt{white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+  .txt.clip{max-height:9.5em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent);cursor:pointer}
+  .t1{color:var(--mut);font-size:12px;border-left:2px solid var(--line);padding-left:8px;margin:0 0 6px}
+  .u{color:var(--mut);font-size:11.5px;font-style:italic;margin:2px 0}
+  mark{background:var(--hit);color:var(--hitfg);border-radius:3px;padding:0 1px}
+  mark.f{background:var(--first);color:var(--firstfg)}
+  .pager{display:flex;gap:14px;font-size:12.5px;margin:0 0 12px;flex-wrap:wrap}
+  .muted{color:var(--mut)}
+  @media (max-width:700px){ main{padding:14px 16px} .mrow{grid-template-columns:1fr} .bars{grid-template-columns:max-content 1fr max-content} nav{margin-left:0} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Open-ended replies</h1><span class="sub">consensus · free wording, no one-word clamp</span>
+  <nav id="nav"></nav>
+</header>
+<main id="main"><p class="note">Loading… (run <span class="mono">python studies/consensus/views/build_open.py</span> if this stays.)</p></main>
+<script>
+const GL = {"name": "Name a X", "name-brand": "Name a brand X", "choose": "Choose X", "recommend": "Recommend X",
+            "pick1": "Which X would you pick?", "pick2": "Recommend, then pick"};
+const FORMS = ["name-brand", "choose", "recommend", "pick1", "pick2"];
+let IX = null; const CH = {}, WAIT = {};
+const OPEN = {
+  index(d) { IX = d; route(); },
+  chunk(i, rows) { CH[i] = rows; (WAIT[i] || []).forEach(f => f(rows)); delete WAIT[i]; },
+};
+function load(i) {
+  if (CH[i]) return Promise.resolve(CH[i]);
+  return new Promise(res => {
+    if (!WAIT[i]) { WAIT[i] = []; const s = document.createElement("script"); s.src = `data-open/p${i}.js`; document.body.appendChild(s); }
+    WAIT[i].push(res);
+  });
+}
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
+const $ = id => document.getElementById(id);
+function params() { const [p, q] = location.hash.slice(1).split("?"); return [p.split("/").filter(Boolean).map(decodeURIComponent), new URLSearchParams(q || "")]; }
+function setq(k, v) { const [p, q] = params(); v == null || v === "" ? q.delete(k) : q.set(k, v); location.hash = "/" + p.map(encodeURIComponent).join("/") + (q.toString() ? "?" + q : ""); }
+
+function navbar(cur) {
+  $("nav").innerHTML = [["", "Overview"], ...Object.keys(GL).map(g => ["g/" + g, GL[g]]), ["models", "Models"]]
+    .map(([h, l]) => `<a href="#/${h}" class="${cur === h ? "on" : ""}">${esc(l)}</a>`).join("");
+}
+
+// sortable table: cols = [[label, key or fn, numeric?, fmt]]
+function table(id, rows, cols, onclick, sortKey) {
+  const [, q] = params(); const sk = q.get("s") ?? sortKey ?? ""; const desc = sk.startsWith("-"); const k = sk.replace(/^-/, "");
+  const col = cols.find(c => c[0] === k);
+  if (col) { const f = typeof col[1] === "function" ? col[1] : r => r[col[1]];
+    rows = [...rows].sort((a, b) => { const x = f(a), y = f(b); const c = x == null ? 1 : y == null ? -1 : x < y ? -1 : x > y ? 1 : 0; return desc ? -c : c; }); }
+  const head = cols.map(c => `<th data-k="${esc(c[0])}">${esc(c[0])}${c[0] === k ? (desc ? " ↓" : " ↑") : ""}</th>`).join("");
+  const body = rows.map((r, i) => `<tr class="${onclick ? "row" : ""}" data-i="${i}">` + cols.map(c => {
+    const v = typeof c[1] === "function" ? c[1](r) : r[c[1]]; return `<td class="${c[2] ? "n" : ""}">${c[3] ? c[3](v, r) : esc(v)}</td>`; }).join("") + "</tr>").join("");
+  setTimeout(() => {
+    const t = $(id); if (!t) return;
+    t.querySelectorAll("th").forEach(th => th.onclick = () => setq("s", (k === th.dataset.k && !desc ? "-" : "") + th.dataset.k));
+    if (onclick) t.querySelectorAll("tr.row").forEach(tr => tr.onclick = () => onclick(rows[+tr.dataset.i]));
+  });
+  return `<div class="twrap"><table class="t" id="${id}"><tr>${head}</tr>${body}</table></div>`;
+}
+const SHAPE = [["replies", "n", 1], ["median words", "median_words", 1], ["bare ≤4w", "bare", 1, pct], ["list", "list", 1, pct],
+               ["asks ?", "asks", 1, pct], ["disclaims", "disclaims", 1, pct], ["bold", "bold", 1, pct], ["no answer found", "no_mention", 1, pct]];
+
+function overview() {
+  navbar("");
+  const g = Object.entries(IX.groups).map(([k, v]) => ({k, ...v}));
+  let h = `<h2>What models do when the clamp is off</h2>
+  <p class="note">Every free-wording reply in the consensus study as served: <b>137 "Name a X." prompts</b> (~100 models) and <b>44 brand nouns</b>
+  asked four ways (~120 models), 4 runs each, each run a fresh conversation (pick2 is two turns in one). Measures are string matching, no judge:
+  <b>first</b> = the first pool answer named (the prose analogue of a one-word pick), <b>list</b> = 3+ answers or 3+ bullet lines,
+  <b>asks</b> = a question mark, <b>disclaims</b> = "as an AI / I don't have preferences", <b>consistent</b> = all of a model's runs open on the same answer.
+  Read the replies before trusting a number. Analysis: <span class="mono">probe_open.py</span> → <span class="mono">probes/open.json</span>.</p>
+  <h3>By prompt group</h3>` + table("tg", g, [["group", r => GL[r.k]], ["prompts", "prompts", 1], ["models", "models", 1], ...SHAPE,
+    ["consistent", "consistency", 1, pct]], r => location.hash = "/g/" + r.k);
+  const vend = Object.entries(IX.per_vendor).map(([k, v]) => ({k, v})).filter(r => Math.max(...Object.values(r.v).map(x => x.models)) >= 3);
+  const vc = (g, f, fm) => r => r.v[g] ? r.v[g][f] : null;
+  h += `<h3>By vendor (3+ models)</h3>` + table("tv", vend, [["vendor", "k"], ["models", r => Math.max(...Object.values(r.v).map(x => x.models)), 1],
+    ["name: words", vc("name", "median_words"), 1], ["name: bare", vc("name", "bare"), 1, pct], ["name: list", vc("name", "list"), 1, pct], ["name: asks", vc("name", "asks"), 1, pct],
+    ["recommend: words", vc("recommend", "median_words"), 1], ["recommend: asks", vc("recommend", "asks"), 1, pct],
+    ["pick1: disclaims", vc("pick1", "disclaims"), 1, pct], ["pick1: no answer", vc("pick1", "no_mention"), 1, pct]], null, "-models");
+  // brand nouns across the forms
+  const nouns = [...new Set(IX.prompts.filter(p => p.group === "recommend").map(p => p.key))];
+  const at = (g, k) => IX.prompts.find(p => p.group === g && p.key === k);
+  h += `<h3>Brand nouns: the field's top first-mention in each form</h3><p class="note">Click a cell to open its replies. Shaded where it differs from the Name answer.</p>
+  <div class="twrap"><table class="t"><tr><th>noun</th>${FORMS.map(f => `<th>${esc(GL[f])}</th>`).join("")}</tr>` +
+    nouns.map(k => { const base = at("name-brand", k)?.top_first;
+      return `<tr><td>${esc(k)}</td>` + FORMS.map(f => { const p = at(f, k); if (!p) return "<td>–</td>";
+        return `<td style="${p.top_first !== base ? "background:var(--panel2)" : ""}"><a href="#/p/${p.id}">${esc(p.top_first ?? "–")}</a> <span class="muted">${pct(p.top_first_share)}</span></td>`; }).join("") + "</tr>"; }).join("") + "</table></div>";
+  if (IX.agreement) h += `<h3>Same model, same noun: does the top first-mention agree between two forms?</h3>` +
+    table("ta", Object.entries(IX.agreement).map(([k, v]) => ({k, ...v})), [["forms", r => r.k.split("~").map(x => GL[x]).join("  ~  ")], ["cells", "cells", 1], ["agree", "same", 1, pct]]);
+  if (IX.pick2) h += `<p class="note" style="margin-top:12px">pick2: the turn-2 pick is in the model's own turn-1 list <b>${pct(IX.pick2.in_turn1_list)}</b> of the time and is the first brand it listed <b>${pct(IX.pick2.turn1_first)}</b> (median turn-1 list ${IX.pick2.turn1_list_len_median} brands).</p>`;
+  $("main").innerHTML = h;
+}
+
+function group(g) {
+  navbar("g/" + g);
+  const ps = IX.prompts.filter(p => p.group === g);
+  $("main").innerHTML = `<h2>${esc(GL[g])} <span class="muted" style="font-size:13px">${ps.length} prompts</span></h2>
+  <p class="note">Click a column to sort, a row to read its replies. <b>top first</b> is the answer most often named first and its share of replies that named one.</p>` +
+    table("tp", ps, [["prompt", "prompt"], ["models", "models", 1], ...SHAPE, ["top first", "top_first"], ["share", "top_first_share", 1, pct],
+      ["distinct firsts", "distinct_first", 1], ["consistent", "consistency", 1, pct]], p => location.hash = "/p/" + p.id);
+}
+
+function hl(text, ms, first) {
+  let s = esc(text); if (!ms || !ms.length) return s;
+  const uniq = [...new Set(ms)].sort((a, b) => b.length - a.length);
+  const re = new RegExp("\\b(" + uniq.map(m => esc(m).replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "['’‘]")).join("|") + ")(s?)\\b", "gi");
+  return s.replace(re, (all, w) => `<mark class="${w.toLowerCase().replace(/[’‘]/g, "'") === first ? "f" : ""}">${all}</mark>`);
+}
+function runCard(r, g) {
+  const [, run, turns, words, ms, fl, t1] = r; const first = ms[0];
+  const tags = IX.flags.filter((f, j) => fl & (1 << j)).map(f => `<span class="tag ${f === "disclaims" ? "warn" : ""}">${f}</span>`).join("");
+  let body = "";
+  if (turns.length > 1) body += turns.slice(0, -1).map(([u, rep]) => `<div class="u">${esc(u)}</div><div class="t1 txt clip">${hl(rep, t1 || [], null)}</div>`).join("");
+  const [u, rep] = turns[turns.length - 1];
+  if (turns.length > 1) body += `<div class="u">${esc(u)}</div>`;
+  body += `<div class="txt ${words > 60 ? "clip" : ""}">${hl(rep, ms, first)}</div>`;
+  const inl = t1 && first ? (t1.includes(first) ? (t1[0] === first ? "= first listed" : `listed #${t1.indexOf(first) + 1}`) : "not in turn 1") : "";
+  return `<div class="run"><div class="meta">run ${run + 1}${first ? `<span class="tag first">${esc(first)}</span>` : `<span class="tag">no answer found</span>`}
+    <span>${words}w</span>${ms.length > 1 ? `<span>${ms.length} named</span>` : ""}${inl ? `<span>${inl}</span>` : ""}${tags}</div>${body}</div>`;
+}
+function wire() { document.querySelectorAll(".txt.clip").forEach(e => e.onclick = () => e.classList.remove("clip")); }
+
+async function prompt(id) {
+  const p = IX.prompts[id]; navbar("g/" + p.group);
+  $("main").innerHTML = `<p class="note">Loading ${esc(p.prompt)}…</p>`;
+  const rows = await load(id);
+  const [, q] = params();
+  const fv = q.get("v") || "", ff = q.get("f") || "", fa = q.get("a") || "", fq = (q.get("q") || "").toLowerCase(), so = q.get("o") || "model";
+  const sibs = IX.prompts.filter(x => x.group === p.group); const ix = sibs.indexOf(p);
+  const other = IX.prompts.filter(x => x.key === p.key && x.id !== p.id);
+  const pm = IX.per_model;
+  let rs = rows.filter(r => (!fv || pm[r[0]]?.vendor === fv) && (!ff || (ff === "none" ? !r[4].length : r[5] & (1 << IX.flags.indexOf(ff))))
+    && (!fa || r[4][0] === fa) && (!fq || r[2].some(t => t[1].toLowerCase().includes(fq)) || r[0].includes(fq)));
+  const byM = {}; rs.forEach(r => (byM[r[0]] ||= []).push(r));
+  let ms = Object.keys(byM);
+  const mean = m => byM[m].reduce((a, r) => a + r[3], 0) / byM[m].length;
+  const modal = m => { const c = {}; byM[m].forEach(r => r[4][0] && (c[r[4][0]] = (c[r[4][0]] || 0) + 1)); return Object.entries(c).sort((a, b) => b[1] - a[1])[0]?.[0] || "~"; };
+  ms.sort(so === "words" ? (a, b) => mean(b) - mean(a) : so === "answer" ? (a, b) => modal(a).localeCompare(modal(b)) || a.localeCompare(b)
+    : so === "vendor" ? (a, b) => (pm[a]?.vendor || "").localeCompare(pm[b]?.vendor || "") || a.localeCompare(b) : (a, b) => a.localeCompare(b));
+  const vendors = [...new Set(rows.map(r => pm[r[0]]?.vendor))].sort();
+  const max = p.top[0]?.[1] || 1;
+  let h = `<div class="pager"><a href="#/g/${p.group}">← ${esc(GL[p.group])}</a>${ix > 0 ? `<a href="#/p/${sibs[ix - 1].id}">‹ ${esc(sibs[ix - 1].key)}</a>` : ""}${ix < sibs.length - 1 ? `<a href="#/p/${sibs[ix + 1].id}">${esc(sibs[ix + 1].key)} ›</a>` : ""}
+    ${other.length ? `<span class="muted">same noun:</span>` + other.map(o => `<a href="#/p/${o.id}">${esc(GL[o.group])}</a>`).join("") : ""}</div>
+  <h2>${esc(p.prompt)}</h2>
+  <p class="note">${p.models} models · ${p.n} replies · median ${p.median_words} words · list ${pct(p.list)} · asks ${pct(p.asks)} · disclaims ${pct(p.disclaims)} · no answer found ${pct(p.no_mention)} · consistent across runs ${pct(p.consistency)}</p>
+  <h3>First answer named (click to filter)</h3><div class="bars">` + p.top.map(([a, n]) =>
+    `<a data-a="${esc(a)}" class="${fa === a ? "on" : ""}">${esc(a)}</a><div class="b"><i style="width:${100 * n / max}%"></i></div><span class="mono muted">${n}</span>`).join("") + `</div>
+  <div class="ctl"><span class="lab">filter</span>
+    <select id="fv"><option value="">all vendors</option>${vendors.map(v => `<option ${v === fv ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>
+    ${["", ...IX.flags, "none"].map(f => `<a data-f="${f}" class="${ff === f ? "on" : ""}">${f === "" ? "any shape" : f === "none" ? "no answer found" : f}</a>`).join("")}
+    <input id="fq" placeholder="search text or model" value="${esc(q.get("q") || "")}">
+    ${fa ? `<a data-a="">first = ${esc(fa)} ✕</a>` : ""}</div>
+  <div class="ctl"><span class="lab">order</span>${["model", "vendor", "answer", "words"].map(o => `<a data-o="${o}" class="${so === o ? "on" : ""}">${o}</a>`).join("")}
+    <span class="muted">${ms.length} models, ${rs.length} replies shown</span></div>`;
+  h += ms.map(m => `<div class="mrow"><div class="who"><a href="#/m/${encodeURIComponent(m)}?g=${p.group}">${esc(m)}</a><small>${esc(pm[m]?.vendor || "")}</small></div>
+    <div class="runs">${byM[m].map(r => runCard(r, p.group)).join("")}</div></div>`).join("");
+  $("main").innerHTML = h; wire();
+  document.querySelectorAll("[data-a]").forEach(e => e.onclick = () => setq("a", e.dataset.a === fa ? "" : e.dataset.a));
+  document.querySelectorAll("[data-f]").forEach(e => e.onclick = () => setq("f", e.dataset.f));
+  document.querySelectorAll("[data-o]").forEach(e => e.onclick = () => setq("o", e.dataset.o));
+  $("fv").onchange = e => setq("v", e.target.value);
+  $("fq").onchange = e => setq("q", e.target.value);
+}
+
+function models() {
+  navbar("models");
+  const rows = Object.entries(IX.per_model).map(([m, v]) => ({m, v}));
+  const c = (g, f) => r => r.v[g] ? r.v[g][f] : null;
+  $("main").innerHTML = `<h2>Models</h2><p class="note">The shape of each model's replies, by group. Click a column to sort, a row for the model's replies.</p>` +
+    table("tm", rows, [["model", "m"], ["vendor", r => r.v.vendor], ["name: words", c("name", "median_words"), 1], ["name: bare", c("name", "bare"), 1, pct],
+      ["name: list", c("name", "list"), 1, pct], ["name: asks", c("name", "asks"), 1, pct], ["name: consistent", c("name", "consistency"), 1, pct],
+      ["recommend: words", c("recommend", "median_words"), 1], ["recommend: asks", c("recommend", "asks"), 1, pct],
+      ["pick1: disclaims", c("pick1", "disclaims"), 1, pct], ["pick1: no answer", c("pick1", "no_mention"), 1, pct], ["pick2: disclaims", c("pick2", "disclaims"), 1, pct]],
+      r => location.hash = "/m/" + encodeURIComponent(r.m), "model");
+}
+
+async function model(m) {
+  navbar("models");
+  const [, q] = params(); const g = q.get("g") || "name"; const v = IX.per_model[m] || {};
+  const ps = IX.prompts.filter(p => p.group === g);
+  let h = `<div class="pager"><a href="#/models">← models</a></div><h2>${esc(m)} <span class="muted" style="font-size:13px">${esc(v.vendor || "")}</span></h2>
+  <div class="ctl"><span class="lab">group</span>${Object.keys(GL).map(k => `<a href="#/m/${encodeURIComponent(m)}?g=${k}" class="${k === g ? "on" : ""}">${esc(GL[k])}${v[k] ? "" : " (none)"}</a>`).join("")}</div>`;
+  if (v[g]) h += `<p class="note">${v[g].n} replies · median ${v[g].median_words} words · bare ${pct(v[g].bare)} · list ${pct(v[g].list)} · asks ${pct(v[g].asks)} · disclaims ${pct(v[g].disclaims)} · consistent ${pct(v[g].consistency)}</p>`;
+  $("main").innerHTML = h + `<p class="note">Loading ${ps.length} prompts…</p>`;
+  const all = await Promise.all(ps.map(p => load(p.id)));
+  h += ps.map((p, i) => { const rs = all[i].filter(r => r[0] === m); if (!rs.length) return "";
+    return `<div class="mrow"><div class="who"><a href="#/p/${p.id}">${esc(p.prompt)}</a><small>field: ${esc(p.top_first ?? "–")} ${pct(p.top_first_share)}</small></div>
+      <div class="runs">${rs.map(r => runCard(r, g)).join("")}</div></div>`; }).join("");
+  $("main").innerHTML = h; wire();
+}
+
+function route() {
+  if (!IX) return;
+  const [p] = params(); const path = p.join("/");
+  if (path !== route.last) window.scrollTo(0, 0); route.last = path;
+  if (p[0] === "g") group(p[1]); else if (p[0] === "p") prompt(+p[1]); else if (p[0] === "models") models();
+  else if (p[0] === "m") model(p[1]); else overview();
+}
+window.addEventListener("hashchange", route);
+</script>
+<script src="data-open/index.js"></script>
+</body>
+</html>
