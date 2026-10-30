@@ -20,7 +20,7 @@
   nav a{color:var(--mut);padding:6px 12px;border-radius:7px;font-size:13px;border:1px solid transparent}
   nav a:hover{color:var(--fg);background:var(--panel2);text-decoration:none}
   nav a.on{color:var(--fg);background:var(--panel2);border-color:var(--line)}
-  main{padding:20px 22px;max-width:1500px}
+  main{padding:20px 22px}
   .note{color:var(--mut);font-size:12.5px;margin:0 0 16px;max-width:96ch} .note b{color:var(--fg)}
   h2{font-size:19px;margin:0 0 10px} h3{margin:24px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-size:11.5px}
   .twrap{overflow-x:auto;max-width:100%}
@@ -129,13 +129,14 @@ function overview() {
     ["recommend: words", vc("recommend", "median_words"), 1], ["recommend: asks", vc("recommend", "asks"), 1, pct],
     ["pick1: disclaims", vc("pick1", "disclaims"), 1, pct], ["pick1: no answer", vc("pick1", "no_mention"), 1, pct]], null, "-models");
   // brand nouns across the forms
+  const clampCell = (c, free) => c ? `<div class="muted" style="font-size:11.5px">1-word: <span style="${c[0] !== free ? "font-weight:600;color:var(--fg)" : ""}">${esc(c[0])}</span> ${pct(c[1])}</div>` : "";
   const nouns = [...new Set(IX.prompts.filter(p => p.group === "recommend").map(p => p.key))];
   const at = (g, k) => IX.prompts.find(p => p.group === g && p.key === k);
-  h += `<h3>Brand nouns: the field's top first-mention in each form</h3><p class="note">Click a cell to open its replies. Shaded where it differs from the Name answer.</p>
+  h += `<h3>Brand nouns: the field's top first-mention in each form</h3><p class="note">Click a cell to open its replies. Second line: the field's top answer to the clamped question ("… Reply with the name only."), <b>bold</b> where the free first-mention differs from it; pick2 has no clamped form.</p>
   <div class="twrap"><table class="t"><tr><th>noun</th>${FORMS.map(f => `<th>${esc(GL[f])}</th>`).join("")}</tr>` +
-    nouns.map(k => { const base = at("name-brand", k)?.top_first;
+    nouns.map(k => {
       return `<tr><td>${esc(k)}</td>` + FORMS.map(f => { const p = at(f, k); if (!p) return "<td>–</td>";
-        return `<td style="${p.top_first !== base ? "background:var(--panel2)" : ""}"><a href="#/p/${p.id}">${esc(p.top_first ?? "–")}</a> <span class="muted">${pct(p.top_first_share)}</span></td>`; }).join("") + "</tr>"; }).join("") + "</table></div>";
+        return `<td><a href="#/p/${p.id}">${esc(p.top_first ?? "–")}</a> <span class="muted">${pct(p.top_first_share)}</span>${clampCell(IX.clamped?.[f]?.[k], p.top_first)}</td>`; }).join("") + "</tr>"; }).join("") + "</table></div>";
   if (IX.agreement) h += `<h3>Same model, same noun: does the top first-mention agree between two forms?</h3>` +
     table("ta", Object.entries(IX.agreement).map(([k, v]) => ({k, ...v})), [["forms", r => r.k.split("~").map(x => GL[x]).join("  ~  ")], ["cells", "cells", 1], ["agree", "same", 1, pct]]);
   if (IX.pick2) h += `<p class="note" style="margin-top:12px">pick2: the turn-2 pick is in the model's own turn-1 list <b>${pct(IX.pick2.in_turn1_list)}</b> of the time and is the first brand it listed <b>${pct(IX.pick2.turn1_first)}</b> (median turn-1 list ${IX.pick2.turn1_list_len_median} brands).</p>`;
@@ -145,9 +146,11 @@ function overview() {
 function group(g) {
   navbar("g/" + g);
   const ps = IX.prompts.filter(p => p.group === g);
+  const later = ps.length ? ps[0].prompt.split(" / ").slice(1) : [];  // pick2: the same follow-up on every row, shown once
   $("main").innerHTML = `<h2>${esc(GL[g])} <span class="muted" style="font-size:13px">${ps.length} prompts</span></h2>
+  ${later.length ? `<p class="note">Each row is turn 1; turn 2 is always <b>${esc(later.join(" / "))}</b></p>` : ""}
   <p class="note">Click a column to sort, a row to read its replies. <b>top first</b> is the answer most often named first and its share of replies that named one.</p>` +
-    table("tp", ps, [["prompt", "prompt"], ["models", "models", 1], ...SHAPE, ["top first", "top_first"], ["share", "top_first_share", 1, pct],
+    table("tp", ps, [["prompt", p => p.prompt.split(" / ")[0]], ["models", "models", 1], ...SHAPE, ["top first", "top_first"], ["share", "top_first_share", 1, pct],
       ["distinct firsts", "distinct_first", 1], ["consistent", "consistency", 1, pct]], p => location.hash = "/p/" + p.id);
 }
 

@@ -18,9 +18,11 @@ from pathlib import Path
 VIEWS = Path(__file__).resolve().parent
 STUDY = VIEWS.parent
 sys.path.insert(0, str(STUDY))
+import brand_ladder  # noqa: E402
 import probe_open  # noqa: E402
 
 FLAGS = ["bare", "list", "asks", "disclaims", "bold"]
+CLAMPED = {"name-brand": "name", "choose": "choose", "recommend": "recommend_clamp", "pick1": "pick1_clamp"}
 
 
 def main():
@@ -62,9 +64,21 @@ def main():
             vv[r["vendor"]].append(r)
         for vd, v in vv.items():
             per_vendor[vd][g] = {**probe_open.summary(v), "models": len({r["model"] for r in v})}
+    # the clamped ("Reply with the name only.") counterpart of each brand form, as brand_ladder scores it; pick2 has none
+    lv, (_, nouns) = brand_ladder.levels(), probe_open.brand_pools()
+    clamped = defaultdict(dict)
+    for g, level in CLAMPED.items():
+        field = defaultdict(probe_open.Counter)
+        for cats in lv[level].values():
+            for c, xs in cats.items():
+                field[c].update(xs)
+        for c, n in field.items():
+            if n and c in nouns:
+                a, k = n.most_common(1)[0]
+                clamped[g][nouns[c]] = [a, round(k / sum(n.values()), 3)]
     saved = json.loads((STUDY / "probes" / "open.json").read_text()) if (STUDY / "probes" / "open.json").exists() else {}
     index = {"flags": FLAGS, "groups": groups, "prompts": prompts, "per_model": per_model, "per_vendor": per_vendor,
-             "agreement": saved.get("brand_form_agreement"), "pick2": saved.get("pick2")}
+             "agreement": saved.get("brand_form_agreement"), "pick2": saved.get("pick2"), "clamped": clamped}
     (out / "index.js").write_text("OPEN.index(" + json.dumps(index, ensure_ascii=False, separators=(",", ":")) + ");\n")
     size = sum(p.stat().st_size for p in out.iterdir()) / 1e6
     print(f"{len(rs)} replies, {len(prompts)} prompts -> {out.relative_to(STUDY.parent.parent)}/ ({size:.0f} MB)")

@@ -72,5 +72,4 @@ All as served (the reasoning-off arms are left out), 4 runs each, every run a fr
   shift: privacy, quality, value, ethics?
 - Join per-model shape to `analysis.json` surprisal and to `probes/clamp_rank.json`.
 
-Side note: re-running `probe_clamp.py` today changes the committed `probes/clamp_rank.json` slightly (Spearman
-0.580 → 0.576), presumably because the panel grew. It was left as committed.
+`probes/clamp_rank.json` was regenerated on the current panel (Spearman 0.580 → 0.576); the papers cite the tagged version.
