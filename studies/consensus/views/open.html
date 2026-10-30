@@ -41,7 +41,8 @@
   .bars a{cursor:pointer;color:var(--fg)} .bars a.on{color:var(--hitfg);font-weight:650}
   .mrow{display:grid;grid-template-columns:210px 1fr;gap:12px;border-top:1px solid var(--line);padding:10px 0}
   .mrow .who{font-size:13px} .mrow .who small{display:block;color:var(--mut);font-size:11.5px}
-  .runs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
+  .runs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  @media (max-width:1250px){ .runs{grid-template-columns:repeat(2,minmax(0,1fr))} }
   .run{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;min-width:0}
   .run .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--mut);margin:0 0 5px}
   .tag{border:1px solid var(--line);border-radius:9px;padding:0 7px}
@@ -55,7 +56,7 @@
   mark.f{background:var(--first);color:var(--firstfg)}
   .pager{display:flex;gap:14px;font-size:12.5px;margin:0 0 12px;flex-wrap:wrap}
   .muted{color:var(--mut)}
-  @media (max-width:700px){ main{padding:14px 16px} .mrow{grid-template-columns:1fr} .bars{grid-template-columns:max-content 1fr max-content} nav{margin-left:0} }
+  @media (max-width:700px){ main{padding:14px 16px} .mrow{grid-template-columns:1fr} .bars{grid-template-columns:max-content 1fr max-content} nav{margin-left:0} .runs{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
