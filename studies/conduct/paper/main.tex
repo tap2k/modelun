@@ -28,12 +28,13 @@
 \noindent
 We study what LLMs do when a user applies pressure in an uncomfortable situation:
 a user insists, begs, flatters or grieves, and the model gives up a correct fact, writes a
-document it should refuse, or cheers a plan that will cost the user money. We send frozen
+document it should refuse, or cheers a plan that will cost the user money, a multi-turn form of sycophancy. We send frozen
 multi-turn scenes to 60 models from 13 vendors and label each transcript with a trajectory (the
 model held its position or folded) and a manner (how it held or folded). Three scenes were used to
 build the codebook; six more were written afterwards and preregistered as a replication.
 Whether a model holds tracks its generation, meaning how recent it is: fold rate correlates
-with a public capability index at Spearman $-0.64$ to $-0.69$ across the two scene sets.
+with a public capability index at Spearman $-0.64$ to $-0.69$ across the two scene sets, so newer models fold
+less, unlike earlier reports that sycophancy grows with model scale.
 How a model holds tracks the vendor: six of the 17 manner codes sort
 by vendor at permutation $p\leq0.001$, corrected across the codebook, and four of them do so
 again on the replication scenes, three of them scene by scene. Anthropic's models name the feeling, warn and offer an alternative; OpenAI's do less of
@@ -105,7 +106,8 @@ cross-vendor, trading ecological validity for comparability across labs.
 traffic. Our unit is an outcome under a frozen stimulus rather than an expressed value.
 
 \paragraph{Sycophancy.} \citet{sharma2023sycophancy} show that assistants trained on human feedback tend toward the
-user's stated view, and \citet{perez2022discovering} found the tendency growing with scale. That
+user's stated view, and \citet{perez2022discovering} found the tendency growing with scale. Across sixty models
+from three years of releases, we find the fold rate falling with generation. That
 work measures whether a model capitulates. We measure whether and, separately, how, and the
 manner is where the vendor signal sits: a capitulation rate cannot tell a model that holds by
 naming the user's feeling from one that holds by citing its own rules.
