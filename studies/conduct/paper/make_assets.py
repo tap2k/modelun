@@ -186,7 +186,7 @@ x2start = xs1[-1] + 2 * CW + GAPSET
 xs2 = [x2start + i * (2 * CW + GAPX) for i in range(len(SCENES2))]
 right = xs2[-1] + 2 * CW
 n_lines = sum(len(b[1]) + 2 for b in blocks)
-fig, ax = plt.subplots(figsize=(6.3, min(8.6, 0.105 * n_lines + 0.9)))
+fig, ax = plt.subplots(figsize=(6.3, min(7.4, 0.092 * n_lines + 0.6)))
 ax.set_axis_off()
 
 y = 0.0
@@ -194,8 +194,8 @@ for i, (_, label) in enumerate(SCENES):
     ax.text(xs1[i] + CW, y + 0.5, label, fontsize=6.6, color=GRAY, ha="center")
 for i, (_, label) in enumerate(SCENES2):
     ax.text(xs2[i] + CW, y + 0.5, label, fontsize=6.6, color=GRAY, ha="center")
-ax.text((xs1[0] + xs1[-1] + 2 * CW) / 2, y + 1.25, "first set", fontsize=6.6, color=GRAY, ha="center")
-ax.text((xs2[0] + right) / 2, y + 1.25, "second set (preregistered)", fontsize=6.6, color=GRAY, ha="center")
+ax.text((xs1[0] + xs1[-1] + 2 * CW) / 2, y + 1.7, "first set", fontsize=6.6, color=GRAY, ha="center")
+ax.text((xs2[0] + right) / 2, y + 1.7, "second set (preregistered)", fontsize=6.6, color=GRAY, ha="center")
 y -= 0.55
 def _cell(x, y, t):
     if t is None:        # not run on this set
@@ -232,7 +232,7 @@ for i, (face, edge, label) in enumerate([(BLUE, BLUE, "folded"), ("white", GRID,
 ax.text(lx + CW + 4.2, ly + CH / 2, "blank: not run on that set", fontsize=6.6, va="center", color=GRAY)
 
 ax.set_xlim(-5.0, right + 3.6)
-ax.set_ylim(ly - 0.8, 1.9)
+ax.set_ylim(ly - 0.8, 2.4)
 fig.tight_layout(pad=0.2)
 fig.savefig(HERE / "figs" / "hold_fold.pdf")
 plt.close(fig)
