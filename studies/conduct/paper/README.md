@@ -67,6 +67,7 @@ All paths under `studies/conduct/data/coding/results/`.
 | Checks from the 2026-09-23 model reviews: held-arc conditioning, without dropout, run agreement, hard folds, fold timing, eta-squared null, cold per-code kappa | `REVIEW-CHECKS-2026-09-23.md`, `harness/review_checks.py` |
 | Fold rate against capability within vendors, centered and per lab (check 8) | `REVIEW-CHECKS-2026-09-25.md`, `harness/review_checks.py` |
 | Encourage-scene folds, endorsed or withdrew (exploratory) | `ENDORSE-CHECK-2026-09-23.md`, `harness/endorse_check.py` |
+| Coder error by vendor on the held-out fifty (appendix) | `CODER-ERROR-BY-VENDOR-2026-11-03.md`, `harness/coder_error_by_vendor.py` |
 | Alternative Annotator Test | `ALT-TEST-2026-09-17.md`, `harness/alt_test.py` |
 | Out-of-scene exploratory test | `HOUSES-OUT-OF-SCENE-2026-09-17.md`, `PREREG-HOUSES-OUT-OF-SCENE-2026-09-17.md` |
 
@@ -190,6 +191,7 @@ control, which v1 did not find. Decisions for the v2 paper, made 2026-09-22:
 ## For v3 (from the 2026-09-23 model reviews)
 
 **Status 2026-09-25: items 1 to 7 are in `main.tex`; 8 was skipped; 9 is deferred; 10 is optional.**
+**2026-11-03:** v3 posted from `main.tex` with items 1 to 7, the two corrections below, and EvalGen and Arawjo (evalstats) in related work with the appendix "Coder error by vendor". 11 and 12 remain open.
 Item 4 was decided differently from how it is written below: no threshold was set after the fact, the claim
 of "codes that cleared reliability" was removed, and cold per-code kappa with bootstrap intervals is a new
 appendix table (79fd276). Commits: 1 e0acd4f, 2 bd57a7f, 3 a615022 and 75a05d3, 4 79fd276, 5 a21177d, 6
