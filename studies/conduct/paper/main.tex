@@ -132,7 +132,10 @@ with a measurement for each. Treating a model's behavior as material for qualita
 
 \paragraph{Validating judges.} \citet{calderon2025alttest} propose the Alternative Annotator Test,
 which we run and report in full, including where it fails for us. \citet{guerdan2025indeterminacy}
-treat rating indeterminacy directly. \citet{norman2026reliability} and \citet{liu2026agreement}
+treat rating indeterminacy directly. \citet{shankar2024evalgen} name criteria drift: grading
+outputs changes the criteria used to grade them. Our codebook allows that drift once, in a single
+revision against the coders' disagreements, and then freezes, so every number reported here
+belongs to one version. \citet{norman2026reliability} and \citet{liu2026agreement}
 warn that agreement is not validity, which is why we report reliability per code. \citeauthor{norman2026reliability} also find that raw
 agreement overstates chance-corrected agreement by 34 to 41 points across 21 judges; every
 agreement figure here is $\kappa$ or $\alpha$, and raw agreement is not reported.
@@ -140,7 +143,9 @@ agreement figure here is $\kappa$ or $\alpha$, and raw agreement is not reported
 \paragraph{Measurement framing.} \citet{jacobs2021measurement} supply the vocabulary: the codebook
 is an operationalization of an unobservable construct, and reliability is one part of construct
 validity, not the whole. \citet{egami2023dsl} and \citet{angelopoulos2023ppi} give the statistical
-form for using machine labels plus a small human sample in downstream estimates, which we do not yet apply (\S\ref{sec:limitations}).
+form for using machine labels plus a small human sample in downstream estimates, which we do not yet apply (\S\ref{sec:limitations}). \citet{arawjo2026evalstats} shows that tests over raw judge labels
+inflate false positives, most when judge-human agreement is high, and gives corrected tests for
+small samples.
 
 \paragraph{Content analysis.} The construction follows \citeauthor{hsieh2005three}'s
 conventional-then-directed sequence \citep{hsieh2005three} with reliability reported in
@@ -541,7 +546,11 @@ also coders. No reliability threshold was set in advance. Before adjudication, w
 and self-citation agree with the machines at $\kappa$ 0.34 to 0.38 for two of the three humans, and
 hedged folds and note-writing occur on too few of the fifty transcripts for their agreement to be
 estimated (Appendix~\ref{app:coldkappa}). Per-model frequencies are raw consensus rates, not corrected with the human sample as
-\citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow. Reliability is not validity: high agreement on a code says the instrument is stable,
+\citet{egami2023dsl} and \citet{angelopoulos2023ppi} allow, and a vendor test on them could
+be inflated if the coders' errors differed by vendor \citep{arawjo2026evalstats}. On the held-out
+fifty we find no vendor-specific coder error (Appendix~\ref{app:vendorerror}); self-citation is the
+least reliable code there, with the excess spread across vendors, and Google's signature on it also
+holds without a judge and without Google's coders. Fifty transcripts rule out only a large vendor-specific bias. Reliability is not validity: high agreement on a code says the instrument is stable,
 not that the construct is the right one.
 
 \section*{Data and code availability}
@@ -684,6 +693,42 @@ folded and encouraged & 0.83 [0.50, 1.00] & 0.50 [0.09, 0.81] & 0.55 [0.15, 0.85
 folded and apologized & 0.70 [0.36, 0.94] & 0.62 [0.15, 0.92] & 0.70 [0.39, 0.94] & 7 \\
 folded and produced & 1.00 & 0.48 & 0.85 & 3 \\
 folded and warned & 0.48 & $-$0.04 & 0.00 & 2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Coder error by vendor}
+\label{app:vendorerror}
+
+Table~\ref{tab:vendorerror} counts, for each vendor on the held-out fifty, the transcripts on
+which the machine consensus marks each of the six vendor codes, beside the counts from the three
+cold human passes (before adjudication). The students never saw machine labels. If the coders
+over-marked a code for one vendor, the vendor effect on that code could be partly the coders'.
+For empathizing, warning and offering an alternative, the machine count for any vendor is at most
+two above the highest of the three human counts, and Anthropic's empathizing (ten of ten by machine, nine of ten
+by each student) is not a coder effect. Self-citation is the least reliable code. The machines mark it on
+seven transcripts, four of them Google's; the cold passes mark it on two, six and none. The author's
+two are both Google's, the first student's six spread over four vendors, and the second student
+never uses the code. The humans disagree with each other about the code's boundary, and the
+machine count is above the median human count for every vendor where the code appears, not for
+Google alone. Hedged folds and producing the artifact are too
+rare on the fifty to read. Nous Research (one transcript) marks none of the six and is omitted.
+
+\begin{table*}[t]
+\centering\small
+\caption{Transcripts marked with each vendor code on the held-out fifty, as machine consensus /
+author / Student 1 / Student 2, cold passes. Transcripts per vendor in the header.}
+\label{tab:vendorerror}
+\begin{tabular}{lccccccc}
+\toprule
+Code & OpenAI (15) & Google (11) & Anthropic (10) & Meta (5) & Qwen (4) & Moonshot (2) & xAI (2) \\
+\midrule
+held and empathized & 5/3/3/1 & 3/1/3/4 & 10/3/9/9 & 0/0/0/2 & 2/2/2/1 & 1/0/1/1 & 1/1/0/1 \\
+folded and warned & 1/1/0/0 & 1/0/0/0 & 0/0/0/0 & 0/0/0/0 & 0/1/2/0 & 0/0/0/0 & 0/0/0/0 \\
+folded and produced & 3/3/1/4 & 0/0/0/0 & 0/0/0/0 & 0/0/0/0 & 0/0/0/0 & 0/0/0/0 & 0/0/0/0 \\
+held and warned & 1/0/1/2 & 3/0/3/4 & 6/1/5/3 & 0/0/0/0 & 2/0/2/2 & 2/2/1/0 & 1/1/1/0 \\
+held and cited itself & 1/0/1/0 & 4/2/2/0 & 1/0/2/0 & 0/0/0/0 & 1/0/1/0 & 1/0/0/0 & 0/0/0/0 \\
+held and provided an alternative & 5/5/5/5 & 2/2/3/1 & 6/4/5/6 & 0/0/0/5 & 2/2/2/2 & 2/1/2/1 & 1/0/0/0 \\
 \bottomrule
 \end{tabular}
 \end{table*}
