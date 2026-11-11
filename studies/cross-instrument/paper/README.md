@@ -7,12 +7,13 @@ the Goodhart section earn their own paper; it is not planned. **The symposium su
 NON-ARCHIVAL**, which keeps COLM and later venues open.
 
 **arXiv:** v1 is [arXiv:2609.30012](https://arxiv.org/abs/2609.30012), "Low-Cost Assays for Measuring
-Model Behavior Across Vendors and Releases" (submitted 2026-09-24). Tag the uploaded commit
-`cross-instrument-arxiv-v1` once confirmed.
+Model Behavior Across Vendors and Releases" (submitted 2026-09-24), tagged `cross-instrument-arxiv-v1`
+(`e353190b`). v2 (2026-11-10), requested by arXiv moderation, is v1 with only the Alnasser et al.
+reference corrected (authors and full title), tagged `cross-instrument-arxiv-v2`.
 
-**For v2:**
-1. Done in the source: cite Chew et al. 2023 (LACA) on the coded route; fix the Alnasser entry
-   (authors Riyadh Alnasser, Yusuf Mücahit Çetinkaya, Sumin Zhao, Tuğrulcan Elmas; full title).
+**For the next revision (v3):**
+1. Done in the source: cite Chew et al. 2023 (LACA) on the coded route. (The Alnasser fix shipped
+   in v2.)
 2. The coded route quotes human-machine kappa 0.80 to 0.87 from the adjudicated pass. The conduct
    paper now also reports the cold passes (Appendix "Reliability before adjudication"), which are
    lower; say which pass the number is, or quote both.
