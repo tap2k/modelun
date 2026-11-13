@@ -153,6 +153,10 @@ in `paper/panel.txt`.
   don't write reads into docs as established. The frontier-lab "house styles" are a working lens, not a
   universal law.
 
+## Where things live
+- Blog posts for the studies: `~/dev/convovo/convovo-site` (`src/content/blog/`). Earlier paths `~/dev/convovo-site` and `~/dev/sites/convovo-site` are stale.
+- Working notes, plans and handoffs: `~/Desktop/projects/modelUN/` (queue in `RESEARCH-QUEUE.md`).
+
 ## Gotchas
 - Some suggestibility probe scripts parse argv by hand and start a run on anything, `--help`
   included. Read their usage line instead.
