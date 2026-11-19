@@ -20,6 +20,7 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 from analyze import classify
+from probe_righteffect import bill
 from probe_righteffect import ITEMS, CLAMP, cap, arate   # the frozen 20-item battery + slug ids
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -48,6 +49,7 @@ signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(HardTimeout()))
 
 MAX_TOKENS = 512                       # wave 1. --max-tokens N raises it (reasoning models exhaust 512 thinking);
 TRACES = []                            # reasoning traces from this run, in call order (see stamp)
+BILLING = {}                           # this run's billed usage, every answered attempt (probe_righteffect.bill)
 REASONING = None                       # --reasoning off|low|medium|high; None sends nothing (the route's default)
 PROVIDER = None                        # a raised budget also lengthens the per-call timeout. Provider pin comes
                                        # from ../consensus/spec/models.json ("provider"), as in the main runner.
@@ -63,6 +65,8 @@ def stamp(rec):
         rec["reasoning_mode"] = REASONING
     if TRACES:
         rec["reasoning"] = list(TRACES)
+    if BILLING:
+        rec["billing"] = dict(BILLING)
     return rec
 
 
@@ -79,8 +83,12 @@ def chat(slug, text):
         try:
             url, key = HOSTS[HOST]
             r = requests.post(url, timeout=hard, headers={"Authorization": f"Bearer {os.environ[key]}"}, json=body)
+            if r.status_code == 402:           # out of credits: stop, rather than store every later call as empty
+                sys.exit("402 Payment Required: OpenRouter credits exhausted")
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            bill(BILLING, j)
+            msg = j["choices"][0]["message"]
             c = msg.get("content")
             signal.alarm(0)
             if c:

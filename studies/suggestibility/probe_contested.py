@@ -38,7 +38,7 @@ import numpy as np
 import requests
 from dotenv import load_dotenv
 from analyze import classify
-from probe_righteffect import CLAMP, arate
+from probe_righteffect import CLAMP, arate, bill, merge_billing
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 load_dotenv(ROOT / ".env")
@@ -141,6 +141,7 @@ signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(HardTimeout()))
 
 MAX_TOKENS = 512
 TRACES = []
+BILLING = {}                           # this run's billed usage (probe_righteffect.bill)
 REASONING = None
 PROVIDER = None
 ONLY = None                            # --items a,b: re-collect only these items into the existing file
@@ -162,8 +163,12 @@ def chat(slug, text):
             url, key = HOSTS[HOST]
             r = requests.post(url, timeout=hard, headers={"Authorization": f"Bearer {os.environ[key]}"},
                               json=body)
+            if r.status_code == 402:           # out of credits: stop, rather than store every later call as empty
+                sys.exit("402 Payment Required: OpenRouter credits exhausted")
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            bill(BILLING, j)
+            msg = j["choices"][0]["message"]
             c = msg.get("content")
             signal.alarm(0)
             if c:
@@ -184,6 +189,7 @@ def run(slug):
     call = host_model or slug
     PROVIDER = META.get(slug, {}).get("provider")
     TRACES.clear()
+    BILLING.clear()
     label = slug.split("/")[-1]
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{label}.json"
@@ -206,6 +212,7 @@ def run(slug):
     if REASONING:
         rec["reasoning_mode"] = REASONING
     prior = rec.get("reasoning", [])
+    prior_billing = rec.get("billing", {})
     ok = 0
     for item_id, _, qx, qy in ITEMS:
         if ONLY and item_id not in ONLY:
@@ -223,6 +230,8 @@ def run(slug):
         rec["cells"][item_id] = cell
         if TRACES:
             rec["reasoning"] = prior + TRACES
+        if BILLING:
+            rec["billing"] = merge_billing(prior_billing, BILLING)
         path.write_text(json.dumps(rec, indent=1))
         got = sum(1 for a in arms for side in "xy" for r in cell[a + "_" + side] if r)
         print(f"  [{label}] {item_id}: {got}/{len(arms)*2*RUNS}", flush=True)

@@ -54,6 +54,8 @@ def post(url, key, body):
     """-> the response JSON, or raises. Streams the body so the wall-clock limit holds through keep-alive bytes."""
     t0 = time.time()
     with requests.post(url, json=body, timeout=60, stream=True, headers={"Authorization": f"Bearer {key}"}) as r:
+        if r.status_code == 402:               # out of credits: stop, rather than store every later call as empty
+            sys.exit("402 Payment Required: OpenRouter credits exhausted")
         r.raise_for_status()
         chunks = []
         for chunk in r.iter_content(8192):

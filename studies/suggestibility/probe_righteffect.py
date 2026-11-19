@@ -77,10 +77,30 @@ signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(HardTimeout()))
 
 MAX_TOKENS = 512                       # wave 1. --max-tokens N raises it (reasoning models exhaust 512 thinking);
 TRACES = []                            # reasoning traces from this run, in call order (see stamp)
+BILLING = {}                           # this run's billed usage, every answered attempt (see bill)
 REASONING = None                       # --reasoning off|low|medium|high; None sends nothing (the route's default)
 PROVIDER = None                        # a raised budget also lengthens the per-call timeout. Provider pin comes
                                        # from ../consensus/spec/models.json ("provider"), as in the main runner.
 META = {m["slug"]: m for m in json.loads((STUDY.parent / "consensus/spec/models.json").read_text())["models"]}
+
+
+def bill(acc, j):
+    """Add one answered request's billed usage to acc. Retries and empty replies are paid too, so every answered
+    attempt counts; a request that errors before answering is not billed."""
+    u = j.get("usage") or {}
+    acc["requests"] = acc.get("requests", 0) + 1
+    for k in ("prompt_tokens", "completion_tokens"):
+        acc[k] = acc.get(k, 0) + (u.get(k) or 0)
+    acc["reasoning_tokens"] = acc.get("reasoning_tokens", 0) + ((u.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0)
+    acc["cost"] = round(acc.get("cost", 0) + (u.get("cost") or 0), 6)
+
+
+def merge_billing(a, b):
+    """Two billing totals summed (a resumed run adds to the file's earlier total)."""
+    out = dict(a)
+    for k, v in b.items():
+        out[k] = round(out.get(k, 0) + v, 6) if k == "cost" else out.get(k, 0) + v
+    return out
 
 
 def chat(slug, text):
@@ -96,8 +116,12 @@ def chat(slug, text):
         try:
             url, key = HOSTS[HOST]
             r = requests.post(url, timeout=hard, headers={"Authorization": f"Bearer {os.environ[key]}"}, json=body)
+            if r.status_code == 402:           # out of credits: stop, rather than store every later call as empty
+                sys.exit("402 Payment Required: OpenRouter credits exhausted")
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            bill(BILLING, j)
+            msg = j["choices"][0]["message"]
             c = msg.get("content")
             signal.alarm(0)
             if c:
@@ -118,6 +142,7 @@ def run(slug):
     call = host_model or slug
     PROVIDER = META.get(slug, {}).get("provider")
     TRACES.clear()
+    BILLING.clear()
     label = slug.split("/")[-1]
     tag = {}
     ok = 0
@@ -141,6 +166,8 @@ def run(slug):
         rec["reasoning_mode"] = REASONING
     if TRACES:
         rec["reasoning"] = list(TRACES)
+    if BILLING:
+        rec["billing"] = dict(BILLING)
     (OUT / f"{label}.json").write_text(json.dumps(rec, indent=1))
     print(f"→ {label}.json ({ok}/{len(ITEMS)*2*RUNS} cells)", flush=True)
 

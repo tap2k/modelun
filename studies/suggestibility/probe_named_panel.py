@@ -37,6 +37,7 @@ def run(slug):
     pr.HOST = src.get("host", "openrouter")
     pr.PROVIDER = pr.META.get(slug, {}).get("provider")
     call = src.get("host_model", slug)
+    pr.BILLING.clear()
     rec = {"model": label, "slug": slug, "arms": {a: {} for a in ARMS}}
     for sid, d, x, y in ITEMS:
         for arm, tpl in ARMS.items():
@@ -49,6 +50,8 @@ def run(slug):
         rec["provider"] = pr.PROVIDER
     if pr.HOST != "openrouter":
         rec["host"], rec["host_model"] = pr.HOST, call
+    if pr.BILLING:
+        rec["billing"] = dict(pr.BILLING)
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"{label}.json").write_text(json.dumps(rec, indent=1))
     n = sum(1 for a in rec["arms"].values() for c in a.values() for s in c.values() for r in s if r)
