@@ -32,13 +32,13 @@ from analyze import BATTERIES, COMBINED, answers, analyze  # noqa: E402
 # chronological order within lineages, for the generation-walk view (release order,
 # maintained by hand — models.json carries no generation field)
 WALKS = {
-    "claude": ["claude-3-haiku", "claude-opus-4.1", "claude-sonnet-4.5", "claude-haiku-4.5", "claude-opus-4.5", "claude-opus-4.6", "claude-sonnet-4.6", "claude-opus-4.7", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5", "claude-opus-5", "claude-fable-5.1", "claude-opus-5.5", "claude-sonnet-5.5"],
-    "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.4-mini", "gpt-5.5", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-6.1-sol", "gpt-6.1-terra"],
-    "gemini": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3-flash-preview", "gemini-3.1-pro-preview", "gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.8-flash", "gemini-4-argon"],
+    "claude": ["claude-3-haiku", "claude-opus-4.1", "claude-sonnet-4.5", "claude-haiku-4.5", "claude-opus-4.5", "claude-opus-4.6", "claude-sonnet-4.6", "claude-opus-4.7", "claude-opus-4.8", "claude-fable-5", "claude-sonnet-5", "claude-opus-5", "claude-fable-5.1", "claude-opus-5.5", "claude-sonnet-5.5", "claude-fable-5.2"],
+    "gpt": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4.1", "gpt-5", "gpt-5.4", "gpt-5.4-mini", "gpt-5.5", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-luna", "gpt-6-sol", "gpt-6.1-sol", "gpt-6.1-terra", "gpt-6.2-astra", "gpt-6.2-astra-pro", "gpt-6.2-sol", "gpt-6.2-sol-pro"],
+    "gemini": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3-flash-preview", "gemini-3.1-pro-preview", "gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.8-flash", "gemini-4-argon", "gemini-4-carbon", "gemini-4-hydrogen", "gemini-4-neon"],
     "deepseek": ["deepseek-chat-v3-0324", "deepseek-v3.2", "deepseek-v4-flash", "deepseek-v4-pro", "deepseek-v4.1-flash-1017", "deepseek-r1"],
     "llama": ["llama-3.1-70b-instruct", "llama-3.3-70b-instruct", "llama-4-scout", "llama-4-maverick"],
     "grok": ["grok-4.20", "grok-4.3", "grok-4.5", "grok-4.6", "grok-4.7"],
-    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507", "qwen3-235b-a22b-thinking-2507", "qwen3.5-9b", "qwen3.5-27b", "qwen3.5-122b-a10b", "qwen3.6-35b-a3b", "qwen3.7-plus", "qwen3.8-2.4t-a95b", "qwen3.8-27b"],
+    "qwen": ["qwen-2.5-72b-instruct", "qwen3-235b-a22b-2507", "qwen3-235b-a22b-thinking-2507", "qwen3.5-9b", "qwen3.5-27b", "qwen3.5-122b-a10b", "qwen3.6-35b-a3b", "qwen3.7-plus", "qwen3.8-2.4t-a95b", "qwen3.8-27b", "qwen4-max"],
     "glm": ["glm-4.7", "glm-5.3-flash", "glm-5.3", "glm-5.3-prime"],
     "kimi": ["kimi-k2", "kimi-k2.5", "kimi-k3", "kimi-k3.1-pro"],
 }

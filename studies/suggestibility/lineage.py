@@ -37,6 +37,11 @@ FAM = {
     "gemini-4-argon": ("Gemini", 5),  # 2026-10-13, on its release
     "deepseek-v4.1-flash-1017": ("DeepSeek", 4),  # 2026-10-17, wave of 2026-10-28
     "gpt-6.1-terra": ("GPT", 9),  # 2026-10-26, wave of 2026-10-28
+    "claude-fable-5.2": ("Claude", 10),  # 2026-11-09, added 2026-11-17
+    "gpt-6.2-astra": ("GPT", 10), "gpt-6.2-astra-pro": ("GPT", 10),  # 2026-11-17, on release
+    "gpt-6.2-sol": ("GPT", 10), "gpt-6.2-sol-pro": ("GPT", 10),
+    "gemini-4-carbon": ("Gemini", 5), "gemini-4-hydrogen": ("Gemini", 5), "gemini-4-neon": ("Gemini", 5),  # 2026-11-10/12/18, added 2026-11-17/18
+    "qwen4-max": ("Qwen", 5),  # 2026-11-15, added 2026-11-17
 }
 
 # Further multi-generation lineages in the panel, used only by the release test's robustness check

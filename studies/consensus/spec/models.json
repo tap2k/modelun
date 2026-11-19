@@ -1,5 +1,5 @@
 {
- "note": "Roster for the consensus study. Broad on purpose — the metric is cheap (one-word answers), so the roster spans US frontier (multiple generations), Chinese labs, enterprise, search-tuned, persona/roleplay, and small open models. The DEEPSEEK LINEAGE (chat-v3-0324 -> v3.2 -> v4-flash, + r1) is a deliberate sub-experiment: deepseek-v3.2 was the pilot's lone genuine outlier (25% novel answers) — is the explorer property stable across its generations, or version-specific? `family` groups lineages; `origin` tags the a-priori expectation bucket (us-frontier | chinese | enterprise | persona | search | small-open); `open` = open weights. WAVE 2 (2026-09-03): 25 models appended from the cross-repo registry (current quorum roster) — the paper's 44 are the first 44 entries; tag consensus-arxiv-v2 pins that panel. hermes-3-llama-3.1-70b was tried and dropped: its only host (DeepInfra) returns rambling multi-sentence text on every prompt, 1 valid one-word answer in 124. WAVE 3 (2026-09-25): 16 models appended to fill the frontier-lab families for the atlas (Anthropic 4/5, GPT 5/6, Grok 4, Gemini 2.5/3, Kimi, Qwen, Meta Muse), same frozen stimulus, 4 runs. Muse Spark requires an 18+ attestation on the OpenRouter account. 2026-09-28: claude-sonnet-5.5 appended on its release, same stimulus, 4 runs. 2026-09-29: gpt-6.1-sol appended on its release, same stimulus, 4 runs. 2026-09-29: six open-weight models appended, same stimulus, 4 runs: Nemotron 3.5 Lightning, Nemotron 3 Super 120B and Ultra 550B (with Nemotron 3 Nano, an NVIDIA lineage across four sizes from one open pipeline), Hermes 4 405B (keeps the Hermes 4 line in the panel now that the 70B has left the catalog), Mistral Small 2603 and Qwen3.8 27B. WAVE 4 (2026-10-02): 11 models appended, all batteries (census 4+4, expanded, brands, choose) plus pickword the same day. Hermes 3 Llama 3.1 70B rejoins: DeepInfra now answers one-word prompts cleanly (124/124), so the September drop no longer applies. Granite 4.2 8B and 30B restore a live IBM model (Granite 4.1 8B's endpoint is gone). New labs: Thinking Machines (Inkling, Inkling-Small), ByteDance (Seed 2.0 Pro), Xiaomi (MiMo V2.6 Pro), Ant/inclusionAI (Ling 3.0 Flash); plus Microsoft's own Phi-4, Meta's Muse Glimmer 30B and Tencent's Hy4. Served by DeepInfra (host field): Hermes 3 70B, Granite 4.2 30B, Seed 2.0 Pro (not on OpenRouter); everything else OpenRouter. open=null where weight availability was not verified on 2026-10-02. 2026-10-08: claude-haiku-5.5 appended on its release, all batteries plus pickword the same day. 2026-10-16: gemini-4-argon and nemotron-3.5-super-vl appended on release, all batteries plus pickword the same day, at --max-tokens 8192. WAVE 5 (2026-10-28): 13 models appended, all core and extended batteries plus pickword the same day, at --max-tokens 8192: GPT-6.1 Terra, Kimi K3.1 Pro, MiniMax M3.1 Flash, DeepSeek V4.1 Flash 1017, Reflection Beam 1.0, Liquid LFM 2.5 24B, Muse Wonder, Step 5 Preview, Mistral Large 4.0, Ling 3.1 Flash, GLM 5.3 Prime, Command A Plus, MiMo V2.6 Flash. Hybrids (off arms): gpt-6.1-terra, kimi-k3.1-pro, deepseek-v4.1-flash-1017, mistral-large-4-0, ling-3.1-flash, command-a-plus, mimo-v2.6-flash. open=null where weight availability was not verified on 2026-10-28; family beam and lfm are new. beam-1.0-501b-a23b has no pick2 files (brands-pick2-free, brands-ext2-pick2-free): every host returns 400 on a second turn whose assistant message lacks its reasoning, which the harness does not send back; its single-turn batteries ran. 2026-10-29: llama-3.1-70b-instruct appended before it leaves OpenRouter (2026-11-03), core and extended batteries plus pickword and the suggestibility core probes the same day; already on the conduct panel. Not a hybrid: no off arms. 2026-10-29: command-r-plus-08-2024, gemma-2-27b-it and qwen3-235b-a22b-thinking-2507 appended, core and extended batteries plus pickword and the suggestibility core probes the same day; the Qwen thinking model at --max-tokens 8192. None is a hybrid: no off arms. open=true checked against Hugging Face on 2026-10-29. 2026-10-29: mistral-large-2512 (Mistral Large 3) tried and not added: see unrunnable. Known short cells, left as recorded (2026-10-29): gemma-2-27b-it 7 empty-content cells in brands-pick1-clamp (ecommerce, airline, brand), finish_reason stop after 2 tokens, so the model returns nothing on a share of those prompts (9, 4 and 7 empties on three samplings); mistral-large-4-0 one failed pickword cell (gu, 2026-10-28; two scene re-runs returned fragments, so the scene was kept). Filled 2026-10-29: kimi-k3.1-pro contested euthanasia belief_x (720/720), qwen3-235b-a22b-thinking-2507 righteffect and maybetag (160/160 each, serial full re-runs). Not a hybrid (its endpoints take no reasoning parameter); open=true checked against Hugging Face on 2026-10-29. minimax-m1 was tried the same day and is recorded under unrunnable.",
+ "note": "Roster for the consensus study. Broad on purpose — the metric is cheap (one-word answers), so the roster spans US frontier (multiple generations), Chinese labs, enterprise, search-tuned, persona/roleplay, and small open models. The DEEPSEEK LINEAGE (chat-v3-0324 -> v3.2 -> v4-flash, + r1) is a deliberate sub-experiment: deepseek-v3.2 was the pilot's lone genuine outlier (25% novel answers) — is the explorer property stable across its generations, or version-specific? `family` groups lineages; `origin` tags the a-priori expectation bucket (us-frontier | chinese | enterprise | persona | search | small-open); `open` = open weights. WAVE 2 (2026-09-03): 25 models appended from the cross-repo registry (current quorum roster) — the paper's 44 are the first 44 entries; tag consensus-arxiv-v2 pins that panel. hermes-3-llama-3.1-70b was tried and dropped: its only host (DeepInfra) returns rambling multi-sentence text on every prompt, 1 valid one-word answer in 124. WAVE 3 (2026-09-25): 16 models appended to fill the frontier-lab families for the atlas (Anthropic 4/5, GPT 5/6, Grok 4, Gemini 2.5/3, Kimi, Qwen, Meta Muse), same frozen stimulus, 4 runs. Muse Spark requires an 18+ attestation on the OpenRouter account. 2026-09-28: claude-sonnet-5.5 appended on its release, same stimulus, 4 runs. 2026-09-29: gpt-6.1-sol appended on its release, same stimulus, 4 runs. 2026-09-29: six open-weight models appended, same stimulus, 4 runs: Nemotron 3.5 Lightning, Nemotron 3 Super 120B and Ultra 550B (with Nemotron 3 Nano, an NVIDIA lineage across four sizes from one open pipeline), Hermes 4 405B (keeps the Hermes 4 line in the panel now that the 70B has left the catalog), Mistral Small 2603 and Qwen3.8 27B. WAVE 4 (2026-10-02): 11 models appended, all batteries (census 4+4, expanded, brands, choose) plus pickword the same day. Hermes 3 Llama 3.1 70B rejoins: DeepInfra now answers one-word prompts cleanly (124/124), so the September drop no longer applies. Granite 4.2 8B and 30B restore a live IBM model (Granite 4.1 8B's endpoint is gone). New labs: Thinking Machines (Inkling, Inkling-Small), ByteDance (Seed 2.0 Pro), Xiaomi (MiMo V2.6 Pro), Ant/inclusionAI (Ling 3.0 Flash); plus Microsoft's own Phi-4, Meta's Muse Glimmer 30B and Tencent's Hy4. Served by DeepInfra (host field): Hermes 3 70B, Granite 4.2 30B, Seed 2.0 Pro (not on OpenRouter); everything else OpenRouter. open=null where weight availability was not verified on 2026-10-02. 2026-10-08: claude-haiku-5.5 appended on its release, all batteries plus pickword the same day. 2026-10-16: gemini-4-argon and nemotron-3.5-super-vl appended on release, all batteries plus pickword the same day, at --max-tokens 8192. WAVE 5 (2026-10-28): 13 models appended, all core and extended batteries plus pickword the same day, at --max-tokens 8192: GPT-6.1 Terra, Kimi K3.1 Pro, MiniMax M3.1 Flash, DeepSeek V4.1 Flash 1017, Reflection Beam 1.0, Liquid LFM 2.5 24B, Muse Wonder, Step 5 Preview, Mistral Large 4.0, Ling 3.1 Flash, GLM 5.3 Prime, Command A Plus, MiMo V2.6 Flash. Hybrids (off arms): gpt-6.1-terra, kimi-k3.1-pro, deepseek-v4.1-flash-1017, mistral-large-4-0, ling-3.1-flash, command-a-plus, mimo-v2.6-flash. open=null where weight availability was not verified on 2026-10-28; family beam and lfm are new. beam-1.0-501b-a23b has no pick2 files (brands-pick2-free, brands-ext2-pick2-free): every host returns 400 on a second turn whose assistant message lacks its reasoning, which the harness does not send back; its single-turn batteries ran. 2026-10-29: llama-3.1-70b-instruct appended before it leaves OpenRouter (2026-11-03), core and extended batteries plus pickword and the suggestibility core probes the same day; already on the conduct panel. Not a hybrid: no off arms. 2026-10-29: command-r-plus-08-2024, gemma-2-27b-it and qwen3-235b-a22b-thinking-2507 appended, core and extended batteries plus pickword and the suggestibility core probes the same day; the Qwen thinking model at --max-tokens 8192. None is a hybrid: no off arms. open=true checked against Hugging Face on 2026-10-29. 2026-10-29: mistral-large-2512 (Mistral Large 3) tried and not added: see unrunnable. Known short cells, left as recorded (2026-10-29): gemma-2-27b-it 7 empty-content cells in brands-pick1-clamp (ecommerce, airline, brand), finish_reason stop after 2 tokens, so the model returns nothing on a share of those prompts (9, 4 and 7 empties on three samplings); mistral-large-4-0 one failed pickword cell (gu, 2026-10-28; two scene re-runs returned fragments, so the scene was kept). Filled 2026-10-29: kimi-k3.1-pro contested euthanasia belief_x (720/720), qwen3-235b-a22b-thinking-2507 righteffect and maybetag (160/160 each, serial full re-runs). Not a hybrid (its endpoints take no reasoning parameter); open=true checked against Hugging Face on 2026-10-29. minimax-m1 was tried the same day and is recorded under unrunnable. 2026-11-17: claude-fable-5.2 (2026-11-09), gpt-6.2-astra, gpt-6.2-astra-pro, gpt-6.2-sol and gpt-6.2-sol-pro (2026-11-17) appended, core batteries, pickword and the suggestibility core probes at --max-tokens 8192. None is a hybrid: every endpoint returns 400 to reasoning off. 2026-11-17: gemini-4-carbon, gemini-4-hydrogen, qwen4-max, hy4, muse-ember, inkling-2-small, motif-3, midm-k-3.0-pro, hy4-flash, lfm-3-1.7b and ripple-65b-preview appended, core batteries, pickword and the suggestibility core probes at --max-tokens 8192. Hybrids (off arms): qwen4-max, hy4, motif-3, midm-k-3.0-pro, hy4-flash. inkling-2-small open=true per its catalog description; open=null elsewhere where weight availability was not verified on 2026-11-17. family motif, midm and ripple are new. midm-k-3.0-pro bills about 360 input tokens beyond the prompt. 2026-11-18: gpt-6.2-astra-pro and gpt-6.2-sol-pro bill about 1,625 input tokens beyond the prompt (a hidden prompt; their base models bill 16-17). Kept because they ran before the 2026-11-18 rule; later variants of this kind are logged with one test call and not run. 2026-11-18: gemini-4-neon appended on its release, core only (the 2026-11-18 tiers), at --max-tokens 8192. Not a hybrid: reasoning off returns 400. Known short cells, left as recorded (2026-11-19): contested industrial (extended), hy4 6 of 40 and ripple-65b-preview 2 of 40 empty after four tries each; a re-collection of ripple's item returned new empties, so the item was kept.",
  "models": [
   {
    "slug": "anthropic/claude-3-haiku",
@@ -908,6 +908,125 @@
    "family": "qwen",
    "origin": "chinese",
    "open": true
+  },
+  {
+   "slug": "anthropic/claude-fable-5.2",
+   "label": "claude-fable-5.2",
+   "family": "claude",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "openai/gpt-6.2-astra",
+   "label": "gpt-6.2-astra",
+   "family": "gpt",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "openai/gpt-6.2-astra-pro",
+   "label": "gpt-6.2-astra-pro",
+   "family": "gpt",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "openai/gpt-6.2-sol",
+   "label": "gpt-6.2-sol",
+   "family": "gpt",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "openai/gpt-6.2-sol-pro",
+   "label": "gpt-6.2-sol-pro",
+   "family": "gpt",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "google/gemini-4-carbon",
+   "label": "gemini-4-carbon",
+   "family": "gemini",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "google/gemini-4-hydrogen",
+   "label": "gemini-4-hydrogen",
+   "family": "gemini",
+   "origin": "us-frontier",
+   "open": false
+  },
+  {
+   "slug": "qwen/qwen4-max",
+   "label": "qwen4-max",
+   "family": "qwen",
+   "origin": "chinese",
+   "open": false
+  },
+  {
+   "slug": "tencent/hy4",
+   "label": "hy4",
+   "family": "hunyuan",
+   "origin": "chinese",
+   "open": null
+  },
+  {
+   "slug": "meta/muse-ember",
+   "label": "muse-ember",
+   "family": "muse",
+   "origin": "us-frontier",
+   "open": null
+  },
+  {
+   "slug": "thinkingmachines/inkling-2-small",
+   "label": "inkling-2-small",
+   "family": "inkling",
+   "origin": "us-frontier",
+   "open": true
+  },
+  {
+   "slug": "motif-technologies/motif-3",
+   "label": "motif-3",
+   "family": "motif",
+   "origin": "small-open",
+   "open": null
+  },
+  {
+   "slug": "kt/midm-k-3.0-pro",
+   "label": "midm-k-3.0-pro",
+   "family": "midm",
+   "origin": "enterprise",
+   "open": null
+  },
+  {
+   "slug": "tencent/hy4-flash",
+   "label": "hy4-flash",
+   "family": "hunyuan",
+   "origin": "chinese",
+   "open": null
+  },
+  {
+   "slug": "liquid/lfm-3-1.7b",
+   "label": "lfm-3-1.7b",
+   "family": "lfm",
+   "origin": "small-open",
+   "open": null
+  },
+  {
+   "slug": "ricursiveai/ripple-65b-preview",
+   "label": "ripple-65b-preview",
+   "family": "ripple",
+   "origin": "small-open",
+   "open": null
+  },
+  {
+   "slug": "google/gemini-4-neon",
+   "label": "gemini-4-neon",
+   "family": "gemini",
+   "origin": "us-frontier",
+   "open": false
   }
  ],
  "unrunnable": [
