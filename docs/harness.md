@@ -150,7 +150,8 @@ A study's `spec/runs.json` lists its transcript directories. Each entry gives `d
 names the models that accept reasoning off and reason by default. A new panel model is owed every
 `core` directory:
 
-- **core**: on release day, judge-free.
+- **core**: the one-word census, on release day, judge-free. Suggestibility's contested-assert is the one
+  core directory with a system prompt.
 - **extended**: run only when Tapan asks (2026-10-29); judged, or the slower grids.
 - **check**: run once to validate an instrument, again only when it changes.
 - **probe**, **local**: question-driven subsets, never standing.
@@ -172,9 +173,9 @@ After a new model's runs, regenerate each study's analyses and views, then the c
 Analyses also rewrite `paper/gen/`. Restore it unless a paper is being revised.
 
 Lists kept by hand also take the new model: `studies/consensus/spec/release-dates.tsv` (when no other date
-source has it), the generation walks in `studies/consensus/views/build.py`, `studies/suggestibility/lineage.py`,
-and, for a lab's newest model, the grid in `studies/consensus/export_brands_site.py`, whose output feeds
-convovo.ai/brands (`convovo-site/public/brands/index.html`).
+source has it), the generation walks in `studies/consensus/views/build.py` and `studies/suggestibility/lineage.py`.
+convovo.ai/brands (`convovo-site/public/brands/index.html`, from `studies/consensus/export_brands_site.py`)
+stays at the 105-model version and is not updated with new models (2026-11-19).
 
 ## The components
 

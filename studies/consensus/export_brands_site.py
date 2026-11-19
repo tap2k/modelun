@@ -1,5 +1,7 @@
 """Export the brand-battery numbers behind the business-facing brands page (convovo.ai/brands and its prototype).
 
+The live page stays at the 105-model version and is not regenerated when models join the panel (2026-11-19).
+
 Writes one JSON file: a simplified grid (key categories x one flagship model per lab), each category's top
 brands across the whole panel, top-brand shares by release half-year, and one open model's training ladder
 (OLMo 3.1 32B, base/SFT/DPO/RL, no system prompt) for "name a brand". Scoring is analyze.answers(study, "brands_all") (41 categories, whole-name,

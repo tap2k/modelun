@@ -90,14 +90,18 @@ consensus, language and suggestibility (metadata, hybrids, waves, `unrunnable`);
 So the sequence for adding a model is: append to `spec/models.txt`, run it,
 commit the transcripts, and leave every earlier tag alone.
 
-A model added to the panel is owed every `core` directory in each study's
-`spec/runs.json` (consensus, language, suggestibility, conduct). `extended`
-directories run only when Tapan asks for them, not by default (2026-10-29).
+At its core the repo is a one-word census. Its main result is how the field's answer distribution departs from a
+prior: human first responses for 20 census categories (Van Overschelde et al. 2004), the model's own neutral
+answer for suggestibility. Brands, expanded and pickword have no prior yet; contested has none by design.
+A model added to the panel is owed every `core` directory in
+each study's `spec/runs.json` on release day: the consensus batteries (Name, and clamped Recommend for brands
+since 2026-11-18), pickword, suggestibility's
+original frame, and contested-assert (the only core item with a system prompt). `extended` directories,
+suggestibility's named, sufficiency and contested among them since 2026-11-18, run only when Tapan asks.
 Which new models join the panel is Tapan's call: an agent proposes candidates from `panel_gap.py`'s
-UNSEEN list, priced with `cost.py`, and runs them only after approval.
-Core runs on release day; it includes pickword, the cheapest longitudinal
-record the repo keeps, and gaps in it cannot be filled after a model is
-retired. One session runs all four studies, then regenerates their analyses and views before
+UNSEEN list, priced with one test call per model, and runs them only after approval. Variants that are an
+existing model behind a hidden prompt (billed input far above the prompt, as gpt-6.2-astra-pro) are
+logged with that call and not run. Gaps in core cannot be filled after a model is retired. One session runs all four studies, then regenerates their analyses and views before
 committing. `harness/panel_gap.py` lists what is still missing. Definitions and the regeneration
 steps: [`docs/harness.md`](docs/harness.md) § The standing panel.
 

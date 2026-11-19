@@ -67,8 +67,9 @@ class Study:
                       if p.name not in ("markers.json", "store.json"))
 
     def standing(self, tiers=("core",)):
-        """The study's standing directories: spec/runs.json entries at the given tiers. Core is owed by
-        every panel model; extended runs only when Tapan asks (2026-10-29), so callers pass it explicitly.
+        """The study's standing directories: spec/runs.json entries at the given tiers. Core (the one-word census,
+        release day) is owed by every panel model; extended runs only when Tapan asks (2026-10-29), so callers
+        pass it explicitly.
 
         Each entry gains ``owed_by``: "hybrids" for an off arm or a hybrids-only entry, which
         only the file's ``hybrids`` list owes, else "panel". A study without the file has none.
